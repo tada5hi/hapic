@@ -16,10 +16,10 @@
 ## Packages
 The repository contains the following packages:
 
-- **hapic**: This package contains the base API-Client, based on axios.
-- **@hapic/harbor**: This package contains an API-Client for the harbor image registry.
-- **@hapic/oauth2**: This package contains an API-Client for an OAuth2 authorization server.
-- **@hapic/vault**: This package contains an API-Client for the vault secret storage.
+- **hapic**: A client, based on axios.
+- **@hapic/harbor**: A client for the harbor image registry.
+- **@hapic/oauth2**: A client for an OAuth2 authorization server.
+- **@hapic/vault**: A client for the vault secret storage.
 
 ## Documentation
 

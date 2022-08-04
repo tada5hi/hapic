@@ -5,16 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { useClient } from 'hapic';
 import { GrantParameters, OAuth2Client, TokenGrantResponse } from '../../src';
 
-const client = useClient('test');
-
 const postFn = jest.fn();
-client.post = postFn;
-
 const getFn = jest.fn();
-client.get = getFn;
 
 const oauth2TokenResponse : TokenGrantResponse = {
     mac_key: 'mac_key',
@@ -152,6 +146,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
             },
         });
 
+        oauth2Client.post = postFn;
+        oauth2Client.get = getFn;
+
         let token = await oauth2Client.getTokenWithRefreshToken({ refresh_token: 'refresh_token' });
         expect(token).toEqual({ ...oauth2TokenResponse });
 
@@ -177,6 +174,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
             },
         });
 
+        oauth2Client.post = postFn;
+        oauth2Client.get = getFn;
+
         const token = await oauth2Client.getTokenWithPasswordGrant({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...oauth2TokenResponse });
     });
@@ -189,6 +189,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
                 token_host: 'https://example.com/',
             },
         });
+
+        oauth2Client.post = postFn;
+        oauth2Client.get = getFn;
 
         const userInfo = await oauth2Client.getUserInfo('token');
         expect(userInfo).toEqual(userInfoResponse);
@@ -203,6 +206,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
                 user_info_path: 'userinfo',
             },
         });
+
+        oauth2Client.post = postFn;
+        oauth2Client.get = getFn;
 
         const userInfo = await oauth2Client.getUserInfo('token');
         expect(userInfo).toEqual(userInfoResponse);

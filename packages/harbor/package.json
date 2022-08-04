@@ -1,6 +1,6 @@
 {
     "name": "@hapic/harbor",
-    "version": "0.0.1",
+    "version": "0.0.0",
     "description": "A harbor http api client.",
     "main": "./dist/index.js",
     "typings": "dist/index.d.ts",
@@ -34,7 +34,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapi#readme",
     "devDependencies": {
-        "hapic": "^0.0.1"
+        "hapic": "^0.0.0"
     },
     "peerDependencies": {
         "hapic": "^0.x"

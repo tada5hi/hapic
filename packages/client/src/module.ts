@@ -12,7 +12,7 @@ import { Config } from './config';
 import { AuthorizationHeader, stringifyAuthorizationHeader } from './header';
 
 export class Client {
-    public readonly driver: ClientDriverInstance;
+    public driver: ClientDriverInstance;
 
     /**
      * API Service
@@ -38,6 +38,10 @@ export class Client {
     }
 
     // ---------------------------------------------------------------------------------
+
+    public setDriver(client: ClientDriverInstance) {
+        this.driver = client;
+    }
 
     /**
      * Return driver config.
