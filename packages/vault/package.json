@@ -1,6 +1,6 @@
 {
     "name": "@hapic/vault",
-    "version": "0.0.1-alpha.0",
+    "version": "0.0.1-alpha.1",
     "description": "A vault http api client.",
     "main": "./dist/index.js",
     "typings": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "hapic": "^0.0.1-alpha.0"
+        "hapic": "^0.0.1-alpha.1"
     },
     "peerDependencies": {
         "hapic": "^2.x"
