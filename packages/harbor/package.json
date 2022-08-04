@@ -1,0 +1,46 @@
+{
+    "name": "@hapic/harbor",
+    "version": "0.0.1",
+    "description": "A harbor http api client.",
+    "main": "./dist/index.js",
+    "typings": "dist/index.d.ts",
+    "files": [
+        "dist/"
+    ],
+    "scripts": {
+        "build": "rm -rf ./dist && tsc -p tsconfig.build.json",
+        "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js",
+        "test:coverage": "npm run test -- --coverage"
+    },
+    "author": {
+        "name": "Peter Placzek",
+        "email": "contact@tada5hi.net",
+        "url": "https://github.com/tada5hi"
+    },
+    "license": "MIT",
+    "keywords": [
+        "query",
+        "api",
+        "rest",
+        "harbor",
+        "go-harbor"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Tada5hi/hapi.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Tada5hi/hapi/issues"
+    },
+    "homepage": "https://github.com/Tada5hi/hapi#readme",
+    "devDependencies": {
+        "hapic": "^0.0.1"
+    },
+    "peerDependencies": {
+        "hapic": "^0.x"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "gitHead": "ac770f3f6e1ec2fd011cdf432b06319c635c01fa"
+}

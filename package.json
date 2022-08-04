@@ -1,0 +1,61 @@
+{
+    "name": "@hapic/monorepo",
+    "private": true,
+    "author": {
+        "name": "Peter Placzek",
+        "email": "contact@tada5hi.net",
+        "url": "https://github.com/tada5hi"
+    },
+    "license": "MIT",
+    "version": "0.0.0",
+    "workspaces": [
+        "./packages/*"
+    ],
+    "keywords": [
+        "hapic",
+        "http",
+        "api",
+        "client",
+        "typescript",
+        "REST-API",
+        "decorators",
+        "metadata",
+        "generation",
+        "decorator metadata",
+        "swagger",
+        "generator"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Tada5hi/trapi.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Tada5hi/trapi/issues"
+    },
+    "homepage": "https://github.com/Tada5hi/trapi#readme",
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "scripts": {
+        "bootstrap": "lerna bootstrap",
+        "clean": "lerna run clean",
+        "build": "lerna run build",
+        "test": "lerna run test",
+        "pub": "npm run build && lerna publish",
+        "lint": "eslint --ext .ts ./packages/",
+        "lint:fix": "npm run lint -- --fix"
+    },
+    "devDependencies": {
+        "@tada5hi/eslint-config-typescript": "^1.0.4",
+        "@types/jest": "^27.5.0",
+        "@types/node": "^18.0.0",
+        "codecov": "^3.8.3",
+        "cross-env": "^7.0.3",
+        "jest": "^27.5.1",
+        "lerna": "^5.1.6",
+        "rimraf": "^3.0.2",
+        "eslint": "^8.18.0",
+        "ts-jest": "^27.1.4",
+        "typescript": "^4.7.4"
+    }
+}

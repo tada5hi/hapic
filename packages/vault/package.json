@@ -1,0 +1,42 @@
+{
+    "name": "@hapic/vault",
+    "version": "0.0.1",
+    "description": "A vault http api client.",
+    "main": "./dist/index.js",
+    "typings": "dist/index.d.ts",
+    "files": [
+        "dist/"
+    ],
+    "scripts": {
+        "build": "rm -rf ./dist && tsc -p tsconfig.build.json"
+    },
+    "author": {
+        "name": "Peter Placzek",
+        "email": "contact@tada5hi.net",
+        "url": "https://github.com/tada5hi"
+    },
+    "license": "MIT",
+    "keywords": [
+        "query",
+        "api",
+        "rest",
+        "vault"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Tada5hi/hapic.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Tada5hi/hapic/issues"
+    },
+    "homepage": "https://github.com/Tada5hi/hapic#readme",
+    "devDependencies": {
+        "hapic": "^0.0.1"
+    },
+    "peerDependencies": {
+        "hapic": "^2.x"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "paths": {
+            "@trapi/client": ["./packages/client/src"]
+        }
+    }
+}
