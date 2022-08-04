@@ -40,8 +40,8 @@ describe('src/protocols/oauth2/client/index.ts', () => {
         // redirect uri in method
         let oauth2Client = new OAuth2Client({
             options: {
-                authorizationEndpoint: 'https://example.com/authorize',
-                clientId: 'client',
+                authorization_endpoint: 'https://example.com/authorize',
+                client_id: 'client',
             },
         });
 
@@ -54,9 +54,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
         // redirect uri in constructor
         oauth2Client = new OAuth2Client({
             options: {
-                authorizationEndpoint: 'https://example.com/authorize',
-                clientId: 'client',
-                redirectUri,
+                authorization_endpoint: 'https://example.com/authorize',
+                client_id: 'client',
+                redirect_uri: redirectUri,
             },
         });
 
@@ -66,9 +66,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
 
         oauth2Client = new OAuth2Client({
             options: {
-                authorizationEndpoint: 'https://example.com/authorize',
-                clientId: 'client',
-                redirectUri,
+                authorization_endpoint: 'https://example.com/authorize',
+                client_id: 'client',
+                redirect_uri: redirectUri,
                 scope: ['email'],
             },
         });
@@ -85,8 +85,8 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     it('should build authorize url with non default authorize path', () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                authorizationEndpoint: 'https://example.com/oauth2/authorize',
-                clientId: 'client',
+                authorization_endpoint: 'https://example.com/oauth2/authorize',
+                client_id: 'client',
             },
         });
 
@@ -100,10 +100,10 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     it('should build token parameters', () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                clientId: 'client',
-                clientSecret: 'secret',
-                tokenEndpoint: 'https://example.com/token',
-                redirectUri,
+                client_id: 'client',
+                client_secret: 'secret',
+                token_endpoint: 'https://example.com/token',
+                redirect_uri: redirectUri,
                 scope: ['email'],
             },
         });
@@ -142,10 +142,10 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     it('should get token', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                clientId: 'client',
-                clientSecret: 'secret',
-                tokenEndpoint: 'https://example.com/token',
-                redirectUri,
+                client_id: 'client',
+                client_secret: 'secret',
+                token_endpoint: 'https://example.com/token',
+                redirect_uri: redirectUri,
                 scope: ['email'],
             },
         });
@@ -168,10 +168,10 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     it('should get token with non default path', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                clientId: 'client',
-                clientSecret: 'secret',
-                tokenEndpoint: 'https://example.com/oauth/token',
-                redirectUri,
+                client_id: 'client',
+                client_secret: 'secret',
+                token_endpoint: 'https://example.com/oauth/token',
+                redirect_uri: redirectUri,
                 scope: ['email'],
             },
         });
@@ -185,9 +185,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     it('should get user info', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                clientId: 'client',
-                clientSecret: 'secret',
-                userInfoEndpoint: 'https://example.com/userinfo',
+                client_id: 'client',
+                client_secret: 'secret',
+                userinfo_endpoint: 'https://example.com/userinfo',
             },
         });
 
@@ -200,9 +200,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     it('should get user info with non default path', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                clientId: 'client',
-                clientSecret: 'secret',
-                userInfoEndpoint: 'https://example.com/userinfo',
+                client_id: 'client',
+                client_secret: 'secret',
+                userinfo_endpoint: 'https://example.com/userinfo',
             },
         });
 

@@ -58,7 +58,7 @@ export class OAuth2Client extends Client {
 
     // -----------------------------------------------------------------------------------
 
-    async useDiscovery(baseURL?: string) {
+    async useOpenIDDiscovery(baseURL?: string) {
         let url = '/.well-known/openid-configuration';
 
         if (baseURL) {
@@ -68,19 +68,19 @@ export class OAuth2Client extends Client {
         const { data } : { data: OpenIDProviderMetadata } = await this.driver.get(url);
 
         if (data.authorization_endpoint) {
-            this.options.authorizationEndpoint = data.authorization_endpoint;
+            this.options.authorization_endpoint = data.authorization_endpoint;
         }
 
         if (data.introspection_endpoint) {
-            this.options.introspectionEndpoint = data.introspection_endpoint;
+            this.options.introspection_endpoint = data.introspection_endpoint;
         }
 
         if (data.token_endpoint) {
-            this.options.tokenEndpoint = data.token_endpoint;
+            this.options.token_endpoint = data.token_endpoint;
         }
 
         if (data.userinfo_endpoint) {
-            this.options.userInfoEndpoint = data.userinfo_endpoint;
+            this.options.userinfo_endpoint = data.userinfo_endpoint;
         }
 
         this.setOptions(this.options);

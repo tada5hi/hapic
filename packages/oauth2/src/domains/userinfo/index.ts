@@ -26,7 +26,7 @@ export class UserinfoAPI extends BaseOAuth2API {
      */
     async get<T extends Record<string, any>>(token: string) : Promise<T> {
         const { data } = await this.client.get(
-            (this.options.userInfoEndpoint || '/userinfo'),
+            (this.options.userinfo_endpoint || '/userinfo'),
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

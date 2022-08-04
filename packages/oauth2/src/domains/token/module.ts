@@ -81,7 +81,7 @@ export class TokenAPI extends BaseOAuth2API {
         }
 
         const { data } = await this.client.post(
-            (this.options.tokenEndpoint || '/token'),
+            (this.options.token_endpoint || '/token'),
             urlSearchParams,
             {
                 headers: {
@@ -124,7 +124,7 @@ export class TokenAPI extends BaseOAuth2API {
         }
 
         const { data } = await this.client.post(
-            this.options.tokenEndpoint || '/token/introspect',
+            this.options.token_endpoint || '/token/introspect',
             urlSearchParams,
             {
                 headers: {
@@ -139,8 +139,8 @@ export class TokenAPI extends BaseOAuth2API {
     // ------------------------------------------------------------------
 
     buildTokenParameters(parameters: TokenGrantParameters): TokenGrantParameters {
-        if (this.options.clientId) {
-            parameters.client_id = this.options.clientId;
+        if (this.options.client_id) {
+            parameters.client_id = this.options.client_id;
         }
 
         if (
@@ -162,16 +162,16 @@ export class TokenAPI extends BaseOAuth2API {
             parameters.grant_type === 'authorization_code'
         ) {
             if (typeof parameters.redirect_uri === 'undefined') {
-                parameters.redirect_uri = this.options.redirectUri;
+                parameters.redirect_uri = this.options.redirect_uri;
             }
         }
 
-        if (this.options.clientId) {
-            parameters.client_id = this.options.clientId;
+        if (this.options.client_id) {
+            parameters.client_id = this.options.client_id;
         }
 
-        if (typeof this.options.clientSecret === 'string') {
-            parameters.client_secret = this.options.clientSecret;
+        if (typeof this.options.client_secret === 'string') {
+            parameters.client_secret = this.options.client_secret;
         }
 
         return parameters;

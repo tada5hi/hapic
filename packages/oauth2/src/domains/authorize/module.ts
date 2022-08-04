@@ -25,8 +25,8 @@ export class AuthorizeAPI extends BaseOAuth2API {
 
         const queryParameters: AuthorizeQueryParameters = {
             response_type: 'code',
-            ...(this.options.clientId ? { client_id: this.options.clientId } : {}),
-            redirect_uri: this.options.redirectUri,
+            ...(this.options.client_id ? { client_id: this.options.client_id } : {}),
+            redirect_uri: this.options.redirect_uri,
         };
 
         if (typeof parameters.redirect_uri === 'string') {
@@ -46,7 +46,7 @@ export class AuthorizeAPI extends BaseOAuth2API {
         }
 
         return (
-            this.options.authorizationEndpoint || removeDuplicateForwardSlashesFromURL(`${this.client.getUri()}/authorize`)
+            this.options.authorization_endpoint || removeDuplicateForwardSlashesFromURL(`${this.client.getUri()}/authorize`)
         ) + buildHTTPQuery(queryParameters);
     }
 }

@@ -6,20 +6,20 @@
  */
 
 export type ClientOptions = {
-    clientId?: string,
-    clientSecret?: string,
+    client_id?: string,
+    client_secret?: string,
 
     scope?: string | string[],
 
-    redirectUri?: string,
+    redirect_uri?: string,
 
-    tokenEndpoint?: string,
+    token_endpoint?: string,
 
-    introspectionEndpoint?: string,
+    introspection_endpoint?: string,
 
-    authorizationEndpoint?: string,
+    authorization_endpoint?: string,
 
-    userInfoEndpoint?: string,
+    userinfo_endpoint?: string,
 };
 
 // ------------------------------------------------------------------
