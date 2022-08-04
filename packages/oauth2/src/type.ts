@@ -4,86 +4,85 @@
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
  */
-export type TokenGrantResponse = {
-    access_token: string,
-
-    refresh_token?: string,
-
-    expires_in: number,
-
-    token_type: string,
-
-    id_token?: string,
-
-    mac_key?: string,
-
-    mac_algorithm?: string,
-
-    scope?: string
-};
 
 export type ClientOptions = {
-    client_id?: string,
-    client_secret?: string,
+    clientId?: string,
+    clientSecret?: string,
 
     scope?: string | string[],
 
-    redirect_uri?: string,
+    redirectUri?: string,
 
-    token_host?: string,
-    token_path?: string,
-    token_introspect_path?: string,
+    tokenEndpoint?: string,
 
-    authorize_host?: string,
-    authorize_path?: string,
+    introspectionEndpoint?: string,
 
-    user_info_host?: string,
-    user_info_path?: string
+    authorizationEndpoint?: string,
+
+    userInfoEndpoint?: string,
 };
 
 // ------------------------------------------------------------------
 
-export type AuthorizeQueryParameters = {
-    response_type: 'code',
-    client_id?: string,
-    redirect_uri: string,
-    scope?: string | string[]
+export type OpenIDProviderMetadata = {
+    /**
+     * The fully qualified issuer URL of the server
+     */
+    issuer: string,
+
+    /**
+     * The fully qualified URL of the server’s authorization endpoint defined by RFC 6749
+     */
+    authorization_endpoint: string,
+
+    /**
+     * The fully qualified URI of the server’s public key in JSON Web Key Set (JWKS) format
+     */
+    jwks_uri: string,
+
+    /**
+     * List of the supported OAuth 2.0 response_type values.
+     */
+    response_type_supported: ('none' | 'code' | 'token' | 'id_token')[],
+
+    /**
+     * List of the supported subject (end-user) identifier types.
+     */
+    subject_types_supported: string[],
+
+    /**
+     * e.g. "HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "none"
+     */
+    id_token_signing_alg_values_supported: string[],
+
+    /**
+     * The fully qualified URL of the server’s token endpoint defined by RFC 6749
+     */
+    token_endpoint: string,
+
+    /**
+     *  The fully qualified URL of the server’s introspection_endpoint defined by OAuth 2.0 Token Introspection
+     */
+    introspection_endpoint: string,
+
+    /**
+     * The fully qualified URL of the server’s revocation endpoint defined by OAuth 2.0 Authorization Server
+     * Metadata (and sort of in OAuth 2.0 Token Revocation)
+     */
+    revocation_endpoint: string,
+
+    /**
+     * The OAuth 2.0 / OpenID Connect URL of the OP's Dynamic Client Registration Endpoint OpenID.Registration.
+     */
+    registration_endpoint?: string,
+
+    /**
+     * The service documentation URL.
+     */
+    service_documentation?: string,
+
+    /**
+     * The OpenID Connect UserInfo endpoint URL.
+     */
+    userinfo_endpoint?: string
 };
-
-// ------------------------------------------------------------------
-
-export type ClientAuthenticationParameters = {
-    client_id?: string,
-    client_secret?: string,
-};
-
-export type ClientCredentialsGrantParameters = {
-    grant_type: 'client_credentials',
-    scope?: string | string[]
-} & ClientAuthenticationParameters;
-
-export type PasswordGrantParameters = {
-    grant_type: 'password',
-    username: string,
-    password: string,
-    scope?: string | string[]
-} & ClientAuthenticationParameters;
-
-export type AuthorizationGrantParameters = {
-    grant_type: 'authorization_code',
-    state: string,
-    code: string,
-    redirect_uri?: string,
-} & ClientAuthenticationParameters;
-
-export type RefreshTokenGrantParameters = {
-    grant_type: 'refresh_token',
-    refresh_token: string,
-    scope?: string | string[]
-} & ClientAuthenticationParameters;
-
-export type GrantParameters =
-    ClientCredentialsGrantParameters |
-    PasswordGrantParameters |
-    AuthorizationGrantParameters |
-    RefreshTokenGrantParameters;

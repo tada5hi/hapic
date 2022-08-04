@@ -2,7 +2,7 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "paths": {
-            "@trapi/client": ["./packages/client/src"]
+            "hapic": ["./packages/client/src"]
         }
     }
 }

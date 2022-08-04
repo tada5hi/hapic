@@ -5,7 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { GrantParameters, OAuth2Client, TokenGrantResponse } from '../../src';
+import { createClient } from 'hapic';
+import { OAuth2Client, TokenGrantParameters, TokenGrantResponse } from '../../src';
 
 const postFn = jest.fn();
 const getFn = jest.fn();
@@ -30,81 +31,84 @@ getFn.mockResolvedValue({ data: userInfoResponse });
 
 const redirectUri = 'https://example.com/redirect';
 
+const client = createClient();
+client.driver.post = postFn;
+client.driver.get = getFn;
+
 describe('src/protocols/oauth2/client/index.ts', () => {
     it('should build authorize url', () => {
         // redirect uri in method
         let oauth2Client = new OAuth2Client({
             options: {
-                token_host: 'https://example.com/',
-                client_id: 'client',
+                authorizationEndpoint: 'https://example.com/authorize',
+                clientId: 'client',
             },
         });
 
-        let url = oauth2Client.buildAuthorizeURL({
+        let url = oauth2Client.authorize.buildURL({
             redirect_uri: redirectUri,
         });
 
-        expect(url).toEqual(`https://example.com/oauth/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
+        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
 
         // redirect uri in constructor
         oauth2Client = new OAuth2Client({
             options: {
-                token_host: 'https://example.com/',
-                client_id: 'client',
-                redirect_uri: redirectUri,
+                authorizationEndpoint: 'https://example.com/authorize',
+                clientId: 'client',
+                redirectUri,
             },
         });
 
-        url = oauth2Client.buildAuthorizeURL();
+        url = oauth2Client.authorize.buildURL();
 
-        expect(url).toEqual(`https://example.com/oauth/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
+        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
 
         oauth2Client = new OAuth2Client({
             options: {
-                token_host: 'https://example.com/',
-                client_id: 'client',
-                redirect_uri: redirectUri,
+                authorizationEndpoint: 'https://example.com/authorize',
+                clientId: 'client',
+                redirectUri,
                 scope: ['email'],
             },
         });
 
-        url = oauth2Client.buildAuthorizeURL();
+        url = oauth2Client.authorize.buildURL();
 
-        expect(url).toEqual(`https://example.com/oauth/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}&scope=email`);
+        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}&scope=email`);
 
-        url = oauth2Client.buildAuthorizeURL({ scope: 'address' });
+        url = oauth2Client.authorize.buildURL({ scope: 'address' });
 
-        expect(url).toEqual(`https://example.com/oauth/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}&scope=address`);
+        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}&scope=address`);
     });
 
     it('should build authorize url with non default authorize path', () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                token_host: 'https://example.com/',
-                client_id: 'client',
-                authorize_path: 'authorize',
+                authorizationEndpoint: 'https://example.com/oauth2/authorize',
+                clientId: 'client',
             },
         });
 
-        const url = oauth2Client.buildAuthorizeURL({
+        const url = oauth2Client.authorize.buildURL({
             redirect_uri: redirectUri,
         });
 
-        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
+        expect(url).toEqual(`https://example.com/oauth2/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
     });
 
     it('should build token parameters', () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                client_id: 'client',
-                client_secret: 'secret',
-                token_host: 'https://example.com/',
-                redirect_uri: redirectUri,
+                clientId: 'client',
+                clientSecret: 'secret',
+                tokenEndpoint: 'https://example.com/token',
+                redirectUri,
                 scope: ['email'],
             },
         });
 
-        let parameters : GrantParameters = oauth2Client.buildTokenParameters({
+        let parameters : TokenGrantParameters = oauth2Client.token.buildTokenParameters({
             grant_type: 'password',
             username: 'admin',
             password: 'start123',
@@ -117,9 +121,9 @@ describe('src/protocols/oauth2/client/index.ts', () => {
             client_id: 'client',
             scope: 'email',
             client_secret: 'secret',
-        } as GrantParameters);
+        } as TokenGrantParameters);
 
-        parameters = oauth2Client.buildTokenParameters({
+        parameters = oauth2Client.token.buildTokenParameters({
             grant_type: 'authorization_code',
             code: 'code',
             state: 'state',
@@ -132,85 +136,79 @@ describe('src/protocols/oauth2/client/index.ts', () => {
             client_id: 'client',
             redirect_uri: redirectUri,
             client_secret: 'secret',
-        } as GrantParameters);
+        } as TokenGrantParameters);
     });
 
     it('should get token', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                client_id: 'client',
-                client_secret: 'secret',
-                token_host: 'https://example.com/',
-                redirect_uri: redirectUri,
+                clientId: 'client',
+                clientSecret: 'secret',
+                tokenEndpoint: 'https://example.com/token',
+                redirectUri,
                 scope: ['email'],
             },
         });
 
-        oauth2Client.post = postFn;
-        oauth2Client.get = getFn;
+        oauth2Client.setDriver(client.driver);
 
-        let token = await oauth2Client.getTokenWithRefreshToken({ refresh_token: 'refresh_token' });
+        let token = await oauth2Client.token.createWithRefreshToken({ refresh_token: 'refresh_token' });
         expect(token).toEqual({ ...oauth2TokenResponse });
 
-        token = await oauth2Client.getTokenWithClientCredentials({});
+        token = await oauth2Client.token.createWithClientCredentials({});
         expect(token).toEqual({ ...oauth2TokenResponse });
 
-        token = await oauth2Client.getTokenWithPasswordGrant({ username: 'admin', password: 'start123' });
+        token = await oauth2Client.token.createWithPasswordGrant({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...oauth2TokenResponse });
 
-        token = await oauth2Client.getTokenWithAuthorizeGrant({ state: 'state', code: 'code' });
+        token = await oauth2Client.token.createWithAuthorizeGrant({ state: 'state', code: 'code' });
         expect(token).toEqual({ ...oauth2TokenResponse });
     });
 
     it('should get token with non default path', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                client_id: 'client',
-                client_secret: 'secret',
-                token_host: 'https://example.com/',
-                token_path: 'token',
-                redirect_uri: redirectUri,
+                clientId: 'client',
+                clientSecret: 'secret',
+                tokenEndpoint: 'https://example.com/oauth/token',
+                redirectUri,
                 scope: ['email'],
             },
         });
 
-        oauth2Client.post = postFn;
-        oauth2Client.get = getFn;
+        oauth2Client.setDriver(client.driver);
 
-        const token = await oauth2Client.getTokenWithPasswordGrant({ username: 'admin', password: 'start123' });
+        const token = await oauth2Client.token.createWithPasswordGrant({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...oauth2TokenResponse });
     });
 
     it('should get user info', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                client_id: 'client',
-                client_secret: 'secret',
-                token_host: 'https://example.com/',
+                clientId: 'client',
+                clientSecret: 'secret',
+                userInfoEndpoint: 'https://example.com/userinfo',
             },
         });
 
-        oauth2Client.post = postFn;
-        oauth2Client.get = getFn;
+        oauth2Client.setDriver(client.driver);
 
-        const userInfo = await oauth2Client.getUserInfo('token');
+        const userInfo = await oauth2Client.userInfo.get('token');
         expect(userInfo).toEqual(userInfoResponse);
     });
 
     it('should get user info with non default path', async () => {
         const oauth2Client = new OAuth2Client({
             options: {
-                client_id: 'client',
-                client_secret: 'secret',
-                token_host: 'https://example.com/',
-                user_info_path: 'userinfo',
+                clientId: 'client',
+                clientSecret: 'secret',
+                userInfoEndpoint: 'https://example.com/userinfo',
             },
         });
 
-        oauth2Client.post = postFn;
-        oauth2Client.get = getFn;
+        oauth2Client.setDriver(client.driver);
 
-        const userInfo = await oauth2Client.getUserInfo('token');
+        const userInfo = await oauth2Client.userInfo.get('token');
         expect(userInfo).toEqual(userInfoResponse);
     });
 });
