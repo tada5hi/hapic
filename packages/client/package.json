@@ -35,12 +35,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/trapi.git"
+        "url": "git+https://github.com/Tada5hi/hapic.git"
     },
     "bugs": {
-        "url": "https://github.com/Tada5hi/trapi/issues"
+        "url": "https://github.com/Tada5hi/hapic/issues"
     },
-    "homepage": "https://github.com/Tada5hi/trapi#readme",
+    "homepage": "https://github.com/Tada5hi/hapic#readme",
     "dependencies": {
         "@typescript-error/core": "^1.1.3",
         "axios": "^0.27.2",
