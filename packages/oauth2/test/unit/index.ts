@@ -6,7 +6,7 @@
  */
 
 import { createClient } from 'hapic';
-import { OAuth2Client, TokenGrantParameters, TokenGrantResponse } from '../../src';
+import { Client, TokenGrantParameters, TokenGrantResponse } from '../../src';
 
 const postFn = jest.fn();
 const getFn = jest.fn();
@@ -38,7 +38,7 @@ client.driver.get = getFn;
 describe('src/protocols/oauth2/client/index.ts', () => {
     it('should build authorize url', () => {
         // redirect uri in method
-        let oauth2Client = new OAuth2Client({
+        let oauth2Client = new Client({
             options: {
                 authorization_endpoint: 'https://example.com/authorize',
                 client_id: 'client',
@@ -52,7 +52,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
         expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
 
         // redirect uri in constructor
-        oauth2Client = new OAuth2Client({
+        oauth2Client = new Client({
             options: {
                 authorization_endpoint: 'https://example.com/authorize',
                 client_id: 'client',
@@ -64,7 +64,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
 
         expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
 
-        oauth2Client = new OAuth2Client({
+        oauth2Client = new Client({
             options: {
                 authorization_endpoint: 'https://example.com/authorize',
                 client_id: 'client',
@@ -83,7 +83,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     });
 
     it('should build authorize url with non default authorize path', () => {
-        const oauth2Client = new OAuth2Client({
+        const oauth2Client = new Client({
             options: {
                 authorization_endpoint: 'https://example.com/oauth2/authorize',
                 client_id: 'client',
@@ -98,7 +98,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     });
 
     it('should build token parameters', () => {
-        const oauth2Client = new OAuth2Client({
+        const oauth2Client = new Client({
             options: {
                 client_id: 'client',
                 client_secret: 'secret',
@@ -140,7 +140,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     });
 
     it('should get token', async () => {
-        const oauth2Client = new OAuth2Client({
+        const oauth2Client = new Client({
             options: {
                 client_id: 'client',
                 client_secret: 'secret',
@@ -166,7 +166,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     });
 
     it('should get token with non default path', async () => {
-        const oauth2Client = new OAuth2Client({
+        const oauth2Client = new Client({
             options: {
                 client_id: 'client',
                 client_secret: 'secret',
@@ -183,7 +183,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     });
 
     it('should get user info', async () => {
-        const oauth2Client = new OAuth2Client({
+        const oauth2Client = new Client({
             options: {
                 client_id: 'client',
                 client_secret: 'secret',
@@ -198,7 +198,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
     });
 
     it('should get user info with non default path', async () => {
-        const oauth2Client = new OAuth2Client({
+        const oauth2Client = new Client({
             options: {
                 client_id: 'client',
                 client_secret: 'secret',

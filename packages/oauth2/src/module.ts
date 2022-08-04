@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, ClientDriverInstance, Config } from 'hapic';
+import { Client as BaseClient, ClientDriverInstance, Config } from 'hapic';
 import {
     ClientOptions, OpenIDProviderMetadata,
 } from './type';
@@ -13,7 +13,7 @@ import {
 import { AuthorizeAPI, TokenAPI, UserinfoAPI } from './domains';
 import { removeDuplicateForwardSlashesFromURL } from './utils';
 
-export class OAuth2Client extends Client {
+export class Client extends BaseClient {
     public options : ClientOptions;
 
     // -----------------------------------------------------------------------------------

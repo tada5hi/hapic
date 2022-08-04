@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, Config } from 'hapic';
+import { Client as BaseClient, Config } from 'hapic';
 import {
     ConnectionConfig,
 } from './type';
@@ -13,7 +13,7 @@ import { MountAPI } from './mount';
 import { KeyValueAPI } from './key-value';
 import { mergeDeep, parseConnectionString } from './utils';
 
-export class VaultClient extends Client {
+export class Client extends BaseClient {
     public readonly mount : MountAPI;
 
     public readonly keyValue: KeyValueAPI;

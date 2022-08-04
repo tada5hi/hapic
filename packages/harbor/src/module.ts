@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, Config } from 'hapic';
+import { Client as BaseClient, Config } from 'hapic';
 import { ConnectionConfig, SearchResult } from './type';
 import { RobotAccountAPI } from './robot-account';
 import { ProjectAPI } from './project';
@@ -14,7 +14,7 @@ import { ProjectRepositoryAPI } from './project-repository';
 import { ProjectArtifactAPI } from './project-artifact';
 import { mergeDeep, parseConnectionString } from './utils';
 
-export class HarborClient extends Client {
+export class Client extends BaseClient {
     public readonly project: ProjectAPI;
 
     public readonly projectArtifact: ProjectArtifactAPI;
