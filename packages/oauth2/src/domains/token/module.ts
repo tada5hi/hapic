@@ -16,7 +16,7 @@ import {
     TokenAuthorizationGrantParameters, TokenClientCredentialsGrantParameters,
     TokenGrantParameters,
     TokenGrantResponse,
-    TokenPasswordGrantParameters, TokenRefreshTokenGrantParameters,
+    TokenPasswordGrantParameters, TokenRefreshTokenGrantParameters, TokenRobotCredentialsGrantParameters,
 } from './type';
 
 export class TokenAPI extends BaseOAuth2API {
@@ -62,6 +62,15 @@ export class TokenAPI extends BaseOAuth2API {
     ): Promise<TokenGrantResponse> {
         return this.create(this.buildTokenParameters({
             grant_type: 'authorization_code',
+            ...parameters,
+        }));
+    }
+
+    async createWithRobotCredentials(
+        parameters: Pick<TokenRobotCredentialsGrantParameters, 'id' | 'secret'>,
+    ) {
+        return this.create(this.buildTokenParameters({
+            grant_type: 'robot_credentials',
             ...parameters,
         }));
     }
@@ -144,7 +153,8 @@ export class TokenAPI extends BaseOAuth2API {
         }
 
         if (
-            parameters.grant_type !== 'authorization_code'
+            parameters.grant_type !== 'authorization_code' &&
+            parameters.grant_type !== 'robot_credentials'
         ) {
             if (
                 typeof parameters.scope === 'undefined' &&

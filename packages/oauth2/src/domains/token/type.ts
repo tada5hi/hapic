@@ -35,11 +35,18 @@ export type TokenRefreshTokenGrantParameters = {
     scope?: string | string[]
 } & ClientAuthenticationParameters;
 
+export type TokenRobotCredentialsGrantParameters = {
+    grant_type: 'robot_credentials',
+    id: string,
+    secret: string,
+} & ClientAuthenticationParameters;
+
 export type TokenGrantParameters =
     TokenClientCredentialsGrantParameters |
     TokenPasswordGrantParameters |
     TokenAuthorizationGrantParameters |
-    TokenRefreshTokenGrantParameters;
+    TokenRefreshTokenGrantParameters |
+    TokenRobotCredentialsGrantParameters;
 
 // ------------------------------------------------------------------
 
