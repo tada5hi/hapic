@@ -1,6 +1,6 @@
 {
     "name": "@hapic/oauth2",
-    "version": "0.0.1-alpha.1",
+    "version": "0.0.1-alpha.2",
     "description": "A oauth2 api client based on axios.",
     "main": "./dist/index.js",
     "typings": "dist/index.d.ts",
