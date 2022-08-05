@@ -133,7 +133,7 @@ export class TokenAPI extends BaseOAuth2API {
         }
 
         const { data } = await this.client.post(
-            this.options.token_endpoint || '/token/introspect',
+            this.options.introspection_endpoint || '/token/introspect',
             urlSearchParams,
             {
                 headers: {
