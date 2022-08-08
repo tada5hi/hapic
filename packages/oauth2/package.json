@@ -1,6 +1,6 @@
 {
     "name": "@hapic/oauth2",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A oauth2 api client based on axios.",
     "main": "./dist/index.js",
     "typings": "dist/index.d.ts",
@@ -45,7 +45,7 @@
         "@types/jsonwebtoken": "^8.5.8"
     },
     "devDependencies": {
-        "hapic": "^0.0.1"
+        "hapic": "^0.0.2"
     },
     "peerDependencies": {
         "hapic": ">=0.0.1"
