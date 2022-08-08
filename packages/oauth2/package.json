@@ -1,6 +1,6 @@
 {
     "name": "@hapic/oauth2",
-    "version": "0.0.1-alpha.3",
+    "version": "0.0.1",
     "description": "A oauth2 api client based on axios.",
     "main": "./dist/index.js",
     "typings": "dist/index.d.ts",
@@ -43,7 +43,7 @@
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "dependencies": {
         "@types/jsonwebtoken": "^8.5.8",
-        "hapic": "^0.0.1-alpha.1"
+        "hapic": "^0.0.1"
     },
     "publishConfig": {
         "access": "public"
