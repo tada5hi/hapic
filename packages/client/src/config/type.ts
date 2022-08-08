@@ -8,12 +8,12 @@
 import { IAxiosRetryConfig } from 'axios-retry';
 import { ClientRequestConfig } from '../type';
 
-export interface Type extends Function {
+export interface ClientInterface extends Function {
     new (config?: Config);
 }
 
 export type Config = {
-    clazz?: Type,
+    clazz?: ClientInterface,
     driver?: ClientRequestConfig,
     retry?: IAxiosRetryConfig | boolean,
     extra?: {
