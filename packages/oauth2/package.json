@@ -42,8 +42,13 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "dependencies": {
-        "@types/jsonwebtoken": "^8.5.8",
+        "@types/jsonwebtoken": "^8.5.8"
+    },
+    "devDependencies": {
         "hapic": "^0.0.1"
+    },
+    "peerDependencies": {
+        "hapic": ">=0.0.1"
     },
     "publishConfig": {
         "access": "public"

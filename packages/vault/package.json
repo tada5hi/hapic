@@ -34,7 +34,7 @@
         "hapic": "^0.0.1"
     },
     "peerDependencies": {
-        "hapic": "^2.x"
+        "hapic": ">=0.0.1"
     },
     "publishConfig": {
         "access": "public"
