@@ -43,7 +43,7 @@
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "dependencies": {
         "@typescript-error/core": "^1.1.3",
-        "axios": "^0.27.2",
+        "axios": "^1.1.2",
         "axios-retry": "^3.3.1"
     },
     "publishConfig": {
