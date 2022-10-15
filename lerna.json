@@ -17,5 +17,6 @@
     },
     "npmClient": "npm",
     "useWorkspaces": true,
+    "useNx": false,
     "version": "independent"
 }

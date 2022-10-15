@@ -20,7 +20,7 @@ export class Client {
      * @param config
      */
     constructor(config?: Config) {
-        config ??= {};
+        config = config || {};
 
         const client = axios.create(config.driver);
 

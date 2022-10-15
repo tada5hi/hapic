@@ -29,7 +29,7 @@ export class Client extends BaseClient {
     constructor(config?: Config & { options?: ClientOptions}) {
         super(config);
 
-        config ??= {};
+        config = config || {};
 
         this.options = config.options || {};
 

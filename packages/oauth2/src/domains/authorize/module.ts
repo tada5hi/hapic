@@ -21,7 +21,7 @@ export class AuthorizeAPI extends BaseOAuth2API {
     }
 
     buildURL(parameters?: Partial<Pick<AuthorizeQueryParameters, 'redirect_uri' | 'scope'>>) {
-        parameters = parameters ?? {};
+        parameters = parameters || {};
 
         const queryParameters: AuthorizeQueryParameters = {
             response_type: 'code',

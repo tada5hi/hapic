@@ -29,8 +29,8 @@ export class KeyValueAPI {
     }
 
     async save(engine: string, key: string, value: Record<string, any>, options?: MountKeyValueOptions) {
-        options ??= {};
-        options.version ??= MountKeyValueVersion.ONE;
+        options = options || {};
+        options.version = options.version || MountKeyValueVersion.ONE;
 
         try {
             const response = await this.client.post(buildKeyValueURLPath(options.version, engine, key), value);
@@ -55,8 +55,8 @@ export class KeyValueAPI {
         key: string,
         options?: MountKeyValueOptions,
     ) : Promise<ResourceResponse<T> | undefined> {
-        options ??= {};
-        options.version ??= MountKeyValueVersion.ONE;
+        options = options || {};
+        options.version = options.version || MountKeyValueVersion.ONE;
 
         try {
             const { data } = await this.client.get(buildKeyValueURLPath(options.version, engine, key));
@@ -80,8 +80,8 @@ export class KeyValueAPI {
         key: string,
         options?: MountKeyValueOptions,
     ) {
-        options ??= {};
-        options.version ??= MountKeyValueVersion.ONE;
+        options = options || {};
+        options.version = options.version || MountKeyValueVersion.ONE;
 
         try {
             await this.client.delete(buildKeyValueURLPath(options.version, engine, key));

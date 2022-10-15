@@ -103,7 +103,7 @@ export class RobotAccountAPI {
             duration: -1,
             level: 'system',
             disable: false,
-            permissions: [buildRobotAccountPermissionForNamespace(projectName ?? robotName)],
+            permissions: [buildRobotAccountPermissionForNamespace(projectName || robotName)],
         }, (payload || {}));
 
         const { data }: { data: RobotAccount } = await this.client

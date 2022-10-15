@@ -36,8 +36,8 @@ export function useConfig(
 export function buildConfig(
     config?: Config,
 ) : Config {
-    config ??= {};
-    config.extra ??= {};
+    config = config || {};
+    config.extra = config.extra || {};
 
     return config;
 }

@@ -2,13 +2,16 @@
     "name": "hapic",
     "version": "0.0.2",
     "description": "A http api client based on axios.",
-    "main": "./dist/index.js",
-    "typings": "dist/index.d.ts",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/types/index.d.ts",
     "files": [
         "dist/"
     ],
     "scripts": {
-        "build": "rm -rf ./dist && tsc -p tsconfig.build.json",
+        "build:types": "tsc  -p tsconfig.build.json --emitDeclarationOnly",
+        "build:js": "rollup -c",
+        "build": "rimraf dist && npm run build:types && npm run build:js",
         "prepublishOnly": "npm run build",
         "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js",
         "test:coverage": "npm run test -- --coverage"
@@ -41,10 +44,14 @@
         "url": "https://github.com/Tada5hi/hapic/issues"
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
-    "dependencies": {
-        "@typescript-error/core": "^1.1.3",
-        "axios": "^0.27.2",
+    "devDependencies": {
+        "ebec": "^0.0.3",
+        "axios": "^1.1.2",
         "axios-retry": "^3.3.1"
+    },
+    "peerDependencies": {
+        "axios": "^1.x",
+        "axios-retry": "^3.x"
     },
     "publishConfig": {
         "access": "public"

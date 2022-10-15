@@ -39,7 +39,7 @@ export class Client extends BaseClient {
 
         config.driver = mergeDeep({
             ...(connectionConfig ? { baseURL: connectionConfig.host } : {}),
-            ...(config.driver ?? {}),
+            ...(config.driver || {}),
         });
 
         super(config);

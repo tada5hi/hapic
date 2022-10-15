@@ -2,13 +2,16 @@
     "name": "@hapic/vault",
     "version": "0.0.2",
     "description": "A vault http api client.",
-    "main": "./dist/index.js",
-    "typings": "dist/index.d.ts",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/types/index.d.ts",
     "files": [
         "dist/"
     ],
     "scripts": {
-        "build": "rm -rf ./dist && tsc -p tsconfig.build.json"
+        "build:types": "tsc  -p tsconfig.build.json --emitDeclarationOnly",
+        "build:js": "rollup -c",
+        "build": "rimraf dist && npm run build:types && npm run build:js"
     },
     "author": {
         "name": "Peter Placzek",

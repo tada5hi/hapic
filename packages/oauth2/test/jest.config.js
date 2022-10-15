@@ -10,6 +10,9 @@ module.exports = {
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
     },
+    moduleNameMapper: {
+        '^axios$': require.resolve('axios'),
+    },
     moduleFileExtensions: [
         'ts',
         'tsx',

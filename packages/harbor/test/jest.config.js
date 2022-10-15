@@ -8,21 +8,24 @@
 module.exports = {
     testEnvironment: 'node',
     transform: {
-        "^.+\\.tsx?$": "ts-jest"
+        '^.+\\.tsx?$': 'ts-jest',
+    },
+    moduleNameMapper: {
+        '^axios$': require.resolve('axios'),
     },
     moduleFileExtensions: [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "node",
+        'ts',
+        'tsx',
+        'js',
+        'jsx',
+        'json',
+        'node',
     ],
     testRegex: '(/unit/.*|(\\.|/)(test|spec))\\.(ts|js)x?$',
     testPathIgnorePatterns: [
-        "writable",
-        "dist",
-        "/unit/mock-util.ts"
+        'writable',
+        'dist',
+        '/unit/mock-util.ts',
     ],
     coverageDirectory: 'writable/coverage',
     collectCoverageFrom: [
@@ -34,16 +37,16 @@ module.exports = {
         // the resolver actually uses exclusive typescript functions
         // and to debug them, we need to rebuild the compiler ^^.
         '!src/resolver/**/*.ts',
-        '!src/utils/validator.ts'
+        '!src/utils/validator.ts',
     ],
     coverageThreshold: {
         global: {
             branches: 58,
             functions: 77,
             lines: 73,
-            statements: 73
-        }
+            statements: 73,
+        },
     },
     rootDir: '../',
-    verbose: true
+    verbose: true,
 };

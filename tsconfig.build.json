@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "sourceMap": true,
-
+        
         "declaration": true,
         "declarationMap": true,
 
@@ -13,11 +13,11 @@
         "skipLibCheck": true,
 
         "esModuleInterop": true,
-        "lib": ["ES6"],
-        "target": "ES6",
+        "lib": ["ESNext"],
+        "target": "ESNext",
 
         "moduleResolution": "Node",
-        "module": "CommonJS"
+        "module": "ESNext"
     },
     "exclude": [
         "node_modules",

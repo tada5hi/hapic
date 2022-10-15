@@ -36,7 +36,7 @@ export class Client extends BaseClient {
                 'X-Vault-Request': 'true',
                 'Content-Type': 'application/json',
             },
-        }, (config.driver ?? {}));
+        }, (config.driver || {}));
 
         super(config);
 
