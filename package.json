@@ -43,6 +43,7 @@
         "build": "lerna run build",
         "test": "lerna run test",
         "prepare": "husky install",
+        "pub": "lerna publish",
         "lint": "eslint --ext .ts ./packages/",
         "lint:fix": "npm run lint -- --fix"
     },

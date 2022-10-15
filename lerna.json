@@ -11,8 +11,10 @@
                 "*.md",
                 ".eslintrc",
                 "package.json"
-            ],
-            "message": "chore(release): publish"
+            ]
+        },
+        "version": {
+            "message": "build(release): publish"
         }
     },
     "npmClient": "npm",
