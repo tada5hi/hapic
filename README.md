@@ -13,6 +13,7 @@
 
 - [Packages](#packages)
 - [Documentation](#documentation)
+- [License](#license)
 
 ## Packages
 The repository contains the following packages:
@@ -30,3 +31,9 @@ The repository contains the following packages:
 The documentation is coming soon...
 
 ---
+
+## License
+
+Made with 💚
+
+Published under [MIT License](./LICENSE).
