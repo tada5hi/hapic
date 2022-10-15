@@ -11,7 +11,8 @@
     "scripts": {
         "build:types": "tsc  -p tsconfig.build.json --emitDeclarationOnly",
         "build:js": "rollup -c",
-        "build": "rimraf dist && npm run build:types && npm run build:js"
+        "build": "rimraf dist && npm run build:types && npm run build:js",
+        "prepublishOnly": "npm run build"
     },
     "author": {
         "name": "Peter Placzek",

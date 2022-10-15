@@ -7,8 +7,7 @@ on:
     push:
         branches: [ master ]
     pull_request:
-        branches:
-            - '**'
+        branches: [ master ]
 
 env:
     PRIMARY_NODE_VERSION: 18
@@ -91,40 +90,3 @@ jobs:
             -   name: Run tests
                 run: |
                     npm run test --workspace=packages/${{matrix.package}} --if-present
-
-    publish:
-        name: Publish canary version
-        needs: [lint, tests]
-        runs-on: ubuntu-latest
-        if: ${{ github.event_name == 'push' }}
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
-                with:
-                    fetch-depth: 2
-
-            -   name: Install
-                uses: ./.github/actions/install
-                with:
-                    node-version: ${{ env.PRIMARY_NODE_VERSION }}
-
-            -   name: Build
-                uses: ./.github/actions/build
-
-            -   name: NPM Identity
-                env:
-                    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                run: |
-                    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-
-            -   run: |
-                    git fetch --prune --unshallow
-
-            -   name: Publish all packages to npm
-                run: npx lerna publish --loglevel=verbose --canary --exact --force-publish --yes --registry https://registry.npmjs.org
-                env:
-                    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-            -   name: Cleanup NPM Identity
-                run: |
-                    echo "" > .npmrc

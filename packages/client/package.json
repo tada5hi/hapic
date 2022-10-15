@@ -45,13 +45,14 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "ebec": "^0.0.3",
         "axios": "^1.1.2",
-        "axios-retry": "^3.3.1"
+        "axios-retry": "^3.3.1",
+        "ebec": "^0.0.3"
     },
     "peerDependencies": {
         "axios": "^1.x",
-        "axios-retry": "^3.x"
+        "axios-retry": "^3.x",
+        "ebec": "0.x"
     },
     "publishConfig": {
         "access": "public"
