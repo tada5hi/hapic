@@ -50,7 +50,6 @@
         "ebec": "^0.0.3"
     },
     "peerDependencies": {
-        "axios": ">=1.1.3",
         "axios-retry": "^3.x",
         "ebec": "0.x"
     },

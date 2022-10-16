@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-
+import includePaths from 'rollup-plugin-includepaths';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
@@ -17,12 +17,14 @@ const extensions = [
 ];
 
 export function createConfig({ pkg, external = [] }) {
+    external = Object.keys(pkg.dependencies || {})
+        .concat(Object.keys(pkg.peerDependencies || {}))
+        .concat(builtinModules)
+        .concat(external);
+
     return {
         input: 'src/index.ts',
-        external: Object.keys(pkg.dependencies || {})
-            .concat(Object.keys(pkg.peerDependencies || {}))
-            .concat(builtinModules)
-            .concat(external),
+        external,
         output: [
             {
                 format: 'cjs',
@@ -36,6 +38,12 @@ export function createConfig({ pkg, external = [] }) {
             }
         ],
         plugins: [
+            includePaths({
+                include: {
+                    'axios': '../../node_modules/axios/dist/esm/axios.js'
+                },
+                external
+            }),
             // Allows node_modules resolution
             resolve({ extensions}),
 
