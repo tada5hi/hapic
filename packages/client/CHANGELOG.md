@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/Tada5hi/hapic/compare/hapic@0.1.0...hapic@0.1.1) (2022-10-26)
+
+
+### Bug Fixes
+
+* include axios in bundle until cjs export is fixed ([a6b0043](https://github.com/Tada5hi/hapic/commit/a6b0043771da089cd3cc8664fe057e428a28ec8a))
+
+
+
+
+
 # [0.1.0](https://github.com/Tada5hi/hapic/compare/hapic@0.0.2...hapic@0.1.0) (2022-10-15)
 
 

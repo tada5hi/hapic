@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/Tada5hi/hapi/compare/@hapic/harbor@0.1.0...@hapic/harbor@0.1.1) (2022-10-26)
+
+**Note:** Version bump only for package @hapic/harbor
+
+
+
+
+
 # [0.1.0](https://github.com/Tada5hi/hapi/compare/@hapic/harbor@0.0.2...@hapic/harbor@0.1.0) (2022-10-15)
 
 
