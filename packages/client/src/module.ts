@@ -14,11 +14,8 @@ import { AuthorizationHeader, stringifyAuthorizationHeader } from './header';
 export class Client {
     public driver: ClientDriverInstance;
 
-    /**
-     * API Service
-     *
-     * @param config
-     */
+    // ---------------------------------------------------------------------------------
+
     constructor(config?: Config) {
         config = config || {};
 
