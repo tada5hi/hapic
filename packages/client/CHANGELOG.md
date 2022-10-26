@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/Tada5hi/hapic/compare/hapic@0.1.1...hapic@0.1.2) (2022-10-26)
+
+
+### Bug Fixes
+
+* force version bump ([ee96e9a](https://github.com/Tada5hi/hapic/commit/ee96e9aec71e312c6d5f8d4464b189a2ca800cee))
+
+
+
+
+
 ## [0.1.1](https://github.com/Tada5hi/hapic/compare/hapic@0.1.0...hapic@0.1.1) (2022-10-26)
 
 
