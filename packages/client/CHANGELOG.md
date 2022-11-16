@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.3](https://github.com/Tada5hi/hapic/compare/hapic@0.1.2...hapic@0.1.3) (2022-11-16)
+
+
+### Bug Fixes
+
+* bump axios version ([a2be601](https://github.com/Tada5hi/hapic/commit/a2be6010d739ebd198a949e0f73f7d6412269acd))
+
+
+
+
+
 ## [0.1.2](https://github.com/Tada5hi/hapic/compare/hapic@0.1.1...hapic@0.1.2) (2022-10-26)
 
 

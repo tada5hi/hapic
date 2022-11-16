@@ -1,6 +1,6 @@
 {
     "name": "@hapic/vault",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "A vault http api client.",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
@@ -35,7 +35,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "hapic": "^0.1.2"
+        "hapic": "^0.1.3"
     },
     "peerDependencies": {
         "hapic": ">=0.1.1 <1.0.0"
