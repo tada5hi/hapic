@@ -1,6 +1,6 @@
 {
     "name": "@hapic/oauth2",
-    "version": "0.1.3",
+    "version": "0.2.0-alpha.1",
     "description": "A oauth2 api client based on axios.",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
@@ -51,7 +51,7 @@
         "hapic": "^0.1.3"
     },
     "peerDependencies": {
-        "hapic": ">=0.1.1 <1.0.0"
+        "hapic": ">=0.2.0 <1.0.0"
     },
     "publishConfig": {
         "access": "public"
