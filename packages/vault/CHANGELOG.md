@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/Tada5hi/hapic/compare/@hapic/vault@0.1.3...@hapic/vault@0.2.0) (2022-11-23)
+
+
+### Features
+
+* updated to axios v1.2.0 ([67daef4](https://github.com/Tada5hi/hapic/commit/67daef4dd51e70048404486a816b60d5d289359d))
+
+
+
+
+
 ## [0.1.3](https://github.com/Tada5hi/hapic/compare/@hapic/vault@0.1.2...@hapic/vault@0.1.3) (2022-11-16)
 
 **Note:** Version bump only for package @hapic/vault
