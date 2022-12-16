@@ -20,7 +20,7 @@
     "useWorkspaces": true,
     "useNx": false,
     "conventionalCommits": true,
-    "version": "independent",
+    "version": "0.2.0",
     "changelog": {
         "labels": {
             "build": "Build",

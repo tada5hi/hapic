@@ -6,9 +6,8 @@
  */
 
 import { Client, ClientDriverInstance } from 'hapic';
-import { AuthorizeQueryParameters } from './type';
+import { AuthorizeParametersInput } from './type';
 import { ClientOptions } from '../../type';
-import { buildHTTPQuery, removeDuplicateForwardSlashesFromURL } from '../../utils';
 import { BaseOAuth2API } from '../base';
 
 export class AuthorizeAPI extends BaseOAuth2API {
@@ -20,33 +19,51 @@ export class AuthorizeAPI extends BaseOAuth2API {
         super(client, options);
     }
 
-    buildURL(parameters?: Partial<Pick<AuthorizeQueryParameters, 'redirect_uri' | 'scope'>>) {
+    buildURL(parameters?: Partial<AuthorizeParametersInput>) {
         parameters = parameters || {};
 
-        const queryParameters: AuthorizeQueryParameters = {
-            response_type: 'code',
-            ...(this.options.client_id ? { client_id: this.options.client_id } : {}),
-            redirect_uri: this.options.redirect_uri,
-        };
-
-        if (typeof parameters.redirect_uri === 'string') {
-            queryParameters.redirect_uri = parameters.redirect_uri;
-        }
-
-        if (typeof parameters.scope === 'undefined') {
-            if (this.options.scope) {
-                queryParameters.scope = this.options.scope;
-            }
+        let baseURL : string | undefined;
+        let input : string;
+        if (this.options.authorization_endpoint) {
+            input = this.options.authorization_endpoint;
         } else {
-            queryParameters.scope = parameters.scope;
+            input = 'authorize';
+            const clientURL = this.client.getUri();
+            if (clientURL) {
+                baseURL = clientURL;
+            }
         }
 
-        if (Array.isArray(queryParameters.scope)) {
-            queryParameters.scope = queryParameters.scope.join(' ');
+        const url = new URL(input, baseURL);
+        url.searchParams.set('response_type', parameters.response_type || 'code');
+
+        if (this.options.client_id) {
+            url.searchParams.set('client_id', this.options.client_id);
         }
 
-        return (
-            this.options.authorization_endpoint || removeDuplicateForwardSlashesFromURL(`${this.client.getUri()}/authorize`)
-        ) + buildHTTPQuery(queryParameters);
+        url.searchParams.set('redirect_uri', parameters.redirect_uri || this.options.redirect_uri);
+
+        const scope : string[] = [];
+        if (this.options.scope) {
+            const input = Array.isArray(this.options.scope) ?
+                this.options.scope :
+                this.options.scope.split(' ');
+
+            scope.push(...input);
+        }
+
+        if (parameters.scope) {
+            const input = Array.isArray(parameters.scope) ?
+                parameters.scope :
+                parameters.scope.split(' ');
+
+            scope.push(...input);
+        }
+
+        if (scope.length > 0) {
+            url.searchParams.set('scope', scope.join(' '));
+        }
+
+        return url.href;
     }
 }

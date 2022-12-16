@@ -5,9 +5,17 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type AuthorizeQueryParameters = {
-    response_type: 'code',
+import { AuthorizeResponseMode } from './constants';
+
+export type AuthorizeParameters = {
     client_id?: string,
     redirect_uri: string,
-    scope?: string | string[]
+    response_mode?: `${AuthorizeResponseMode}`,
+    response_type: string,
+    scope?: string,
+    state?: string
+};
+
+export type AuthorizeParametersInput = Omit<AuthorizeParameters, 'scope'> & {
+    scope?: string | string[],
 };

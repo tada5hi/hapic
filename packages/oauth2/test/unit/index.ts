@@ -79,7 +79,7 @@ describe('src/protocols/oauth2/client/index.ts', () => {
 
         url = oauth2Client.authorize.buildURL({ scope: 'address' });
 
-        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}&scope=address`);
+        expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}&scope=email+address`);
     });
 
     it('should build authorize url with non default authorize path', () => {

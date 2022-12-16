@@ -5,6 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export function removeDuplicateForwardSlashesFromURL(str: string) : string {
-    return str.replace(/([^:]\/)\/+/g, '$1');
+export enum AuthorizeResponseMode {
+    QUERY = 'query',
+    FRAGMENT = 'fragment',
+    FORM_POST = 'form_post',
+    WEB_MESSAGE = 'web_message',
 }

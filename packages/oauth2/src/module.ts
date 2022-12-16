@@ -11,7 +11,6 @@ import {
 } from './type';
 
 import { AuthorizeAPI, TokenAPI, UserinfoAPI } from './domains';
-import { removeDuplicateForwardSlashesFromURL } from './utils';
 
 export class Client extends BaseClient {
     public options : ClientOptions;
@@ -62,7 +61,7 @@ export class Client extends BaseClient {
         let url = '/.well-known/openid-configuration';
 
         if (baseURL) {
-            url = removeDuplicateForwardSlashesFromURL(`${baseURL}/.well-known/openid-configuration`);
+            url = new URL(url, baseURL).href;
         }
 
         const { data } : { data: OpenIDProviderMetadata } = await this.driver.get(url);
