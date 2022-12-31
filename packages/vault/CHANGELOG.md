@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/Tada5hi/hapic/compare/v0.3.0...v1.0.0) (2022-12-31)
+
+
+### Bug Fixes
+
+* dump peer-dependencies version ref ([5e8cab0](https://github.com/Tada5hi/hapic/commit/5e8cab08bd7a3c39743fd7dece01b81962db12ac))
+
+
+
+
+
 # 0.3.0 (2022-12-16)
 
 

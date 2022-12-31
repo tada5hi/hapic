@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/Tada5hi/hapic/compare/v0.3.0...v1.0.0) (2022-12-31)
+
+
+### Bug Fixes
+
+* **deps:** bump @types/jsonwebtoken from 8.5.9 to 9.0.0 ([74ba2bc](https://github.com/Tada5hi/hapic/commit/74ba2bc3aefca16a3aa50aec47a69a05b96d5148))
+* dump peer-dependencies version ref ([5e8cab0](https://github.com/Tada5hi/hapic/commit/5e8cab08bd7a3c39743fd7dece01b81962db12ac))
+
+
+
+
+
 # 0.3.0 (2022-12-16)
 
 
