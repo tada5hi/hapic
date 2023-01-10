@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/Tada5hi/hapic/compare/v1.0.0...v1.0.1) (2023-01-10)
+
+
+### Bug Fixes
+
+* **deps:** bump json5 from 1.0.1 to 1.0.2 ([571c3a0](https://github.com/Tada5hi/hapic/commit/571c3a00ffb96040cb856cf0d4dab05124863d16))
+* **oauth2:** remove obsolote jsonwebtoken type dependency ([3b0f787](https://github.com/Tada5hi/hapic/commit/3b0f787976ab26716d3ddab372d4327607d4dc33))
+
+
+
+
+
 # [1.0.0](https://github.com/Tada5hi/hapic/compare/v0.3.0...v1.0.0) (2022-12-31)
 
 
