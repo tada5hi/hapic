@@ -44,9 +44,6 @@
         "url": "https://github.com/Tada5hi/hapic/issues"
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
-    "dependencies": {
-        "@types/jsonwebtoken": "^9.0.0"
-    },
     "devDependencies": {
         "hapic": "^1.0.0"
     },

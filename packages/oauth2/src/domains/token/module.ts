@@ -6,9 +6,9 @@
  */
 
 import { Client, ClientDriverInstance } from 'hapic';
-import { JwtPayload } from 'jsonwebtoken';
 import {
     ClientOptions,
+    JwtPayload,
 } from '../../type';
 
 import { BaseOAuth2API } from '../base';
