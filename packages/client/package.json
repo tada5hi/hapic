@@ -2,9 +2,17 @@
     "name": "hapic",
     "version": "1.0.0",
     "description": "A http api client based on axios.",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/types/index.d.ts",
+    "main": "dist/index.cjs",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
     "files": [
         "dist/"
     ],
@@ -45,12 +53,12 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "axios": "^1.2.2",
+        "axios": "^1.2.5",
         "axios-retry": "^3.3.1",
         "ebec": "^0.1.0"
     },
     "peerDependencies": {
-        "axios": ">=1.2.0",
+        "axios": ">=1.2.5",
         "axios-retry": "^3.x",
         "ebec": ">=0.1.0 <1.0.0"
     },

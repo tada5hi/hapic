@@ -5,14 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import babel from '@rollup/plugin-babel';
+import { transform } from '@swc/core';
 
 import { builtinModules } from 'module';
 
 const extensions = [
-    '.js', '.mjs', '.ts',
+    '.js', '.cjs', '.mjs', '.ts',
 ];
 
 export function createConfig({ pkg, external = [] }) {
@@ -34,7 +33,6 @@ export function createConfig({ pkg, external = [] }) {
             {
                 format: 'es',
                 file: pkg.module,
-                exports: 'named',
                 sourcemap: true
             }
         ],
@@ -42,17 +40,27 @@ export function createConfig({ pkg, external = [] }) {
             // Allows node_modules resolution
             resolve({ extensions}),
 
-            // Allow bundling cjs modules. Rollup doesn't understand cjs
-            commonjs(),
-
             // Compile TypeScript/JavaScript files
-            babel({
-                extensions,
-                babelHelpers: 'bundled',
-                include: [
-                    'src/**/*'
-                ],
-            })
+            {
+                name: 'swc',
+                transform(code) {
+                    return transform(code, {
+                        jsc: {
+                            target: 'es2016',
+                            parser: {
+                                syntax: 'typescript',
+                                decorators: true
+                            },
+                            transform: {
+                                decoratorMetadata: true,
+                                legacyDecorator: true
+                            },
+                            loose: true
+                        },
+                        sourceMaps: true
+                    });
+                }
+            },
         ]
     };
 }
