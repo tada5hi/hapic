@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/Tada5hi/hapic/compare/v1.0.1...v1.1.0) (2023-01-27)
+
+
+### Features
+
+* refactored build pipeline + updated dependencies ([1ba51e1](https://github.com/Tada5hi/hapic/commit/1ba51e15033bfc851fb9f2bfc50d14b97fd9a8ae))
+
+
+
+
+
 # [1.0.0](https://github.com/Tada5hi/hapic/compare/v0.3.0...v1.0.0) (2022-12-31)
 
 **Note:** Version bump only for package hapic
