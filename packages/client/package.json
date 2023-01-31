@@ -53,7 +53,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "axios": "^1.2.5",
+        "axios": "^1.2.6",
         "axios-retry": "^3.4.0",
         "ebec": "^0.2.1"
     },
