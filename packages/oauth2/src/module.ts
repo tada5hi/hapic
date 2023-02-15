@@ -40,7 +40,7 @@ export class Client extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    setDriver(client: ClientDriverInstance) {
+    override setDriver(client: ClientDriverInstance) {
         super.setDriver(client);
 
         this.authorize.setClient(client);

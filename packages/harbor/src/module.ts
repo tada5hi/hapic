@@ -7,13 +7,14 @@
 
 import type { Config } from 'hapic';
 import { Client as BaseClient } from 'hapic';
+import { merge } from 'smob';
 import type { ConnectionConfig, SearchResult } from './type';
 import { RobotAccountAPI } from './robot-account';
 import { ProjectAPI } from './project';
 import { ProjectWebHookAPI } from './project-webhook';
 import { ProjectRepositoryAPI } from './project-repository';
 import { ProjectArtifactAPI } from './project-artifact';
-import { mergeDeep, parseConnectionString } from './utils';
+import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
     public readonly project: ProjectAPI;
@@ -38,7 +39,7 @@ export class Client extends BaseClient {
             connectionConfig = parseConnectionString(config.extra.connectionString);
         }
 
-        config.driver = mergeDeep({
+        config.driver = merge({
             ...(connectionConfig ? { baseURL: connectionConfig.host } : {}),
             ...(config.driver || {}),
         });

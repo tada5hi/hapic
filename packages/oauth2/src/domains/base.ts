@@ -23,6 +23,8 @@ export abstract class BaseOAuth2API {
             this.options = options;
         } else if (hasOwnProperty(client, 'options')) {
             this.options = client.options as ClientOptions;
+        } else {
+            this.options = options || {};
         }
     }
 

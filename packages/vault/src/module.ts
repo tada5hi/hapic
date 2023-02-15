@@ -7,12 +7,13 @@
 
 import type { Config } from 'hapic';
 import { Client as BaseClient } from 'hapic';
+import { merge } from 'smob';
 import type {
     ConnectionConfig,
 } from './type';
 import { MountAPI } from './mount';
 import { KeyValueAPI } from './key-value';
-import { mergeDeep, parseConnectionString } from './utils';
+import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
     public readonly mount : MountAPI;
@@ -29,7 +30,7 @@ export class Client extends BaseClient {
             vaultConfig = parseConnectionString(config.extra.connectionString);
         }
 
-        config.driver = mergeDeep({
+        config.driver = merge({
             withCredentials: true,
             timeout: 3000,
             ...(vaultConfig ? { baseURL: vaultConfig.host } : {}),

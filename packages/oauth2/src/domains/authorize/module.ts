@@ -23,25 +23,28 @@ export class AuthorizeAPI extends BaseOAuth2API {
         parameters = parameters || {};
 
         let baseURL : string | undefined;
-        let input : string;
+        let input : string | undefined;
+
         if (this.options.authorization_endpoint) {
             input = this.options.authorization_endpoint;
         } else {
-            input = 'authorize';
             const clientURL = this.client.getUri();
             if (clientURL) {
                 baseURL = clientURL;
             }
         }
 
-        const url = new URL(input, baseURL);
+        const url = new URL(input || 'authorize', baseURL);
         url.searchParams.set('response_type', parameters.response_type || 'code');
 
         if (this.options.client_id) {
             url.searchParams.set('client_id', this.options.client_id);
         }
 
-        url.searchParams.set('redirect_uri', parameters.redirect_uri || this.options.redirect_uri);
+        const redirectUri = parameters.redirect_uri || this.options.redirect_uri;
+        if (redirectUri) {
+            url.searchParams.set('redirect_uri', redirectUri);
+        }
 
         const scope : string[] = [];
         if (this.options.scope) {

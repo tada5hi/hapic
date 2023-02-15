@@ -31,7 +31,7 @@ export class KeyValueAPI {
         this.mount = context.mountAPI;
     }
 
-    async save(engine: string, key: string, value: Record<string, any>, options?: MountKeyValueOptions) {
+    async save(engine: string, key: string, value: Record<string, any>, options?: MountKeyValueOptions) : Promise<any> {
         options = options || {};
         options.version = options.version || MountKeyValueVersion.ONE;
 
@@ -102,14 +102,13 @@ export class KeyValueAPI {
     }
 
     async createMount(
-        config: Pick<MountKeyValuePayload, 'path'> &
-        Partial<MountKeyValuePayload>,
+        config: Pick<MountKeyValuePayload, 'path'> & Partial<MountKeyValuePayload>,
         options?: MountKeyValueOptions,
     ) {
         return this.mount.create({
             config: {},
             generate_signing_key: true,
-            options,
+            options: options || {},
             type: 'kv',
             ...config,
         });

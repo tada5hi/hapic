@@ -9,7 +9,7 @@ import type { IAxiosRetryConfig } from 'axios-retry';
 import type { ClientRequestConfig } from '../type';
 
 export interface ClientInterface extends Function {
-    new (config?: Config);
+    new (config?: Config) : any;
 }
 
 export type Config = {

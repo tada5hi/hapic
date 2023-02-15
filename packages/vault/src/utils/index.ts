@@ -6,4 +6,3 @@
  */
 
 export * from './connection-string';
-export * from './merge-deep';

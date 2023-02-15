@@ -6,9 +6,9 @@
  */
 
 import type { ClientDriverInstance } from 'hapic';
+import { merge } from 'smob';
 import type { RobotAccount } from './type';
 import { buildRobotAccountPermissionForNamespace } from './utils';
-import { mergeDeep } from '../utils';
 
 export class RobotAccountAPI {
     protected client: ClientDriverInstance;
@@ -32,7 +32,7 @@ export class RobotAccountAPI {
 
             if (withSecret) {
                 const patchedAccount = await this.refreshSecret(accounts[0].id);
-                secret = patchedAccount.secret;
+                secret = patchedAccount.secret as string | undefined;
             }
 
             return {
@@ -77,7 +77,7 @@ export class RobotAccountAPI {
         namespace: string,
         data?: Partial<RobotAccount>,
     ): Promise<Partial<RobotAccount>> {
-        data = mergeDeep({
+        data = merge({
             id,
             description: '',
             duration: -1,
@@ -98,7 +98,7 @@ export class RobotAccountAPI {
         projectName?: string,
         payload?: Partial<RobotAccount>,
     ) {
-        payload = mergeDeep({
+        payload = merge({
             name: robotName,
             duration: -1,
             level: 'system',

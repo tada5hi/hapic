@@ -45,6 +45,9 @@
         "url": "https://github.com/Tada5hi/hapi/issues"
     },
     "homepage": "https://github.com/Tada5hi/hapi#readme",
+    "dependencies": {
+        "smob": "^0.1.0"
+    },
     "devDependencies": {
         "hapic": "^1.1.0"
     },

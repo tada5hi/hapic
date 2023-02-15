@@ -7,8 +7,8 @@
 
 import type { ClientDriverInstance } from 'hapic';
 import { isClientError } from 'hapic';
+import { merge } from 'smob';
 import type { ProjectWebhook } from './type';
-import { mergeDeep } from '../utils';
 
 export class ProjectWebHookAPI {
     protected client: ClientDriverInstance;
@@ -51,7 +51,7 @@ export class ProjectWebHookAPI {
             headers['X-Is-Resource-Name'] = true;
         }
 
-        const webhook: ProjectWebhook = mergeDeep({
+        const webhook: ProjectWebhook = merge({
             name: (Math.random() + 1).toString(36).substring(7),
             enabled: true,
             targets: [],
