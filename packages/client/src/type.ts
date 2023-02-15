@@ -20,7 +20,7 @@ export interface ClientRequestConfig<T = any> extends AxiosRequestConfig<T> {
 
 }
 
-export interface ClientResponse<T = any> extends AxiosResponse {
+export interface ClientResponse<T = any, D = any> extends AxiosResponse<T, D> {
 
 }
 
@@ -28,7 +28,7 @@ export interface ClientDriverInstance extends AxiosInstance {
 
 }
 
-export interface ClientError extends AxiosError {
+export interface ClientError<T = any, D = any> extends AxiosError<T, D> {
 
 }
 

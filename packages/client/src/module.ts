@@ -45,7 +45,7 @@ export class Client {
      *
      * @return AxiosDefaults<any>
      */
-    get config() : AxiosDefaults<any> {
+    get config() {
         return this.driver.defaults;
     }
 
