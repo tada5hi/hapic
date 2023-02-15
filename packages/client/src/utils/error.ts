@@ -6,7 +6,7 @@
  */
 
 import axios from 'axios';
-import { ClientError } from '../type';
+import type { ClientError } from '../type';
 
 export function isClientError(error?: any) : error is ClientError {
     if (typeof error !== 'object') {

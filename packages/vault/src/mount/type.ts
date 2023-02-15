@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { MountType } from './constants';
+import type { MountType } from './constants';
 
 export enum MountKeyValueVersion {
     ONE = 1,

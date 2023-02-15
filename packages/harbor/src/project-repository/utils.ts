@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { RepositoryNameParsed } from './type';
+import type { RepositoryNameParsed } from './type';
 
 export function parseProjectRepositoryName(name: string) : RepositoryNameParsed {
     const parts = name.split('/');

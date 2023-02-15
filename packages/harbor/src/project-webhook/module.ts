@@ -5,8 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverInstance, isClientError } from 'hapic';
-import { ProjectWebhook } from './type';
+import type { ClientDriverInstance } from 'hapic';
+import { isClientError } from 'hapic';
+import type { ProjectWebhook } from './type';
 import { mergeDeep } from '../utils';
 
 export class ProjectWebHookAPI {

@@ -5,7 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { BaseError, Options, mergeOptions } from 'ebec';
+import type { Options } from 'ebec';
+import { BaseError, mergeOptions } from 'ebec';
 import { ErrorCode } from '../constants';
 
 export class AuthorizationHeaderError extends BaseError {

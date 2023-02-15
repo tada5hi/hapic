@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import {
+import type {
     AxiosError,
     AxiosInstance,
     AxiosRequestConfig,
     AxiosResponse,
 } from 'axios';
 
-import {
+import type {
     IAxiosRetryConfig,
 } from 'axios-retry';
 

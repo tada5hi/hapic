@@ -5,9 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverInstance, isClientError } from 'hapic';
-import { MountPayload } from './type';
-import { MountType } from './constants';
+import type { ClientDriverInstance } from 'hapic';
+import { isClientError } from 'hapic';
+import type { MountPayload } from './type';
+import type { MountType } from './constants';
 
 export class MountAPI {
     protected client: ClientDriverInstance;

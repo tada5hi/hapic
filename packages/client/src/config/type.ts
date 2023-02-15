@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { IAxiosRetryConfig } from 'axios-retry';
-import { ClientRequestConfig } from '../type';
+import type { IAxiosRetryConfig } from 'axios-retry';
+import type { ClientRequestConfig } from '../type';
 
 export interface ClientInterface extends Function {
     new (config?: Config);

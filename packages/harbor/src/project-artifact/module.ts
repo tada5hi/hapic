@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverInstance } from 'hapic';
-import { ProjectArtifact, ProjectArtifactLabel } from './type';
+import type { ClientDriverInstance } from 'hapic';
+import type { ProjectArtifact, ProjectArtifactLabel } from './type';
 
 export class ProjectArtifactAPI {
     protected client: ClientDriverInstance;

@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverInstance } from 'hapic';
-import { MountAPI } from '../mount';
+import type { ClientDriverInstance } from 'hapic';
+import type { MountAPI } from '../mount';
 
 export type KeyValueContext = {
     client: ClientDriverInstance,

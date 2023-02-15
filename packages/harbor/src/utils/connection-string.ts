@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ConnectionConfig } from '../type';
+import type { ConnectionConfig } from '../type';
 import { ConnectionStringParseError } from '../error';
 
 export function parseConnectionString(connectionString: string): ConnectionConfig {

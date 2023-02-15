@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, ClientDriverInstance } from 'hapic';
-import { ClientOptions } from '../../type';
+import type { Client, ClientDriverInstance } from 'hapic';
+import type { ClientOptions } from '../../type';
 import { BaseOAuth2API } from '../base';
 
 export class UserinfoAPI extends BaseOAuth2API {

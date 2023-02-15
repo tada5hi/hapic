@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { AuthorizeResponseMode } from './constants';
+import type { AuthorizeResponseMode } from './constants';
 
 export type AuthorizeParameters = {
     client_id?: string,

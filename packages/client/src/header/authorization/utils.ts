@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { AuthorizationHeader } from './type';
+import type { AuthorizationHeader } from './type';
 import { AuthorizationHeaderType } from './constants';
 import { AuthorizationHeaderError } from '../../error';
 

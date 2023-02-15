@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverInstance } from 'hapic';
-import { RobotAccount } from './type';
+import type { ClientDriverInstance } from 'hapic';
+import type { RobotAccount } from './type';
 import { buildRobotAccountPermissionForNamespace } from './utils';
 import { mergeDeep } from '../utils';
 

@@ -5,11 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import axios, { AxiosDefaults } from 'axios';
-import axiosRetry, { IAxiosRetryConfig } from 'axios-retry';
-import { ClientDriverInstance, ClientRequestConfig, ClientResponse } from './type';
-import { Config } from './config';
-import { AuthorizationHeader, stringifyAuthorizationHeader } from './header';
+import axios from 'axios';
+import type { IAxiosRetryConfig } from 'axios-retry';
+import axiosRetry from 'axios-retry';
+import type { ClientDriverInstance, ClientRequestConfig, ClientResponse } from './type';
+import type { Config } from './config';
+import type { AuthorizationHeader } from './header';
+import { stringifyAuthorizationHeader } from './header';
 
 export class Client {
     public driver: ClientDriverInstance;

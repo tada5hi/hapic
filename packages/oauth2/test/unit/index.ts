@@ -6,7 +6,8 @@
  */
 
 import { createClient } from 'hapic';
-import { Client, TokenGrantParameters, TokenGrantResponse } from '../../src';
+import type { TokenGrantParameters, TokenGrantResponse } from '../../src';
+import { Client } from '../../src';
 
 const postFn = jest.fn();
 const getFn = jest.fn();

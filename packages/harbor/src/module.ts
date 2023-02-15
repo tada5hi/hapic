@@ -5,8 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client as BaseClient, Config } from 'hapic';
-import { ConnectionConfig, SearchResult } from './type';
+import type { Config } from 'hapic';
+import { Client as BaseClient } from 'hapic';
+import type { ConnectionConfig, SearchResult } from './type';
 import { RobotAccountAPI } from './robot-account';
 import { ProjectAPI } from './project';
 import { ProjectWebHookAPI } from './project-webhook';

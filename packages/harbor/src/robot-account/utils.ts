@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { RobotAccountPermission } from './type';
+import type { RobotAccountPermission } from './type';
 
 export function buildRobotAccountPermissionForNamespace(namespace: string) : RobotAccountPermission {
     return {

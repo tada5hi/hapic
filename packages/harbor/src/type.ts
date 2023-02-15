@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Project } from './project';
-import { SearchRepository } from './project-repository';
+import type { Project } from './project';
+import type { SearchRepository } from './project-repository';
 
 export type ConnectionConfig = {
     host: string,

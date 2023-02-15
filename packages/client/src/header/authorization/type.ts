@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { AuthorizationHeaderType } from './constants';
+import type { AuthorizationHeaderType } from './constants';
 
 export interface AbstractAuthorizationHeader {
     type: `${AuthorizationHeaderType}`

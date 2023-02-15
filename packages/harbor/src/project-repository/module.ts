@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverInstance } from 'hapic';
-import { Repository } from './type';
+import type { ClientDriverInstance } from 'hapic';
+import type { Repository } from './type';
 import { parseProjectRepositoryName } from './utils';
 
 export class ProjectRepositoryAPI {
