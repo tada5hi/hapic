@@ -1,38 +1,38 @@
 {
-    "packages": [
-        "packages/*"
-    ],
-    "publishConfig": {
-        "access": "public"
+  "packages": [
+    "packages/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "*.md",
+        ".eslintrc"
+      ]
     },
-    "command": {
-        "publish": {
-            "ignoreChanges": [
-                "*.md",
-                ".eslintrc"
-            ]
-        },
-        "version": {
-            "message": "build(release): publish"
-        }
-    },
-    "npmClient": "npm",
-    "useWorkspaces": true,
-    "useNx": true,
-    "conventionalCommits": true,
-    "version": "1.1.0",
-    "changelog": {
-        "labels": {
-            "build": "Build",
-            "ci": "Continuous Integration",
-            "docs": "Documentation",
-            "feat": "New Feature",
-            "fix": "Bug Fix",
-            "perf": "Performance",
-            "refactor": "Refactor",
-            "revert": "Revert",
-            "style": "Style",
-            "test": "Test"
-        }
+    "version": {
+      "message": "build(release): publish"
     }
+  },
+  "npmClient": "npm",
+  "useWorkspaces": true,
+  "useNx": true,
+  "conventionalCommits": true,
+  "version": "1.2.0",
+  "changelog": {
+    "labels": {
+      "build": "Build",
+      "ci": "Continuous Integration",
+      "docs": "Documentation",
+      "feat": "New Feature",
+      "fix": "Bug Fix",
+      "perf": "Performance",
+      "refactor": "Refactor",
+      "revert": "Revert",
+      "style": "Style",
+      "test": "Test"
+    }
+  }
 }

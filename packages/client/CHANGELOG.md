@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/Tada5hi/hapic/compare/v1.1.0...v1.2.0) (2023-02-15)
+
+
+### Bug Fixes
+
+* extend generic type arguments ([b0d8628](https://github.com/Tada5hi/hapic/commit/b0d8628d6a97b10a13643b884afa26d7086cdf4c))
+
+
+### Features
+
+* enforce stricter typings ([5206076](https://github.com/Tada5hi/hapic/commit/5206076ecb203807c9437ed17de5c5e468cf38a4))
+
+
+
+
+
 # [1.1.0](https://github.com/Tada5hi/hapic/compare/v1.0.1...v1.1.0) (2023-01-27)
 
 
