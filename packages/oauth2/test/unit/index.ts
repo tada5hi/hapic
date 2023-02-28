@@ -212,4 +212,17 @@ describe('src/protocols/oauth2/client/index.ts', () => {
         const userInfo = await oauth2Client.userInfo.get('token');
         expect(userInfo).toEqual(userInfoResponse);
     });
+
+    it('should build open id discovery url', () => {
+        const client = new Client();
+
+        let url = client.buildOpenIDDiscoveryURL('http://localhost:3002');
+        expect(url).toEqual('http://localhost:3002/.well-known/openid-configuration');
+
+        url = client.buildOpenIDDiscoveryURL('https://example.com/api/');
+        expect(url).toEqual('https://example.com/api/.well-known/openid-configuration');
+
+        url = client.buildOpenIDDiscoveryURL();
+        expect(url).toEqual('/.well-known/openid-configuration');
+    });
 });

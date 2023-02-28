@@ -58,12 +58,20 @@ export class Client extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    async useOpenIDDiscovery(baseURL?: string) {
-        let url = '/.well-known/openid-configuration';
+    buildOpenIDDiscoveryURL(baseURL?: string) {
+        let url = '.well-known/openid-configuration';
 
         if (baseURL) {
             url = new URL(url, baseURL).href;
+        } else {
+            url = `/${url}`;
         }
+
+        return url;
+    }
+
+    async useOpenIDDiscovery(baseURL?: string) {
+        const url = this.buildOpenIDDiscoveryURL(baseURL);
 
         const { data } : { data: OpenIDProviderMetadata } = await this.driver.get(url);
 
