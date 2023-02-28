@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/Tada5hi/hapic/compare/v1.2.0...v1.2.1) (2023-02-28)
+
+
+### Bug Fixes
+
+* open-id endpoint construction ([2d9ff41](https://github.com/Tada5hi/hapic/commit/2d9ff41e3f438acaaa46c4037e91595fd2cd50fe))
+
+
+
+
+
 # [1.2.0](https://github.com/Tada5hi/hapic/compare/v1.1.0...v1.2.0) (2023-02-15)
 
 
