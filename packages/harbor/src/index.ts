@@ -5,6 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { createClient } from './client';
+
 export * from './client';
 export * from './project';
 export * from './project-repository';
@@ -13,3 +15,6 @@ export * from './robot-account';
 export * from './module';
 export * from './type';
 export * from './utils';
+
+const client = createClient();
+export default client;

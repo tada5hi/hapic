@@ -5,9 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { createClient } from './utils';
+
 export * from './config';
 export * from './error';
 export * from './header';
 export * from './module';
 export * from './type';
 export * from './utils';
+
+const client = createClient();
+export default client;
