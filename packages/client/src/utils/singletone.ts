@@ -14,7 +14,7 @@ import { Client } from '../module';
 
 const instanceMap: Record<string, Client> = {};
 
-export function setClient<T extends Client>(
+export function setClient<T extends Client = Client>(
     client: T,
     key?: string,
 ) : T {
@@ -25,7 +25,7 @@ export function setClient<T extends Client>(
     return client;
 }
 
-export function useClient<T extends Client>(
+export function useClient<T extends Client = Client>(
     key?: string,
 ) : T {
     key = key || 'default';
