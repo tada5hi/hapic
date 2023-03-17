@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/Tada5hi/hapic/compare/v1.2.1...v1.3.0) (2023-03-17)
+
+
+### Features
+
+* create and expose client as default export ([b22db43](https://github.com/Tada5hi/hapic/commit/b22db436bc6ae805019050b6031331787b597f94))
+* **harbor:** expose hapic api + custom create-,set,use-client utilities ([5b67b30](https://github.com/Tada5hi/hapic/commit/5b67b30a4f463ec195250d4cdbd3cd8bfa68bb4b))
+* refactored config handling ([0067c44](https://github.com/Tada5hi/hapic/commit/0067c441ab07a24e502d88b9e98347025986dc5f))
+
+
+
+
+
 ## [1.2.1](https://github.com/Tada5hi/hapic/compare/v1.2.0...v1.2.1) (2023-02-28)
 
 **Note:** Version bump only for package hapic
