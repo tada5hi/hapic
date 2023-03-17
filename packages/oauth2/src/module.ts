@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance, Config } from 'hapic';
+import type { ClientDriverInstance, ConfigInput } from 'hapic';
 import { Client as BaseClient } from 'hapic';
 import type {
     ClientOptions, OpenIDProviderMetadata,
@@ -26,7 +26,7 @@ export class Client extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    constructor(config?: Config & { options?: ClientOptions}) {
+    constructor(config?: ConfigInput & { options?: ClientOptions}) {
         super(config);
 
         config = config || {};

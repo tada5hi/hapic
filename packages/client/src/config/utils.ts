@@ -5,18 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Config } from './type';
+import type { ConfigInput } from './type';
 import { hasOwnProperty } from '../utils';
 
-export function isConfig(value: unknown) : value is Config {
+export function isConfig(value: unknown) : value is ConfigInput {
     if (typeof value !== 'object' || value === null) {
-        return false;
-    }
-
-    if (
-        hasOwnProperty(value, 'clazz') &&
-        typeof value.clazz !== 'function'
-    ) {
         return false;
     }
 

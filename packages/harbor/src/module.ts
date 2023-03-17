@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Config } from 'hapic';
+import type { ConfigInput } from 'hapic';
 import { Client as BaseClient } from 'hapic';
 import { merge } from 'smob';
 import type { ConnectionConfig, SearchResult } from './type';
@@ -29,7 +29,7 @@ export class Client extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    constructor(config: Config) {
+    constructor(config: ConfigInput) {
         let connectionConfig : ConnectionConfig | undefined;
 
         if (

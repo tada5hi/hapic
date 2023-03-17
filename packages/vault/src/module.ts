@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Config } from 'hapic';
+import type { ConfigInput } from 'hapic';
 import { Client as BaseClient } from 'hapic';
 import { merge } from 'smob';
 import type {
@@ -20,7 +20,7 @@ export class Client extends BaseClient {
 
     public readonly keyValue: KeyValueAPI;
 
-    constructor(config: Config) {
+    constructor(config: ConfigInput) {
         let vaultConfig : ConnectionConfig | undefined;
 
         if (

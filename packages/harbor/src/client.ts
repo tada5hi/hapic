@@ -6,7 +6,7 @@
  */
 
 import type {
-    Config,
+    ConfigInput,
 } from 'hapic';
 import {
     setClient as _setClient,
@@ -16,7 +16,7 @@ import {
 import { Client } from './module';
 
 export type {
-    Config,
+    ConfigInput,
 
     ClientRequestConfig,
     ClientResponse,
@@ -34,7 +34,7 @@ export {
     useConfig,
 } from 'hapic';
 
-export function createClient(input?: Omit<Config, 'clazz'>) : Client {
+export function createClient(input?: Omit<ConfigInput, 'clazz'>) : Client {
     const config = buildConfig(input);
 
     return new Client(config);

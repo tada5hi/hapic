@@ -8,8 +8,9 @@
 import axios from 'axios';
 import type { IAxiosRetryConfig } from 'axios-retry';
 import axiosRetry from 'axios-retry';
+import { buildConfig } from './config';
 import type { ClientDriverInstance, ClientRequestConfig, ClientResponse } from './type';
-import type { Config } from './config';
+import type { ConfigInput } from './config';
 import type { AuthorizationHeader } from './header';
 import { stringifyAuthorizationHeader } from './header';
 
@@ -18,8 +19,8 @@ export class Client {
 
     // ---------------------------------------------------------------------------------
 
-    constructor(config?: Config) {
-        config = config || {};
+    constructor(input?: ConfigInput) {
+        const config = buildConfig(input);
 
         const client = axios.create(config.driver);
 

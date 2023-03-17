@@ -5,25 +5,24 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Config } from './type';
+import type { Config, ConfigInput } from './type';
 
 const configMap: Record<string, Config> = {};
 
 export function setConfig(
-    value?: Config,
+    value?: ConfigInput,
     key?: string,
-) : Config {
+) : ConfigInput {
     key = key || 'default';
-    value = buildConfig(value);
 
-    configMap[key] = value;
+    configMap[key] = buildConfig(value);
 
-    return value;
+    return configMap[key];
 }
 
 export function useConfig(
     key?: string,
-): Config {
+): ConfigInput {
     key = key || 'default';
 
     if (typeof configMap[key] === 'undefined') {
@@ -34,10 +33,13 @@ export function useConfig(
 }
 
 export function buildConfig(
-    config?: Config,
+    config?: ConfigInput,
 ) : Config {
     config = config || {};
-    config.extra = config.extra || {};
 
-    return config;
+    return {
+        ...config,
+        extra: config.extra || {},
+        retry: config.retry ?? false,
+    };
 }
