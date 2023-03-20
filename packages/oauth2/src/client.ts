@@ -38,7 +38,7 @@ export {
 export {
     BaseClient,
 };
-export function createClient(input?: Omit<ConfigInput, 'clazz'>) : Client {
+export function createClient(input?: ConfigInput) : Client {
     const config = buildConfig(input);
 
     return new Client(config);
