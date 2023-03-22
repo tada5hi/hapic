@@ -6,7 +6,7 @@
  */
 
 import type { ConfigInput } from 'hapic';
-import { Client as BaseClient } from 'hapic';
+import { Client as BaseClient, buildConfig } from 'hapic';
 import { merge } from 'smob';
 import type {
     ConnectionConfig,
@@ -20,8 +20,10 @@ export class Client extends BaseClient {
 
     public readonly keyValue: KeyValueAPI;
 
-    constructor(config: ConfigInput) {
+    constructor(input?: ConfigInput) {
         let vaultConfig : ConnectionConfig | undefined;
+
+        const config = buildConfig(input);
 
         if (
             config.extra &&

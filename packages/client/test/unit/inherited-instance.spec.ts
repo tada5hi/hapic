@@ -5,7 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { setClient, useClient } from '../../src';
+import {
+    setClient,
+    unsetClient,
+    unsetConfig,
+    useClient,
+} from '../../src';
 import { TestTrapiClient } from '../data/child-class';
 
 describe('src/**/*.ts', () => {
@@ -16,5 +21,8 @@ describe('src/**/*.ts', () => {
 
         expect(instance).toBeInstanceOf(TestTrapiClient);
         expect(instance.test()).toEqual(true);
+
+        unsetConfig();
+        unsetClient();
     });
 });

@@ -5,40 +5,16 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput } from './type';
-import { hasOwnProperty } from '../utils';
+import type { Config, ConfigInput } from './type';
 
-export function isConfig(value: unknown) : value is ConfigInput {
-    if (typeof value !== 'object' || value === null) {
-        return false;
-    }
+export function buildConfig(
+    config?: ConfigInput,
+) : Config {
+    config = config || {};
 
-    if (
-        hasOwnProperty(value, 'driver') &&
-        (
-            typeof value.driver !== 'object' ||
-                value.driver === null
-        )
-    ) {
-        return false;
-    }
-
-    if (
-        hasOwnProperty(value, 'retry') &&
-        typeof value.retry !== 'boolean' &&
-        (
-            typeof value.retry !== 'object' ||
-            value.retry === null
-        )
-    ) {
-        return false;
-    }
-
-    return !(
-        hasOwnProperty(value, 'extra') &&
-        (
-            typeof value.extra !== 'object' ||
-            value.extra === null
-        )
-    );
+    return {
+        ...config,
+        extra: config.extra || {},
+        retry: config.retry ?? false,
+    };
 }

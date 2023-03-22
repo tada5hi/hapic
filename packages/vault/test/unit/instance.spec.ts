@@ -5,19 +5,28 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, useClient } from '../../src';
+import {
+    createClient, hasClient, setClient, unsetClient, useClient,
+} from '../../src';
 
-describe('src/client', () => {
-    it('should create singleton', () => {
-        const client = useClient();
-        expect(client).toBeInstanceOf(Client);
+describe('src/instance', () => {
+    it('should create instance', () => {
+        expect(hasClient()).toBeFalsy();
 
+        const client = setClient(createClient());
         expect(client).toEqual(useClient());
+
+        expect(hasClient()).toBeTruthy();
+
+        unsetClient();
     });
 
     it('should have client properties', () => {
         const client = useClient();
+
         expect(client.keyValue).toBeDefined();
         expect(client.mount).toBeDefined();
+
+        unsetClient();
     });
 });

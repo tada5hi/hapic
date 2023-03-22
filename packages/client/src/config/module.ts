@@ -5,9 +5,17 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { hasOwnProperty } from '../utils';
 import type { Config, ConfigInput } from './type';
+import { buildConfig } from './utils';
 
-const configMap: Record<string, Config> = {};
+const instanceMap: Record<string, Config> = {};
+
+export function hasConfig(
+    key?: string,
+) : boolean {
+    return hasOwnProperty(instanceMap, key || 'default');
+}
 
 export function setConfig(
     value?: ConfigInput,
@@ -15,9 +23,9 @@ export function setConfig(
 ) : ConfigInput {
     key = key || 'default';
 
-    configMap[key] = buildConfig(value);
+    instanceMap[key] = buildConfig(value);
 
-    return configMap[key];
+    return instanceMap[key];
 }
 
 export function useConfig(
@@ -25,21 +33,16 @@ export function useConfig(
 ): ConfigInput {
     key = key || 'default';
 
-    if (typeof configMap[key] === 'undefined') {
+    if (typeof instanceMap[key] === 'undefined') {
         return buildConfig();
     }
 
-    return configMap[key];
+    return instanceMap[key];
 }
 
-export function buildConfig(
-    config?: ConfigInput,
-) : Config {
-    config = config || {};
-
-    return {
-        ...config,
-        extra: config.extra || {},
-        retry: config.retry ?? false,
-    };
+export function unsetConfig(key?: string) {
+    key = key || 'default';
+    if (hasOwnProperty(instanceMap, key)) {
+        delete instanceMap[key];
+    }
 }

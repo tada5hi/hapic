@@ -5,16 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type {
-    ConfigInput,
-} from 'hapic';
 import {
     Client as BaseClient,
-    setClient as _setClient,
-    useClient as _useClient,
-    buildConfig,
 } from 'hapic';
-import { Client } from './module';
 
 export type {
     Config,
@@ -28,39 +21,14 @@ export type {
     ClientRetryConfig,
 
     ErrorCode,
-
 } from 'hapic';
 export {
     buildConfig,
+    hasConfig,
     setConfig,
+    unsetConfig,
     useConfig,
 } from 'hapic';
 export {
     BaseClient,
 };
-
-export function createClient(input?: ConfigInput) : Client {
-    const config = buildConfig(input);
-
-    return new Client(config);
-}
-
-export function setClient<T extends Client = Client>(client: T, key?: string) : T {
-    _setClient(client, key);
-
-    return client;
-}
-
-export function useClient(key?: string) : Client {
-    key = key || 'vault';
-
-    let client = _useClient(key);
-    if (client instanceof Client) {
-        return client;
-    }
-
-    client = createClient();
-    setClient(client as Client, key);
-
-    return client as Client;
-}
