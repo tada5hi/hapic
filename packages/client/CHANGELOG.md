@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/Tada5hi/hapic/compare/v1.3.0...v1.4.0) (2023-03-22)
+
+
+### Bug Fixes
+
+* **deps:** bump smob & ebec to v1.x ([1b94aba](https://github.com/Tada5hi/hapic/commit/1b94aba02ab9017039b9fcccb897820e0744302f))
+
+
+### Features
+
+* individual singleton management per package + nullable client constructor argument ([5af2f0c](https://github.com/Tada5hi/hapic/commit/5af2f0cf87808f515044cda8be9c3c038ced7734))
+
+
+
+
+
 # [1.3.0](https://github.com/Tada5hi/hapic/compare/v1.2.1...v1.3.0) (2023-03-17)
 
 
