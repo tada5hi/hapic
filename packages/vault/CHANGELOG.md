@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/Tada5hi/hapic/compare/v1.4.0...v1.5.0) (2023-03-23)
+
+
+### Features
+
+* expose is-client-error check ([f731d69](https://github.com/Tada5hi/hapic/commit/f731d69fe7ac04e23e4e96d4d3c41d2888d8b989))
+
+
+
+
+
 # [1.4.0](https://github.com/Tada5hi/hapic/compare/v1.3.0...v1.4.0) (2023-03-22)
 
 
