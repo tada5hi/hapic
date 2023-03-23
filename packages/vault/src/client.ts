@@ -28,6 +28,8 @@ export {
     setConfig,
     unsetConfig,
     useConfig,
+
+    isClientError,
 } from 'hapic';
 export {
     BaseClient,
