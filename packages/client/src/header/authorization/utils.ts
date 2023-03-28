@@ -9,7 +9,12 @@ import type { AuthorizationHeader } from './type';
 import { AuthorizationHeaderType } from './constants';
 import { AuthorizationHeaderError } from '../../error';
 
-export function parseAuthorizationHeader(value: string): AuthorizationHeader {
+export function parseAuthorizationHeader(value?: string): AuthorizationHeader {
+    /* istanbul ignore next */
+    if (typeof value !== 'string') {
+        throw AuthorizationHeaderError.parse();
+    }
+
     const parts: string[] = value.split(' ');
 
     if (parts.length < 2) {
