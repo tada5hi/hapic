@@ -5,7 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import axios from 'axios';
 import type { IAxiosRetryConfig } from 'axios-retry';
 import axiosRetry from 'axios-retry';
 import { buildConfig } from './config';
@@ -13,8 +12,11 @@ import type { ClientDriverInstance, ClientRequestConfig, ClientResponse } from '
 import type { ConfigInput } from './config';
 import type { AuthorizationHeader } from './header';
 import { stringifyAuthorizationHeader } from './header';
+import { createClientDriverInstance } from './utils';
 
 export class Client {
+    public '@instanceOf' = Symbol.for('HapicClient');
+
     public driver: ClientDriverInstance;
 
     // ---------------------------------------------------------------------------------
@@ -22,7 +24,7 @@ export class Client {
     constructor(input?: ConfigInput) {
         const config = buildConfig(input);
 
-        const client = axios.create(config.driver);
+        const client = createClientDriverInstance(config.driver);
 
         if (config.retry) {
             let retryConfig : IAxiosRetryConfig = {};

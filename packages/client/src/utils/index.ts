@@ -7,3 +7,5 @@
 
 export * from './error';
 export * from './has-own-property';
+export * from './instance';
+export * from './object';
