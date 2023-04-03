@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/Tada5hi/hapic/compare/v1.5.0...v1.6.0) (2023-04-03)
+
+
+### Features
+
+* export client dirver check and creator ([0951985](https://github.com/Tada5hi/hapic/commit/09519855f584fe5664d3323d01cdf215eaee2ecc))
+
+
+
+
+
 # [1.5.0](https://github.com/Tada5hi/hapic/compare/v1.4.0...v1.5.0) (2023-03-23)
 
 

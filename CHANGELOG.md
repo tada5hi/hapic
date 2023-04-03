@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/Tada5hi/hapic/compare/v1.5.0...v1.6.0) (2023-04-03)
+
+
+### Bug Fixes
+
+* assume non string type for parse auth header ([dd8cb6d](https://github.com/Tada5hi/hapic/commit/dd8cb6db3a3e529d751c448cf3845fe62d310fcf))
+
+
+### Features
+
+* export client dirver check and creator ([0951985](https://github.com/Tada5hi/hapic/commit/09519855f584fe5664d3323d01cdf215eaee2ecc))
+* support providing client driver instance & config as client config ([e15acf9](https://github.com/Tada5hi/hapic/commit/e15acf9051e698f30f74a9aaf0276f85df2369d2))
+
+
+
+
+
 # [1.5.0](https://github.com/Tada5hi/hapic/compare/v1.4.0...v1.5.0) (2023-03-23)
 
 
