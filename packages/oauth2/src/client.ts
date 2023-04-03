@@ -23,9 +23,6 @@ export type {
     ErrorCode,
 } from 'hapic';
 export {
-    isClientDriverInstance,
-    createClientDriverInstance,
-
     buildConfig,
     hasConfig,
     setConfig,
@@ -33,6 +30,8 @@ export {
     useConfig,
 
     isClientError,
+    isClientDriverInstance,
+    createClientDriverInstance,
 } from 'hapic';
 export {
     BaseClient,
