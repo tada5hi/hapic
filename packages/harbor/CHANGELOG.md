@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/Tada5hi/hapi/compare/v1.6.0...v1.6.1) (2023-04-03)
+
+
+### Bug Fixes
+
+* minor export adjustments + peer dep bump ([4506599](https://github.com/Tada5hi/hapi/commit/45065991ee2891d388ea26b2be6354cc2c15b49f))
+
+
+
+
+
 # [1.6.0](https://github.com/Tada5hi/hapi/compare/v1.5.0...v1.6.0) (2023-04-03)
 
 
