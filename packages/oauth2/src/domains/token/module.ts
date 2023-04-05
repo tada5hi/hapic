@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { stringifyAuthorizationHeader } from 'hapic';
 import type { Client, ClientDriverInstance } from 'hapic';
 import type {
     ClientOptions,
@@ -83,10 +84,21 @@ export class TokenAPI extends BaseOAuth2API {
      */
     async create(parameters: TokenGrantParameters): Promise<TokenGrantResponse> {
         const urlSearchParams = new URLSearchParams();
-        const parameterKeys = Object.keys(parameters);
+        const parameterKeys = Object.keys(parameters) as (keyof TokenGrantParameters)[];
 
         for (let i = 0; i < parameterKeys.length; i++) {
-            urlSearchParams.append(parameterKeys[i], (parameters as Record<string, any>)[parameterKeys[i]]);
+            if (
+                this.options.client_authentication_with_header &&
+                (parameterKeys[i] === 'client_id' || parameterKeys[i] === 'client_secret')
+            ) {
+                continue;
+            }
+
+            const parameter = parameters[parameterKeys[i]];
+
+            if (typeof parameter === 'string') {
+                urlSearchParams.append(parameterKeys[i], parameter);
+            }
         }
 
         const { data } = await this.client.post(
@@ -96,6 +108,25 @@ export class TokenAPI extends BaseOAuth2API {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
+                transformRequest: [
+                    (data, headers) => {
+                        if (
+                            this.options.client_authentication_with_header &&
+                            parameters.client_id &&
+                            parameters.client_secret
+                        ) {
+                            headers.authorization = stringifyAuthorizationHeader({
+                                type: 'Basic',
+                                username: parameters.client_id,
+                                password: parameters.client_secret,
+                            });
+                        } else {
+                            delete headers.authorization;
+                        }
+
+                        return data;
+                    },
+                ],
             },
         );
 

@@ -6,19 +6,50 @@
  */
 
 export type ClientOptions = {
+    /**
+     * The client ID provided by the OAuth2 server.
+     */
     client_id?: string,
+
+    /**
+     * The client secret provided by the OAuth2 server.
+     */
     client_secret?: string,
 
+    /**
+     * Indicates whether to include the client credentials in the Basic Authorization header
+     * for token requests.
+     */
+    client_authentication_with_header?: boolean,
+
+    /**
+     * The scopes to request from the OAuth2 server.
+     */
     scope?: string | string[],
 
+    /**
+     * The redirect URI to use for authorization grants.
+     */
     redirect_uri?: string,
 
+    /**
+     * The token endpoint URL provided by the OAuth2 server.
+     */
     token_endpoint?: string,
 
+    /**
+     * The introspection endpoint URL provided by the OAuth2 server.
+     */
     introspection_endpoint?: string,
 
+    /**
+     * The authorization endpoint URL provided by the OAuth2 server.
+     */
     authorization_endpoint?: string,
 
+    /**
+     * The userinfo endpoint URL provided by the OAuth2 server.
+     */
     userinfo_endpoint?: string,
 };
 
