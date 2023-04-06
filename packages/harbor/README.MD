@@ -1,8 +1,7 @@
-# @hapic/harbor
+# @hapic/harbor 🚢
 
 [![npm version](https://badge.fury.io/js/@hapic%2Fharbor.svg)](https://badge.fury.io/js/@hapic%2Fharbor)
 [![main](https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg)](https://github.com/Tada5hi/hapic/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/Tada5hi/hapic/branch/main/graph/badge.svg?token=ZUJ8F5TTSX)](https://codecov.io/gh/Tada5hi/hapic)
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hapic/badge.svg)](https://snyk.io/test/github/Tada5hi/hapic)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 

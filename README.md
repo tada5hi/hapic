@@ -1,7 +1,6 @@
-# HAPIC 🥋
+# HAPIC 🌐
 
 [![main](https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg)](https://github.com/Tada5hi/hapic/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/Tada5hi/hapic/branch/main/graph/badge.svg?token=ZUJ8F5TTSX)](https://codecov.io/gh/Tada5hi/hapic)
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hapic/badge.svg)](https://snyk.io/test/github/Tada5hi/hapic)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
@@ -12,28 +11,27 @@
 **Table of Contents**
 
 - [Packages](#packages)
-  - [Base](#base)
-  - [Harbor](#harbor)
-  - [OAuth2](#oauth2)
-  - [Vault](#vault)
-- [Documentation](#documentation)
+  - [Base](#base-)
+  - [Harbor](#harbor-)
+  - [OAuth2](#oauth2-)
+  - [Vault](#vault-)
 - [License](#license)
 
 ## Packages
 The repository contains the following packages:
 
-### Base
+### Base 🚀
 
 **`hapic`**
 
 This client provides a convenient way to make HTTP requests to various API endpoints,
 such as POST, GET, PUT, DELETE, and more.
-The client is extended by the [Harbor](#harbor), [Vault](#vault), and [OAuth2](#oauth2) clients, 
+The client is extended by the [Harbor](#harbor-), [Vault](#vault-), and [OAuth2](#oauth2-) clients, 
 which provide additional functionality specific to those services.
 
 [Documentation](./packages/client)
 
-### Harbor
+### Harbor 🚢
 
 **`@hapic/harbor`**
 
@@ -45,7 +43,7 @@ this API client is a powerful tool to get the most out of the platform.
 
 [Documentation](./packages/harbor)
 
-### OAuth2
+### OAuth2 🛡️
 
 **`@hapic/oauth2`**
 
@@ -61,7 +59,7 @@ and authorization in your applications.
 
 [Documentation](./packages/oauth2)
 
-### Vault
+### Vault 🔒
 
 **`@hapic/vault`**
 
