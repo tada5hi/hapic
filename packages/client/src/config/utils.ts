@@ -5,12 +5,23 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { isDriver } from '../utils';
 import type { Config, ConfigInput } from './type';
 
-export function buildOptions(
+export function buildConfig(
     options?: ConfigInput,
 ) : Config {
     options = options || {};
+
+    if (options.driver) {
+        if (isDriver(options.driver)) {
+            if (typeof options.driver.defaults.withCredentials === 'undefined') {
+                options.driver.defaults.withCredentials = true;
+            }
+        } else if (typeof options.driver.withCredentials === 'undefined') {
+            options.driver.withCredentials = true;
+        }
+    }
 
     return {
         ...options,

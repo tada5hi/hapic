@@ -7,7 +7,7 @@
 
 import { hasOwnProperty } from '../utils';
 import type { Config, ConfigInput } from './type';
-import { buildOptions } from './utils';
+import { buildConfig } from './utils';
 
 const instanceMap: Record<string, Config> = {};
 
@@ -23,7 +23,7 @@ export function setConfig(
 ) : ConfigInput {
     key = key || 'default';
 
-    instanceMap[key] = buildOptions(value);
+    instanceMap[key] = buildConfig(value);
 
     return instanceMap[key];
 }
@@ -34,7 +34,7 @@ export function useConfig(
     key = key || 'default';
 
     if (typeof instanceMap[key] === 'undefined') {
-        return buildOptions();
+        return buildConfig();
     }
 
     return instanceMap[key];

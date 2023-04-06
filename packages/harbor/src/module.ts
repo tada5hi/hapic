@@ -5,10 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput } from 'hapic';
-import { Client as BaseClient, buildOptions } from 'hapic';
-import { merge } from 'smob';
-import type { ConnectionConfig, SearchResult } from './type';
+import { Client as BaseClient } from 'hapic';
+import type { ConfigInput, ConnectionOptions, SearchResult } from './type';
 import { RobotAccountAPI } from './robot-account';
 import { ProjectAPI } from './project';
 import { ProjectWebHookAPI } from './project-webhook';
@@ -30,25 +28,23 @@ export class Client extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
-        let connectionConfig : ConnectionConfig | undefined;
+        input = input || {};
 
-        const config = buildConfig(input);
+        super(input);
 
-        if (
-            config.extra &&
-            config.extra.connectionString
-        ) {
-            connectionConfig = parseConnectionString(config.extra.connectionString);
+        let connectionConfig : ConnectionOptions | undefined;
+
+        if (input.connectionString) {
+            connectionConfig = parseConnectionString(input.connectionString);
         }
 
-        config.driver = merge({
-            ...(connectionConfig ? { baseURL: connectionConfig.host } : {}),
-            ...(config.driver || {}),
-        });
-
-        super(config);
+        if (input.connectionOptions) {
+            connectionConfig = input.connectionOptions;
+        }
 
         if (connectionConfig) {
+            this.setBaseURL(connectionConfig.host);
+
             this.setAuthorizationHeader({
                 type: 'Basic',
                 username: connectionConfig.user,

@@ -5,11 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput } from 'hapic';
-import { Client as BaseClient, buildOptions } from 'hapic';
-import { merge } from 'smob';
+import { Client as BaseClient } from 'hapic';
 import type {
-    ConnectionConfig,
+    ConfigInput,
+    ConnectionOptions,
 } from './type';
 import { MountAPI } from './mount';
 import { KeyValueAPI } from './key-value';
@@ -23,31 +22,26 @@ export class Client extends BaseClient {
     public readonly keyValue: KeyValueAPI;
 
     constructor(input?: ConfigInput) {
-        let vaultConfig : ConnectionConfig | undefined;
+        super(input);
 
-        const config = buildConfig(input);
+        input = input || {};
 
-        if (
-            config.extra &&
-            config.extra.connectionString
-        ) {
-            vaultConfig = parseConnectionString(config.extra.connectionString);
+        this.setHeader('X-Vault-Request', 'true');
+        this.setHeader('Content-Type', 'application/json');
+
+        let connectionOptions : ConnectionOptions | undefined;
+
+        if (input.connectionString) {
+            connectionOptions = parseConnectionString(input.connectionString);
         }
 
-        config.driver = merge({
-            withCredentials: true,
-            timeout: 3000,
-            ...(vaultConfig ? { baseURL: vaultConfig.host } : {}),
-            headers: {
-                'X-Vault-Request': 'true',
-                'Content-Type': 'application/json',
-            },
-        }, (config.driver || {}));
+        if (input.connectionOptions) {
+            connectionOptions = input.connectionOptions;
+        }
 
-        super(config);
-
-        if (vaultConfig) {
-            this.setHeader('X-Vault-Token', vaultConfig.token);
+        if (connectionOptions) {
+            this.setBaseURL(connectionOptions.host);
+            this.setHeader('X-Vault-Token', connectionOptions.token);
         }
 
         this.mount = new MountAPI(this.driver);

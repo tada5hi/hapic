@@ -23,7 +23,7 @@ export type {
     ErrorCode,
 } from 'hapic';
 export {
-    buildOptions,
+    buildConfig,
     hasConfig,
     setConfig,
     unsetConfig,

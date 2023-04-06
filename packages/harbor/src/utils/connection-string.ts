@@ -5,10 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConnectionConfig } from '../type';
+import type { ConnectionOptions } from '../type';
 import { ConnectionStringParseError } from '../error';
 
-export function parseConnectionString(connectionString: string): ConnectionConfig {
+export function parseConnectionString(connectionString: string): ConnectionOptions {
     const parts: string[] = connectionString.split('@');
     if (parts.length !== 2) {
         throw new ConnectionStringParseError('Harbor connection string must be in the following format: user:password@host');

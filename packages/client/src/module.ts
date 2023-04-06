@@ -7,7 +7,7 @@
 
 import type { IAxiosRetryConfig } from 'axios-retry';
 import axiosRetry from 'axios-retry';
-import { buildOptions } from './config';
+import { buildConfig } from './config';
 import type { Driver, RequestConfig, Response } from './type';
 import type { ConfigInput } from './config';
 import type { AuthorizationHeader } from './header';
@@ -28,7 +28,7 @@ export class Client {
     // ---------------------------------------------------------------------------------
 
     public setConfig(input?: ConfigInput) {
-        const config = buildOptions(input);
+        const config = buildConfig(input);
 
         let driver: Driver;
         if (config.driver || !this.driver) {
@@ -67,6 +67,17 @@ export class Client {
         }
 
         return this.driver.getUri(config);
+    }
+
+    /**
+     * Overwrite existing base url.
+     *
+     * @param url
+     */
+    public setBaseURL(url: string) {
+        this.driver.defaults.baseURL = url;
+
+        return this;
     }
 
     // ---------------------------------------------------------------------------------

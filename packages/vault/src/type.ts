@@ -5,7 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type ConnectionConfig = {
+import type { Config as BaseConfig } from 'hapic';
+
+export type ConnectionOptions = {
     host: string,
     token: string
 };
@@ -20,3 +22,10 @@ export type ResourceResponse<T extends Record<string, any> = Record<string, any>
     warnings: null,
     wrap_info: null
 };
+
+export type Config = BaseConfig & {
+    connectionString?: string,
+    connectionOptions?: ConnectionOptions
+};
+
+export type ConfigInput = Partial<Config>;

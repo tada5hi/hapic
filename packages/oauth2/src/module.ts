@@ -8,7 +8,7 @@
 import type { Driver } from 'hapic';
 import { Client as BaseClient } from 'hapic';
 import type {
-    Config,
+    ConfigInput,
     Options,
 } from './type';
 
@@ -27,11 +27,12 @@ export class Client extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    constructor(config?: Config) {
-        super(config);
+    constructor(input?: ConfigInput) {
+        super(input);
 
-        config = config || {};
-        this.options = config.options || {};
+        input = input || {};
+
+        this.options = input.options || {};
 
         this.token = new TokenAPI({
             driver: this.driver,
@@ -58,5 +59,13 @@ export class Client extends BaseClient {
         this.authorize.setDriver(driver);
         this.token.setDriver(driver);
         this.userInfo.setDriver(driver);
+    }
+
+    setOptions(options: Options) {
+        this.options = options;
+
+        this.authorize.setOptions(options);
+        this.token.setOptions(options);
+        this.userInfo.setOptions(options);
     }
 }

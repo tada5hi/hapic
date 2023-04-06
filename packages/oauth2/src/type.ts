@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput as BaseConfigInput } from 'hapic';
+import type { Config as BaseConfig } from 'hapic';
 import type { ResponseType } from './constants';
 
 export type Options = {
@@ -50,9 +50,11 @@ export type Options = {
     userinfoEndpoint?: string,
 };
 
-export type Config = BaseConfigInput & {
+export type Config = BaseConfig & {
     options?: Options
 };
+
+export type ConfigInput = Partial<Config>;
 
 // ------------------------------------------------------------------
 
