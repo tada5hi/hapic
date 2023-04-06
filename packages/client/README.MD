@@ -14,6 +14,7 @@ This package contains a simple API-Client based on axios.
 - [Usage](#usage)
   - [Config](#config)
   - [Singleton](#singleton)
+  - [Request](#request)
   - [Header](#header)
 - [License](#license)
 
@@ -30,12 +31,8 @@ npm install hapic --save
 To create a configuration for the  `Client`, a configuration must be specified,
 like described in the following:
 
-**Client**
-
 ```typescript
-import {
-    setConfig
-} from "hapic";
+import { setConfig } from "hapic";
 
 setConfig({
     driver: {
@@ -55,23 +52,65 @@ In the upper example, the **driver** property is used to pass information to the
 A singleton instance associated for a given configuration key,
 can be acquired like described in the following:
 
-**Client**
+**`Client`**
 ```typescript
-import {
-    useClient
-} from "hapic";
+import { useClient } from 'hapic';
 
 const client = useClient('key');
-client.setAuthorizationHeader({
-    type: 'bearer',
-    token: 'xxx'
-})
 
-(async () => {
-    const {data} = await client.get('users');
-    console.log(data);
-    // [{id: 1, name: 'Peter'}]
-})();
+const response = await client.get('users');
+// { data: {...}, ... }
+
+data = await client.post('users', { name: 'Hans' });
+console.log(data);
+// { id: 1, name, 'Hans', .... }
+```
+
+### Request
+
+**`DELETE`**
+```typescript
+import client from 'hapic';
+
+const { data } = await client.delete('users/1');
+console.log(data);
+// [{ id: 1, name: 'xxx' }]
+```
+
+**`GET`**
+```typescript
+import client from 'hapic';
+
+let { data } = await client.get('users');
+console.log(data);
+// [{ id: 2, name: 'Peter' }]
+```
+
+**`PATCH`**
+```typescript
+import client from 'hapic';
+
+let { data } = await client.patch('users/2', { name: 'Peter P.' });
+console.log(data);
+// [{ id: 2, name: 'Peter P.' }]
+```
+
+**`POST`**
+```typescript
+import client from 'hapic';
+
+let { data } = await client.post('users', { name: 'Hans' });
+console.log(data);
+// [{ id: 3, name: 'Hans' }]
+```
+
+**`PUT`**
+```typescript
+import client from 'hapic';
+
+let { data } = await client.put('users/3', { id: 3, name: 'Hans' });
+console.log(data);
+// [{ id: 3, name: 'Hans' }]
 ```
 
 ### Header

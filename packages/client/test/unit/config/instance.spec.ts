@@ -5,13 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { buildConfig, hasConfig, setConfig } from '../../../src';
+import { buildOptions, hasConfig, setConfig } from '../../../src';
 
 describe('src/config/instance', () => {
     it('should create instance', () => {
         expect(hasConfig()).toBeFalsy();
 
-        setConfig(buildConfig());
+        setConfig(buildOptions());
 
         expect(hasConfig()).toBeTruthy();
     });

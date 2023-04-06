@@ -6,10 +6,10 @@
  */
 
 import axios, { Axios } from 'axios';
-import type { ClientDriverInstance, ClientRequestConfig } from '../type';
+import type { Driver, RequestConfig } from '../type';
 import { isObject } from './object';
 
-export function isClientDriverInstance(input: unknown) : input is Axios {
+export function isDriver(input: unknown) : input is Driver {
     if (input instanceof Axios) {
         return true;
     }
@@ -22,10 +22,10 @@ export function isClientDriverInstance(input: unknown) : input is Axios {
         typeof (input as Axios).defaults !== 'undefined';
 }
 
-export function createClientDriverInstance(
-    input?: ClientDriverInstance | ClientRequestConfig,
-) : ClientDriverInstance {
-    return isClientDriverInstance(input) ?
+export function createDriver(
+    input?: Driver | RequestConfig,
+) : Driver {
+    return isDriver(input) ?
         input :
         axios.create(input);
 }

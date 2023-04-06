@@ -5,15 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance } from 'hapic';
+import type { Driver } from 'hapic';
 import { merge } from 'smob';
 import type { RobotAccount } from './type';
 import { buildRobotAccountPermissionForNamespace } from './utils';
 
 export class RobotAccountAPI {
-    protected client: ClientDriverInstance;
+    protected client: Driver;
 
-    constructor(client: ClientDriverInstance) {
+    constructor(client: Driver) {
         this.client = client;
     }
 

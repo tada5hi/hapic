@@ -5,29 +5,29 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClientDriverInstance, isClientDriverInstance } from '../../../src';
+import { createDriver, isDriver } from '../../../src';
 
 describe('src/utils/instance', () => {
     it('should check client driver instance', () => {
         let input : any;
-        expect(isClientDriverInstance(input)).toBeFalsy();
+        expect(isDriver(input)).toBeFalsy();
 
         input = () => 1;
-        expect(isClientDriverInstance(input)).toBeFalsy();
+        expect(isDriver(input)).toBeFalsy();
 
-        input = createClientDriverInstance();
+        input = createDriver();
         expect(input).toBeTruthy();
     });
 
     it('should create client driver instance', () => {
-        const instance = createClientDriverInstance({
+        const instance = createDriver({
             baseURL: 'http://localhost:3000',
         });
-        expect(isClientDriverInstance(instance)).toBeTruthy();
+        expect(isDriver(instance)).toBeTruthy();
         expect(instance.defaults.baseURL).toEqual('http://localhost:3000');
 
-        const instanceTwo = createClientDriverInstance(instance);
-        expect(isClientDriverInstance(instanceTwo)).toBeTruthy();
+        const instanceTwo = createDriver(instance);
+        expect(isDriver(instanceTwo)).toBeTruthy();
         expect(instance).toEqual(instanceTwo);
     });
 });

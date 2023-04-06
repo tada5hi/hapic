@@ -5,10 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance } from 'hapic';
+import type { Driver } from 'hapic';
 import type { MountAPI } from '../mount';
 
 export type KeyValueContext = {
-    client: ClientDriverInstance,
+    client: Driver,
     mountAPI: MountAPI
 };

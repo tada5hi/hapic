@@ -5,15 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, createClientDriverInstance } from 'hapic';
-import type { ClientDriverInstance } from 'hapic';
+import { Client, createDriver } from 'hapic';
+import type { Driver } from 'hapic';
 import type { Options } from '../type';
 import type { BaseAPIContext } from './type';
 
 export abstract class BaseAPI {
     protected options : Options;
 
-    protected driver : Client | ClientDriverInstance;
+    protected driver : Client | Driver;
 
     // -----------------------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ export abstract class BaseAPI {
 
     // -----------------------------------------------------------------------------------
 
-    setDriver(client: Client | ClientDriverInstance) {
+    setDriver(client: Client | Driver) {
         this.driver = client;
     }
 }

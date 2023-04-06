@@ -13,25 +13,25 @@ export type {
     Config,
     ConfigInput,
 
-    ClientRequestConfig,
-    ClientResponse,
+    RequestConfig,
+    Response,
     ClientInterface,
-    ClientDriverInstance,
-    ClientError,
-    ClientRetryConfig,
+    Driver,
+    DriverError,
+    RetryConfig,
 
     ErrorCode,
 } from 'hapic';
 export {
-    buildConfig,
+    buildOptions,
     hasConfig,
     setConfig,
     unsetConfig,
     useConfig,
 
-    isClientError,
-    isClientDriverInstance,
-    createClientDriverInstance,
+    isRequestError,
+    isDriver,
+    createDriver,
 } from 'hapic';
 export {
     BaseClient,

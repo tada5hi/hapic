@@ -31,9 +31,7 @@ export function setClient<T extends Client = Client>(
     return client;
 }
 
-export function useClient<T extends Client = Client>(
-    key?: string,
-) : T {
+export function useClient<T extends Client = Client>(key?: string) : T {
     key = key || 'default';
 
     if (Object.prototype.hasOwnProperty.call(instanceMap, key)) {

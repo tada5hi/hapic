@@ -6,10 +6,11 @@
  */
 
 import axios from 'axios';
-import type { ClientError } from '../type';
+import type { DriverError } from '../type';
+import { isObject } from './object';
 
-export function isClientError(error?: any) : error is ClientError {
-    if (typeof error !== 'object') {
+export function isRequestError(error?: unknown) : error is DriverError {
+    if (!isObject(error)) {
         return false;
     }
 
@@ -18,8 +19,15 @@ export function isClientError(error?: any) : error is ClientError {
         Object.prototype.hasOwnProperty.call(error, 'isAxiosError') &&
         typeof error.isAxiosError === 'boolean'
     ) {
-        return !!error.isAxiosError;
+        return error.isAxiosError;
     }
 
     return axios.isAxiosError(error);
+}
+
+export function isNetworkError(error?: unknown) {
+    return isObject(error) &&
+        !error.response &&
+        Boolean(error.code) &&
+        error.code !== 'ECONNABORTED';
 }

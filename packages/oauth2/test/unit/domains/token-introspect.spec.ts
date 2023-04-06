@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientRequestConfig } from 'hapic';
+import type { RequestConfig } from 'hapic';
 import {
     Client,
 } from 'hapic';
@@ -38,7 +38,7 @@ const payload : JwtPayload = {
 postFn.mockImplementation((
     _url: string,
     _data?: any,
-    config?: ClientRequestConfig,
+    config?: RequestConfig,
 ) => Promise.resolve({ data: payload, request: { config } }));
 
 client.post = postFn;

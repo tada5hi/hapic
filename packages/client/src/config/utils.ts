@@ -7,14 +7,13 @@
 
 import type { Config, ConfigInput } from './type';
 
-export function buildConfig(
-    config?: ConfigInput,
+export function buildOptions(
+    options?: ConfigInput,
 ) : Config {
-    config = config || {};
+    options = options || {};
 
     return {
-        ...config,
-        extra: config.extra || {},
-        retry: config.retry ?? false,
+        ...options,
+        retry: options.retry ?? false,
     };
 }

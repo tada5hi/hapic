@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance } from 'hapic';
-import { isClientError } from 'hapic';
+import type { Driver } from 'hapic';
+import { isRequestError } from 'hapic';
 import { buildKeyValueURLPath } from './utils';
 import type {
     KeyValueContext,
@@ -22,7 +22,7 @@ import {
 import type { ResourceResponse } from '../type';
 
 export class KeyValueAPI {
-    protected client: ClientDriverInstance;
+    protected client: Driver;
 
     protected mount: MountAPI;
 

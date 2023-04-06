@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { ClientDriverHeaders, stringifyAuthorizationHeader } from 'hapic';
+import { Headers, stringifyAuthorizationHeader } from 'hapic';
 import { TokenAPI } from '../../../src';
 
 describe('src/domains/token', () => {

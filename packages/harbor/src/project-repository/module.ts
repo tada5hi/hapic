@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance } from 'hapic';
+import type { Driver } from 'hapic';
 import type { Repository } from './type';
 import { parseProjectRepositoryName } from './utils';
 
 export class ProjectRepositoryAPI {
-    protected client: ClientDriverInstance;
+    protected client: Driver;
 
-    constructor(client: ClientDriverInstance) {
+    constructor(client: Driver) {
         this.client = client;
     }
 

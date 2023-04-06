@@ -5,15 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance } from 'hapic';
-import { isClientError } from 'hapic';
+import type { Driver } from 'hapic';
+import { isRequestError } from 'hapic';
 import { merge } from 'smob';
 import type { ProjectWebhook } from './type';
 
 export class ProjectWebHookAPI {
-    protected client: ClientDriverInstance;
+    protected client: Driver;
 
-    constructor(client: ClientDriverInstance) {
+    constructor(client: Driver) {
         this.client = client;
     }
 

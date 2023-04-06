@@ -7,24 +7,35 @@
 
 import type { IAxiosRetryConfig } from 'axios-retry';
 import axiosRetry from 'axios-retry';
-import { buildConfig } from './config';
-import type { ClientDriverInstance, ClientRequestConfig, ClientResponse } from './type';
+import { buildOptions } from './config';
+import type { Driver, RequestConfig, Response } from './type';
 import type { ConfigInput } from './config';
 import type { AuthorizationHeader } from './header';
-import { stringifyAuthorizationHeader } from './header';
-import { createClientDriverInstance } from './utils';
+import { HeaderName, stringifyAuthorizationHeader } from './header';
+import { createDriver } from './utils';
 
 export class Client {
     readonly '@instanceof' = Symbol.for('BaseClient');
 
-    public driver: ClientDriverInstance;
+    public driver!: Driver;
 
     // ---------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
-        const config = buildConfig(input);
+        this.setConfig(input);
+    }
 
-        const client = createClientDriverInstance(config.driver);
+    // ---------------------------------------------------------------------------------
+
+    public setConfig(input?: ConfigInput) {
+        const config = buildOptions(input);
+
+        let driver: Driver;
+        if (config.driver || !this.driver) {
+            driver = createDriver(config.driver);
+        } else {
+            driver = this.driver;
+        }
 
         if (config.retry) {
             let retryConfig : IAxiosRetryConfig = {};
@@ -33,25 +44,14 @@ export class Client {
                 retryConfig = config.retry;
             }
 
-            axiosRetry(client, retryConfig);
+            const retrySymbol = Symbol.for('ClientRetry');
+            if (!(retrySymbol in driver)) {
+                (driver as any)[retrySymbol] = true;
+                axiosRetry(driver, retryConfig);
+            }
         }
 
-        this.driver = client;
-    }
-
-    // ---------------------------------------------------------------------------------
-
-    public setDriver(client: ClientDriverInstance) {
-        this.driver = client;
-    }
-
-    /**
-     * Return driver config.
-     *
-     * @return AxiosDefaults<any>
-     */
-    get config() {
-        return this.driver.defaults;
+        this.driver = driver;
     }
 
     /**
@@ -61,7 +61,11 @@ export class Client {
      *
      * @return string
      */
-    public getUri(config?: ClientRequestConfig): string {
+    public getBaseURL(config?: RequestConfig): string {
+        if (this.driver.defaults.baseURL) {
+            return this.driver.defaults.baseURL;
+        }
+
         return this.driver.getUri(config);
     }
 
@@ -73,10 +77,19 @@ export class Client {
      * @param key
      * @param value
      */
-    public setHeader(key: string, value: string) {
+    public setHeader(key: string, value: any) {
         this.driver.defaults.headers.common[key] = value;
 
         return this;
+    }
+
+    /**
+     * Get a header for all upcoming requests.
+     *
+     * @param key
+     */
+    public getHeader(key: string) {
+        return this.driver.defaults.headers.common[key];
     }
 
     /**
@@ -95,7 +108,7 @@ export class Client {
     /**
      * Unset all defined headers for the upcoming requests.
      */
-    public resetHeader() {
+    public unsetHeaders() {
         this.driver.defaults.headers.common = {};
 
         return this;
@@ -109,7 +122,7 @@ export class Client {
      * @param options
      */
     public setAuthorizationHeader(options: AuthorizationHeader) {
-        this.setHeader('Authorization', stringifyAuthorizationHeader(options));
+        this.setHeader(HeaderName.AUTHORIZATION, stringifyAuthorizationHeader(options));
 
         return this;
     }
@@ -118,7 +131,7 @@ export class Client {
      * Unset an authorization header.
      */
     public unsetAuthorizationHeader() {
-        this.unsetHeader('Authorization');
+        this.unsetHeader(HeaderName.AUTHORIZATION);
 
         return this;
     }
@@ -130,7 +143,7 @@ export class Client {
      *
      * @param config
      */
-    public request<T = any, R = ClientResponse<T>, C = any>(config: ClientRequestConfig<C>): Promise<R> {
+    public request<T = any, R = Response<T>, C = any>(config: RequestConfig<C>): Promise<R> {
         return this.driver.request(config);
     }
 
@@ -142,7 +155,7 @@ export class Client {
      * @param url
      * @param config
      */
-    public get<T = any, R = ClientResponse<T>, C = any>(url: string, config?: ClientRequestConfig<C>): Promise<R> {
+    public get<T = any, R = Response<T>, C = any>(url: string, config?: RequestConfig<C>): Promise<R> {
         return this.driver.get(url, config);
     }
 
@@ -154,7 +167,7 @@ export class Client {
      * @param url
      * @param config
      */
-    public delete<T = any, R = ClientResponse<T>, C = any>(url: string, config?: ClientRequestConfig<C>): Promise<R> {
+    public delete<T = any, R = Response<T>, C = any>(url: string, config?: RequestConfig<C>): Promise<R> {
         return this.driver.delete(url, config);
     }
 
@@ -166,7 +179,7 @@ export class Client {
      * @param url
      * @param config
      */
-    public head<T = any, R = ClientResponse<T>, C = any>(url: string, config?: ClientRequestConfig<C>): Promise<R> {
+    public head<T = any, R = Response<T>, C = any>(url: string, config?: RequestConfig<C>): Promise<R> {
         return this.driver.head(url, config);
     }
 
@@ -179,7 +192,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public post<T = any, R = ClientResponse<T>, C = any>(url: string, data?: any, config?: ClientRequestConfig<C>): Promise<R> {
+    public post<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
         return this.driver.post(url, data, config);
     }
 
@@ -190,7 +203,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public postForm<T = any, R = ClientResponse<T>, C = any>(url: string, data?: any, config?: ClientRequestConfig<C>): Promise<R> {
+    public postForm<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
         return this.driver.postForm(url, data, config);
     }
 
@@ -203,7 +216,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public put<T = any, R = ClientResponse<T>, C = any>(url: string, data?: any, config?: ClientRequestConfig<C>): Promise<R> {
+    public put<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
         return this.driver.put(url, data, config);
     }
 
@@ -214,7 +227,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public putForm<T = any, R = ClientResponse<T>, C = any>(url: string, data?: any, config?: ClientRequestConfig<C>): Promise<R> {
+    public putForm<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
         return this.driver.putForm(url, data, config);
     }
 
@@ -227,7 +240,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public patch<T = any, R = ClientResponse<T>, C = any>(url: string, data?: any, config?: ClientRequestConfig<C>): Promise<R> {
+    public patch<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
         return this.driver.patch(url, data, config);
     }
 
@@ -238,7 +251,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public patchForm<T = any, R = ClientResponse<T>, C = any>(url: string, data?: any, config?: ClientRequestConfig<C>): Promise<R> {
+    public patchForm<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
         return this.driver.patchForm(url, data, config);
     }
 
@@ -251,7 +264,7 @@ export class Client {
      * @param onRejected
      */
     public mountResponseInterceptor(
-        onFulfilled: (value: ClientResponse<any>) => any | Promise<ClientResponse<any>>,
+        onFulfilled: (value: Response<any>) => any | Promise<Response<any>>,
         onRejected: (error: any) => any,
     ) : number {
         return this.driver.interceptors.response.use(onFulfilled, onRejected);
@@ -268,6 +281,13 @@ export class Client {
         return this;
     }
 
+    /**
+     * Unmount all response interceptors.
+     */
+    public unmountResponseInterceptors() {
+        this.driver.interceptors.response.clear();
+    }
+
     //---------------------------------------------------------------------------------
 
     /**
@@ -277,7 +297,7 @@ export class Client {
      * @param onRejected
      */
     public mountRequestInterceptor(
-        onFulfilled: (value: ClientRequestConfig) => any | Promise<ClientRequestConfig>,
+        onFulfilled: (value: RequestConfig) => any | Promise<RequestConfig>,
         onRejected: (error: any) => any,
     ) : number {
         return this.driver.interceptors.request.use(onFulfilled, onRejected);
@@ -292,5 +312,12 @@ export class Client {
         this.driver.interceptors.request.eject(id);
 
         return this;
+    }
+
+    /**
+     * Unmount all request interceptors.
+     */
+    public unmountRequestInterceptors() {
+        this.driver.interceptors.request.clear();
     }
 }

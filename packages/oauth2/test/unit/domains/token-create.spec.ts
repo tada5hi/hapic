@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientRequestConfig } from 'hapic';
+import type { RequestConfig } from 'hapic';
 import { createClient } from 'hapic';
 import type { TokenGrantParameters, TokenGrantResponse } from '../../../src';
 import { TokenAPI } from '../../../src';
@@ -26,7 +26,7 @@ const tokenGrantResponse : TokenGrantResponse = {
 postFn.mockImplementation((
     _url: string,
     _data?: any,
-    config?: ClientRequestConfig,
+    config?: RequestConfig,
 ) => Promise.resolve({ data: tokenGrantResponse, request: { config } }));
 
 client.post = postFn;

@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance } from 'hapic';
+import type { Driver } from 'hapic';
 import { Client as BaseClient } from 'hapic';
 import type {
     Config,
@@ -52,11 +52,11 @@ export class Client extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     /* istanbul ignore next */
-    override setDriver(client: ClientDriverInstance) {
-        super.setDriver(client);
+    setDriver(driver: Driver) {
+        super.setConfig({ driver });
 
-        this.authorize.setDriver(client);
-        this.token.setDriver(client);
-        this.userInfo.setDriver(client);
+        this.authorize.setDriver(driver);
+        this.token.setDriver(driver);
+        this.userInfo.setDriver(driver);
     }
 }

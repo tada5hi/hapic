@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClientDriverInstance } from 'hapic';
+import { createDriver } from 'hapic';
 import type { OpenIDProviderMetadata } from '../../src';
 import { buildOpenIDDiscoveryURL, createClientWithOpenIDDiscoveryURL } from '../../src';
 

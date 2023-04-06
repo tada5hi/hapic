@@ -7,7 +7,7 @@
 
 import { stringifyAuthorizationHeader } from 'hapic';
 import type {
-    ClientDriverHeaders,
+    Headers,
 } from 'hapic';
 import type {
     JwtPayload,
@@ -181,7 +181,7 @@ export class TokenAPI extends BaseAPI {
      * @param options
      */
     transformHeadersForRequest(
-        headers: ClientDriverHeaders,
+        headers: Headers,
         options?: TokenBaseOptions,
     ) : void {
         options = options || {};

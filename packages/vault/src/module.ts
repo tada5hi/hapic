@@ -6,7 +6,7 @@
  */
 
 import type { ConfigInput } from 'hapic';
-import { Client as BaseClient, buildConfig } from 'hapic';
+import { Client as BaseClient, buildOptions } from 'hapic';
 import { merge } from 'smob';
 import type {
     ConnectionConfig,
