@@ -29,3 +29,15 @@ export function createClientDriverInstance(
         input :
         axios.create(input);
 }
+
+export function verifyInstanceBySymbol(
+    input: unknown,
+    name: string,
+) {
+    if (!isObject(input) && typeof input !== 'function') {
+        return false;
+    }
+
+    return (input as { '@instanceof': symbol })['@instanceof'] ===
+        Symbol.for(name);
+}

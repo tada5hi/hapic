@@ -9,6 +9,7 @@ import type { ConfigInput } from 'hapic';
 import {
     hasOwnProperty,
     useConfig,
+    verifyInstanceBySymbol,
 } from 'hapic';
 import { Client } from './module';
 
@@ -83,4 +84,17 @@ export function unsetClient(key?: string) {
  */
 export function createClient(input?: ConfigInput) {
     return new Client(input);
+}
+
+/**
+ * Check if the argument is of instance Client.
+ *
+ * @param input
+ */
+export function isClient(input: unknown): input is Client {
+    if (input instanceof Client) {
+        return true;
+    }
+
+    return verifyInstanceBySymbol(input, 'OAuth2Client');
 }

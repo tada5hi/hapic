@@ -19,7 +19,7 @@ describe('src/utils/instance', () => {
         expect(input).toBeTruthy();
     });
 
-    fit('should create client driver instance', () => {
+    it('should create client driver instance', () => {
         const instance = createClientDriverInstance({
             baseURL: 'http://localhost:3000',
         });

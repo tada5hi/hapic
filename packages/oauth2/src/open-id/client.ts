@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ClientDriverInstance, ClientRequestConfig } from 'hapic';
-import { Client as BaseClient, createClientDriverInstance } from 'hapic';
+import type { Client as BaseClient, ClientDriverInstance, ClientRequestConfig } from 'hapic';
+import { createClientDriverInstance, isClient } from 'hapic';
 import { Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
 import type { OpenIDProviderMetadata } from './type';
@@ -24,7 +24,7 @@ export async function createClientWithOpenIDDiscoveryURL(
 ) {
     let driver: ClientDriverInstance;
 
-    if (client instanceof BaseClient) {
+    if (isClient(client)) {
         driver = client.driver;
     } else {
         driver = createClientDriverInstance(client);

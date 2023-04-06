@@ -15,6 +15,8 @@ import type {
 import { AuthorizeAPI, TokenAPI, UserInfoAPI } from './domains';
 
 export class Client extends BaseClient {
+    override readonly '@instanceof' = Symbol.for('OAuth2Client');
+
     public options : Options;
 
     public authorize: AuthorizeAPI;

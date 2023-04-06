@@ -15,7 +15,7 @@ import { stringifyAuthorizationHeader } from './header';
 import { createClientDriverInstance } from './utils';
 
 export class Client {
-    public '@instanceOf' = Symbol.for('HapicClient');
+    readonly '@instanceof' = Symbol.for('BaseClient');
 
     public driver: ClientDriverInstance;
 

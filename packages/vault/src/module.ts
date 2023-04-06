@@ -16,6 +16,8 @@ import { KeyValueAPI } from './key-value';
 import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
+    override readonly '@instanceof' = Symbol.for('VaultClient');
+
     public readonly mount : MountAPI;
 
     public readonly keyValue: KeyValueAPI;

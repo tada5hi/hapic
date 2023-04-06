@@ -10,7 +10,7 @@ import {
     useConfig,
 } from './config';
 import { Client } from './module';
-import { hasOwnProperty } from './utils';
+import { hasOwnProperty, verifyInstanceBySymbol } from './utils';
 
 const instanceMap: Record<string, Client> = {};
 
@@ -57,4 +57,12 @@ export function unsetClient(key?: string) {
 
 export function createClient(input?: ConfigInput) {
     return new Client(input);
+}
+
+export function isClient(input: unknown): input is Client {
+    if (input instanceof Client) {
+        return true;
+    }
+
+    return verifyInstanceBySymbol(input, 'BaseClient');
 }
