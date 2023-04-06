@@ -6,7 +6,7 @@
  */
 
 import axios, { Axios } from 'axios';
-import type { Driver, RequestConfig } from '../type';
+import type { Driver, DriverRequestConfig } from '../type';
 import { isObject } from './object';
 
 export function isDriver(input: unknown) : input is Driver {
@@ -23,7 +23,7 @@ export function isDriver(input: unknown) : input is Driver {
 }
 
 export function createDriver(
-    input?: Driver | RequestConfig,
+    input?: Driver | DriverRequestConfig,
 ) : Driver {
     return isDriver(input) ?
         input :

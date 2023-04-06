@@ -6,8 +6,8 @@
  */
 
 import { createDriver, isClient } from 'hapic';
-import type { Client, Driver } from 'hapic';
-import type { Options } from '../type';
+import type { Client, Driver, DriverRequestConfig } from 'hapic';
+import type { Options } from '../config';
 import type { BaseAPIContext } from './type';
 
 export abstract class BaseAPI {
@@ -20,12 +20,13 @@ export abstract class BaseAPI {
     protected constructor(context?: BaseAPIContext) {
         context = context || {};
 
-        this.options = context.options || {};
+        this.setDriver(context.driver);
+        this.setOptions(context.options);
     }
 
     // -----------------------------------------------------------------------------------
 
-    setDriver(input: Client | Driver) {
+    setDriver(input?: Client | Driver | DriverRequestConfig) {
         if (isClient(input)) {
             this.driver = input.driver;
         } else {
@@ -33,8 +34,8 @@ export abstract class BaseAPI {
         }
     }
 
-    setOptions(options: Options) {
-        this.options = options;
+    setOptions(options?: Options) {
+        this.options = options || {};
     }
 
     setOption<K extends keyof Options>(key: K, value: Options[K]) {

@@ -21,7 +21,9 @@ export type TokenPasswordGrantParameters = {
     grant_type: 'password',
     username: string,
     password: string,
-    scope?: string | string[]
+    scope?: string | string[],
+    realm_id?: string,
+    realm_name?: string,
 } & ClientAuthenticationParameters;
 
 export type TokenAuthorizationGrantParameters = {

@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client as BaseClient, Driver, RequestConfig } from 'hapic';
+import type { Client as BaseClient, Driver, DriverRequestConfig } from 'hapic';
 import { createDriver, isClient } from 'hapic';
 import { Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
@@ -20,7 +20,7 @@ import type { OpenIDProviderMetadata } from './type';
  */
 export async function createClientWithOpenIDDiscoveryURL(
     url: string,
-    client?: BaseClient | RequestConfig | Driver,
+    client?: BaseClient | DriverRequestConfig | Driver,
 ) : Promise<Client> {
     let driver: Driver;
 

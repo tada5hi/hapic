@@ -5,12 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Headers, stringifyAuthorizationHeader } from 'hapic';
+import { DriverHeaders, stringifyAuthorizationHeader } from 'hapic';
 import { TokenAPI } from '../../../src';
 
 describe('src/domains/token', () => {
     it('should use inherited header over client credentials', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
         headers.set('Authorization', 'Bearer foo');
 
         const tokenAPI = new TokenAPI();
@@ -27,7 +27,7 @@ describe('src/domains/token', () => {
     });
 
     it('should use inherited header over header by option', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
         headers.set('Authorization', 'Bearer foo');
 
         const tokenAPI = new TokenAPI();
@@ -47,7 +47,7 @@ describe('src/domains/token', () => {
     });
 
     it('should use client-credentials for header', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
 
         const tokenAPI = new TokenAPI();
         tokenAPI.transformHeadersForRequest(headers, {
@@ -64,7 +64,7 @@ describe('src/domains/token', () => {
     });
 
     it('should use client-credentials for header', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
 
         const tokenAPI = new TokenAPI({
             options: {
@@ -85,7 +85,7 @@ describe('src/domains/token', () => {
     });
 
     it('should not use client-credentials for header', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
         headers.set('Authorization', 'Bearer foo');
 
         const tokenAPI = new TokenAPI();
@@ -99,7 +99,7 @@ describe('src/domains/token', () => {
     });
 
     it('should use options authorization header', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
 
         const tokenAPI = new TokenAPI();
         tokenAPI.transformHeadersForRequest(headers, { authorizationHeader: 'Bearer foo' });
@@ -107,7 +107,7 @@ describe('src/domains/token', () => {
     });
 
     it('should not use options authorization header', () => {
-        const headers = new ClientDriverHeaders();
+        const headers = new DriverHeaders();
         headers.set('Authorization', 'Bearer foo');
 
         const tokenAPI = new TokenAPI();

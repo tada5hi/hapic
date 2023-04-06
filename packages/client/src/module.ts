@@ -5,10 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { IAxiosRetryConfig } from 'axios-retry';
 import axiosRetry from 'axios-retry';
 import { buildConfig } from './config';
-import type { Driver, RequestConfig, Response } from './type';
+import type {
+    Driver, DriverRequestConfig, DriverResponse, DriverRetryConfig,
+} from './type';
 import type { ConfigInput } from './config';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
@@ -38,7 +39,7 @@ export class Client {
         }
 
         if (config.retry) {
-            let retryConfig : IAxiosRetryConfig = {};
+            let retryConfig : DriverRetryConfig = {};
 
             if (typeof config.retry !== 'boolean') {
                 retryConfig = config.retry;
@@ -61,7 +62,7 @@ export class Client {
      *
      * @return string
      */
-    public getBaseURL(config?: RequestConfig): string {
+    public getBaseURL(config?: DriverRequestConfig): string {
         if (this.driver.defaults.baseURL) {
             return this.driver.defaults.baseURL;
         }
@@ -154,7 +155,7 @@ export class Client {
      *
      * @param config
      */
-    public request<T = any, R = Response<T>, C = any>(config: RequestConfig<C>): Promise<R> {
+    public request<T = any, R = DriverResponse<T>, C = any>(config: DriverRequestConfig<C>): Promise<R> {
         return this.driver.request(config);
     }
 
@@ -166,7 +167,7 @@ export class Client {
      * @param url
      * @param config
      */
-    public get<T = any, R = Response<T>, C = any>(url: string, config?: RequestConfig<C>): Promise<R> {
+    public get<T = any, R = DriverResponse<T>, C = any>(url: string, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.get(url, config);
     }
 
@@ -178,7 +179,7 @@ export class Client {
      * @param url
      * @param config
      */
-    public delete<T = any, R = Response<T>, C = any>(url: string, config?: RequestConfig<C>): Promise<R> {
+    public delete<T = any, R = DriverResponse<T>, C = any>(url: string, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.delete(url, config);
     }
 
@@ -190,7 +191,7 @@ export class Client {
      * @param url
      * @param config
      */
-    public head<T = any, R = Response<T>, C = any>(url: string, config?: RequestConfig<C>): Promise<R> {
+    public head<T = any, R = DriverResponse<T>, C = any>(url: string, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.head(url, config);
     }
 
@@ -203,7 +204,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public post<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
+    public post<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.post(url, data, config);
     }
 
@@ -214,7 +215,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public postForm<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
+    public postForm<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.postForm(url, data, config);
     }
 
@@ -227,7 +228,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public put<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
+    public put<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.put(url, data, config);
     }
 
@@ -238,7 +239,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public putForm<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
+    public putForm<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.putForm(url, data, config);
     }
 
@@ -251,7 +252,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public patch<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
+    public patch<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.patch(url, data, config);
     }
 
@@ -262,7 +263,7 @@ export class Client {
      * @param data
      * @param config
      */
-    public patchForm<T = any, R = Response<T>, C = any>(url: string, data?: any, config?: RequestConfig<C>): Promise<R> {
+    public patchForm<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
         return this.driver.patchForm(url, data, config);
     }
 
@@ -275,7 +276,7 @@ export class Client {
      * @param onRejected
      */
     public mountResponseInterceptor(
-        onFulfilled: (value: Response<any>) => any | Promise<Response<any>>,
+        onFulfilled: (value: DriverResponse<any>) => any | Promise<DriverResponse<any>>,
         onRejected: (error: any) => any,
     ) : number {
         return this.driver.interceptors.response.use(onFulfilled, onRejected);
@@ -308,7 +309,7 @@ export class Client {
      * @param onRejected
      */
     public mountRequestInterceptor(
-        onFulfilled: (value: RequestConfig) => any | Promise<RequestConfig>,
+        onFulfilled: (value: DriverRequestConfig) => any | Promise<DriverRequestConfig>,
         onRejected: (error: any) => any,
     ) : number {
         return this.driver.interceptors.request.use(onFulfilled, onRejected);

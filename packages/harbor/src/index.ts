@@ -8,11 +8,9 @@
 import { createClient } from './instance';
 
 export * from './client';
+export * from './config';
 export * from './instance';
-export * from './project';
-export * from './project-repository';
-export * from './project-webhook';
-export * from './robot-account';
+export * from './domains';
 export * from './module';
 export * from './type';
 export * from './utils';

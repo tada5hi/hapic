@@ -6,9 +6,6 @@
  */
 
 import type { ConfigInput } from './config';
-import {
-    useConfig,
-} from './config';
 import { Client } from './module';
 import { hasOwnProperty, verifyInstanceBySymbol } from './utils';
 
@@ -38,8 +35,7 @@ export function useClient<T extends Client = Client>(key?: string) : T {
         return instanceMap[key] as T;
     }
 
-    const config = useConfig(key);
-    const instance = createClient(config);
+    const instance = createClient();
 
     instanceMap[key] = instance;
 

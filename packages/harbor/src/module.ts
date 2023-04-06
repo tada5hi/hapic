@@ -6,12 +6,15 @@
  */
 
 import { Client as BaseClient } from 'hapic';
-import type { ConfigInput, ConnectionOptions, SearchResult } from './type';
-import { RobotAccountAPI } from './robot-account';
-import { ProjectAPI } from './project';
-import { ProjectWebHookAPI } from './project-webhook';
-import { ProjectRepositoryAPI } from './project-repository';
-import { ProjectArtifactAPI } from './project-artifact';
+import type { ConfigInput, ConnectionOptions } from './config';
+import type { SearchResult } from './type';
+import {
+    ProjectAPI,
+    ProjectArtifactAPI,
+    ProjectRepositoryAPI,
+    RobotAccountAPI,
+} from './domains';
+import { ProjectWebHookAPI } from './domains/project-webhook';
 import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
@@ -28,9 +31,23 @@ export class Client extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
-        input = input || {};
-
         super(input);
+
+        this.project = new ProjectAPI(this.driver);
+        this.projectArtifact = new ProjectArtifactAPI(this.driver);
+        this.projectWebHook = new ProjectWebHookAPI(this.driver);
+        this.projectRepository = new ProjectRepositoryAPI(this.driver);
+        this.robotAccount = new RobotAccountAPI(this.driver);
+
+        this.setConfig(input);
+    }
+
+    // -----------------------------------------------------------------------------------
+
+    override setConfig(input?: ConfigInput) {
+        super.setConfig(input);
+
+        input = input || {};
 
         let connectionConfig : ConnectionOptions | undefined;
 
@@ -51,12 +68,6 @@ export class Client extends BaseClient {
                 password: connectionConfig.password,
             });
         }
-
-        this.project = new ProjectAPI(this.driver);
-        this.projectArtifact = new ProjectArtifactAPI(this.driver);
-        this.projectWebHook = new ProjectWebHookAPI(this.driver);
-        this.projectRepository = new ProjectRepositoryAPI(this.driver);
-        this.robotAccount = new RobotAccountAPI(this.driver);
     }
 
     // -----------------------------------------------------------------------------------

@@ -6,14 +6,14 @@
  */
 
 import type { IAxiosRetryConfig } from 'axios-retry';
-import type { Driver, RequestConfig } from '../type';
+import type { Driver, DriverRequestConfig } from '../type';
 
 export interface ClientInterface extends Function {
     new (config?: ConfigInput) : any;
 }
 
 export type Config = {
-    driver?: Driver | RequestConfig,
+    driver?: Driver | DriverRequestConfig,
     retry: IAxiosRetryConfig | boolean,
 };
 

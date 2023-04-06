@@ -5,19 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Driver } from 'hapic';
 import { Client as BaseClient } from 'hapic';
-import type {
-    ConfigInput,
-    Options,
-} from './type';
+import type { ConfigInput, Options } from './config';
 
 import { AuthorizeAPI, TokenAPI, UserInfoAPI } from './domains';
 
 export class Client extends BaseClient {
     override readonly '@instanceof' = Symbol.for('OAuth2Client');
 
-    public options : Options;
+    public options!: Options;
 
     public authorize: AuthorizeAPI;
 
@@ -30,42 +26,36 @@ export class Client extends BaseClient {
     constructor(input?: ConfigInput) {
         super(input);
 
-        input = input || {};
+        this.token = new TokenAPI({ driver: this.driver });
+        this.authorize = new AuthorizeAPI({ driver: this.driver });
+        this.userInfo = new UserInfoAPI({ driver: this.driver });
 
-        this.options = input.options || {};
-
-        this.token = new TokenAPI({
-            driver: this.driver,
-            options: this.options,
-        });
-
-        this.authorize = new AuthorizeAPI({
-            driver: this.driver,
-            options: this.options,
-        });
-
-        this.userInfo = new UserInfoAPI({
-            driver: this.driver,
-            options: this.options,
-        });
+        this.setConfig(input);
     }
 
     // -----------------------------------------------------------------------------------
 
-    /* istanbul ignore next */
-    setDriver(driver: Driver) {
-        super.setConfig({ driver });
+    override setConfig(input?: ConfigInput) {
+        super.setConfig(input);
 
-        this.authorize.setDriver(driver);
-        this.token.setDriver(driver);
-        this.userInfo.setDriver(driver);
-    }
+        input = input || {};
 
-    setOptions(options: Options) {
-        this.options = options;
+        if (!this.options || input.options) {
+            this.options = input.options || {};
+        }
 
-        this.authorize.setOptions(options);
-        this.token.setOptions(options);
-        this.userInfo.setOptions(options);
+        if (this.authorize) {
+            this.authorize.setDriver(this.driver);
+            this.authorize.setOptions(this.options);
+        }
+        if (this.token) {
+            this.token.setDriver(this.driver);
+            this.token.setOptions(this.options);
+        }
+
+        if (this.userInfo) {
+            this.userInfo.setOptions(this.options);
+            this.userInfo.setDriver(this.driver);
+        }
     }
 }

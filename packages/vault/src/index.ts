@@ -7,13 +7,13 @@
 
 import { createClient } from './instance';
 
+export * from './config';
 export * from './client';
+export * from './domains';
 export * from './instance';
 export * from './error';
 export * from './module';
-export * from './mount';
 export * from './type';
-export * from './key-value';
 export * from './utils';
 
 const client = createClient();

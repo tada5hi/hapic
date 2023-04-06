@@ -10,6 +10,7 @@ import type {
     AxiosError,
     AxiosInstance,
     AxiosRequestConfig,
+    AxiosRequestTransformer,
     AxiosResponse,
 } from 'axios';
 
@@ -17,19 +18,23 @@ import type {
     IAxiosRetryConfig,
 } from 'axios-retry';
 
-export interface RequestConfig<T = any> extends AxiosRequestConfig<T> {
+export interface DriverRequestConfig<T = any> extends AxiosRequestConfig<T> {
 
 }
 
-export interface Response<T = any, D = any> extends AxiosResponse<T, D> {
+export interface DriverRequestTransformer extends AxiosRequestTransformer {
 
 }
 
-export class Headers extends AxiosHeaders {
+export interface DriverResponse<T = any, D = any> extends AxiosResponse<T, D> {
 
 }
 
-export interface RetryConfig extends IAxiosRetryConfig {
+export class DriverHeaders extends AxiosHeaders {
+
+}
+
+export interface DriverRetryConfig extends IAxiosRetryConfig {
 
 }
 

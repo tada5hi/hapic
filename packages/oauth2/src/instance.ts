@@ -8,7 +8,6 @@
 import type { ConfigInput } from 'hapic';
 import {
     hasOwnProperty,
-    useConfig,
     verifyInstanceBySymbol,
 } from 'hapic';
 import { Client } from './module';
@@ -57,8 +56,7 @@ export function useClient(
         return instanceMap[key];
     }
 
-    const config = useConfig(key);
-    const instance = createClient(config);
+    const instance = createClient();
 
     instanceMap[key] = instance;
 

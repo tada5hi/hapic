@@ -6,12 +6,8 @@
  */
 
 import { Client as BaseClient } from 'hapic';
-import type {
-    ConfigInput,
-    ConnectionOptions,
-} from './type';
-import { MountAPI } from './mount';
-import { KeyValueAPI } from './key-value';
+import type { ConfigInput, ConnectionOptions } from './config';
+import { KeyValueAPI, MountAPI } from './domains';
 import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
@@ -21,8 +17,24 @@ export class Client extends BaseClient {
 
     public readonly keyValue: KeyValueAPI;
 
+    // -----------------------------------------------------------------------------------
+
     constructor(input?: ConfigInput) {
         super(input);
+
+        this.mount = new MountAPI(this.driver);
+        this.keyValue = new KeyValueAPI({
+            client: this.driver,
+            mountAPI: this.mount,
+        });
+
+        this.setConfig(input);
+    }
+
+    // -----------------------------------------------------------------------------------
+
+    override setConfig(input?: ConfigInput) {
+        super.setConfig(input);
 
         input = input || {};
 
@@ -44,12 +56,10 @@ export class Client extends BaseClient {
             this.setHeader('X-Vault-Token', connectionOptions.token);
         }
 
-        this.mount = new MountAPI(this.driver);
-        this.keyValue = new KeyValueAPI({
-            client: this.driver,
-            mountAPI: this.mount,
-        });
+        return this;
     }
+
+    // -----------------------------------------------------------------------------------
 
     setNamespace(namespace: string) {
         this.setHeader('X-Vault-Namespace', namespace);

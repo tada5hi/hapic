@@ -19,7 +19,7 @@ import type {
 import {
     MountKeyValueVersion,
 } from '../mount';
-import type { ResourceResponse } from '../type';
+import type { ResourceResponse } from '../../type';
 
 export class KeyValueAPI {
     protected client: Driver;

@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestConfig } from 'hapic';
+import type { DriverRequestConfig } from 'hapic';
 import {
-    Client,
+    createDriver,
 } from 'hapic';
 import { TokenAPI } from '../../../src';
 import type { JwtPayload } from '../../../src';
 
-const client = new Client();
+const driver = createDriver();
 const postFn = jest.fn();
 
 const payload : JwtPayload = {
@@ -38,14 +38,14 @@ const payload : JwtPayload = {
 postFn.mockImplementation((
     _url: string,
     _data?: any,
-    config?: RequestConfig,
+    config?: DriverRequestConfig,
 ) => Promise.resolve({ data: payload, request: { config } }));
 
-client.post = postFn;
+driver.post = postFn;
 
 describe('src/domains/token', () => {
     it('should introspect token', async () => {
-        const tokenAPI = new TokenAPI({ driver: client });
+        const tokenAPI = new TokenAPI({ driver });
 
         const response = await tokenAPI.introspect({ token: 'foo' });
         expect(response).toEqual(payload);

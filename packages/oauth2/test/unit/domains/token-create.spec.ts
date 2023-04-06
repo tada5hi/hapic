@@ -5,12 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestConfig } from 'hapic';
-import { createClient } from 'hapic';
+import type { DriverRequestConfig } from 'hapic';
+import { createDriver } from 'hapic';
 import type { TokenGrantParameters, TokenGrantResponse } from '../../../src';
 import { TokenAPI } from '../../../src';
 
-const client = createClient();
+const driver = createDriver();
 const postFn = jest.fn();
 
 const tokenGrantResponse : TokenGrantResponse = {
@@ -26,10 +26,10 @@ const tokenGrantResponse : TokenGrantResponse = {
 postFn.mockImplementation((
     _url: string,
     _data?: any,
-    config?: RequestConfig,
+    config?: DriverRequestConfig,
 ) => Promise.resolve({ data: tokenGrantResponse, request: { config } }));
 
-client.post = postFn;
+driver.post = postFn;
 
 const redirectUri = 'https://example.com/redirect';
 
@@ -87,7 +87,7 @@ describe('src/domains/token', () => {
             },
         });
 
-        api.setDriver(client);
+        api.setDriver(driver);
 
         let token = await api.createWithRefreshToken({ refresh_token: 'refresh_token' });
         expect(token).toEqual({ ...tokenGrantResponse });
@@ -116,7 +116,7 @@ describe('src/domains/token', () => {
             },
         });
 
-        api.setDriver(client);
+        api.setDriver(driver);
 
         const token = await api.createWithPasswordGrant({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...tokenGrantResponse });

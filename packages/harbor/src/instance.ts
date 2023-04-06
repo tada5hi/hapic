@@ -8,12 +8,11 @@
 import type { ConfigInput } from 'hapic';
 import {
     hasOwnProperty,
-    useConfig,
     verifyInstanceBySymbol,
 } from 'hapic';
 import { Client } from './module';
 
-const instanceMap: Record<string, Client> = {};
+const instances: Record<string, Client> = {};
 
 /**
  * Verify if a harbor client singleton instance exists.
@@ -23,7 +22,7 @@ const instanceMap: Record<string, Client> = {};
 export function hasClient(
     key?: string,
 ) : boolean {
-    return hasOwnProperty(instanceMap, key || 'default');
+    return hasOwnProperty(instances, key || 'default');
 }
 
 /**
@@ -38,7 +37,7 @@ export function setClient(
 ) : Client {
     key = key || 'default';
 
-    instanceMap[key] = client;
+    instances[key] = client;
 
     return client;
 }
@@ -53,14 +52,13 @@ export function useClient(
 ) : Client {
     key = key || 'default';
 
-    if (Object.prototype.hasOwnProperty.call(instanceMap, key)) {
-        return instanceMap[key];
+    if (Object.prototype.hasOwnProperty.call(instances, key)) {
+        return instances[key];
     }
 
-    const config = useConfig(key);
-    const instance = createClient(config);
+    const instance = createClient();
 
-    instanceMap[key] = instance;
+    instances[key] = instance;
 
     return instance;
 }
@@ -72,8 +70,8 @@ export function useClient(
  */
 export function unsetClient(key?: string) {
     key = key || 'default';
-    if (hasOwnProperty(instanceMap, key)) {
-        delete instanceMap[key];
+    if (hasOwnProperty(instances, key)) {
+        delete instances[key];
     }
 }
 

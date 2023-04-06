@@ -7,7 +7,8 @@
 
 import { stringifyAuthorizationHeader } from 'hapic';
 import type {
-    Headers,
+    DriverHeaders,
+    DriverRequestTransformer,
 } from 'hapic';
 import type {
     JwtPayload,
@@ -105,17 +106,7 @@ export class TokenAPI extends BaseAPI {
             (this.options.tokenEndpoint || '/token'),
             urlSearchParams,
             {
-                transformRequest: /* istanbul ignore next */ (data, headers) => {
-                    options = options || {};
-                    if (!options.clientId) {
-                        options.clientId = parameters.client_id;
-                        options.clientSecret = parameters.client_secret;
-                    }
-
-                    this.transformHeadersForRequest(headers, options);
-
-                    return data;
-                },
+                transformRequest: this.buildRequestTransformers(parameters, options),
             },
         );
 
@@ -156,22 +147,40 @@ export class TokenAPI extends BaseAPI {
             this.options.introspectionEndpoint || '/token/introspect',
             urlSearchParams,
             {
-                transformRequest: /* istanbul ignore next */ (data, headers) => {
-                    options = options || {};
-
-                    if (!options.clientId) {
-                        options.clientId = parameters.client_id;
-                        options.clientSecret = parameters.client_secret;
-                    }
-
-                    this.transformHeadersForRequest(headers, options);
-
-                    return data;
-                },
+                transformRequest: this.buildRequestTransformers(parameters, options),
             },
         );
 
         return data;
+    }
+
+    protected buildRequestTransformers(
+        parameters: ClientAuthenticationParameters,
+        options?: TokenBaseOptions,
+    ) : DriverRequestTransformer[] {
+        const transformers : DriverRequestTransformer[] = [];
+        if (this.driver.defaults.transformRequest) {
+            if (Array.isArray(this.driver.defaults.transformRequest)) {
+                transformers.push(...this.driver.defaults.transformRequest);
+            } else {
+                transformers.push(this.driver.defaults.transformRequest);
+            }
+        }
+
+        transformers.push(/* istanbul ignore next */ (data, headers) => {
+            options = options || {};
+
+            if (!options.clientId) {
+                options.clientId = parameters.client_id;
+                options.clientSecret = parameters.client_secret;
+            }
+
+            this.transformHeadersForRequest(headers, options);
+
+            return data;
+        });
+
+        return transformers;
     }
 
     /**
@@ -181,7 +190,7 @@ export class TokenAPI extends BaseAPI {
      * @param options
      */
     transformHeadersForRequest(
-        headers: Headers,
+        headers: DriverHeaders,
         options?: TokenBaseOptions,
     ) : void {
         options = options || {};

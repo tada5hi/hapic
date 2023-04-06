@@ -32,38 +32,45 @@ To create a configuration for the  `Client`, a configuration must be specified,
 like described in the following:
 
 ```typescript
-import { setConfig } from "hapic";
+import { Client } from "hapic";
 
-setConfig({
+const client = new Client({
     driver: {
         baseURL: 'http://localhost:3000/',
         withCredentials: true,
     },
-}, 'key')
+    retry: false
+});
 ```
 
-A configuration is always identified by a `key`,
-so multiple configurations can be registered. The default key is named: `default`
-
-In the upper example, the **driver** property is used to pass information to the underneath driver (axios).
+In the upper example, the **driver** property is used to pass
+information to the underneath driver [axios](https://github.com/axios/axios).
 
 ### Singleton
 
-A singleton instance associated for a given configuration key,
-can be acquired like described in the following:
+A singleton instance can be associated to a key, to handle multiple singleton instances.
 
-**`Client`**
+**`Registration`**
+```typescript
+import { Client, setClient } from "hapic";
+
+const client = new Client({
+    //...
+});
+
+// This will register the client for the key "default",
+// which is also the default key.
+setClient(client, 'default');
+
+```
+
+**`Access`**
 ```typescript
 import { useClient } from 'hapic';
 
-const client = useClient('key');
+const client = useClient('default');
 
-const response = await client.get('users');
-// { data: {...}, ... }
-
-data = await client.post('users', { name: 'Hans' });
-console.log(data);
-// { id: 1, name, 'Hans', .... }
+// do something with the client
 ```
 
 ### Request

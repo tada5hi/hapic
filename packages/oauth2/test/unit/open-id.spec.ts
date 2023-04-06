@@ -9,7 +9,7 @@ import { createDriver } from 'hapic';
 import type { OpenIDProviderMetadata } from '../../src';
 import { buildOpenIDDiscoveryURL, createClientWithOpenIDDiscoveryURL } from '../../src';
 
-const driver = createClientDriverInstance();
+const driver = createDriver();
 const fn = jest.fn();
 
 fn.mockReturnValue({

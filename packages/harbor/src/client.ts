@@ -10,23 +10,18 @@ import {
 } from 'hapic';
 
 export type {
-    RequestConfig,
-    Response,
+    DriverRequestConfig,
+    DriverResponse,
     ClientInterface,
     Driver,
     DriverError,
-    RetryConfig,
+    DriverRetryConfig,
 
     ErrorCode,
 } from 'hapic';
 export {
-    buildConfig,
-    hasConfig,
-    setConfig,
-    unsetConfig,
-    useConfig,
-
     isRequestError,
+    isNetworkError,
     isDriver,
     createDriver,
 } from 'hapic';
