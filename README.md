@@ -12,25 +12,72 @@
 **Table of Contents**
 
 - [Packages](#packages)
+  - [Base](#base)
+  - [Harbor](#harbor)
+  - [OAuth2](#oauth2)
+  - [Vault](#vault)
 - [Documentation](#documentation)
 - [License](#license)
 
 ## Packages
 The repository contains the following packages:
 
-- **hapic**: A client, based on axios.
-- **@hapic/harbor**: A client for the harbor image registry.
-- **@hapic/oauth2**: A client for an OAuth2 authorization server.
-- **@hapic/vault**: A client for the vault secret storage.
+### Base
 
-## Documentation
+**`hapic`**
 
----
-**NOTE**
+This client provides a convenient way to make HTTP requests to various API endpoints,
+such as POST, GET, PUT, DELETE, and more. 
+With this client, developers can easily integrate with multiple APIs and services using
+a common set of abstractions.
+The client is extended by the [Harbor](#harbor), [Vault](#vault), and [OAuth2](#oauth2) clients, 
+which provide additional functionality specific to those services.
 
-The documentation is coming soon...
+### Harbor
 
----
+**`@hapic/harbor`**
+
+This client provides an easy way to interact with various domain endpoints such as repositories, projects, and more.
+The Harbor Image Registry is an open-source platform that enables users to store, manage, and distribute container images. 
+The client offers a variety of abstractions to simplify interaction with the platform and speed up the development process.
+Whether you are an experienced developer or new to the world of container images,
+this API client is a powerful tool to get the most out of the platform.
+
+[Documentation](./packages/harbor)
+
+### OAuth2
+
+**`@hapic/oauth2`**
+
+This client provides an easy way to authenticate and authorize **users**, **clients**, **robots**, ...
+within your applications using OAuth2 and OpenID Connect standards. 
+An OAuth2/OpenID server acts as a central hub for user authentication and authorization,
+allowing developers to secure their applications without having to build authentication 
+and authorization from scratch.
+With this API client, developers can easily interact with the server's endpoints, 
+such as authentication flows, token issuance, and user management. 
+The client offers a range of abstractions to simplify interactions with the server 
+and speed up the development process. 
+Whether you are an experienced developer or new to OAuth2/OpenID,
+this API client is a powerful tool to help you implement secure user authentication 
+and authorization in your applications.
+
+[Documentation](./packages/oauth2)
+
+### Vault
+
+**`@hapic/vault`**
+
+This client provides a convenient way to interact with various endpoints in Vault, 
+such as secrets, engines, and more. 
+Vault is a popular open-source tool used for securely storing and accessing sensitive data, 
+such as passwords, API keys, and certificates. 
+The client offers a range of abstractions to simplify interactions with Vault and
+streamline the development process. 
+Whether you are a seasoned developer or new to the world of secrets management, 
+this API client is a powerful tool to help you get the most out of Vault.
+
+[Documentation](./packages/vault)
 
 ## License
 
