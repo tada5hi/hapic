@@ -12,9 +12,9 @@ import {
     ProjectAPI,
     ProjectArtifactAPI,
     ProjectRepositoryAPI,
+    ProjectWebHookAPI,
     RobotAccountAPI,
 } from './domains';
-import { ProjectWebHookAPI } from './domains/project-webhook';
 import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {

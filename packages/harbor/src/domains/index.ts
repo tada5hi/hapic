@@ -8,4 +8,5 @@
 export * from './project';
 export * from './project-artifact';
 export * from './project-repository';
+export * from './project-webhook';
 export * from './robot-account';
