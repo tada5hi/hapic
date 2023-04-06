@@ -27,11 +27,11 @@ The repository contains the following packages:
 **`hapic`**
 
 This client provides a convenient way to make HTTP requests to various API endpoints,
-such as POST, GET, PUT, DELETE, and more. 
-With this client, developers can easily integrate with multiple APIs and services using
-a common set of abstractions.
+such as POST, GET, PUT, DELETE, and more.
 The client is extended by the [Harbor](#harbor), [Vault](#vault), and [OAuth2](#oauth2) clients, 
 which provide additional functionality specific to those services.
+
+[Documentation](./packages/client)
 
 ### Harbor
 
@@ -50,16 +50,13 @@ this API client is a powerful tool to get the most out of the platform.
 **`@hapic/oauth2`**
 
 This client provides an easy way to authenticate and authorize **users**, **clients**, **robots**, ...
-within your applications using OAuth2 and OpenID Connect standards. 
-An OAuth2/OpenID server acts as a central hub for user authentication and authorization,
-allowing developers to secure their applications without having to build authentication 
-and authorization from scratch.
+using OAuth2 and OpenID Connect standards.
 With this API client, developers can easily interact with the server's endpoints, 
 such as authentication flows, token issuance, and user management. 
 The client offers a range of abstractions to simplify interactions with the server 
 and speed up the development process. 
 Whether you are an experienced developer or new to OAuth2/OpenID,
-this API client is a powerful tool to help you implement secure user authentication 
+this API client is a powerful tool to help you implement secure **users**, **clients** & **robots** authentication 
 and authorization in your applications.
 
 [Documentation](./packages/oauth2)

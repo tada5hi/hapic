@@ -6,7 +6,15 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hapic/badge.svg)](https://snyk.io/test/github/Tada5hi/hapic)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
-This package contains an API-Client for an authorization server based on OAuth2.
+This client provides an easy way to authenticate and authorize **users**, **clients**, **robots**, ...
+using OAuth2 and OpenID Connect standards.
+With this API client, developers can easily interact with the server's endpoints,
+such as authentication flows, token issuance, and user management.
+The client offers a range of abstractions to simplify interactions with the server
+and speed up the development process.
+Whether you are an experienced developer or new to OAuth2/OpenID,
+this API client is a powerful tool to help you implement secure **users**, **clients** & **robots** authentication
+and authorization in your applications.
 
 **Table of Contents**
 

@@ -7,6 +7,13 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
 This package contains a simple API-Client based on axios.
+IT provides a convenient way to make HTTP requests to various API endpoints,
+such as POST, GET, PUT, DELETE, and more.
+
+The client is extended by the [Harbor](https://www.npmjs.com/package/@hapic/harbor),
+[Vault](https://www.npmjs.com/package/@hapic/vault),
+and [OAuth2](https://www.npmjs.com/package/@hapic/oauth2) clients,
+which provide additional functionality specific to those services.
 
 **Table of Contents**
 
