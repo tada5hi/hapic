@@ -33,9 +33,4 @@ export type MountSSHPayload = {
     generate_signing_key?: boolean,
 };
 
-export type MountPayload<T extends `${MountType}`> =
-    T extends `${MountType.KEY_VALUE}` ?
-        MountKeyValuePayload :
-        T extends `${MountType.SSH}` ?
-            MountSSHPayload :
-            never;
+export type MountPayload = MountKeyValuePayload | MountSSHPayload;

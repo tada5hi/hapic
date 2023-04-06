@@ -8,7 +8,6 @@
 import type { Driver } from 'hapic';
 import { isRequestError } from 'hapic';
 import type { MountPayload } from './type';
-import type { MountType } from './constants';
 
 export class MountAPI {
     protected client: Driver;
@@ -17,13 +16,13 @@ export class MountAPI {
         this.client = client;
     }
 
-    async create(data: MountPayload<MountType.KEY_VALUE>) {
+    async create(data: MountPayload) {
         const response = await this.client.post(`sys/mounts/${data.path}`, data);
 
         return response.data;
     }
 
-    async delete(data: MountPayload<MountType.KEY_VALUE> | string) {
+    async delete(data: MountPayload | string) {
         const path : string = typeof data === 'string' ?
             data :
             data.path;
