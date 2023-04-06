@@ -32,7 +32,7 @@ export class MountAPI {
             await this.client.delete(`sys/mounts/${path}`);
         } catch (e) {
             if (
-                isClientError(e) &&
+                isRequestError(e) &&
                 e.response &&
                 e.response.status === 404
             ) {

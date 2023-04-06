@@ -40,7 +40,7 @@ export class KeyValueAPI {
             return response.data;
         } catch (e) {
             if (
-                isClientError(e) &&
+                isRequestError(e) &&
                 e.response &&
                 e.response.status === 404
             ) {
@@ -67,7 +67,7 @@ export class KeyValueAPI {
             return data;
         } catch (e) {
             if (
-                isClientError(e) &&
+                isRequestError(e) &&
                 e.response &&
                 e.response.status === 404
             ) {
@@ -90,7 +90,7 @@ export class KeyValueAPI {
             await this.client.delete(buildKeyValueURLPath(options.version, engine, key));
         } catch (e) {
             if (
-                isClientError(e) &&
+                isRequestError(e) &&
                 e.response &&
                 e.response.status === 404
             ) {

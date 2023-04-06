@@ -42,7 +42,7 @@ export class ProjectAPI {
                 .post('projects', payload);
         } catch (e) {
             if (
-                isClientError(e) &&
+                isRequestError(e) &&
                 e.response &&
                 e.response.status === 409
             ) {

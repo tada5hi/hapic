@@ -21,13 +21,13 @@ import type { OpenIDProviderMetadata } from './type';
 export async function createClientWithOpenIDDiscoveryURL(
     url: string,
     client?: BaseClient | RequestConfig | Driver,
-) {
+) : Promise<Client> {
     let driver: Driver;
 
     if (isClient(client)) {
         driver = client.driver;
     } else {
-        driver = createClientDriverInstance(client);
+        driver = createDriver(client);
     }
 
     const { data }: { data: OpenIDProviderMetadata } = await driver.get(url);

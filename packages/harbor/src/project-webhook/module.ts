@@ -63,7 +63,7 @@ export class ProjectWebHookAPI {
                 .post(`projects/${projectIdOrName}/webhook/policies`, webhook, headers);
         } catch (e) {
             if (
-                isClientError(e) &&
+                isRequestError(e) &&
                 e.response &&
                 e.response.status === 409
             ) {
