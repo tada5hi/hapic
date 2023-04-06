@@ -5,30 +5,33 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client, ClientDriverInstance } from 'hapic';
+import { scopeToArray, scopeToString } from '../../utils';
+import type { BaseAPIContext } from '../type';
 import type { AuthorizeParametersInput } from './type';
-import type { ClientOptions } from '../../type';
-import { BaseOAuth2API } from '../base';
+import { BaseAPI } from '../base';
 
-export class AuthorizeAPI extends BaseOAuth2API {
+export class AuthorizeAPI extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
-    constructor(
-        client: Client | ClientDriverInstance,
-        options?: ClientOptions,
-    ) {
-        super(client, options);
+    constructor(context?: BaseAPIContext) {
+        super(context);
     }
 
-    buildURL(parameters?: Partial<AuthorizeParametersInput>) {
+    /**
+     * Build authorize url based on
+     * input parameters.
+     *
+     * @param parameters
+     */
+    buildURL(parameters?: Partial<AuthorizeParametersInput>) : string {
         parameters = parameters || {};
 
         let baseURL : string | undefined;
         let input : string | undefined;
 
-        if (this.options.authorization_endpoint) {
-            input = this.options.authorization_endpoint;
+        if (this.options.authorizationEndpoint) {
+            input = this.options.authorizationEndpoint;
         } else {
-            const clientURL = this.client.getUri();
+            const clientURL = this.driver.getUri();
             if (clientURL) {
                 baseURL = clientURL;
             }
@@ -37,34 +40,30 @@ export class AuthorizeAPI extends BaseOAuth2API {
         const url = new URL(input || 'authorize', baseURL);
         url.searchParams.set('response_type', parameters.response_type || 'code');
 
-        if (this.options.client_id) {
-            url.searchParams.set('client_id', this.options.client_id);
+        if (this.options.clientId) {
+            url.searchParams.set('client_id', this.options.clientId);
         }
 
-        const redirectUri = parameters.redirect_uri || this.options.redirect_uri;
+        const redirectUri = parameters.redirect_uri || this.options.redirectUri;
         if (redirectUri) {
             url.searchParams.set('redirect_uri', redirectUri);
         }
 
         const scope : string[] = [];
         if (this.options.scope) {
-            const input = Array.isArray(this.options.scope) ?
-                this.options.scope :
-                this.options.scope.split(' ');
+            const input = scopeToArray(this.options.scope);
 
             scope.push(...input);
         }
 
         if (parameters.scope) {
-            const input = Array.isArray(parameters.scope) ?
-                parameters.scope :
-                parameters.scope.split(' ');
+            const input = scopeToArray(parameters.scope);
 
             scope.push(...input);
         }
 
         if (scope.length > 0) {
-            url.searchParams.set('scope', scope.join(' '));
+            url.searchParams.set('scope', scopeToString(scope));
         }
 
         return url.href;

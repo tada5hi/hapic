@@ -5,6 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { AuthorizationHeader } from 'hapic';
+
 export type ClientAuthenticationParameters = {
     client_id?: string,
     client_secret?: string,
@@ -67,3 +69,19 @@ export type TokenGrantResponse = {
 
     scope?: string
 };
+
+// ------------------------------------------------------------------
+
+export type TokenBaseOptions = {
+    authorizationHeaderInherit?: boolean,
+    authorizationHeader?: string | AuthorizationHeader,
+    clientId?: string,
+    clientSecret?: string
+};
+
+// ------------------------------------------------------------------
+
+export type TokenIntrospectParameters = {
+    token?: string,
+    token_type_hint?: string,
+} & ClientAuthenticationParameters;

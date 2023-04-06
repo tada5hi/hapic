@@ -5,32 +5,43 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client, ClientDriverInstance } from 'hapic';
-import type { ClientOptions } from '../../type';
-import { BaseOAuth2API } from '../base';
+import type { AuthorizationHeader } from 'hapic';
+import { stringifyAuthorizationHeader } from 'hapic';
+import { BaseAPI } from '../base';
+import type { BaseAPIContext } from '../type';
 
-export class UserinfoAPI extends BaseOAuth2API {
+export class UserInfoAPI extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
-    constructor(
-        client: Client | ClientDriverInstance,
-        options?: ClientOptions,
-    ) {
-        super(client, options);
+    constructor(context?: BaseAPIContext) {
+        super(context);
     }
 
     // -----------------------------------------------------------------------------------
 
     /**
      * @throws Error
-     * @param token
+     * @param header
      */
-    async get<T extends Record<string, any>>(token: string) : Promise<T> {
-        const { data } = await this.client.get(
-            (this.options.userinfo_endpoint || '/userinfo'),
+    async get<T extends Record<string, any> = Record<string, any>>(
+        header?: string | AuthorizationHeader,
+    ) : Promise<T> {
+        const headers : Record<string, string> = {};
+        if (header) {
+            if (typeof header === 'string') {
+                if (header.indexOf(' ') === -1) {
+                    headers.Authroization = `Bearer ${header}`;
+                } else {
+                    headers.Authorization = header;
+                }
+            } else {
+                headers.Authorization = stringifyAuthorizationHeader(header);
+            }
+        }
+
+        const { data } = await this.driver.get(
+            (this.options.userinfoEndpoint || '/userinfo'),
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers,
             },
         );
 

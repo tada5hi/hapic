@@ -5,36 +5,33 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client, ClientDriverInstance } from 'hapic';
-import type { ClientOptions } from '../type';
-import { hasOwnProperty } from '../utils';
+import { Client, createClientDriverInstance } from 'hapic';
+import type { ClientDriverInstance } from 'hapic';
+import type { Options } from '../type';
+import type { BaseAPIContext } from './type';
 
-export abstract class BaseOAuth2API {
-    protected options : ClientOptions;
+export abstract class BaseAPI {
+    protected options : Options;
 
-    protected client : Client | ClientDriverInstance;
+    protected driver : Client | ClientDriverInstance;
 
     // -----------------------------------------------------------------------------------
 
-    protected constructor(client: Client | ClientDriverInstance, options?: ClientOptions) {
-        this.client = client;
+    protected constructor(context?: BaseAPIContext) {
+        context = context || {};
 
-        if (options) {
-            this.options = options;
-        } else if (hasOwnProperty(client, 'options')) {
-            this.options = client.options as ClientOptions;
+        if (context.driver instanceof Client) {
+            this.driver = context.driver;
         } else {
-            this.options = options || {};
+            this.driver = createClientDriverInstance(context.driver);
         }
+
+        this.options = context.options || {};
     }
 
     // -----------------------------------------------------------------------------------
 
-    setClient(client: Client | ClientDriverInstance) {
-        this.client = client;
-    }
-
-    setOptions(options: ClientOptions) {
-        this.options = options;
+    setDriver(client: Client | ClientDriverInstance) {
+        this.driver = client;
     }
 }

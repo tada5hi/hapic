@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { AxiosHeaders } from 'axios';
 import type {
     AxiosError,
     AxiosInstance,
@@ -25,6 +26,10 @@ export interface ClientResponse<T = any, D = any> extends AxiosResponse<T, D> {
 }
 
 export interface ClientDriverInstance extends AxiosInstance {
+
+}
+
+export class ClientDriverHeaders extends AxiosHeaders {
 
 }
 

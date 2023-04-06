@@ -10,9 +10,6 @@ import {
 } from 'hapic';
 
 export type {
-    Config,
-    ConfigInput,
-
     ClientRequestConfig,
     ClientResponse,
     ClientInterface,

@@ -8,11 +8,14 @@
 import { createClient } from './instance';
 
 export * from './client';
+export * from './constants';
 export * from './instance';
 export * from './domains';
+export * from './open-id';
 export * from './module';
 export * from './type';
 export * from './utils';
 
 const client = createClient();
 export default client;
+export { OpenIDProviderMetadata } from './open-id';
