@@ -18,4 +18,3 @@ export * from './utils';
 
 const client = createClient();
 export default client;
-export { OpenIDProviderMetadata } from './open-id';
