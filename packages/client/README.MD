@@ -1,4 +1,4 @@
-# hapic 🐯
+# hapic 🚀
 
 [![npm version](https://badge.fury.io/js/hapic.svg)](https://badge.fury.io/js/hapic)
 [![main](https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg)](https://github.com/Tada5hi/hapic/actions/workflows/main.yml)
