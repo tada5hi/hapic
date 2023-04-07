@@ -32,10 +32,10 @@ describe('src/module', () => {
             type: 'Bearer',
             token: 'foo',
         });
-        expect(client.getHeader(HeaderName.AUTHORIZATION)).toEqual('Bearer foo');
+        expect(client.getAuthorizationHeader()).toEqual('Bearer foo');
 
         client.unsetAuthorizationHeader();
-        expect(client.getHeader(HeaderName.AUTHORIZATION)).toBeFalsy();
+        expect(client.getAuthorizationHeader()).toBeFalsy();
     });
 
     it('should get baseURL', () => {

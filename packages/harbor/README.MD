@@ -45,11 +45,11 @@ const client = new Client({
         withCredentials: true,
     },
     conenctionOptions: {
-        host: 'https://example.com',
+        host: 'https://example.com/api/v2.0/',
         user: 'admin',
         password: 'start123'
     },
-    // connectionString: 'admin:start123@https://example.com'
+    // connectionString: 'admin:start123@https://example.com/api/v2.0/'
 });
 ```
 
