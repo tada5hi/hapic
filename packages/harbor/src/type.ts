@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Project, SearchRepository } from './domains';
+import type { Project, ProjectRepositorySearchResult } from './domains';
 
 export type SearchResult = {
     project: Project[],
-    repository: SearchRepository[]
+    repository: ProjectRepositorySearchResult[]
 };

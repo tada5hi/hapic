@@ -8,7 +8,12 @@
 import type { Driver } from 'hapic';
 import { isRequestError } from 'hapic';
 import { merge } from 'smob';
-import type { ProjectWebhook } from './type';
+import type {
+    ProjectWebhook,
+    ProjectWebhookDeleteOptions,
+    ProjectWebhookFindOneOptions,
+    ProjectWebhookSaveOptions,
+} from './type';
 
 export class ProjectWebHookAPI {
     protected client: Driver;
@@ -17,74 +22,92 @@ export class ProjectWebHookAPI {
         this.client = client;
     }
 
-    async find(
-        projectIdOrName: number | string,
-        isProjectName: boolean,
-        name : string,
-    ): Promise<ProjectWebhook | undefined> {
-        const headers: Record<string, any> = {};
+    async delete(options: ProjectWebhookDeleteOptions) : Promise<any> {
+        const webhook = await this.findOne(options);
 
-        if (isProjectName) {
-            headers['X-Is-Resource-Name'] = true;
-        }
+        if (typeof webhook !== 'undefined') {
+            const response = await this.client
+                .delete(`projects/${webhook.project_id}/webhook/policies/${webhook.id}`);
 
-        const { data } = await this.client
-            .get(`projects/${projectIdOrName}/webhook/policies`, headers);
-
-        const policies = data.filter((policy: { name: string; }) => policy.name === name);
-
-        if (policies.length === 1) {
-            return policies[0];
+            return response.data;
         }
 
         return undefined;
     }
 
-    async save(
-        projectIdOrName: number | string,
-        isProjectName: boolean,
+    async create(
         data: Partial<ProjectWebhook>,
-    ): Promise<ProjectWebhook> {
+        options: ProjectWebhookSaveOptions,
+    ) : Promise<any> {
         const headers: Record<string, any> = {};
 
-        if (isProjectName) {
+        if (options.isProjectName) {
             headers['X-Is-Resource-Name'] = true;
         }
 
-        const webhook: ProjectWebhook = merge({
-            name: (Math.random() + 1).toString(36).substring(7),
-            enabled: true,
-            targets: [],
-            event_types: ['PUSH_ARTIFACT'],
-        }, data);
+        const webhook: ProjectWebhook = this.buildWebhook(data);
+
+        const response = await this.client
+            .post(`projects/${options.projectIdOrName}/webhook/policies`, webhook, headers);
+
+        return response.data;
+    }
+
+    async save(
+        data: Partial<ProjectWebhook>,
+        options: ProjectWebhookSaveOptions,
+    ): Promise<any> {
+        let response : any;
 
         try {
-            await this.client
-                .post(`projects/${projectIdOrName}/webhook/policies`, webhook, headers);
+            response = await this.create(data, options);
         } catch (e) {
             if (
                 isRequestError(e) &&
                 e.response &&
                 e.response.status === 409
             ) {
-                await this.delete(projectIdOrName, isProjectName, webhook.name);
-
-                await this.client
-                    .post(`projects/${projectIdOrName}/webhook/policies`, webhook, headers);
+                await this.delete(options);
+                response = await this.create(data, options);
             } else {
                 throw e;
             }
         }
 
-        return webhook;
+        return response;
     }
 
-    async delete(projectIdOrName: number | string, isProjectName: boolean, name: string) {
-        const webhook = await this.find(projectIdOrName, isProjectName, name);
+    async findOne(options: ProjectWebhookFindOneOptions): Promise<ProjectWebhook | undefined> {
+        const headers: Record<string, any> = {};
 
-        if (typeof webhook !== 'undefined') {
-            await this.client
-                .delete(`projects/${webhook.project_id}/webhook/policies/${webhook.id}`);
+        if (options.isProjectName) {
+            headers['X-Is-Resource-Name'] = true;
         }
+
+        const { data } = await this.client
+            .get(`projects/${options.projectIdOrName}/webhook/policies`, headers);
+
+        if (!Array.isArray(data) || data.length === 0) {
+            return undefined;
+        }
+
+        const index = data.findIndex((
+            policy: { name: string; },
+        ) => policy.name === options.name);
+
+        if (index === -1) {
+            return undefined;
+        }
+
+        return data[index];
+    }
+
+    protected buildWebhook(data: Partial<ProjectWebhook>) : ProjectWebhook {
+        return merge(data, {
+            name: (Math.random() + 1).toString(36).substring(7),
+            enabled: true,
+            targets: [],
+            event_types: ['PUSH_ARTIFACT'],
+        });
     }
 }

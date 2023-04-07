@@ -5,19 +5,19 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RepositoryNameParsed } from './type';
+import type { ProjectRepositoryNameParsed } from './type';
 
-export function parseProjectRepositoryName(name: string) : RepositoryNameParsed {
-    const parts = name.split('/');
-    const projectName = parts.shift();
-    const repositoryName = parts.join('/');
-
-    if (!projectName) {
-        throw new Error('The project name could not parsed.');
+export function parseProjectRepositoryName(name: string) : ProjectRepositoryNameParsed {
+    const index = name.indexOf('/');
+    if (index === -1) {
+        throw new Error('The project repository name could not parsed.');
     }
 
+    const projectName = name.substring(0, index);
+    const repositoryName = name.substring(projectName.length + 1);
+
     return {
-        project_name: projectName,
-        repository_name: repositoryName,
+        projectName,
+        repositoryName,
     };
 }

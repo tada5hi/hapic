@@ -6,7 +6,12 @@
  */
 
 import type { Driver } from 'hapic';
-import type { ProjectArtifact, ProjectArtifactLabel } from './type';
+import type {
+    ProjectArtifact,
+    ProjectArtifactCopyElement,
+    ProjectArtifactDeleteOptions,
+    ProjectArtifactGetManyOptions,
+} from './type';
 
 export class ProjectArtifactAPI {
     protected client: Driver;
@@ -15,51 +20,41 @@ export class ProjectArtifactAPI {
         this.client = client;
     }
 
-    async getMany(
-        projectName : string,
-        repositoryName: string,
-    ) : Promise<ProjectArtifact[]> {
+    async getMany(options: ProjectArtifactGetManyOptions) : Promise<ProjectArtifact[]> {
+        options.withTag = typeof options.withTag === 'boolean' ? options.withTag : true;
+        options.withLabel = typeof options.withLabel === 'boolean' ? options.withLabel : true;
+
+        const searchParams = new URLSearchParams();
+        if (options.withTag) {
+            searchParams.append('with_tag', 'true');
+        }
+        if (options.withLabel) {
+            searchParams.append('with_label', 'true');
+        }
+
+        let qs = searchParams.toString();
+        if (qs.length > 0) {
+            qs = `?${qs}`;
+        }
         const { data } = await this.client
-            .get(`projects/${projectName}/repositories/${repositoryName}/artifacts?with_tag=true&with_label=true`);
+            .get(`projects/${options.projectName}/repositories/${options.repositoryName}/artifacts${qs}`);
 
         return data;
     }
 
     async copy(
-        projectName: string,
-        repositoryName: string,
-        sourcePath: string,
+        destination: ProjectArtifactCopyElement,
+        source: ProjectArtifactCopyElement,
     ) : Promise<void> {
         await this.client
-            .post(`projects/${projectName}/repositories/${repositoryName}/artifacts?from=${sourcePath}`);
+            .post(
+                `projects/${destination.projectName}/repositories/${destination.repositoryName}/artifacts?` +
+                `from=${source.projectName}/${source.repositoryName}`,
+            );
     }
 
-    async delete(
-        projectName: string,
-        repositoryName: string,
-        tagOrDigest = 'latest',
-    ) {
+    async delete(options: ProjectArtifactDeleteOptions) {
         await this.client
-            .delete(`projects/${projectName}/repositories/${repositoryName}/artifacts/${tagOrDigest}`);
-    }
-
-    async createLabel(
-        projectName: string,
-        repositoryName: string,
-        tagOrDigest: string,
-        data: ProjectArtifactLabel,
-    ) : Promise<void> {
-        await this.client
-            .post(`projects/${projectName}/repositories/${repositoryName}/artifacts/${tagOrDigest}/labels`, data);
-    }
-
-    async deleteLabel(
-        projectName: string,
-        repositoryName: string,
-        tagOrDigest: string,
-        id: string,
-    ) {
-        await this.client
-            .delete(`projects/${projectName}/repositories/${repositoryName}/artifacts/${tagOrDigest}/labels/${id}`);
+            .delete(`projects/${options.projectName}/repositories/${options.repositoryName}/artifacts/${options.tagOrDigest || 'latest'}`);
     }
 }

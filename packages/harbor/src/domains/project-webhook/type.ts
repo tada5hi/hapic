@@ -31,3 +31,21 @@ export type ProjectWebhook = {
     targets: ProjectWebhookTarget[];
     update_time?: string;
 };
+
+export type ProjectWebhookFindOneOptions = {
+    projectIdOrName: number | string,
+    isProjectName: boolean,
+    name : string,
+};
+
+export type ProjectWebhookDeleteOptions = {
+    projectIdOrName: number | string,
+    isProjectName: boolean,
+    name : string,
+};
+
+export type ProjectWebhookSaveOptions = {
+    projectIdOrName: number | string,
+    isProjectName: boolean,
+    name : string,
+};

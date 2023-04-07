@@ -5,9 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type Repository = {
+export type ProjectRepository = {
     id: number,
-    // <project-name>/<repository-name>
+    //
+    /**
+     * Full repository name
+     * <project-name>/<repository-name>
+     */
     name: string,
     project_id: number,
     pull_count: number,
@@ -17,12 +21,23 @@ export type Repository = {
     update_time: string,
 
     // bonus fields
-    name_slim?: string,
+    /**
+     * Repository name without project name.
+     * .../<repository-name>
+     */
+    name_short?: string,
+    /**
+     * Project name without repository name.
+     * <project-name>/...
+     */
     project_name?: string,
 };
 
-export type SearchRepository = {
-    // <project-name>/<repository-name>
+export type ProjectRepositorySearchResult = {
+    /**
+     * Full repository name
+     * <project-name>/<repository-name>
+     */
     repository_name: string,
     project_name: string,
     artifact_count: number,
@@ -31,7 +46,39 @@ export type SearchRepository = {
     pull_count: number
 };
 
-export type RepositoryNameParsed = {
-    project_name: string,
-    repository_name: string
+export type ProjectRepositoryNameParsed = {
+    /**
+     * Project name without repository name.
+     * <project-name>/...
+     */
+    projectName: string,
+    /**
+     * Project name without repository name.
+     * <project-name>/...
+     */
+    repositoryName: string
+};
+
+export type ProjectRepositoryFindOneOptions = {
+    projectName: string,
+    repositoryName: string
+};
+
+export type ProjectRepositoryGetOneOptions = {
+    projectName: string,
+    repositoryName: string
+};
+
+export type ProjectRepositoryGetManyOptions = {
+    projectName: string
+};
+
+export type ProjectRepositoryUpdateOptions = {
+    projectName: string,
+    repositoryName: string
+};
+
+export type ProjectRepositoryDeleteOptions = {
+    projectName: string,
+    repositoryName: string
 };

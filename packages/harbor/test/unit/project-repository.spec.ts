@@ -11,7 +11,7 @@ describe('src/project-repository', () => {
     it('should parse project repository name', () => {
         const parsed = parseProjectRepositoryName('project_name/repository_prefix/repository');
         expect(parsed).toBeDefined();
-        expect(parsed.repository_name).toEqual('repository_prefix/repository');
-        expect(parsed.project_name).toEqual('project_name');
+        expect(parsed.repositoryName).toEqual('repository_prefix/repository');
+        expect(parsed.projectName).toEqual('project_name');
     });
 });

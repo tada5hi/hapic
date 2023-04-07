@@ -7,6 +7,7 @@
 
 import { Client as BaseClient } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
+import { ProjectArtifactLabelAPI } from './domains/project-artifact-label';
 import type { SearchResult } from './type';
 import {
     ProjectAPI,
@@ -22,6 +23,8 @@ export class Client extends BaseClient {
 
     public readonly projectArtifact: ProjectArtifactAPI;
 
+    public readonly projectArtifactLabel : ProjectArtifactLabelAPI;
+
     public readonly projectRepository: ProjectRepositoryAPI;
 
     public readonly projectWebHook: ProjectWebHookAPI;
@@ -35,6 +38,7 @@ export class Client extends BaseClient {
 
         this.project = new ProjectAPI(this.driver);
         this.projectArtifact = new ProjectArtifactAPI(this.driver);
+        this.projectArtifactLabel = new ProjectArtifactLabelAPI(this.driver);
         this.projectWebHook = new ProjectWebHookAPI(this.driver);
         this.projectRepository = new ProjectRepositoryAPI(this.driver);
         this.robotAccount = new RobotAccountAPI(this.driver);
@@ -49,23 +53,23 @@ export class Client extends BaseClient {
 
         input = input || {};
 
-        let connectionConfig : ConnectionOptions | undefined;
+        let connectionOptions : ConnectionOptions | undefined;
 
         if (input.connectionString) {
-            connectionConfig = parseConnectionString(input.connectionString);
+            connectionOptions = parseConnectionString(input.connectionString);
         }
 
         if (input.connectionOptions) {
-            connectionConfig = input.connectionOptions;
+            connectionOptions = input.connectionOptions;
         }
 
-        if (connectionConfig) {
-            this.setBaseURL(connectionConfig.host);
+        if (connectionOptions) {
+            this.setBaseURL(connectionOptions.host);
 
             this.setAuthorizationHeader({
                 type: 'Basic',
-                username: connectionConfig.user,
-                password: connectionConfig.password,
+                username: connectionOptions.user,
+                password: connectionOptions.password,
             });
         }
     }

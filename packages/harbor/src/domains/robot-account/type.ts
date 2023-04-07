@@ -24,6 +24,7 @@ export type RobotAccountPermission = {
 
 export type RobotAccount = {
     id?: number | string,
+    description?: string,
     name: string,
     secret?: string | null,
     creation_time?: string,
@@ -34,4 +35,29 @@ export type RobotAccount = {
     disable?: boolean,
     editable?: boolean,
     permissions?: RobotAccountPermission[]
+};
+
+export type RobotAccountWithSecret = Omit<RobotAccount, 'secret'> & {
+    secret: string
+};
+
+export type RobotAccountFindOneOptions = {
+    /**
+     * Name of the robot account.
+     */
+    name: string,
+    /**
+     * Create a secret for the robot account.
+     *
+     * default: true
+     */
+    withSecret?: string
+};
+
+export type RobotAccountCreateOptions = {
+    projectName?: string
+};
+
+export type RobotAccountUpdateOptions = {
+    projectName?: string,
 };

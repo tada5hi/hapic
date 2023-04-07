@@ -5,6 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { ProjectArtifactLabel } from '../project-artifact-label';
+
 export type ProjectArtifactTag = {
     artifact_id: number,
     id: number,
@@ -14,14 +16,6 @@ export type ProjectArtifactTag = {
     push_time: string,
     repository_id: number,
     signed: boolean
-};
-
-export type ProjectArtifactLabel = {
-    id: number,
-    name: string,
-    scope: string,
-    update_time: string,
-    creation_time: string
 };
 
 export type ProjectArtifact = {
@@ -35,4 +29,22 @@ export type ProjectArtifact = {
     type: 'IMAGE' | 'CHART' | string,
     project_id: number,
     repository_id: number,
+};
+
+export type ProjectArtifactGetManyOptions = {
+    projectName: string,
+    repositoryName: string,
+    withTag?: boolean,
+    withLabel?: boolean
+};
+
+export type ProjectArtifactDeleteOptions = {
+    projectName: string,
+    repositoryName: string,
+    tagOrDigest?: string
+};
+
+export type ProjectArtifactCopyElement = {
+    projectName: string,
+    repositoryName: string
 };

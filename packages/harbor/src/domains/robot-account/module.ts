@@ -7,7 +7,13 @@
 
 import type { Driver } from 'hapic';
 import { merge } from 'smob';
-import type { RobotAccount } from './type';
+import type {
+    RobotAccount, RobotAccountCreateOptions,
+    RobotAccountFindOneOptions,
+    RobotAccountPermission,
+    RobotAccountUpdateOptions,
+    RobotAccountWithSecret,
+} from './type';
 import { buildRobotAccountPermissionForNamespace } from './utils';
 
 export class RobotAccountAPI {
@@ -17,75 +23,84 @@ export class RobotAccountAPI {
         this.client = client;
     }
 
-    async find(
-        name: string,
-        withSecret = true,
-    ): Promise<RobotAccount | undefined> {
-        const { data } = await this.client.get(`robots?q=name%3D${name}&page_size=1`);
+    async create(
+        data: RobotAccount,
+        options?: RobotAccountCreateOptions,
+    ) : Promise<RobotAccount> {
+        const response = await this.client
+            .post('robots', this.extendPayload(data, options));
 
-        const accounts = Array.isArray(data) ? data.filter((account) => account.name === `robot$${name}`) : [];
+        return response.data;
+    }
 
-        if (
-            accounts.length === 1
-        ) {
-            let secret: string | undefined;
+    async delete(id: RobotAccount['id']): Promise<void> {
+        await this.client
+            .delete(`robots/${id}`);
+    }
 
-            if (withSecret) {
-                const patchedAccount = await this.refreshSecret(accounts[0].id);
-                secret = patchedAccount.secret as string | undefined;
-            }
+    async findOne(options: RobotAccountFindOneOptions): Promise<RobotAccount | undefined> {
+        const { data } = await this.client.get(`robots?q=name%3D${options.name}&page_size=1`);
 
-            return {
-                id: accounts[0].id,
-                name: accounts[0].name,
-                creation_time: accounts[0].creation_time,
-                expires_at: accounts[0].expires_at,
-                secret,
-            };
+        if (!Array.isArray(data) || data.length === 0) {
+            return undefined;
         }
 
-        return undefined;
+        const account : RobotAccount = data.shift();
+
+        let lookupName : string;
+        if (!options.name.startsWith('robot$')) {
+            lookupName = `robot$${options.name}`;
+        } else {
+            lookupName = options.name;
+        }
+        if (account.name !== lookupName || account.name === options.name) {
+            return undefined;
+        }
+
+        const withSecret = typeof options.withSecret === 'boolean' ?
+            options.withSecret :
+            true;
+
+        if (withSecret && account.id) {
+            const patchedAccount = await this.updateSecret(account.id);
+            account.secret = patchedAccount.secret as string | undefined;
+        }
+
+        return account;
     }
 
     /**
      * Update harbor project robot account.
-     * If no "record.secret" provided, a new secret is generated.
+     * If no "secret" provided, a new secret is generated.
      *
-     * @param robotId
+     * @param id
      * @param secret
      */
-    async refreshSecret(
-        robotId: string | number,
+    async updateSecret(
+        id: string | number,
         secret?: string,
-    ): Promise<Pick<RobotAccount, 'secret'>> {
+    ): Promise<RobotAccountWithSecret> {
         const payload: Record<string, any> = {
             ...(secret ? { secret } : {}),
         };
 
         const { data }: { data: RobotAccount } = await this.client
-            .patch(`robots/${robotId}`, payload);
+            .patch(`robots/${id}`, payload);
 
         if (typeof payload.secret !== 'undefined') {
             data.secret = payload.secret;
         }
 
-        return data as Pick<RobotAccount, 'secret'>;
+        return data as RobotAccountWithSecret;
     }
 
     async update(
         id: string | number,
-        namespace: string,
         data?: Partial<RobotAccount>,
+        options?: RobotAccountUpdateOptions,
     ): Promise<Partial<RobotAccount>> {
-        data = merge({
-            id,
-            description: '',
-            duration: -1,
-            level: 'system',
-            editable: true,
-            disable: false,
-            permissions: [buildRobotAccountPermissionForNamespace(namespace)],
-        }, (data || {}));
+        data = data || {};
+        data = this.extendPayload({ ...data, id }, options);
 
         await this.client
             .put(`robots/${id}`, data);
@@ -93,27 +108,26 @@ export class RobotAccountAPI {
         return data;
     }
 
-    async create(
-        robotName: string,
-        projectName?: string,
-        payload?: Partial<RobotAccount>,
-    ) {
-        payload = merge({
-            name: robotName,
+    protected extendPayload<T extends Record<string, any>>(
+        data: T,
+        options?: {projectName?: string},
+    ) : T {
+        options = options || {};
+        let permissions : RobotAccountPermission[] = [];
+        if (options.projectName) {
+            permissions = [
+                buildRobotAccountPermissionForNamespace(
+                    options.projectName,
+                ),
+            ];
+        }
+        return merge((data || {}), {
+            description: '',
             duration: -1,
             level: 'system',
+            editable: true,
             disable: false,
-            permissions: [buildRobotAccountPermissionForNamespace(projectName || robotName)],
-        }, (payload || {}));
-
-        const { data }: { data: RobotAccount } = await this.client
-            .post('robots', payload);
-
-        return data;
-    }
-
-    async delete(id: RobotAccount['id']): Promise<void> {
-        await this.client
-            .delete(`robots/${id}`);
+            permissions,
+        } satisfies Partial<RobotAccount>) as T;
     }
 }

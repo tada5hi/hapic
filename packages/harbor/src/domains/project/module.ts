@@ -16,14 +16,42 @@ export class ProjectAPI {
         this.client = client;
     }
 
+    async create(data: ProjectPayload) : Promise<void> {
+        await this.client
+            .post('projects', data);
+    }
+
+    async delete(id: string | number, isProjectName = false) {
+        const headers: Record<string, any> = {};
+
+        if (isProjectName) {
+            headers['X-Is-Resource-Name'] = true;
+        }
+
+        await this.client
+            .delete(`projects/${id}`, headers);
+    }
+
+    async update(
+        id: Project['project_id'],
+        data: ProjectPayload,
+    ) : Promise<void> {
+        await this.client
+            .put(`projects/${id}`, data);
+    }
+
     async getMany() : Promise<Project[]> {
+        // todo: filtering & pagination
         const { data } = await this.client
             .get('projects');
 
         return data;
     }
 
-    async getOne(id: string | number, isProjectName = false): Promise<Project> {
+    async getOne(
+        id: string | number,
+        isProjectName = false,
+    ): Promise<Project> {
         const headers: Record<string, any> = {};
 
         if (isProjectName) {
@@ -55,26 +83,5 @@ export class ProjectAPI {
 
             throw e;
         }
-    }
-
-    async create(data: ProjectPayload) : Promise<void> {
-        await this.client
-            .post('projects', data);
-    }
-
-    async update(id: Project['project_id'], data: ProjectPayload) : Promise<void> {
-        await this.client
-            .put(`projects/${id}`, data);
-    }
-
-    async delete(id: string | number, isProjectName = false) {
-        const headers: Record<string, any> = {};
-
-        if (isProjectName) {
-            headers['X-Is-Resource-Name'] = true;
-        }
-
-        await this.client
-            .delete(`projects/${id}`, headers);
     }
 }
