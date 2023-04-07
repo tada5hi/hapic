@@ -34,6 +34,8 @@ npm install @hapic/harbor --save
 ### Project
 
 **`Create`**
+
+Creates a new project in Harbor with the given name and metadata.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -49,6 +51,8 @@ console.log(data);
 ```
 
 **`Delete`**
+
+Deletes a specific project in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -64,6 +68,8 @@ await harbor.project.delete('name', true);
 ```
 
 **`Update`**
+
+Updates the metadata for a specific project in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -77,6 +83,8 @@ await harbor.project.update(1, {
 ```
 
 **`GetMany`**
+
+Retrieves a list of all projects in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -90,6 +98,8 @@ console.log(data);
 ```
 
 **`GetOne`**
+
+Retrieves details for a specific project in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -107,6 +117,8 @@ console.log(data);
 ```
 
 **`Save`**
+
+Saves a project in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -122,6 +134,8 @@ await harbor.project.save({
 ### Project Artifact
 
 **`Delete`**
+
+Deletes a specific project artifact in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -137,6 +151,8 @@ await harbor.projectArtifact.delete({
 ```
 
 **`GetMany`**
+
+Retrieves a list of all project artifacts in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -155,6 +171,8 @@ console.log(data);
 ```
 
 **`Copy`**
+
+Copy a specific project repository to another location.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -177,6 +195,8 @@ await harbor.projectArtifact.copy(
 ### Project Artifact Label
 
 **`Create`**
+
+Assigns an existing label object to a project in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -198,6 +218,8 @@ const data = await harbor.robotAccount.create({
 ```
 
 **`Delete`**
+
+Delete an assigned label of a project in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -216,6 +238,8 @@ const data = await harbor.robotAccount.delete(1, {
 ### Project Repository
 
 **`Delete`**
+
+Deletes a specific project repository in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -236,6 +260,8 @@ await harbor.projectRepository.delete(
 ```
 
 **`FindOne`**
+
+Finds a specific project repository in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -255,10 +281,12 @@ data = await harbor.projectRepository.findOne(
 );
 
 console.log(data);
-// { name: 'xxx', ... }
+// { name: 'xxx', ... } | undefined
 ```
 
 **`GetOne`**
+
+Retrieves a specific project repository in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -282,6 +310,8 @@ console.log(data);
 ```
 
 **`Update`**
+
+Updates a specific registry repository in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -303,6 +333,8 @@ console.log(data);
 ### Project Webhook
 
 **`Create`**
+
+Creates a project webhook in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -320,6 +352,8 @@ await harbor.projectWebHook.create({
 ```
 
 **`Delete`**
+
+Deletes a specific project webhook in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -335,6 +369,8 @@ await harbor.projectWebHook.delete({
 ```
 
 **`FindOne`**
+
+Finds a specific project webhook in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -354,6 +390,8 @@ console.log(data);
 ### Robot Account
 
 **`Create`**
+
+Creates a robot account in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -369,6 +407,8 @@ console.log(data);
 ```
 
 **`Delete`**
+
+Deletes a robot account in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -380,6 +420,8 @@ await harbor.robotAccount.delete(1);
 ```
 
 **`FindOne`**
+
+Attempts to find a robot account in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -391,10 +433,12 @@ const data = await harbor.robotAccount.findOne({
     name: 'system'
 });
 console.log(data);
-// { name: 'xxx', ... }
+// { name: 'xxx', ... } | undefined
 ```
 
 **`Update`**
+
+Updates a specific robot account in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -412,6 +456,8 @@ console.log(data);
 ```
 
 **`UpdateSecret`**
+
+Sets a specific robot account secret in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
