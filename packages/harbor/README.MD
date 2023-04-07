@@ -154,7 +154,7 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.project.getMany({
+const data = await harbor.projectArtifact.getMany({
     projectName: 'project-z',
     repositoryName: 'repository-x',
     query: {
