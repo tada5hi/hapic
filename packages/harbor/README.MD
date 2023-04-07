@@ -19,8 +19,8 @@ this API client is a powerful tool to get the most out of the platform.
   - [ProjectArtifact](#project-artifact)
   - [ProjectArtifactLabel](#project-artifact-label)
   - [ProjectRepository](#project-repository)
-  - [ProjectWebhook](#project-webhook)
-  - [RobotAccount](#robot-account)
+  - [ProjectWebhookPolicy](#project-webhook-policy)
+  - [RobotAccount](#robot)
 - [License](#license)
 
 ## Installation
@@ -31,7 +31,67 @@ npm install @hapic/harbor --save
 
 ## Usage
 
+
+### Config
+
+To create a configuration for the  `Client`, a configuration must be specified,
+like described in the following:
+
+```typescript
+import { Client } from '@hapic/harbor';
+
+const client = new Client({
+    driver: {
+        withCredentials: true,
+    },
+    conenctionOptions: {
+        host: 'https://example.com',
+        user: 'admin',
+        password: 'start123'
+    },
+    // connectionString: 'admin:start123@https://example.com'
+});
+```
+
 ### Project
+
+**`GetMany`**
+
+Retrieves a set of projects in Harbor.
+```typescript
+import { Client } from '@hapic/harbor';
+
+const harbor = new Client({
+    // ...
+});
+
+const data = await harbor.project.getMany({
+    query: {
+        // page_size: 10
+    }
+});
+console.log(data);
+// { meta: { total: 1 }, data: [ {...}, ... ] }
+```
+
+**`GetOne`**
+
+Retrieves details for a specific project in Harbor.
+```typescript
+import { Client } from '@hapic/harbor';
+
+const harbor = new Client({
+    // ...
+});
+
+// get project by id
+let data = await harbor.project.getOne(1);
+
+// get project by name
+data = await harbor.project.getOne('name', true);
+console.log(data);
+// { name: 'new-name', ... }
+```
 
 **`Create`**
 
@@ -82,9 +142,11 @@ await harbor.project.update(1, {
 });
 ```
 
+### Project Artifact
+
 **`GetMany`**
 
-Retrieves a list of all projects in Harbor.
+Retrieves a list of all project artifacts in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -92,46 +154,17 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.project.getMany();
+const data = await harbor.project.getMany({
+    projectName: 'project-z',
+    repositoryName: 'repository-x',
+    query: {
+        // with_tag: true,
+        // with_label: true
+    }
+});
 console.log(data);
-// [ { name: 'new-name', ... }, {...}, ... ]
+// [ {...}, ... ]
 ```
-
-**`GetOne`**
-
-Retrieves details for a specific project in Harbor.
-```typescript
-import { Client } from '@hapic/harbor';
-
-const harbor = new Client({
-    // ...
-});
-
-// get project by id
-let data = await harbor.project.getOne(1);
-
-// get project by name
-data = await harbor.project.getOne('name', true);
-console.log(data);
-// { name: 'new-name', ... }
-```
-
-**`Save`**
-
-Saves a project in Harbor.
-```typescript
-import { Client } from '@hapic/harbor';
-
-const harbor = new Client({
-    // ...
-});
-
-await harbor.project.save({
-    project_name: 'new-name'
-});
-```
-
-### Project Artifact
 
 **`Delete`**
 
@@ -148,26 +181,6 @@ await harbor.projectArtifact.delete({
     repositoryName: 'repository-x',
     // tagOrDigest: 'latest'
 });
-```
-
-**`GetMany`**
-
-Retrieves a list of all project artifacts in Harbor.
-```typescript
-import { Client } from '@hapic/harbor';
-
-const harbor = new Client({
-    // ...
-});
-
-const data = await harbor.project.getMany({
-    projectName: 'project-z',
-    repositoryName: 'repository-x',
-    // withTag: true,
-    // withLabel: true
-});
-console.log(data);
-// [ {...}, ... ]
 ```
 
 **`Copy`**
@@ -205,15 +218,11 @@ const harbor = new Client({
 });
 
 // assign a label object to a specific project & repo
-const data = await harbor.robotAccount.create({
-    id: 1,
-    name: 'label',
-    scope: 'xxx',
-    // ...
-}, {
+const data = await harbor.projectArtifactLabel.create({
+    labelId: 1,
     projectName: 'project-name',
     repositoryName: 'repository-name',
-    // tagOrDigest: 'latest'
+    // tagOrDigest: 'latest',
 });
 ```
 
@@ -228,7 +237,8 @@ const harbor = new Client({
 });
 
 // delete an assigned label of a specific project & repo
-const data = await harbor.robotAccount.delete(1, {
+const data = await harbor.projectArtifactLabel.delete({
+    labelId: 1,
     projectName: 'project-name',
     repositoryName: 'repository-name',
     // tagOrDigest: 'latest'
@@ -237,9 +247,9 @@ const data = await harbor.robotAccount.delete(1, {
 
 ### Project Repository
 
-**`Delete`**
+**`GetMany`**
 
-Deletes a specific project repository in Harbor.
+Retrieves a set of project repositories in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -247,41 +257,15 @@ const harbor = new Client({
     // ...
 });
 
-// delete repository by options
-await harbor.projectRepository.delete({
+const response = await harbor.projectRepository.getMany({
     projectName: 'project-name',
-    repositoryName: 'repository-name'
+    query: {
+        // page_size: 10
+    }
 });
 
-// delete repository by name
-await harbor.projectRepository.delete(
-    'project-name/repository-name'
-);
-```
-
-**`FindOne`**
-
-Finds a specific project repository in Harbor.
-```typescript
-import { Client } from '@hapic/harbor';
-
-const harbor = new Client({
-    // ...
-});
-
-// find repository by options
-let data = await harbor.projectRepository.findOne({
-    projectName: 'project-name',
-    repositoryName: 'repository-name'
-});
-
-// find repository by name
-data = await harbor.projectRepository.findOne(
-    'project-name/repository-name'
-);
-
-console.log(data);
-// { name: 'xxx', ... } | undefined
+console.log(response);
+// { meta: {total: 1}, data: [{ name: 'xxx', ... }, ... ] }
 ```
 
 **`GetOne`**
@@ -309,6 +293,31 @@ console.log(data);
 // { name: 'xxx', ... }
 ```
 
+**`FindOne`**
+
+Finds a specific project repository in Harbor.
+```typescript
+import { Client } from '@hapic/harbor';
+
+const harbor = new Client({
+    // ...
+});
+
+// find repository by options
+let data = await harbor.projectRepository.findOne({
+    projectName: 'project-name',
+    repositoryName: 'repository-name'
+});
+
+// find repository by name
+data = await harbor.projectRepository.findOne(
+    'project-name/repository-name'
+);
+
+console.log(data);
+// { name: 'xxx', ... } | undefined
+```
+
 **`Update`**
 
 Updates a specific registry repository in Harbor.
@@ -319,22 +328,21 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.projectRepository.update(
-    'project-name/repository-name',
-    {
+const data = await harbor.projectRepository.update({
+    projectName: 'foo',
+    repositoryName: 'bar',
+    data: {
         name: 'xxx',
         // ...
     }
-);
+});
 console.log(data);
 // { name: 'xxx', ... }
 ```
 
-### Project Webhook
+**`Delete`**
 
-**`Create`**
-
-Creates a project webhook in Harbor.
+Deletes a specific project repository in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -342,7 +350,31 @@ const harbor = new Client({
     // ...
 });
 
-await harbor.projectWebHook.create({
+// delete repository by options
+await harbor.projectRepository.delete({
+    projectName: 'project-name',
+    repositoryName: 'repository-name'
+});
+
+// delete repository by name
+await harbor.projectRepository.delete(
+    'project-name/repository-name'
+);
+```
+
+### Project Webhook Policy
+
+**`Create`**
+
+Creates a project webhook policy in Harbor.
+```typescript
+import { Client } from '@hapic/harbor';
+
+const harbor = new Client({
+    // ...
+});
+
+await harbor.projectWebhookPolicy.create({
     name: 'webhook',
     // ...
 }, {
@@ -351,9 +383,9 @@ await harbor.projectWebHook.create({
 });
 ```
 
-**`Delete`**
+**`GetMany`**
 
-Deletes a specific project webhook in Harbor.
+Retrieves a set of project webhook policies in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -361,16 +393,22 @@ const harbor = new Client({
     // ...
 });
 
-await harbor.projectWebHook.delete({
+const response = await harbor.projectWebhookPolicy.getMany({
     projectIdOrName: 1,
     // isProjectName: false,
-    name: 'webhook'
+    query: {
+        q: {
+            name: 'webhook'
+        }
+    }
 });
+console.log(response);
+// { meta: { total: 1 }, data: { { ... } ] }
 ```
 
-**`FindOne`**
+**`GetOne`**
 
-Finds a specific project webhook in Harbor.
+Retrieves a specific project webhook policy in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -378,20 +416,18 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.projectWebHook.findOne({
+const data = await harbor.projectWebhookPolicy.getOne({
     projectIdOrName: 1,
     // isProjectName: false,
-    name: 'webhook'
+    id: 1
 });
 console.log(data);
 // { name: 'xxx', ... }
 ```
 
-### Robot Account
+**`Delete`**
 
-**`Create`**
-
-Creates a robot account in Harbor.
+Deletes a specific project webhook policy in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -399,16 +435,35 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.robotAccount.create({
+await harbor.projectWebhookPolicy.delete({
+    projectIdOrName: 1,
+    // isProjectName: false,
+    id: 1
+});
+```
+
+### Robot
+
+**`Create`**
+
+Creates a robot in Harbor.
+```typescript
+import { Client } from '@hapic/harbor';
+
+const harbor = new Client({
+    // ...
+});
+
+const data = await harbor.robots.create({
     name: 'system',
 });
 console.log(data);
 // { name: 'xxx', ... }
 ```
 
-**`Delete`**
+**`GetMany`**
 
-Deletes a robot account in Harbor.
+Retrieves a set of robots in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -416,12 +471,20 @@ const harbor = new Client({
     // ...
 });
 
-await harbor.robotAccount.delete(1);
+const response = await harbor.robots.getMany({
+    query: {
+        q: {
+            name: 'robot'
+        }
+    }
+});
+console.log(response);
+// { meta: { total: 1 }, data: { { ... } ] }
 ```
 
-**`FindOne`**
+**`GetOne`**
 
-Attempts to find a robot account in Harbor.
+Retrieves a specific robot in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -429,16 +492,14 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.robotAccount.findOne({
-    name: 'system'
-});
+const data = await harbor.robots.getOne(1);
 console.log(data);
-// { name: 'xxx', ... } | undefined
+// { name: 'xxx', ... }
 ```
 
 **`Update`**
 
-Updates a specific robot account in Harbor.
+Updates a specific robot in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -446,7 +507,7 @@ const harbor = new Client({
     // ...
 });
 
-const data = await harbor.robotAccount.update(1, {
+const data = await harbor.robots.update(1, {
     name: 'system',
     description: 'foo',
     disable: true
@@ -457,7 +518,7 @@ console.log(data);
 
 **`UpdateSecret`**
 
-Sets a specific robot account secret in Harbor.
+Sets a specific robot secret in Harbor.
 ```typescript
 import { Client } from '@hapic/harbor';
 
@@ -466,9 +527,22 @@ const harbor = new Client({
 });
 
 // optional provie a secret as second argument.
-const data = await harbor.robotAccount.updateSecret(1);
+const data = await harbor.robots.updateSecret(1);
 console.log(data);
 // { secret: 'xxx', ... }
+```
+
+**`Delete`**
+
+Deletes a robot in Harbor.
+```typescript
+import { Client } from '@hapic/harbor';
+
+const harbor = new Client({
+    // ...
+});
+
+await harbor.robots.delete(1);
 ```
 
 ## License

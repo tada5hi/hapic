@@ -7,6 +7,7 @@
 
 import { createClient } from './instance';
 
+export * from './constants';
 export * from './client';
 export * from './config';
 export * from './instance';

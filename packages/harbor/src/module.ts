@@ -7,15 +7,15 @@
 
 import { Client as BaseClient } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
-import { ProjectArtifactLabelAPI } from './domains/project-artifact-label';
-import type { SearchResult } from './type';
 import {
     ProjectAPI,
     ProjectArtifactAPI,
+    ProjectArtifactLabelAPI,
     ProjectRepositoryAPI,
-    ProjectWebHookAPI,
-    RobotAccountAPI,
+    ProjectWebhookPolicyAPI,
+    RobotAPI,
 } from './domains';
+import type { SearchResult } from './type';
 import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
@@ -27,21 +27,21 @@ export class Client extends BaseClient {
 
     public readonly projectRepository: ProjectRepositoryAPI;
 
-    public readonly projectWebHook: ProjectWebHookAPI;
+    public readonly projectWebhookPolicy: ProjectWebhookPolicyAPI;
 
-    public readonly robotAccount : RobotAccountAPI;
+    public readonly robot : RobotAPI;
 
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
         super(input);
 
-        this.project = new ProjectAPI(this.driver);
-        this.projectArtifact = new ProjectArtifactAPI(this.driver);
-        this.projectArtifactLabel = new ProjectArtifactLabelAPI(this.driver);
-        this.projectWebHook = new ProjectWebHookAPI(this.driver);
-        this.projectRepository = new ProjectRepositoryAPI(this.driver);
-        this.robotAccount = new RobotAccountAPI(this.driver);
+        this.project = new ProjectAPI({ driver: this.driver });
+        this.projectArtifact = new ProjectArtifactAPI({ driver: this.driver });
+        this.projectArtifactLabel = new ProjectArtifactLabelAPI({ driver: this.driver });
+        this.projectWebhookPolicy = new ProjectWebhookPolicyAPI({ driver: this.driver });
+        this.projectRepository = new ProjectRepositoryAPI({ driver: this.driver });
+        this.robot = new RobotAPI({ driver: this.driver });
 
         this.setConfig(input);
     }
@@ -71,6 +71,30 @@ export class Client extends BaseClient {
                 username: connectionOptions.user,
                 password: connectionOptions.password,
             });
+        }
+
+        if (this.project) {
+            this.project.setDriver(this.driver);
+        }
+
+        if (this.projectArtifact) {
+            this.projectArtifact.setDriver(this.driver);
+        }
+
+        if (this.projectArtifactLabel) {
+            this.projectArtifactLabel.setDriver(this.driver);
+        }
+
+        if (this.projectWebhookPolicy) {
+            this.projectWebhookPolicy.setDriver(this.driver);
+        }
+
+        if (this.projectRepository) {
+            this.projectRepository.setDriver(this.driver);
+        }
+
+        if (this.robot) {
+            this.robot.setDriver(this.driver);
         }
     }
 

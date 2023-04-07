@@ -5,61 +5,67 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Driver } from 'hapic';
+import { buildQueryString, extractResourceMetaOfResponse } from '../../utils';
+import { BaseAPI } from '../base';
+import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
 import type {
     ProjectRepository,
-    ProjectRepositoryDeleteOptions,
-    ProjectRepositoryFindOneOptions,
-    ProjectRepositoryGetManyOptions,
-    ProjectRepositoryGetOneOptions,
-    ProjectRepositoryUpdateOptions,
+    ProjectRepositoryDeleteContext,
+    ProjectRepositoryFindOneContext,
+    ProjectRepositoryGetManyContext,
+    ProjectRepositoryGetOneContext,
+    ProjectRepositoryUpdateContext,
 } from './type';
-import { parseProjectRepositoryName } from './utils';
+import { parseLongProjectRepositoryName } from './utils';
 
-export class ProjectRepositoryAPI {
-    protected client: Driver;
-
-    constructor(client: Driver) {
-        this.client = client;
+export class ProjectRepositoryAPI extends BaseAPI {
+    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
+    constructor(context: BaseAPIContext) {
+        super(context);
     }
 
     async findOne(projectRepositoryName: string): Promise<ProjectRepository | undefined>;
 
-    async findOne(options: ProjectRepositoryFindOneOptions): Promise<ProjectRepository | undefined>;
+    async findOne(context: ProjectRepositoryFindOneContext): Promise<ProjectRepository | undefined>;
 
-    async findOne(input: string | ProjectRepositoryFindOneOptions): Promise<ProjectRepository | undefined> {
-        let options : ProjectRepositoryDeleteOptions;
+    async findOne(input: string | ProjectRepositoryFindOneContext): Promise<ProjectRepository | undefined> {
+        let context : ProjectRepositoryDeleteContext;
         if (typeof input === 'string') {
-            options = parseProjectRepositoryName(input);
+            context = parseLongProjectRepositoryName(input);
         } else {
-            options = input;
+            context = input;
         }
 
-        const { data } = await this.client.get(
-            `projects/${options.projectName}/repositories?q=name=~${options.repositoryName}&=page_size=1`,
-        );
+        const { data } = await this.getMany({
+            projectName: context.projectName,
+            query: {
+                q: {
+                    name: `~${context.repositoryName}`,
+                },
+                page_size: 1,
+            },
+        });
 
-        if (!Array.isArray(data) || data.length !== 1) {
-            return undefined;
-        }
-
-        const item : ProjectRepository = data[0];
-
-        const parsed = parseProjectRepositoryName(item.name);
-
-        return {
-            ...item,
-            name_short: parsed.repositoryName,
-            project_name: parsed.projectName,
-        };
+        return data.shift();
     }
 
-    async getOne(options: ProjectRepositoryGetOneOptions) : Promise<ProjectRepository> {
-        const { data } : { data: ProjectRepository } = await this.client.get(
-            `projects/${options.projectName}/repositories/${options.repositoryName}`,
+    async getOne(projectRepositoryName: string) : Promise<ProjectRepository>;
+
+    async getOne(context: ProjectRepositoryGetOneContext) : Promise<ProjectRepository>;
+
+    async getOne(input: string | ProjectRepositoryGetOneContext) : Promise<ProjectRepository> {
+        let context : ProjectRepositoryGetOneContext;
+        if (typeof input === 'string') {
+            context = parseLongProjectRepositoryName(input);
+        } else {
+            context = input;
+        }
+
+        const { data } : { data: ProjectRepository } = await this.driver.get(
+            `projects/${context.projectName}/repositories/${context.repositoryName}`,
         );
 
-        const parsed = parseProjectRepositoryName(data.name);
+        const parsed = parseLongProjectRepositoryName(data.name);
 
         return {
             ...data,
@@ -68,50 +74,43 @@ export class ProjectRepositoryAPI {
         };
     }
 
-    async getMany(options: ProjectRepositoryGetManyOptions): Promise<ProjectRepository[]> {
-        const result = await this.client
-            .get(`projects/${options.projectName}/repositories`);
+    async getMany(context: ProjectRepositoryGetManyContext): Promise<ResourceCollectionResponse<ProjectRepository>> {
+        const result = await this.driver
+            .get(`projects/${context.projectName}/repositories${buildQueryString(context.query)}`);
 
-        return result.data.map((item: ProjectRepository) => {
-            const parsed = parseProjectRepositoryName(item.name);
+        return {
+            data: result.data
+                .map((item: ProjectRepository) => {
+                    const parsed = parseLongProjectRepositoryName(item.name);
 
-            return {
-                ...item,
-                name_short: parsed.repositoryName,
-                project_name: parsed.projectName,
-            };
-        });
+                    return {
+                        ...item,
+                        name_short: parsed.repositoryName,
+                        project_name: parsed.projectName,
+                    };
+                }),
+            meta: extractResourceMetaOfResponse(result),
+        };
     }
 
-    async update(projectRepositoryName: string, data: Partial<ProjectRepository>) : Promise<void>;
-
-    async update(options: ProjectRepositoryUpdateOptions, data: Partial<ProjectRepository>) : Promise<void>;
-
-    async update(input: string | ProjectRepositoryUpdateOptions, data: Partial<ProjectRepository>) : Promise<void> {
-        let options : ProjectRepositoryDeleteOptions;
-        if (typeof input === 'string') {
-            options = parseProjectRepositoryName(input);
-        } else {
-            options = input;
-        }
-
-        await this.client
-            .put(`projects/${options.projectName}/repositories/${options.repositoryName}`, data);
+    async update(context: ProjectRepositoryUpdateContext) : Promise<void> {
+        await this.driver
+            .put(`projects/${context.projectName}/repositories/${context.repositoryName}`, context.data);
     }
 
     async delete(projectRepositoryName: string) : Promise<void>;
 
-    async delete(options: ProjectRepositoryDeleteOptions) : Promise<void>;
+    async delete(context: ProjectRepositoryDeleteContext) : Promise<void>;
 
-    async delete(input: string | ProjectRepositoryDeleteOptions) : Promise<void> {
-        let options : ProjectRepositoryDeleteOptions;
+    async delete(input: string | ProjectRepositoryDeleteContext) : Promise<void> {
+        let context : ProjectRepositoryDeleteContext;
         if (typeof input === 'string') {
-            options = parseProjectRepositoryName(input);
+            context = parseLongProjectRepositoryName(input);
         } else {
-            options = input;
+            context = input;
         }
 
-        await this.client
-            .delete(`projects/${options.projectName}/repositories/${options.repositoryName}`);
+        await this.driver
+            .delete(`projects/${context.projectName}/repositories/${context.repositoryName}`);
     }
 }

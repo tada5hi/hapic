@@ -5,6 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { ResourceCollectionQuery } from '../type';
+
 export type ProjectRepository = {
     id: number,
     //
@@ -46,7 +48,7 @@ export type ProjectRepositorySearchResult = {
     pull_count: number
 };
 
-export type ProjectRepositoryNameParsed = {
+export type ProjectRepositoryLongNameRepresentation = {
     /**
      * Project name without repository name.
      * <project-name>/...
@@ -56,29 +58,41 @@ export type ProjectRepositoryNameParsed = {
      * Project name without repository name.
      * <project-name>/...
      */
-    repositoryName: string
+    repositoryName: string,
+    /**
+     * Artifact tag
+     */
+    artifactTag?: string,
+    /**
+     * Artifact digest
+     */
+    artifactDigest?: string
 };
 
-export type ProjectRepositoryFindOneOptions = {
+export type ProjectRepositoryFindOneContext = {
     projectName: string,
     repositoryName: string
 };
 
-export type ProjectRepositoryGetOneOptions = {
+export type ProjectRepositoryGetOneContext = {
     projectName: string,
     repositoryName: string
 };
 
-export type ProjectRepositoryGetManyOptions = {
-    projectName: string
-};
+export type ProjectRepositoryGetManyQuery = ResourceCollectionQuery<ProjectRepository>;
 
-export type ProjectRepositoryUpdateOptions = {
+export type ProjectRepositoryGetManyContext = {
     projectName: string,
-    repositoryName: string
+    query?: ProjectRepositoryGetManyQuery
 };
 
-export type ProjectRepositoryDeleteOptions = {
+export type ProjectRepositoryUpdateContext = {
+    projectName: string,
+    repositoryName: string,
+    data: Partial<ProjectRepository>
+};
+
+export type ProjectRepositoryDeleteContext = {
     projectName: string,
     repositoryName: string
 };

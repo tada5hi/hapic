@@ -5,9 +5,16 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RobotAccountPermission } from './type';
+import type { RobotPermission } from './type';
 
-export function buildRobotAccountPermissionForNamespace(namespace: string) : RobotAccountPermission {
+/**
+ * Create robot permission to access all resources.
+ *
+ * @param namespace (e.g. * or project name)
+ */
+export function buildRobotPermissionForAllResources(
+    namespace: string,
+) : RobotPermission {
     return {
         access: [
             { resource: 'repository', action: 'push' },

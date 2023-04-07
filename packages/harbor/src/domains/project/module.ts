@@ -5,47 +5,75 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Driver } from 'hapic';
-import { isRequestError } from 'hapic';
-import type { Project, ProjectPayload } from './type';
+import { HeaderName } from '../../constants';
+import {
+    buildQueryString,
+    extractResourceIDOfResponse,
+    extractResourceMetaOfResponse,
+} from '../../utils';
+import { BaseAPI } from '../base';
+import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
+import type {
+    Project,
+    ProjectCreatePayload,
+    ProjectCreateResponse,
+    ProjectGetManyOptions,
+    ProjectUpdatePayload,
+} from './type';
 
-export class ProjectAPI {
-    protected client: Driver;
-
-    constructor(client: Driver) {
-        this.client = client;
+export class ProjectAPI extends BaseAPI {
+    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
+    constructor(context: BaseAPIContext) {
+        super(context);
     }
 
-    async create(data: ProjectPayload) : Promise<void> {
-        await this.client
+    async create(data: ProjectCreatePayload) : Promise<ProjectCreateResponse> {
+        const response = await this.driver
             .post('projects', data);
+
+        return {
+            id: extractResourceIDOfResponse(response),
+        };
     }
 
-    async delete(id: string | number, isProjectName = false) {
+    async delete(
+        id: string | number,
+        isProjectName = false,
+    ) : Promise<void> {
         const headers: Record<string, any> = {};
 
         if (isProjectName) {
-            headers['X-Is-Resource-Name'] = true;
+            headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        await this.client
+        await this.driver
             .delete(`projects/${id}`, headers);
     }
 
     async update(
-        id: Project['project_id'],
-        data: ProjectPayload,
+        id: number | string,
+        data: ProjectUpdatePayload,
+        isProjectName = false,
     ) : Promise<void> {
-        await this.client
-            .put(`projects/${id}`, data);
+        const headers: Record<string, any> = {};
+
+        if (isProjectName) {
+            headers[HeaderName.IS_RESOURCE_NAME] = true;
+        }
+
+        await this.driver
+            .put(`projects/${id}`, data, headers);
     }
 
-    async getMany() : Promise<Project[]> {
-        // todo: filtering & pagination
-        const { data } = await this.client
-            .get('projects');
+    async getMany(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
+        options = options || {};
+        const response = await this.driver
+            .get(`projects${buildQueryString(options.query)}`);
 
-        return data;
+        return {
+            data: response.data,
+            meta: extractResourceMetaOfResponse(response),
+        };
     }
 
     async getOne(
@@ -55,33 +83,12 @@ export class ProjectAPI {
         const headers: Record<string, any> = {};
 
         if (isProjectName) {
-            headers['X-Is-Resource-Name'] = true;
+            headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        const { data } = await this.client
-            .get(`projects/${id}`);
+        const { data } = await this.driver
+            .get(`projects/${id}`, headers);
 
         return data;
-    }
-
-    async save(payload: ProjectPayload) : Promise<void> {
-        try {
-            await this.client
-                .post('projects', payload);
-        } catch (e) {
-            if (
-                isRequestError(e) &&
-                e.response &&
-                e.response.status === 409
-            ) {
-                const data = await this.getOne(payload.project_name, true);
-                if (data) {
-                    await this.update(data.project_id, payload);
-                }
-                return;
-            }
-
-            throw e;
-        }
     }
 }

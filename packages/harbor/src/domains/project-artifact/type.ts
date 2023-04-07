@@ -6,6 +6,7 @@
  */
 
 import type { ProjectArtifactLabel } from '../project-artifact-label';
+import type { ResourceCollectionQuery } from '../type';
 
 export type ProjectArtifactTag = {
     artifact_id: number,
@@ -31,14 +32,21 @@ export type ProjectArtifact = {
     repository_id: number,
 };
 
-export type ProjectArtifactGetManyOptions = {
-    projectName: string,
-    repositoryName: string,
-    withTag?: boolean,
-    withLabel?: boolean
+export type ProjectArtifactGetManyQuery = ResourceCollectionQuery<ProjectArtifact> & {
+    with_tag?: boolean,
+    with_label?: boolean,
+    with_scan_overview?: boolean,
+    with_signature?: boolean,
+    with_immutable_status?: boolean
 };
 
-export type ProjectArtifactDeleteOptions = {
+export type ProjectArtifactGetManyContext = {
+    projectName: string,
+    repositoryName: string,
+    query?: ProjectArtifactGetManyQuery
+};
+
+export type ProjectArtifactDeleteContext = {
     projectName: string,
     repositoryName: string,
     tagOrDigest?: string
@@ -46,5 +54,7 @@ export type ProjectArtifactDeleteOptions = {
 
 export type ProjectArtifactCopyElement = {
     projectName: string,
-    repositoryName: string
+    repositoryName: string,
+    artifactTag?: string
+    artifactDigest?: string
 };

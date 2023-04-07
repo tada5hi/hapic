@@ -28,13 +28,7 @@ module.exports = {
     collectCoverageFrom: [
         'src/**/*.{ts,tsx,js,jsx}',
         '!src/**/*.d.ts',
-        '!src/decorator/functions.ts',
-        '!src/decorator/mapper/maps/**/*.{ts,js,json,yml}',
-        '!src/decorator/utils/validator.ts',
-        // the resolver actually uses exclusive typescript functions
-        // and to debug them, we need to rebuild the compiler ^^.
-        '!src/resolver/**/*.ts',
-        '!src/utils/validator.ts',
+        '!src/error/*.ts',
     ],
     coverageThreshold: {
         global: {

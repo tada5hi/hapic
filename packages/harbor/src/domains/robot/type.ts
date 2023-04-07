@@ -5,7 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type RobotAccountPermissionAccess = {
+import type { ResourceCollectionQuery } from '../type';
+
+export type RobotPermissionAccess = {
     resource: 'artifact' |
     'artifact-label' |
     'helm-chart' |
@@ -16,14 +18,14 @@ export type RobotAccountPermissionAccess = {
     action: 'delete' | 'read' | 'create' | 'pull' | 'push' | 'list' | 'stop'
 };
 
-export type RobotAccountPermission = {
-    access: RobotAccountPermissionAccess[],
+export type RobotPermission = {
+    access: RobotPermissionAccess[],
     kind: 'project',
     namespace: string
 };
 
-export type RobotAccount = {
-    id?: number | string,
+export type Robot = {
+    id: number,
     description?: string,
     name: string,
     secret?: string | null,
@@ -34,30 +36,17 @@ export type RobotAccount = {
     level?: 'system',
     disable?: boolean,
     editable?: boolean,
-    permissions?: RobotAccountPermission[]
+    permissions?: RobotPermission[]
 };
 
-export type RobotAccountWithSecret = Omit<RobotAccount, 'secret'> & {
+export type RobotGetManyContext = {
+    query?: ResourceCollectionQuery<Robot>
+};
+
+export type RobotCreatePayload = Omit<Robot, 'id'>;
+
+export type RobotUpdatePayload = Omit<Robot, 'id'>;
+
+export type RobotUpdateSecretResponse = {
     secret: string
-};
-
-export type RobotAccountFindOneOptions = {
-    /**
-     * Name of the robot account.
-     */
-    name: string,
-    /**
-     * Create a secret for the robot account.
-     *
-     * default: true
-     */
-    withSecret?: string
-};
-
-export type RobotAccountCreateOptions = {
-    projectName?: string
-};
-
-export type RobotAccountUpdateOptions = {
-    projectName?: string,
 };

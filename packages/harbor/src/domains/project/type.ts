@@ -5,9 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { ResourceCollectionQuery } from '../type';
+
 export type Project = {
     name: string,
-    project_id: string,
+    project_id: number,
     owner_id: number,
     owner_name: string,
     registry_id?: number,
@@ -23,9 +25,31 @@ export type ProjectMetadata = {
     severity?: 'none' | 'low' | 'medium' | 'high' | 'critical'
 };
 
-export type ProjectPayload = {
+export type ProjectCreatePayload = {
     project_name: string,
     public?: boolean,
     registry_id?: string | number | null,
     storage_limit?: number
+};
+
+export type ProjectUpdatePayload = {
+    project_name: string,
+    public?: boolean,
+    registry_id?: string | number | null,
+    storage_limit?: number
+};
+
+export type ProjectCreateResponse = {
+    id?: number
+};
+
+export type ProjectQuery = ResourceCollectionQuery<Project> & {
+    name?: string,
+    public?: boolean,
+    owner?: string,
+    with_detail?: boolean
+};
+
+export type ProjectGetManyOptions = {
+    query?: ProjectQuery
 };

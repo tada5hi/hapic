@@ -13,14 +13,16 @@ export type ProjectArtifactLabel = {
     creation_time: string
 };
 
-export type ProjectArtifactLabelCreateOptions = {
+export type ProjectArtifactLabelCreateContext = {
     projectName: string,
     repositoryName: string,
-    tagOrDigest: string,
+    labelId: ProjectArtifactLabel['id'],
+    tagOrDigest?: string,
 };
 
-export type ProjectArtifactLabelDeleteOptions = {
+export type ProjectArtifactLabelDeleteContext = {
     projectName: string,
     repositoryName: string,
-    tagOrDigest: string,
+    labelId: ProjectArtifactLabel['id'],
+    tagOrDigest?: string,
 };

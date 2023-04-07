@@ -140,6 +140,18 @@ export class Client {
     }
 
     /**
+     * Get authorization header.
+     */
+    public getAuthorizationHeader() {
+        const header = this.getHeader(HeaderName.AUTHORIZATION);
+        if (typeof header === 'string') {
+            return header;
+        }
+
+        return undefined;
+    }
+
+    /**
      * Unset an authorization header.
      */
     public unsetAuthorizationHeader() {

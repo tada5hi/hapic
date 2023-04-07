@@ -5,32 +5,33 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Driver } from 'hapic';
+import { BaseAPI } from '../base';
+import type { BaseAPIContext } from '../type';
 import type {
-    ProjectArtifactLabel,
-    ProjectArtifactLabelCreateOptions,
-    ProjectArtifactLabelDeleteOptions,
+    ProjectArtifactLabelCreateContext,
+    ProjectArtifactLabelDeleteContext,
 } from './type';
 
-export class ProjectArtifactLabelAPI {
-    protected client: Driver;
-
-    constructor(client: Driver) {
-        this.client = client;
+export class ProjectArtifactLabelAPI extends BaseAPI {
+    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
+    constructor(context: BaseAPIContext) {
+        super(context);
     }
 
-    async create(
-        data: ProjectArtifactLabel,
-        options: ProjectArtifactLabelCreateOptions,
-    ) : Promise<void> {
-        await this.client
-            .post(`projects/${options.projectName}/repositories/${options.repositoryName}` +
-                `/artifacts/${options.tagOrDigest || 'latest'}/labels`, data);
+    async create(options: ProjectArtifactLabelCreateContext) : Promise<void> {
+        await this.driver
+            .post(
+                `projects/${options.projectName}/repositories/${options.repositoryName}` +
+                `/artifacts/${options.tagOrDigest || 'latest'}/labels`,
+                {
+                    id: options.labelId,
+                },
+            );
     }
 
-    async delete(id: number, options: ProjectArtifactLabelDeleteOptions) {
-        await this.client
+    async delete(options: ProjectArtifactLabelDeleteContext) {
+        await this.driver
             .delete(`projects/${options.projectName}/repositories/${options.repositoryName}` +
-                `/artifacts/${options.tagOrDigest || 'latest'}/labels/${id}`);
+                `/artifacts/${options.tagOrDigest || 'latest'}/labels/${options.labelId}`);
     }
 }
