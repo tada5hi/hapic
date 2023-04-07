@@ -48,6 +48,7 @@ export class Client extends BaseClient {
             this.authorize.setDriver(this.driver);
             this.authorize.setOptions(this.options);
         }
+
         if (this.token) {
             this.token.setDriver(this.driver);
             this.token.setOptions(this.options);

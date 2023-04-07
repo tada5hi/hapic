@@ -5,32 +5,33 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { MountType } from './constants';
+import type { KeyValueVersion, MountType } from './constants';
 
-export enum MountKeyValueVersion {
-    ONE = 1,
-    TWO = 2,
-}
-
-export type MountKeyValueOptions = {
-    version?: MountKeyValueVersion
+export type MountCreatePayloadOptions = {
+    version?: KeyValueVersion
 };
 
-export type MountKeyValuePayload = {
-    path: string,
-    type: `${MountType.KEY_VALUE}`,
+export type MountCreatePayloadConfig = {
+    default_lease_ttl?: string
+    max_lease_ttl?: string,
+    force_no_cache?: boolean,
+    audit_non_hmac_request_keys?: string[],
+    audit_non_hmac_response_keys?: string[],
+    listing_visibility?: string,
+    passthrough_request_headers?: string[],
+    allowed_response_headers?: string[],
+    plugin_version?: string
+};
+
+export type MountCreatePayload = {
+    type: `${MountType}`,
     description?: string,
-    config: Record<string, any>,
-    generate_signing_key?: boolean,
-    options: MountKeyValueOptions,
+    config?: MountCreatePayloadConfig,
+    options?: MountCreatePayloadOptions,
+    generate_signing_key?: boolean
 };
 
-export type MountSSHPayload = {
+export type MountCreateContext = {
     path: string,
-    type: `${MountType.SSH}`,
-    description?: string,
-    config: Record<string, any>,
-    generate_signing_key?: boolean,
+    data: MountCreatePayload
 };
-
-export type MountPayload = MountKeyValuePayload | MountSSHPayload;

@@ -17,6 +17,11 @@ this API client is a powerful tool to help you get the most out of Vault.
 **Table of Contents**
 
 - [Installation](#installation)
+- [Usage](#usage)
+  - [Config](#config)
+  - [KeyValue V1](#keyvalue-v1)
+  - [KeyValue V2](#keyvalue-v2)
+  - [Mount](#mount)
 - [License](#license)
 
 ## Installation
@@ -25,13 +30,242 @@ this API client is a powerful tool to help you get the most out of Vault.
 npm install @hapic/vault --save
 ```
 
----
-**Important NOTE**
+## Usage
 
-The `README.md` file is under construction ☂ at the moment.
-So please stay patient or contribute to it, till it covers all parts ⭐.
+### Config
 
----
+To create a configuration for the  `Client`, a configuration must be specified,
+like described in the following:
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    driver: {
+        withCredentials: true,
+    },
+    conenctionOptions: {
+        host: 'https://example.com/api/v1/',
+        token: 'xxx',
+    },
+    // connectionString: 'xxx@https://example.com/v1/'
+});
+```
+
+### KeyValue V1
+
+**`Create`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.keyValueV1.create({
+    engine: 'engine',
+    path: 'path',
+    data: {
+        foo: 'bar'
+    }
+});
+```
+
+**`GetOne`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+const data = await client.keyValueV1.getOne({
+    engine: 'engine',
+    path: 'path',
+});
+console.log(data);
+// { data: { foo: 'bar' }, lease_duration: 0, ... }
+```
+
+**`Delete`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.keyValueV1.delete({
+    engine: 'engine',
+    path: 'path',
+});
+```
+
+### KeyValue V2
+
+**`Create`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.keyValueV2.create({
+    engine: 'engine',
+    path: 'path',
+    data: {
+        data: {
+            foo: 'bar'
+        }
+    }
+});
+```
+
+**`GetOne`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+const data = await client.keyValueV2.getOne({
+    engine: 'engine',
+    path: 'path',
+});
+console.log(data);
+// { data: { data: { foo: 'bar' }, ... } }
+```
+
+**`Update`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.keyValueV2.create({
+    engine: 'engine',
+    path: 'path',
+    data: {
+        data: {
+            baz: 'boz'
+        }
+    }
+});
+```
+
+**`Delete`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.keyValueV2.delete({
+    engine: 'engine',
+    path: 'path',
+});
+```
+
+**`Save`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.keyValueV2.save({
+    engine: 'engine',
+    path: 'path',
+    data: {
+        data: {
+            foo: 'bar'
+        }
+    }
+});
+```
+
+### Mount
+
+**`Create`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.mount.create({
+    path: 'secrets',
+    data: {
+        type: 'kv',
+        generate_signing_key: true
+    }
+});
+```
+
+**`GetMany`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+const data = await client.mount.getMany();
+console.log(data);
+// {
+//      data: {
+//          'engine/': {
+//              type: 'kv',
+//              uuid: 'xxx',
+//           }
+//       },
+//       lease_duration: 0,
+//       ...
+// }
+```
+
+**`GetOne`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+const data = await client.mount.getOne('engine');
+console.log(data);
+// { data: { type: 'kv', uuid: 'xxx' }, lease_duration: 0, ... }
+```
+
+**`Delete`**
+
+```typescript
+import { Client } from '@hapic/vault';
+
+const client = new Client({
+    // ...
+});
+
+await client.mount.create('engine');
+```
 
 ## License
 

@@ -24,7 +24,7 @@ describe('src/instance', () => {
     it('should have client properties', () => {
         const client = useClient();
 
-        expect(client.keyValue).toBeDefined();
+        expect(client.keyValueV1).toBeDefined();
         expect(client.mount).toBeDefined();
 
         unsetClient();

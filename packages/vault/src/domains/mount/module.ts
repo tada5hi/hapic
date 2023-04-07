@@ -5,40 +5,39 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Driver } from 'hapic';
-import { isRequestError } from 'hapic';
-import type { MountPayload } from './type';
+import type { ResourceResponse } from '../../type';
+import { BaseAPI } from '../base';
+import type { BaseAPIContext } from '../type';
+import type { MountCreateContext, MountCreatePayload } from './type';
 
-export class MountAPI {
-    protected client: Driver;
-
-    constructor(client: Driver) {
-        this.client = client;
+export class MountAPI extends BaseAPI {
+    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
+    constructor(context?: BaseAPIContext) {
+        super(context);
     }
 
-    async create(data: MountPayload) {
-        const response = await this.client.post(`sys/mounts/${data.path}`, data);
+    async create(context: MountCreateContext) {
+        const { data, path } = context;
+        data.options = data.options || {};
+        data.config = data.config || {};
+        const response = await this.driver.post(`sys/mounts/${path}`, data);
 
         return response.data;
     }
 
-    async delete(data: MountPayload | string) {
-        const path : string = typeof data === 'string' ?
-            data :
-            data.path;
+    async getMany() : Promise<ResourceResponse<Record<string, MountCreatePayload>>> {
+        const response = await this.driver.get('sys/mounts');
 
-        try {
-            await this.client.delete(`sys/mounts/${path}`);
-        } catch (e) {
-            if (
-                isRequestError(e) &&
-                e.response &&
-                e.response.status === 404
-            ) {
-                return;
-            }
+        return response.data;
+    }
 
-            throw e;
-        }
+    async getOne(path: string) : Promise<ResourceResponse<MountCreatePayload>> {
+        const response = await this.driver.get(`sys/mounts/${path}`);
+
+        return response.data;
+    }
+
+    async delete(path: string) {
+        await this.driver.delete(`sys/mounts/${path}`);
     }
 }

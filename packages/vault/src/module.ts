@@ -7,7 +7,8 @@
 
 import { Client as BaseClient } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
-import { KeyValueAPI, MountAPI } from './domains';
+import { HeaderName } from './constants';
+import { KeyValueV1API, KeyValueV2API, MountAPI } from './domains';
 import { parseConnectionString } from './utils';
 
 export class Client extends BaseClient {
@@ -15,18 +16,18 @@ export class Client extends BaseClient {
 
     public readonly mount : MountAPI;
 
-    public readonly keyValue: KeyValueAPI;
+    public readonly keyValueV1: KeyValueV1API;
+
+    public readonly keyValueV2: KeyValueV2API;
 
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
         super(input);
 
-        this.mount = new MountAPI(this.driver);
-        this.keyValue = new KeyValueAPI({
-            client: this.driver,
-            mountAPI: this.mount,
-        });
+        this.mount = new MountAPI({ driver: this.driver });
+        this.keyValueV1 = new KeyValueV1API({ driver: this.driver });
+        this.keyValueV2 = new KeyValueV2API({ driver: this.driver });
 
         this.setConfig(input);
     }
@@ -38,8 +39,8 @@ export class Client extends BaseClient {
 
         input = input || {};
 
-        this.setHeader('X-Vault-Request', 'true');
-        this.setHeader('Content-Type', 'application/json');
+        this.setHeader(HeaderName.VAULT_REQUEST, 'true');
+        this.setHeader(HeaderName.CONTENT_TYPE, 'application/json');
 
         let connectionOptions : ConnectionOptions | undefined;
 
@@ -56,16 +57,24 @@ export class Client extends BaseClient {
             this.setHeader('X-Vault-Token', connectionOptions.token);
         }
 
+        if (this.keyValueV1) {
+            this.keyValueV1.setDriver(this.driver);
+        }
+
+        if (this.keyValueV2) {
+            this.keyValueV2.setDriver(this.driver);
+        }
+
         return this;
     }
 
     // -----------------------------------------------------------------------------------
 
     setNamespace(namespace: string) {
-        this.setHeader('X-Vault-Namespace', namespace);
+        this.setHeader(HeaderName.VAULT_NAMESPACE, namespace);
     }
 
     unsetNamespace() {
-        this.unsetHeader('X-Vault-Namespace');
+        this.unsetHeader(HeaderName.VAULT_NAMESPACE);
     }
 }

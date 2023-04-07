@@ -5,6 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export * from './module';
-export * from './utils';
+export * from './v1';
+export * from './v2';
 export * from './type';

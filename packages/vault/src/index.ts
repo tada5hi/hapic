@@ -8,6 +8,7 @@
 import { createClient } from './instance';
 
 export * from './config';
+export * from './constants';
 export * from './client';
 export * from './domains';
 export * from './instance';
