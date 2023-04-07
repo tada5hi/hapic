@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.0](https://github.com/Tada5hi/hapic/compare/v1.6.1...v2.0.0-alpha.0) (2023-04-07)
+
+
+### Bug Fixes
+
+* enhance public domain api(s) + added tests ([9aeb35a](https://github.com/Tada5hi/hapic/commit/9aeb35ac62e7e2c36aa5835e402ee42abe2e930a))
+
+
+### Features
+
+* allow overriding client config after initialisation ([b117f22](https://github.com/Tada5hi/hapic/commit/b117f22239e33791ee506c392b57956a4c018c5b))
+* refactor oauth2 module and domain apis ([c23a479](https://github.com/Tada5hi/hapic/commit/c23a479c1e295e72f4e002a6edd71eea326d0b6d))
+* refactored types ([e66ada1](https://github.com/Tada5hi/hapic/commit/e66ada1a53cec23ffa5058817d789737e57190cf))
+* verify client by instance and symbol check ([ece1626](https://github.com/Tada5hi/hapic/commit/ece1626dd83bf9bb01b7fb316b52f3bf71cc0f72))
+
+
+### BREAKING CHANGES
+
+* public api changed
+* public api rewritten
+
+
+
+
+
 # [1.6.0](https://github.com/Tada5hi/hapic/compare/v1.5.0...v1.6.0) (2023-04-03)
 
 
