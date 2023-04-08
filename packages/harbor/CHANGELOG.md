@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.2](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2023-04-08)
+
+
+### Features
+
+* better naming for driver error utility helpers ([a0ed089](https://github.com/Tada5hi/hapi/commit/a0ed0891c969b0221a7047ca2bb2771fe9e1ad15))
+
+
+
+
+
 # [2.0.0-alpha.1](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.0...v2.0.0-alpha.1) (2023-04-08)
 
 

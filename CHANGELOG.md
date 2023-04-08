@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.2](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2023-04-08)
+
+
+### Features
+
+* better naming for driver error utility helpers ([a0ed089](https://github.com/Tada5hi/hapic/commit/a0ed0891c969b0221a7047ca2bb2771fe9e1ad15))
+* enhance control for token api request transformation ([09d02d9](https://github.com/Tada5hi/hapic/commit/09d02d96820347f4f23fb5248a0b2927a70a9974))
+* renamed option engine to mount ([2c5fcfa](https://github.com/Tada5hi/hapic/commit/2c5fcfa5f1f9ad772148f1a098362cb26970e525))
+
+
+
+
+
 # [2.0.0-alpha.1](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.0...v2.0.0-alpha.1) (2023-04-08)
 
 
