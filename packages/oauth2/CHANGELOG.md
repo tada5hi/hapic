@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.1](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.0...v2.0.0-alpha.1) (2023-04-08)
+
+
+### Features
+
+* add status code verifier for request error ([1629426](https://github.com/Tada5hi/hapic/commit/16294262c50405f8bf7b796a4d3121524c868ee2))
+
+
+
+
+
 # [2.0.0-alpha.0](https://github.com/Tada5hi/hapic/compare/v1.6.1...v2.0.0-alpha.0) (2023-04-07)
 
 
