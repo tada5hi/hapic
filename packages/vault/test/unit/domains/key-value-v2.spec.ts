@@ -17,7 +17,7 @@ describe('src/domains/key-value/v2', () => {
 
         const api = new KeyValueV2API({ driver });
         await api.create({
-            engine: 'secrets',
+            mount: 'secrets',
             path: 'key',
             data: {
                 data: {
@@ -36,7 +36,7 @@ describe('src/domains/key-value/v2', () => {
         driver.get = fn;
 
         const api = new KeyValueV2API({ driver });
-        await api.getOne({ engine: 'foo', path: 'bar' });
+        await api.getOne({ mount: 'foo', path: 'bar' });
 
         expect(fn).toHaveBeenCalledWith('foo/data/bar');
     });
@@ -49,7 +49,7 @@ describe('src/domains/key-value/v2', () => {
 
         const api = new KeyValueV2API({ driver });
         await api.update({
-            engine: 'secrets',
+            mount: 'secrets',
             path: 'key',
             data: {
                 data: {
@@ -68,7 +68,7 @@ describe('src/domains/key-value/v2', () => {
         driver.delete = fn;
 
         const api = new KeyValueV2API({ driver });
-        await api.delete({ engine: 'foo', path: 'bar' });
+        await api.delete({ mount: 'foo', path: 'bar' });
 
         expect(fn).toHaveBeenCalledWith('foo/metadata/bar');
     });
@@ -81,7 +81,7 @@ describe('src/domains/key-value/v2', () => {
 
         const api = new KeyValueV2API({ driver });
         await api.save({
-            engine: 'secrets',
+            mount: 'secrets',
             path: 'key',
             data: {
                 data: {

@@ -6,7 +6,15 @@
  */
 
 export type KeyValueBaseContext = {
-    engine: string,
+    /**
+     * The mount point on which the secret
+     * engine is mounted.
+     */
+    mount: string,
+    /**
+     * The secret path relative to the secret engine
+     * mount.
+     */
     path: string
 };
 
@@ -23,14 +31,26 @@ type KeyValueV2Payload = {
 
 export type KeyValueV2CreateContext = KeyValueBaseContext & {
     data: KeyValueV2Payload,
+    version?: number
+};
+
+export type KeyValueV2CreateResponse = {
+    data: {
+        created_time: string,
+        deletion_time: string,
+        destroyed: boolean,
+        version: number,
+    }
 };
 
 export type KeyValueV2UpdateContext = KeyValueBaseContext & {
-    data: KeyValueV2Payload
+    data: KeyValueV2Payload,
+    version?: number
 };
 
 export type KeyValueV2SaveContext = KeyValueBaseContext & {
-    data: KeyValueV2Payload
+    data: KeyValueV2Payload,
+    version?: number
 };
 
 export type KeyValueV2GetOneResponse<
@@ -46,7 +66,7 @@ export type KeyValueV2GetOneResponse<
             },
             deletion_time: string,
             destroyed: boolean,
-            version: 2
+            version: number
         }
     }
 };

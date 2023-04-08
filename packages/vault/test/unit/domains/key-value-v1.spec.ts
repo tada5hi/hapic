@@ -17,7 +17,7 @@ describe('src/domains/key-value/v1', () => {
 
         const api = new KeyValueV1API({ driver });
         await api.create({
-            engine: 'secrets',
+            mount: 'secrets',
             path: 'key',
             data: {
                 bar: 'baz',
@@ -34,7 +34,7 @@ describe('src/domains/key-value/v1', () => {
         driver.get = fn;
 
         const api = new KeyValueV1API({ driver });
-        await api.getOne({ engine: 'foo', path: 'bar' });
+        await api.getOne({ mount: 'foo', path: 'bar' });
 
         expect(fn).toHaveBeenCalledWith('foo/bar');
     });
@@ -46,7 +46,7 @@ describe('src/domains/key-value/v1', () => {
         driver.delete = fn;
 
         const api = new KeyValueV1API({ driver });
-        await api.delete({ engine: 'foo', path: 'bar' });
+        await api.delete({ mount: 'foo', path: 'bar' });
 
         expect(fn).toHaveBeenCalledWith('foo/bar');
     });

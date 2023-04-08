@@ -18,7 +18,7 @@ export class KeyValueV1API extends BaseAPI {
 
     async create(context: KeyValueV1CreateContext) : Promise<any> {
         const response = await this.driver.post(
-            `${context.engine}/${context.path}`,
+            `${context.mount}/${context.path}`,
             context.data,
         );
         return response.data;
@@ -27,12 +27,12 @@ export class KeyValueV1API extends BaseAPI {
     async getOne<T extends Record<string, any> = Record<string, any>>(
         context: KeyValueBaseContext,
     ) : Promise<ResourceResponse<T>> {
-        const { data } = await this.driver.get(`${context.engine}/${context.path}`);
+        const { data } = await this.driver.get(`${context.mount}/${context.path}`);
 
         return data;
     }
 
     async delete(context: KeyValueBaseContext) {
-        await this.driver.delete(`${context.engine}/${context.path}`);
+        await this.driver.delete(`${context.mount}/${context.path}`);
     }
 }

@@ -10,6 +10,7 @@ import type { BaseAPIContext } from '../type';
 import type {
     KeyValueBaseContext,
     KeyValueV2CreateContext,
+    KeyValueV2CreateResponse,
     KeyValueV2GetOneResponse,
     KeyValueV2SaveContext,
     KeyValueV2UpdateContext,
@@ -21,9 +22,9 @@ export class KeyValueV2API extends BaseAPI {
         super(context);
     }
 
-    async create(context: KeyValueV2CreateContext) : Promise<any> {
+    async create(context: KeyValueV2CreateContext) : Promise<KeyValueV2CreateResponse> {
         const response = await this.driver.post(
-            `${context.engine}/data/${context.path}`,
+            `${context.mount}/data/${context.path}`,
             context.data,
         );
         return response.data;
@@ -32,24 +33,24 @@ export class KeyValueV2API extends BaseAPI {
     async getOne<T extends Record<string, any> = Record<string, any>>(
         context: KeyValueBaseContext,
     ) : Promise<KeyValueV2GetOneResponse<T>> {
-        const { data } = await this.driver.get(`${context.engine}/data/${context.path}`);
+        const { data } = await this.driver.get(`${context.mount}/data/${context.path}`);
 
         return data;
     }
 
     async update(context: KeyValueV2UpdateContext) : Promise<any> {
         const response = await this.driver.patch(
-            `${context.engine}/data/${context.path}`,
+            `${context.mount}/data/${context.path}`,
             context.data,
         );
         return response.data;
     }
 
     async delete(context: KeyValueBaseContext) {
-        await this.driver.delete(`${context.engine}/metadata/${context.path}`);
+        await this.driver.delete(`${context.mount}/metadata/${context.path}`);
     }
 
-    async save(context: KeyValueV2SaveContext) : Promise<any> {
+    async save(context: KeyValueV2SaveContext) : Promise<KeyValueV2CreateResponse> {
         return this.create(context);
     }
 }
