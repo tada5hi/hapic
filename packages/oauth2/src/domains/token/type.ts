@@ -75,10 +75,41 @@ export type TokenGrantResponse = {
 // ------------------------------------------------------------------
 
 export type TokenBaseOptions = {
+    /**
+     * Inherit existing driver authorization header for
+     * current request.
+     *
+     * default: false
+     */
     authorizationHeaderInherit?: boolean,
+    /**
+     * Set a custom authorization header or disable
+     * setting an authorization at all for the current request.
+     *
+     * default: undefined
+     */
     authorizationHeader?: string | AuthorizationHeader,
+    /**
+     * Custom client id for
+     * current request.
+     *
+     * default: undefined
+     */
     clientId?: string,
+    /**
+     * Custom client secret for
+     * current request.
+     *
+     * default: undefined
+     */
     clientSecret?: string
+    /**
+     * If this options is enabled, the client credentials will
+     * be stripped as request parameters and set as header if present.
+     *
+     * default: false
+     */
+    clientCredentialsAsHeader?: boolean
 };
 
 // ------------------------------------------------------------------

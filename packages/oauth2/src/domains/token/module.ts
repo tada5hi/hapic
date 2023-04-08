@@ -5,14 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { stringifyAuthorizationHeader } from 'hapic';
-import type {
-    DriverHeaders,
-    DriverRequestTransformer,
-} from 'hapic';
-import type {
-    JwtPayload,
-} from '../../type';
+import type { DriverRequestTransformer } from 'hapic';
+import type { JwtPayload } from '../../type';
 
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../type';
@@ -28,6 +22,7 @@ import type {
     TokenRefreshTokenGrantParameters,
     TokenRobotCredentialsGrantParameters,
 } from './type';
+import { createRequestTransformerForTokenAPIRequest } from './utils';
 
 export class TokenAPI extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
@@ -41,50 +36,50 @@ export class TokenAPI extends BaseAPI {
         parameters: Pick<TokenRefreshTokenGrantParameters, 'refresh_token' | 'scope'>,
         options?: TokenBaseOptions,
     ) {
-        return this.create(this.extendCreateParameters({
+        return this.create({
             grant_type: 'refresh_token',
             ...parameters,
-        }), options);
+        }, options);
     }
 
     async createWithClientCredentials(
         parameters?: Pick<TokenClientCredentialsGrantParameters, 'scope'>,
         options?: TokenBaseOptions,
     ) {
-        return this.create(this.extendCreateParameters({
+        return this.create({
             grant_type: 'client_credentials',
             ...(parameters || {}),
-        }), options);
+        }, options);
     }
 
     async createWithPasswordGrant(
         parameters: Pick<TokenPasswordGrantParameters, 'username' | 'password' | 'scope'>,
         options?: TokenBaseOptions,
     ) {
-        return this.create(this.extendCreateParameters({
+        return this.create({
             grant_type: 'password',
             ...parameters,
-        }), options);
+        }, options);
     }
 
     async createWithAuthorizeGrant(
         parameters: Pick<TokenAuthorizationGrantParameters, 'state' | 'code' | 'redirect_uri'>,
         options?: TokenBaseOptions,
     ): Promise<TokenGrantResponse> {
-        return this.create(this.extendCreateParameters({
+        return this.create({
             grant_type: 'authorization_code',
             ...parameters,
-        }), options);
+        }, options);
     }
 
     async createWithRobotCredentials(
         parameters: Pick<TokenRobotCredentialsGrantParameters, 'id' | 'secret'>,
         options?: TokenBaseOptions,
     ) {
-        return this.create(this.extendCreateParameters({
+        return this.create({
             grant_type: 'robot_credentials',
             ...parameters,
-        }), options);
+        }, options);
     }
 
     // ------------------------------------------------------------------
@@ -98,9 +93,11 @@ export class TokenAPI extends BaseAPI {
         parameters: TokenGrantParameters,
         options?: TokenBaseOptions,
     ): Promise<TokenGrantResponse> {
-        this.extendParametersWithClientCredentials(parameters);
+        options = options || {};
 
-        const urlSearchParams = this.buildURLSearchParams(parameters, options);
+        this.extendCreateParameters(parameters);
+
+        const urlSearchParams = this.buildURLSearchParams(parameters);
 
         const { data } = await this.driver.post(
             (this.options.tokenEndpoint || '/token'),
@@ -139,9 +136,9 @@ export class TokenAPI extends BaseAPI {
         parameters: TokenIntrospectParameters,
         options?: TokenBaseOptions,
     ): Promise<T> {
-        this.extendParametersWithClientCredentials(parameters);
+        options = options || {};
 
-        const urlSearchParams = this.buildURLSearchParams(parameters, options);
+        const urlSearchParams = this.buildURLSearchParams(parameters);
 
         const { data } = await this.driver.post(
             this.options.introspectionEndpoint || '/token/introspect',
@@ -159,6 +156,20 @@ export class TokenAPI extends BaseAPI {
         options?: TokenBaseOptions,
     ) : DriverRequestTransformer[] {
         const transformers : DriverRequestTransformer[] = [];
+
+        options = options || {};
+        if (!options.clientId) {
+            if (this.options.clientId) {
+                options.clientId = this.options.clientId;
+            }
+
+            if (this.options.clientSecret) {
+                options.clientSecret = this.options.clientSecret;
+            }
+        }
+
+        transformers.push(createRequestTransformerForTokenAPIRequest(parameters, options));
+
         if (this.driver.defaults.transformRequest) {
             if (Array.isArray(this.driver.defaults.transformRequest)) {
                 transformers.push(...this.driver.defaults.transformRequest);
@@ -167,74 +178,7 @@ export class TokenAPI extends BaseAPI {
             }
         }
 
-        transformers.push(/* istanbul ignore next */ (data, headers) => {
-            options = options || {};
-
-            if (!options.clientId) {
-                options.clientId = parameters.client_id;
-                options.clientSecret = parameters.client_secret;
-            }
-
-            this.transformHeadersForRequest(headers, options);
-
-            return data;
-        });
-
         return transformers;
-    }
-
-    /**
-     * Set Content-Type and Authorization Header for request.
-     *
-     * @param headers
-     * @param options
-     */
-    transformHeadersForRequest(
-        headers: DriverHeaders,
-        options?: TokenBaseOptions,
-    ) : void {
-        options = options || {};
-
-        // set content type
-        headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
-        if (
-            options.authorizationHeaderInherit &&
-            headers.has('Authorization')
-        ) {
-            return;
-        }
-
-        // request should be in general unauthorized
-        headers.delete('Authorization');
-
-        if (options.authorizationHeader) {
-            const header = typeof options.authorizationHeader === 'string' ?
-                options.authorizationHeader :
-                stringifyAuthorizationHeader(options.authorizationHeader);
-
-            headers.set('Authorization', header);
-
-            return;
-        }
-
-        if (options.clientId && options.clientSecret) {
-            headers.set('Authorization', stringifyAuthorizationHeader({
-                type: 'Basic',
-                username: options.clientId,
-                password: options.clientSecret,
-            }));
-
-            return;
-        }
-
-        if (this.options.clientId && this.options.clientSecret) {
-            headers.set('Authorization', stringifyAuthorizationHeader({
-                type: 'Basic',
-                username: this.options.clientId,
-                password: this.options.clientSecret,
-            }));
-        }
     }
 
     // ------------------------------------------------------------------
@@ -255,54 +199,31 @@ export class TokenAPI extends BaseAPI {
             }
         }
 
-        this.extendParametersWithClientCredentials(parameters);
+        if (!parameters.client_id) {
+            if (parameters.client_secret) {
+                delete parameters.client_secret;
+            }
+
+            if (this.options.clientId) {
+                parameters.client_id = this.options.clientId;
+            }
+
+            if (this.options.clientSecret) {
+                parameters.client_secret = this.options.clientSecret;
+            }
+        }
 
         return parameters;
-    }
-
-    protected extendParametersWithClientCredentials<T extends ClientAuthenticationParameters>(input: T) : T {
-        if (input.client_id) {
-            return input;
-        }
-
-        // secret should not be set if id is not
-        if (input.client_secret) {
-            delete input.client_secret;
-        }
-
-        if (this.options.clientId) {
-            input.client_id = this.options.clientId;
-        }
-
-        if (input.client_id && this.options.clientSecret) {
-            input.client_secret = this.options.clientSecret;
-        }
-
-        return input;
     }
 
     // ------------------------------------------------------------------
 
     protected buildURLSearchParams<T extends ClientAuthenticationParameters>(
         input: T,
-        options?: TokenBaseOptions,
     ) : URLSearchParams {
-        options = options || {};
-
-        const setClientCredentialsHeader = this.hasClientCredentials(input) &&
-            !options.authorizationHeaderInherit &&
-            !options.authorizationHeader;
-
         const urlSearchParams = new URLSearchParams();
         const keys = Object.keys(input);
         for (let i = 0; i < keys.length; i++) {
-            if (
-                setClientCredentialsHeader &&
-                (keys[i] === 'client_id' || keys[i] === 'client_secret')
-            ) {
-                continue;
-            }
-
             const value = input[keys[i] as keyof T];
 
             if (typeof value === 'string' && !!value) {
@@ -316,17 +237,5 @@ export class TokenAPI extends BaseAPI {
         }
 
         return urlSearchParams;
-    }
-
-    /**
-     * Check if client credentials are available.
-     *
-     * @param options
-     */
-    protected hasClientCredentials(options?: ClientAuthenticationParameters) : boolean {
-        options = options || {};
-
-        return (!!options.client_id && !!options.client_secret) ||
-            (!!this.options.clientId && !!this.options.clientSecret);
     }
 }
