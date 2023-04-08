@@ -9,23 +9,36 @@ import axios from 'axios';
 import type { DriverError } from '../type';
 import { isObject } from './object';
 
-export function isRequestError(error?: unknown) : error is DriverError {
-    if (!isObject(error)) {
+export function isRequestError(
+    error?: unknown,
+) : error is DriverError {
+    return isObject(error) && axios.isAxiosError(error);
+}
+
+export function isRequestErrorWithStatusCode(
+    error: unknown,
+    statusCode: number | number[],
+) : boolean {
+    if (!isRequestError(error) || !isObject(error.response)) {
         return false;
     }
 
-    if (
-        Object.prototype.hasOwnProperty.call(error, 'config') &&
-        Object.prototype.hasOwnProperty.call(error, 'isAxiosError') &&
-        typeof error.isAxiosError === 'boolean'
-    ) {
-        return error.isAxiosError;
+    const statusCodes = Array.isArray(statusCode) ?
+        statusCode :
+        [statusCode];
+
+    for (let i = 0; i < statusCodes.length; i++) {
+        if (statusCodes[i] === error.response.status) {
+            return true;
+        }
     }
 
-    return axios.isAxiosError(error);
+    return false;
 }
 
-export function isNetworkError(error?: unknown) {
+export function isNetworkError(
+    error?: unknown,
+) {
     return isObject(error) &&
         !error.response &&
         Boolean(error.code) &&

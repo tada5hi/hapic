@@ -51,7 +51,7 @@
         "hapic": "^2.0.0-alpha.0"
     },
     "peerDependencies": {
-        "hapic": "^2.x || >= 2.0.0-alpha.0"
+        "hapic": "^2.x || >= 2.0.0-alpha.1"
     },
     "publishConfig": {
         "access": "public"

@@ -21,6 +21,7 @@ export type {
 } from 'hapic';
 export {
     isRequestError,
+    isRequestErrorWithStatusCode,
     isNetworkError,
     isDriver,
     createDriver,

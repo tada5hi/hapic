@@ -20,6 +20,7 @@ export type {
 
 export {
     isRequestError,
+    isRequestErrorWithStatusCode,
     isNetworkError,
     isDriver,
     createDriver,
