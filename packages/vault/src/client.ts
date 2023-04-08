@@ -18,9 +18,9 @@ export type {
     ErrorCode,
 } from 'hapic';
 export {
-    isRequestError,
-    isRequestErrorWithStatusCode,
-    isNetworkError,
+    isDriverError,
+    hasDriverFailedWithStausCode,
+    hasDriverFailedDueNetworkError,
     isDriver,
     createDriver,
 } from 'hapic';

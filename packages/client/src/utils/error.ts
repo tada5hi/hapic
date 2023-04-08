@@ -9,17 +9,17 @@ import axios from 'axios';
 import type { DriverError } from '../type';
 import { isObject } from './object';
 
-export function isRequestError(
+export function isDriverError(
     error?: unknown,
 ) : error is DriverError {
     return isObject(error) && axios.isAxiosError(error);
 }
 
-export function isRequestErrorWithStatusCode(
+export function hasDriverFailedWithStausCode(
     error: unknown,
     statusCode: number | number[],
 ) : boolean {
-    if (!isRequestError(error) || !isObject(error.response)) {
+    if (!isDriverError(error) || !isObject(error.response)) {
         return false;
     }
 
@@ -36,10 +36,10 @@ export function isRequestErrorWithStatusCode(
     return false;
 }
 
-export function isNetworkError(
+export function hasDriverFailedDueNetworkError(
     error?: unknown,
 ) {
-    return isObject(error) &&
+    return isDriverError(error) &&
         !error.response &&
         Boolean(error.code) &&
         error.code !== 'ECONNABORTED';
