@@ -6,27 +6,27 @@
  */
 
 import {
-    createOAuth2Client, hasOAuth2Client, setOAuth2Client, unsetOAuth2Client, useOAuth2Client,
+    createClient, hasClient, setClient, unsetClient, useClient,
 } from '../../src';
 
 describe('src/instance', () => {
     it('should create instance', () => {
-        expect(hasOAuth2Client()).toBeFalsy();
+        expect(hasClient()).toBeFalsy();
 
-        const client = setOAuth2Client(createOAuth2Client());
-        expect(client).toEqual(useOAuth2Client());
+        const client = setClient(createClient());
+        expect(client).toEqual(useClient());
 
-        expect(hasOAuth2Client()).toBeTruthy();
+        expect(hasClient()).toBeTruthy();
 
-        unsetOAuth2Client();
+        unsetClient();
     });
 
     it('should have client properties', () => {
-        const client = useOAuth2Client();
+        const client = useClient();
 
         expect(client.token).toBeDefined();
         expect(client.authorize).toBeDefined();
 
-        unsetOAuth2Client();
+        unsetClient();
     });
 });

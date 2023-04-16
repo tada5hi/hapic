@@ -19,7 +19,7 @@ const instances: Record<string, HarborClient> = {};
  *
  * @param key
  */
-export function hasHarborClient(
+export function hasClient(
     key?: string,
 ) : boolean {
     return hasOwnProperty(instances, key || 'default');
@@ -31,7 +31,7 @@ export function hasHarborClient(
  * @param client
  * @param key
  */
-export function setHarborClient(
+export function setClient(
     client: HarborClient,
     key?: string,
 ) : HarborClient {
@@ -47,7 +47,7 @@ export function setHarborClient(
  *
  * @param key
  */
-export function useHarborClient(
+export function useClient(
     key?: string,
 ) : HarborClient {
     key = key || 'default';
@@ -56,7 +56,7 @@ export function useHarborClient(
         return instances[key];
     }
 
-    const instance = createHarborClient();
+    const instance = createClient();
 
     instances[key] = instance;
 
@@ -68,7 +68,7 @@ export function useHarborClient(
  *
  * @param key
  */
-export function unsetHarborClient(key?: string) {
+export function unsetClient(key?: string) {
     key = key || 'default';
     if (hasOwnProperty(instances, key)) {
         delete instances[key];
@@ -80,7 +80,7 @@ export function unsetHarborClient(key?: string) {
  *
  * @param input
  */
-export function createHarborClient(input?: ConfigInput) {
+export function createClient(input?: ConfigInput) {
     return new HarborClient(input);
 }
 
@@ -89,7 +89,7 @@ export function createHarborClient(input?: ConfigInput) {
  *
  * @param input
  */
-export function isHarborClient(input: unknown): input is HarborClient {
+export function isClient(input: unknown): input is HarborClient {
     if (input instanceof HarborClient) {
         return true;
     }

@@ -8,11 +8,11 @@
 import { stringifyAuthorizationHeader } from 'hapic';
 import {
     HarborClient,
-    createHarborClient,
-    hasHarborClient,
-    setHarborClient,
-    unsetHarborClient,
-    useHarborClient,
+    createClient,
+    hasClient,
+    setClient,
+    unsetClient,
+    useClient,
 } from '../../src';
 
 describe('src/instance', () => {
@@ -29,22 +29,22 @@ describe('src/instance', () => {
         }));
     });
     it('should be manageable by singleton', () => {
-        expect(hasHarborClient()).toBeFalsy();
+        expect(hasClient()).toBeFalsy();
 
-        const client = setHarborClient(createHarborClient());
-        expect(client).toEqual(useHarborClient());
+        const client = setClient(createClient());
+        expect(client).toEqual(useClient());
 
-        expect(hasHarborClient()).toBeTruthy();
+        expect(hasClient()).toBeTruthy();
 
-        unsetHarborClient();
+        unsetClient();
     });
 
     it('should have client properties', () => {
-        const client = useHarborClient();
+        const client = useClient();
 
         expect(client.project).toBeDefined();
         expect(client.search).toBeDefined();
 
-        unsetHarborClient();
+        unsetClient();
     });
 });

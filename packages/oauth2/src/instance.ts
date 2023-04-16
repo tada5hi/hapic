@@ -19,7 +19,7 @@ const instanceMap: Record<string, OAuth2Client> = {};
  *
  * @param key
  */
-export function hasOAuth2Client(
+export function hasClient(
     key?: string,
 ) : boolean {
     return hasOwnProperty(instanceMap, key || 'default');
@@ -31,7 +31,7 @@ export function hasOAuth2Client(
  * @param client
  * @param key
  */
-export function setOAuth2Client(
+export function setClient(
     client: OAuth2Client,
     key?: string,
 ) : OAuth2Client {
@@ -47,7 +47,7 @@ export function setOAuth2Client(
  *
  * @param key
  */
-export function useOAuth2Client(
+export function useClient(
     key?: string,
 ) : OAuth2Client {
     key = key || 'default';
@@ -56,7 +56,7 @@ export function useOAuth2Client(
         return instanceMap[key];
     }
 
-    const instance = createOAuth2Client();
+    const instance = createClient();
 
     instanceMap[key] = instance;
 
@@ -68,7 +68,7 @@ export function useOAuth2Client(
  *
  * @param key
  */
-export function unsetOAuth2Client(key?: string) {
+export function unsetClient(key?: string) {
     key = key || 'default';
     if (hasOwnProperty(instanceMap, key)) {
         delete instanceMap[key];
@@ -80,7 +80,7 @@ export function unsetOAuth2Client(key?: string) {
  *
  * @param input
  */
-export function createOAuth2Client(input?: ConfigInput) {
+export function createClient(input?: ConfigInput) {
     return new OAuth2Client(input);
 }
 
@@ -89,7 +89,7 @@ export function createOAuth2Client(input?: ConfigInput) {
  *
  * @param input
  */
-export function isOAuth2Client(input: unknown): input is OAuth2Client {
+export function isClient(input: unknown): input is OAuth2Client {
     if (input instanceof OAuth2Client) {
         return true;
     }

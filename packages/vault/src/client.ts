@@ -5,20 +5,16 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client as BaseClient } from 'hapic';
-
 export type {
     RequestOptions,
     Response,
+    ResponseData,
     ClientError,
     ErrorCode,
 } from 'hapic';
+
 export {
-    createClient,
     isClientError,
     hasClientFailedWithStausCode,
     hasClientFailedDueNetworkError,
 } from 'hapic';
-export {
-    BaseClient,
-};
