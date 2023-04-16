@@ -27,7 +27,7 @@ describe('src/instance', () => {
         expect(isClient(client)).toBeTruthy();
 
         const fakeClient = {
-            '@instanceof': Symbol.for('BaseClient'),
+            '@instanceof': Symbol.for('Client'),
         };
         expect(isClient(fakeClient)).toBeTruthy();
     });

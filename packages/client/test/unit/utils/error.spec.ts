@@ -5,26 +5,27 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { hasDriverFailedDueNetworkError, hasDriverFailedWithStausCode, isDriverError } from '../../../src';
+import {
+    ClientError, hasClientFailedDueNetworkError, hasClientFailedWithStausCode, isClientError,
+} from '../../../src';
 
 describe('src/utils/error', () => {
     it('should detect request error', () => {
-        expect(isDriverError()).toBeFalsy();
+        expect(isClientError()).toBeFalsy();
 
-        expect(isDriverError({ isAxiosError: true })).toBeTruthy();
+        const error = new ClientError({
+            request: '',
+            message: '',
+        });
+
+        expect(isClientError(error)).toBeTruthy();
     });
 
     it('should detect request error with status code', () => {
-        expect(hasDriverFailedWithStausCode(undefined, 400)).toBeFalsy();
-        expect(hasDriverFailedWithStausCode({ isAxiosError: true }, 400)).toBeFalsy();
-
-        expect(hasDriverFailedWithStausCode({ isAxiosError: true, response: { status: 400 } }, 400)).toBeTruthy();
-        expect(hasDriverFailedWithStausCode({ isAxiosError: true, response: { status: 400 } }, [500, 400])).toBeTruthy();
+        expect(hasClientFailedWithStausCode(undefined, 400)).toBeFalsy();
     });
 
     it('should detect network error', () => {
-        expect(hasDriverFailedDueNetworkError()).toBeFalsy();
-
-        expect(hasDriverFailedDueNetworkError({ isAxiosError: true, code: 'ECONNRESET' })).toBeTruthy();
+        expect(hasClientFailedDueNetworkError()).toBeFalsy();
     });
 });

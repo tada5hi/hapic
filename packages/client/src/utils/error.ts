@@ -5,21 +5,24 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import axios from 'axios';
-import type { DriverError } from '../type';
-import { isObject } from './object';
+import { ErrorCode } from '../error';
+import type { ClientError } from '../error';
+import { verifyInstanceBySymbol } from './instance';
 
-export function isDriverError(
+import { isObject } from './type-check';
+
+export function isClientError(
     error?: unknown,
-) : error is DriverError {
-    return isObject(error) && axios.isAxiosError(error);
+) : error is ClientError {
+    return isObject(error) &&
+        verifyInstanceBySymbol(error, 'ClientError');
 }
 
-export function hasDriverFailedWithStausCode(
+export function hasClientFailedWithStausCode(
     error: unknown,
     statusCode: number | number[],
 ) : boolean {
-    if (!isDriverError(error) || !isObject(error.response)) {
+    if (!isClientError(error) || !isObject(error.response)) {
         return false;
     }
 
@@ -36,11 +39,11 @@ export function hasDriverFailedWithStausCode(
     return false;
 }
 
-export function hasDriverFailedDueNetworkError(
+export function hasClientFailedDueNetworkError(
     error?: unknown,
 ) {
-    return isDriverError(error) &&
+    return isClientError(error) &&
         !error.response &&
         Boolean(error.code) &&
-        error.code !== 'ECONNABORTED';
+        error.code !== ErrorCode.CONNECTION_ABORTED;
 }

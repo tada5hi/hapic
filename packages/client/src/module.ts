@@ -5,69 +5,60 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import axiosRetry from 'axios-retry';
-import { buildConfig } from './config';
+import { Headers, fetch } from 'node-fetch-native';
+import { withBase, withQuery } from 'ufo';
+
+import { MethodName, ResponseType } from './constants';
 import type {
-    Driver, DriverRequestConfig, DriverResponse, DriverRetryConfig,
-} from './type';
-import type { ConfigInput } from './config';
+    ClientContext,
+    InterceptorErrorHandler, InterceptorHandler,
+    RequestOptions,
+    RequestOptionsWithURL,
+    Response,
+    ResponseData,
+} from './core';
+import {
+    InterceptorManager,
+    detectResponseType,
+    extendRequestOptionsWithDefaults, isRequestPayloadSupported,
+} from './core';
+import type { ClientError } from './error';
+import { ErrorCode, createClientError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
-import { createDriver } from './utils';
 
 export class Client {
     readonly '@instanceof' = Symbol.for('BaseClient');
 
-    public driver!: Driver;
+    public defaults : RequestOptions;
+
+    protected headers : Headers;
+
+    protected requestInterceptors : InterceptorManager;
+
+    protected responseInterceptors : InterceptorManager;
 
     // ---------------------------------------------------------------------------------
 
-    constructor(input?: ConfigInput) {
-        this.setConfig(input);
+    constructor(input?: RequestOptions) {
+        input = input || {};
+
+        this.defaults = extendRequestOptionsWithDefaults(input || {});
+        this.headers = new Headers(this.defaults.headers);
+
+        this.requestInterceptors = new InterceptorManager();
+        this.responseInterceptors = new InterceptorManager();
     }
 
     // ---------------------------------------------------------------------------------
-
-    public setConfig(input?: ConfigInput) {
-        const config = buildConfig(input);
-
-        let driver: Driver;
-        if (config.driver || !this.driver) {
-            driver = createDriver(config.driver);
-        } else {
-            driver = this.driver;
-        }
-
-        if (config.retry) {
-            let retryConfig : DriverRetryConfig = {};
-
-            if (typeof config.retry !== 'boolean') {
-                retryConfig = config.retry;
-            }
-
-            const retrySymbol = Symbol.for('ClientRetry');
-            if (!(retrySymbol in driver)) {
-                (driver as any)[retrySymbol] = true;
-                axiosRetry(driver, retryConfig);
-            }
-        }
-
-        this.driver = driver;
-    }
 
     /**
      * Return base url
      *
-     * @param config
-     *
      * @return string
      */
-    public getBaseURL(config?: DriverRequestConfig): string {
-        if (this.driver.defaults.baseURL) {
-            return this.driver.defaults.baseURL;
-        }
-
-        return this.driver.getUri(config);
+    public getBaseURL(): string | undefined {
+        return this.defaults.baseURL;
     }
 
     /**
@@ -76,7 +67,7 @@ export class Client {
      * @param url
      */
     public setBaseURL(url: string) {
-        this.driver.defaults.baseURL = url;
+        this.defaults.baseURL = url;
 
         return this;
     }
@@ -90,7 +81,7 @@ export class Client {
      * @param value
      */
     public setHeader(key: string, value: any) {
-        this.driver.defaults.headers.common[key] = value;
+        this.headers.set(key, value);
 
         return this;
     }
@@ -101,7 +92,7 @@ export class Client {
      * @param key
      */
     public getHeader(key: string) {
-        return this.driver.defaults.headers.common[key];
+        return this.headers.get(key);
     }
 
     /**
@@ -110,8 +101,8 @@ export class Client {
      * @param key
      */
     public unsetHeader(key: string) {
-        if (key in this.driver.defaults.headers.common) {
-            delete this.driver.defaults.headers.common[key];
+        if (this.headers.has(key)) {
+            this.headers.delete(key);
         }
 
         return this;
@@ -121,7 +112,9 @@ export class Client {
      * Unset all defined headers for the upcoming requests.
      */
     public unsetHeaders() {
-        this.driver.defaults.headers.common = {};
+        this.headers.forEach((_value, key) => {
+            this.headers.delete(key);
+        });
 
         return this;
     }
@@ -167,8 +160,154 @@ export class Client {
      *
      * @param config
      */
-    public request<T = any, R = DriverResponse<T>, C = any>(config: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.request(config);
+    public async request<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(config: RequestOptionsWithURL<RT>): Promise<R> {
+        const headers = new Headers(config.headers);
+
+        this.headers.forEach((value, key) => {
+            if (!headers.has(key)) {
+                headers.set(key, value);
+            }
+        });
+
+        const baseURL = config.baseURL || this.defaults.baseURL;
+        const context : ClientContext<RT, T> = {
+            request: baseURL ? withBase(config.url, baseURL) : config.url,
+            options: { ...this.defaults as RequestOptionsWithURL<RT>, ...config, headers },
+        };
+
+        if (context.options.query || context.options.params) {
+            context.request = withQuery(context.request, {
+                ...context.options.params,
+                ...context.options.query,
+            });
+        }
+
+        await this.requestInterceptors.run(context as ClientContext);
+
+        if (context.options.transform) {
+            const transformers = Array.isArray(context.options.transform) ?
+                context.options.transform :
+                [context.options.transform];
+
+            for (let i = 0; i < transformers.length; i++) {
+                const transformer = transformers[i];
+                context.options.body = transformer(
+                    context.options.body,
+                    context.options.headers as Headers,
+                );
+            }
+        }
+
+        const handleError = async (
+            step: 'request' | 'response',
+            ctx: Omit<ClientContext<RT, T>, 'error'> & { error?: Error },
+        ) : Promise<R> => {
+            const isAbort = (!!ctx.error && ctx.error.name === 'AbortError');
+
+            let code : ErrorCode | undefined;
+            if (!ctx.response) {
+                if (isAbort) {
+                    code = ErrorCode.CONNECTION_ABORTED;
+                } else {
+                    code = ErrorCode.CONNECTION_CLOSED;
+                }
+            }
+
+            const error = createClientError({
+                ...ctx,
+                code,
+            });
+
+            if (Error.captureStackTrace) {
+                Error.captureStackTrace(error);
+            }
+
+            ctx.error = error as ClientError<T>;
+
+            let output : ClientContext | undefined;
+            if (step === 'request') {
+                output = await this.requestInterceptors.run(ctx as ClientContext);
+            } else {
+                output = await this.responseInterceptors.run(ctx as ClientContext);
+            }
+
+            if (
+                output &&
+                output.response
+            ) {
+                return output.response as R;
+            }
+
+            throw error;
+        };
+
+        let response : Response<ResponseData<RT, T>>;
+
+        try {
+            if (!isRequestPayloadSupported(context.options.method)) {
+                delete context.options.body;
+            }
+
+            response = await fetch(context.request, context.options as RequestInit);
+        } catch (error: any) {
+            return handleError('request', {
+                ...context,
+                ...(error instanceof Error ? { error } : {}),
+            });
+        }
+
+        const responseType = context.options.responseType ||
+            detectResponseType(response.headers.get(HeaderName.CONTENT_TYPE));
+
+        let data : ResponseData<RT, T>;
+
+        switch (responseType) {
+            case ResponseType.STREAM: {
+                data = response.body as ResponseData<RT, T>;
+                break;
+            }
+            case ResponseType.BLOB: {
+                data = await response.blob() as ResponseData<RT, T>;
+                break;
+            }
+            case ResponseType.ARRAY_BUFFER: {
+                data = await response.arrayBuffer() as ResponseData<RT, T>;
+                break;
+            }
+            case ResponseType.TEXT: {
+                data = await response.text() as ResponseData<RT, T>;
+                break;
+            }
+            default: {
+                const temp = await response.text();
+                try {
+                    data = JSON.parse(temp);
+                } catch (e) {
+                    data = temp as ResponseData<RT, T>;
+                }
+            }
+        }
+
+        Object.defineProperty(response, 'data', {
+            get() {
+                return data;
+            },
+        });
+
+        if (
+            response.status >= 400 &&
+            response.status < 600
+        ) {
+            context.response = response;
+
+            return handleError('response', context);
+        }
+
+        return response as R;
     }
 
     // ---------------------------------------------------------------------------------
@@ -179,8 +318,16 @@ export class Client {
      * @param url
      * @param config
      */
-    public get<T = any, R = DriverResponse<T>, C = any>(url: string, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.get(url, config);
+    public get<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(url: string, config?: RequestOptions<RT>): Promise<R> {
+        return this.request({
+            ...(config || {}),
+            method: MethodName.GET,
+            url,
+        });
     }
 
     // ---------------------------------------------------------------------------------
@@ -191,8 +338,16 @@ export class Client {
      * @param url
      * @param config
      */
-    public delete<T = any, R = DriverResponse<T>, C = any>(url: string, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.delete(url, config);
+    public delete<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(url: string, config?: RequestOptions<RT>): Promise<R> {
+        return this.request({
+            ...(config || {}),
+            method: MethodName.DELETE,
+            url,
+        });
     }
 
     // ---------------------------------------------------------------------------------
@@ -203,8 +358,16 @@ export class Client {
      * @param url
      * @param config
      */
-    public head<T = any, R = DriverResponse<T>, C = any>(url: string, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.head(url, config);
+    public head<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(url: string, config?: RequestOptions<RT>): Promise<R> {
+        return this.request({
+            ...(config || {}),
+            method: MethodName.HEAD,
+            url,
+        });
     }
 
     // ---------------------------------------------------------------------------------
@@ -213,22 +376,20 @@ export class Client {
      * Create a resource with the POST method.
      *
      * @param url
-     * @param data
+     * @param body
      * @param config
      */
-    public post<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.post(url, data, config);
-    }
-
-    /**
-     * Create a resource with the POST method and FormData formatted payload.
-     *
-     * @param url
-     * @param data
-     * @param config
-     */
-    public postForm<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.postForm(url, data, config);
+    public post<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(url: string, body?: any, config?: RequestOptions<RT>): Promise<R> {
+        return this.request({
+            ...(config || {}),
+            method: MethodName.POST,
+            url,
+            body,
+        });
     }
 
     // ---------------------------------------------------------------------------------
@@ -237,22 +398,20 @@ export class Client {
      * Update a resource with the PUT method.
      *
      * @param url
-     * @param data
+     * @param body
      * @param config
      */
-    public put<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.put(url, data, config);
-    }
-
-    /**
-     * Update a resource with the PUT method and FormData formatted payload.
-     *
-     * @param url
-     * @param data
-     * @param config
-     */
-    public putForm<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.putForm(url, data, config);
+    public put<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(url: string, body?: any, config?: RequestOptions<RT>): Promise<R> {
+        return this.request({
+            ...(config || {}),
+            method: MethodName.PUT,
+            url,
+            body,
+        });
     }
 
     // ---------------------------------------------------------------------------------
@@ -261,22 +420,20 @@ export class Client {
      * Update a resource with the PATCH method.
      *
      * @param url
-     * @param data
+     * @param body
      * @param config
      */
-    public patch<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.patch(url, data, config);
-    }
-
-    /**
-     * Update a resource with the PATCH method and FormData formatted payload.
-     *
-     * @param url
-     * @param data
-     * @param config
-     */
-    public patchForm<T = any, R = DriverResponse<T>, C = any>(url: string, data?: any, config?: DriverRequestConfig<C>): Promise<R> {
-        return this.driver.patchForm(url, data, config);
+    public patch<
+        T = any,
+        RT extends `${ResponseType}` = `${ResponseType.JSON}`,
+        R = Response<ResponseData<RT, T>>,
+    >(url: string, body?: any, config?: RequestOptions<RT>): Promise<R> {
+        return this.request({
+            ...(config || {}),
+            method: MethodName.PATCH,
+            url,
+            body,
+        });
     }
 
     //---------------------------------------------------------------------------------
@@ -284,14 +441,10 @@ export class Client {
     /**
      * Mount a response interceptor.
      *
-     * @param onFulfilled
-     * @param onRejected
+     * @param interceptor
      */
-    public mountResponseInterceptor(
-        onFulfilled: (value: DriverResponse<any>) => any | Promise<DriverResponse<any>>,
-        onRejected: (error: any) => any,
-    ) : number {
-        return this.driver.interceptors.response.use(onFulfilled, onRejected);
+    public mountResponseInterceptor(interceptor: InterceptorHandler) : number {
+        return this.responseInterceptors.registerHandler(interceptor);
     }
 
     /**
@@ -300,7 +453,7 @@ export class Client {
      * @param id
      */
     public unmountResponseInterceptor(id: number) {
-        this.driver.interceptors.response.eject(id);
+        this.responseInterceptors.ejectHandler(id);
 
         return this;
     }
@@ -309,7 +462,38 @@ export class Client {
      * Unmount all response interceptors.
      */
     public unmountResponseInterceptors() {
-        this.driver.interceptors.response.clear();
+        this.responseInterceptors.clearHandlers();
+    }
+
+    //---------------------------------------------------------------------------------
+
+    /**
+     * Mount a response error interceptor.
+     *
+     * @param interceptor
+     */
+    public mountResponseErrorInterceptor(interceptor: InterceptorErrorHandler) : number {
+        return this.responseInterceptors.registerErrorHandler(interceptor);
+    }
+
+    /**
+     * Unmount a response error interceptor.
+     *
+     * @param id
+     */
+    public unmountResponseErrorInterceptor(id: number) {
+        this.responseInterceptors.ejectErrorHandler(id);
+
+        return this;
+    }
+
+    /**
+     * Unmount all error interceptors.
+     */
+    public unmountResponseErrorInterceptors() {
+        this.responseInterceptors.clearErrorHandlers();
+
+        return this;
     }
 
     //---------------------------------------------------------------------------------
@@ -317,14 +501,10 @@ export class Client {
     /**
      * Mount a request interceptor.
      *
-     * @param onFulfilled
-     * @param onRejected
+     * @param interceptor
      */
-    public mountRequestInterceptor(
-        onFulfilled: (value: DriverRequestConfig) => any | Promise<DriverRequestConfig>,
-        onRejected: (error: any) => any,
-    ) : number {
-        return this.driver.interceptors.request.use(onFulfilled, onRejected);
+    public mountRequestInterceptor(interceptor: InterceptorHandler) : number {
+        return this.requestInterceptors.registerHandler(interceptor);
     }
 
     /**
@@ -333,7 +513,7 @@ export class Client {
      * @param id
      */
     public unmountRequestInterceptor(id: number) {
-        this.driver.interceptors.request.eject(id);
+        this.requestInterceptors.ejectHandler(id);
 
         return this;
     }
@@ -342,6 +522,35 @@ export class Client {
      * Unmount all request interceptors.
      */
     public unmountRequestInterceptors() {
-        this.driver.interceptors.request.clear();
+        this.requestInterceptors.clearHandlers();
+    }
+
+    //---------------------------------------------------------------------------------
+
+    /**
+     * Mount a request error interceptor.
+     *
+     * @param interceptor
+     */
+    public mountRequestErrorInterceptor(interceptor: InterceptorHandler) : number {
+        return this.requestInterceptors.registerErrorHandler(interceptor);
+    }
+
+    /**
+     * Unmount a request error interceptor.
+     *
+     * @param id
+     */
+    public unmountRequestErrorInterceptor(id: number) {
+        this.requestInterceptors.ejectErrorHandler(id);
+
+        return this;
+    }
+
+    /**
+     * Unmount all request interceptors.
+     */
+    public unmountRequestErrorInterceptors() {
+        this.requestInterceptors.clearErrorHandlers();
     }
 }

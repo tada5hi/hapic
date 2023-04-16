@@ -9,4 +9,7 @@ export enum ErrorCode {
     AUTHORIZATION_HEADER_INVALID = 'auth_header_invalid',
     AUTHORIZATION_HEADER_PARSE = 'auth_header_parse',
     AUTHORIZATION_HEADER_TYPE_PARSE = 'auth_header_type_parse',
+
+    CONNECTION_ABORTED = 'ECONNABORTED',
+    CONNECTION_CLOSED = 'ECONNRESET',
 }

@@ -40,9 +40,7 @@ describe('src/module', () => {
 
     it('should get baseURL', () => {
         const client = new Client({
-            driver: {
-                baseURL: 'http://localhost:3000/',
-            },
+            baseURL: 'http://localhost:3000/',
         });
 
         expect(client.getBaseURL()).toEqual('http://localhost:3000/');
@@ -51,10 +49,9 @@ describe('src/module', () => {
     it('should mount/unmount response interceptor', () => {
         const client = new Client();
 
-        const interceptorId = client.mountResponseInterceptor(
-            (value) => value,
-            (err) => { throw err; },
-        );
+        const interceptorId = client.mountResponseInterceptor((ctx) => {
+            throw ctx.error;
+        });
 
         expect(interceptorId).toBeDefined();
 
@@ -65,10 +62,9 @@ describe('src/module', () => {
     it('should mount/unmount request interceptor', () => {
         const client = new Client();
 
-        const interceptorId = client.mountRequestInterceptor(
-            (value) => value,
-            (err) => { throw err; },
-        );
+        const interceptorId = client.mountRequestInterceptor((ctx) => {
+            throw ctx.error;
+        });
 
         expect(interceptorId).toBeDefined();
 

@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput } from './config';
+import type { RequestOptions } from './core';
 import { Client } from './module';
 import { hasOwnProperty, verifyInstanceBySymbol } from './utils';
 
@@ -49,7 +49,7 @@ export function unsetClient(key?: string) {
     }
 }
 
-export function createClient(input?: ConfigInput) {
+export function createClient(input?: RequestOptions) {
     return new Client(input);
 }
 
@@ -58,5 +58,5 @@ export function isClient(input: unknown): input is Client {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'BaseClient');
+    return verifyInstanceBySymbol(input, 'Client');
 }

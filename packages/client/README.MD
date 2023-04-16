@@ -5,9 +5,8 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hapic/badge.svg)](https://snyk.io/test/github/Tada5hi/hapic)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
-This package contains a simple API-Client based on axios.
-IT provides a convenient way to make HTTP requests to various API endpoints,
-such as POST, GET, PUT, DELETE, and more.
+This package contains a HTTP-Client based on fetch.
+IT provides a convenient way to make HTTP requests.
 
 The client is extended by the [Harbor](https://www.npmjs.com/package/@hapic/harbor),
 [Vault](https://www.npmjs.com/package/@hapic/vault),
@@ -41,16 +40,10 @@ like described in the following:
 import { Client } from "hapic";
 
 const client = new Client({
-    driver: {
-        baseURL: 'http://localhost:3000/',
-        withCredentials: true,
-    },
-    retry: false
+    baseURL: 'http://localhost:3000/',
+    credentials: 'include',
 });
 ```
-
-In the upper example, the **driver** property is used to pass
-information to the underneath driver [axios](https://github.com/axios/axios).
 
 ### Singleton
 

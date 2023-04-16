@@ -8,4 +8,6 @@
 export * from './error';
 export * from './has-own-property';
 export * from './instance';
-export * from './object';
+export * from './json-serializable';
+export * from './promise';
+export * from './type-check';
