@@ -24,8 +24,9 @@ The repository contains the following packages:
 
 **`hapic`**
 
-This client provides a convenient way to make HTTP requests to various API endpoints,
-such as POST, GET, PUT, DELETE, and more.
+This package contains a HTTP-Client based on fetch.
+IT provides a convenient way to make HTTP requests.
+
 The client is extended by the [Harbor](#harbor-), [Vault](#vault-), and [OAuth2](#oauth2-) clients, 
 which provide additional functionality specific to those services.
 

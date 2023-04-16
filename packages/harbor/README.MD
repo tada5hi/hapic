@@ -34,15 +34,15 @@ npm install @hapic/harbor --save
 
 ### Config
 
-To create a configuration for the  `Client`, a configuration must be specified,
+To create a configuration for the  `HarborClient`, a configuration must be specified,
 like described in the following:
 
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const client = new Client({
-    driver: {
-        withCredentials: true,
+const client = new HarborClient({
+    request: {
+        credentials: 'include',
     },
     conenctionOptions: {
         host: 'https://example.com/api/v2.0/',
@@ -59,9 +59,9 @@ const client = new Client({
 
 Retrieves a set of projects in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -78,9 +78,9 @@ console.log(data);
 
 Retrieves details for a specific project in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -97,9 +97,9 @@ console.log(data);
 
 Creates a new project in Harbor with the given name and metadata.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -114,9 +114,9 @@ console.log(data);
 
 Deletes a specific project in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -131,9 +131,9 @@ await harbor.project.delete('name', true);
 
 Updates the metadata for a specific project in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -148,9 +148,9 @@ await harbor.project.update(1, {
 
 Retrieves a list of all project artifacts in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -170,9 +170,9 @@ console.log(data);
 
 Deletes a specific project artifact in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -187,9 +187,9 @@ await harbor.projectArtifact.delete({
 
 Copy a specific project repository to another location.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -211,9 +211,9 @@ await harbor.projectArtifact.copy(
 
 Assigns an existing label object to a project in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -230,9 +230,9 @@ const data = await harbor.projectArtifactLabel.create({
 
 Delete an assigned label of a project in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -251,9 +251,9 @@ const data = await harbor.projectArtifactLabel.delete({
 
 Retrieves a set of project repositories in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -272,9 +272,9 @@ console.log(response);
 
 Retrieves a specific project repository in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -297,9 +297,9 @@ console.log(data);
 
 Finds a specific project repository in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -322,9 +322,9 @@ console.log(data);
 
 Updates a specific registry repository in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -344,9 +344,9 @@ console.log(data);
 
 Deletes a specific project repository in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -368,9 +368,9 @@ await harbor.projectRepository.delete(
 
 Creates a project webhook policy in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -387,9 +387,9 @@ await harbor.projectWebhookPolicy.create({
 
 Retrieves a set of project webhook policies in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -410,9 +410,9 @@ console.log(response);
 
 Retrieves a specific project webhook policy in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -429,9 +429,9 @@ console.log(data);
 
 Deletes a specific project webhook policy in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -448,9 +448,9 @@ await harbor.projectWebhookPolicy.delete({
 
 Creates a robot in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -465,9 +465,9 @@ console.log(data);
 
 Retrieves a set of robots in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -486,9 +486,9 @@ console.log(response);
 
 Retrieves a specific robot in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -501,9 +501,9 @@ console.log(data);
 
 Updates a specific robot in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -520,9 +520,9 @@ console.log(data);
 
 Sets a specific robot secret in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 
@@ -536,9 +536,9 @@ console.log(data);
 
 Deletes a robot in Harbor.
 ```typescript
-import { Client } from '@hapic/harbor';
+import { HarborClient } from '@hapic/harbor';
 
-const harbor = new Client({
+const harbor = new HarborClient({
     // ...
 });
 

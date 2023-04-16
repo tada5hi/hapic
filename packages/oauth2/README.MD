@@ -35,11 +35,11 @@ npm install @hapic/oauth2 --save
 ### Authorize
 **`URL`**
 ```typescript
-import { Client } from '@hapic/oauth2';
+import { OAuth2Client } from '@hapic/oauth2';
 
-const client = new Client({
-    driver: {
-        baseURL: 'http://localhost:3000/'
+const client = new OAuth2Client({
+    request: {
+        baseURL: 'http://localhost:3000/',
     },
     options: {
         /**
@@ -67,10 +67,10 @@ console.log(authorizeUrl);
 
 **`Create`**
 ```typescript
-import { Client } from '@hapic/oauth2';
+import { OAuth2Client } from '@hapic/oauth2';
 
-const client = new Client({
-    driver: {
+const client = new OAuth2Client({
+    request: {
         baseURL: 'http://localhost:3000/'
     },
     options: {
@@ -87,7 +87,7 @@ let token = await api.createWithRefreshToken({
     refresh_token: 'refresh_token'
 });
 
-token = await api.createWithClientCredentials();
+token = await api.createWithOAuth2ClientCredentials();
 
 token = await api.createWithPasswordGrant({
     username: 'admin',
@@ -110,10 +110,10 @@ console.log(token);
 
 **`Introspect`**
 ```typescript
-import { Client } from '@hapic/oauth2';
+import { OAuth2Client } from '@hapic/oauth2';
 
-const client = new Client({
-    driver: {
+const client = new OAuth2Client({
+    request: {
         baseURL: 'http://localhost:3000/'
     },
     options: {
@@ -178,10 +178,10 @@ console.log(token);
 ### UserInfo
 
 ```typescript
-import { Client } from '@hapic/oauth2';
+import { OAuth2Client } from '@hapic/oauth2';
 
-const client = new Client({
-    driver: {
+const client = new OAuth2Client({
+    request: {
         baseURL: 'http://localhost:3000/'
     },
     options: {

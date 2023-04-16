@@ -34,15 +34,15 @@ npm install @hapic/vault --save
 
 ### Config
 
-To create a configuration for the  `Client`, a configuration must be specified,
+To create a configuration for the  `VaultClient`, a configuration must be specified,
 like described in the following:
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
-    driver: {
-        withCredentials: true,
+const client = new VaultClient({
+    request: {
+        credentials: 'include',
     },
     conenctionOptions: {
         host: 'https://example.com/api/v1/',
@@ -57,9 +57,9 @@ const client = new Client({
 **`Create`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -75,9 +75,9 @@ await client.keyValueV1.create({
 **`GetOne`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -92,9 +92,9 @@ console.log(data);
 **`Delete`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -109,9 +109,9 @@ await client.keyValueV1.delete({
 **`Create`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -129,9 +129,9 @@ await client.keyValueV2.create({
 **`GetOne`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -146,9 +146,9 @@ console.log(data);
 **`Update`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -166,9 +166,9 @@ await client.keyValueV2.create({
 **`Delete`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -181,9 +181,9 @@ await client.keyValueV2.delete({
 **`Save`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -203,9 +203,9 @@ await client.keyValueV2.save({
 **`Create`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -221,9 +221,9 @@ await client.mount.create({
 **`GetMany`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -244,9 +244,9 @@ console.log(data);
 **`GetOne`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
@@ -258,9 +258,9 @@ console.log(data);
 **`Delete`**
 
 ```typescript
-import { Client } from '@hapic/vault';
+import { VaultClient } from '@hapic/vault';
 
-const client = new Client({
+const client = new VaultClient({
     // ...
 });
 
