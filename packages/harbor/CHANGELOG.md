@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.3](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2023-04-16)
+
+
+### Bug Fixes
+
+* exports ([3f649d3](https://github.com/Tada5hi/hapi/commit/3f649d3a3d5f2db62b5789f05979fe0ba91c5e0e))
+
+
+### Features
+
+* updated oauth2, harbor & vault usage ([e5be624](https://github.com/Tada5hi/hapi/commit/e5be6241a9c77eecc565fdd2acea59e964f96194))
+
+
+
+
+
 # [2.0.0-alpha.2](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2023-04-08)
 
 
