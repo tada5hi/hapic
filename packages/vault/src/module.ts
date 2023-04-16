@@ -5,13 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client as BaseClient } from 'hapic';
+import { Client } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
 import { HeaderName } from './constants';
 import { KeyValueV1API, KeyValueV2API, MountAPI } from './domains';
 import { parseConnectionString } from './utils';
 
-export class Client extends BaseClient {
+export class VaultClient extends Client {
     override readonly '@instanceof' = Symbol.for('VaultClient');
 
     public readonly mount : MountAPI;
@@ -23,20 +23,20 @@ export class Client extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
-        super(input);
+        input = input || {};
 
-        this.mount = new MountAPI({ driver: this.driver });
-        this.keyValueV1 = new KeyValueV1API({ driver: this.driver });
-        this.keyValueV2 = new KeyValueV2API({ driver: this.driver });
+        super(input.request);
 
-        this.setConfig(input);
+        this.mount = new MountAPI({ client: this });
+        this.keyValueV1 = new KeyValueV1API({ client: this });
+        this.keyValueV2 = new KeyValueV2API({ client: this });
+
+        this.applyConfig(input);
     }
 
     // -----------------------------------------------------------------------------------
 
-    override setConfig(input?: ConfigInput) {
-        super.setConfig(input);
-
+    applyConfig(input?: ConfigInput) {
         input = input || {};
 
         this.setHeader(HeaderName.VAULT_REQUEST, 'true');
@@ -55,14 +55,6 @@ export class Client extends BaseClient {
         if (connectionOptions) {
             this.setBaseURL(connectionOptions.host);
             this.setHeader('X-Vault-Token', connectionOptions.token);
-        }
-
-        if (this.keyValueV1) {
-            this.keyValueV1.setDriver(this.driver);
-        }
-
-        if (this.keyValueV2) {
-            this.keyValueV2.setDriver(this.driver);
         }
 
         return this;

@@ -5,14 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Config as BaseConfig } from 'hapic';
+import type { RequestOptions } from 'hapic';
 
 export type ConnectionOptions = {
     host: string,
     user: string,
     password: string
 };
-export type Config = BaseConfig & {
+export type Config = {
+    request: RequestOptions,
     connectionString?: string,
     connectionOptions?: ConnectionOptions
 };

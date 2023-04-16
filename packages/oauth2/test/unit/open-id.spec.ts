@@ -5,11 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createDriver } from 'hapic';
+import { createClient } from 'hapic';
 import type { OpenIDProviderMetadata } from '../../src';
 import { buildOpenIDDiscoveryURL, createClientWithOpenIDDiscoveryURL } from '../../src';
 
-const driver = createDriver();
+const driver = createClient();
 const fn = jest.fn();
 
 fn.mockReturnValue({

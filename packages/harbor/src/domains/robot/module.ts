@@ -24,14 +24,14 @@ export class RobotAPI extends BaseAPI {
     }
 
     async create(data: RobotCreatePayload) : Promise<Robot> {
-        const response = await this.driver
+        const response = await this.client
             .post('robots', this.extendPayload(data));
 
         return merge(response.data, data);
     }
 
     async getMany(context: RobotGetManyContext) : Promise<ResourceCollectionResponse<Robot>> {
-        const response = await this.driver.get(`robots${buildQueryString(context.query)}`);
+        const response = await this.client.get(`robots${buildQueryString(context.query)}`);
 
         return {
             data: response.data,
@@ -40,7 +40,7 @@ export class RobotAPI extends BaseAPI {
     }
 
     async getOne(id: number) : Promise<Robot> {
-        const response = await this.driver.get(`robots/${id}`);
+        const response = await this.client.get(`robots/${id}`);
 
         return response.data;
     }
@@ -60,7 +60,7 @@ export class RobotAPI extends BaseAPI {
             ...(secret ? { secret } : {}),
         };
 
-        const { data }: { data: Robot } = await this.driver
+        const { data }: { data: Robot } = await this.client
             .patch(`robots/${id}`, payload);
 
         if (typeof payload.secret !== 'undefined') {
@@ -74,12 +74,12 @@ export class RobotAPI extends BaseAPI {
         id: number,
         data: RobotUpdatePayload,
     ): Promise<void> {
-        await this.driver
+        await this.client
             .put(`robots/${id}`, this.extendPayload({ ...data, id }));
     }
 
     async delete(id: Robot['id']): Promise<void> {
-        await this.driver
+        await this.client
             .delete(`robots/${id}`);
     }
 

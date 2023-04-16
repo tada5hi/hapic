@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client as BaseClient, Driver, DriverRequestConfig } from 'hapic';
-import { createDriver, isClient } from 'hapic';
-import { Client } from '../module';
+import type { Client as BaseClient, RequestOptions } from 'hapic';
+import { createClient, isClient } from 'hapic';
+import { OAuth2Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
 import type { OpenIDProviderMetadata } from './type';
 
@@ -16,21 +16,24 @@ import type { OpenIDProviderMetadata } from './type';
  * the open-id discovery endpoint.
  *
  * @param url (.e.g. .well-known/openid-configuration)
- * @param client
+ * @param options
  */
 export async function createClientWithOpenIDDiscoveryURL(
     url: string,
-    client?: BaseClient | DriverRequestConfig | Driver,
-) : Promise<Client> {
-    let driver: Driver;
+    options?: BaseClient | RequestOptions,
+) : Promise<OAuth2Client> {
+    let client: BaseClient;
 
-    if (isClient(client)) {
-        driver = client.driver;
+    if (isClient(options)) {
+        client = options;
     } else {
-        driver = createDriver(client);
+        client = createClient(options);
     }
 
-    const { data }: { data: OpenIDProviderMetadata } = await driver.get(url);
+    const { data }: { data: OpenIDProviderMetadata } = await client.get(url);
 
-    return new Client({ driver, options: parseOpenIDProviderMetadata(data) });
+    return new OAuth2Client({
+        request: client.defaults,
+        options: parseOpenIDProviderMetadata(data),
+    });
 }

@@ -1,7 +1,7 @@
 {
     "extends": "@tada5hi/tsconfig",
     "compilerOptions": {
-        "lib": ["ESNext"],
+        "lib": ["ESNext", "DOM"],
         "target": "ESNext",
 
         "moduleResolution": "Node",

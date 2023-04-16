@@ -5,21 +5,21 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput } from 'hapic';
 import {
     hasOwnProperty,
     verifyInstanceBySymbol,
 } from 'hapic';
-import { Client } from './module';
+import type { ConfigInput } from './config';
+import { OAuth2Client } from './module';
 
-const instanceMap: Record<string, Client> = {};
+const instanceMap: Record<string, OAuth2Client> = {};
 
 /**
  * Verify if an oauth2 client singleton instance exists.
  *
  * @param key
  */
-export function hasClient(
+export function hasOAuth2Client(
     key?: string,
 ) : boolean {
     return hasOwnProperty(instanceMap, key || 'default');
@@ -31,10 +31,10 @@ export function hasClient(
  * @param client
  * @param key
  */
-export function setClient(
-    client: Client,
+export function setOAuth2Client(
+    client: OAuth2Client,
     key?: string,
-) : Client {
+) : OAuth2Client {
     key = key || 'default';
 
     instanceMap[key] = client;
@@ -47,16 +47,16 @@ export function setClient(
  *
  * @param key
  */
-export function useClient(
+export function useOAuth2Client(
     key?: string,
-) : Client {
+) : OAuth2Client {
     key = key || 'default';
 
     if (Object.prototype.hasOwnProperty.call(instanceMap, key)) {
         return instanceMap[key];
     }
 
-    const instance = createClient();
+    const instance = createOAuth2Client();
 
     instanceMap[key] = instance;
 
@@ -68,7 +68,7 @@ export function useClient(
  *
  * @param key
  */
-export function unsetClient(key?: string) {
+export function unsetOAuth2Client(key?: string) {
     key = key || 'default';
     if (hasOwnProperty(instanceMap, key)) {
         delete instanceMap[key];
@@ -80,8 +80,8 @@ export function unsetClient(key?: string) {
  *
  * @param input
  */
-export function createClient(input?: ConfigInput) {
-    return new Client(input);
+export function createOAuth2Client(input?: ConfigInput) {
+    return new OAuth2Client(input);
 }
 
 /**
@@ -89,8 +89,8 @@ export function createClient(input?: ConfigInput) {
  *
  * @param input
  */
-export function isClient(input: unknown): input is Client {
-    if (input instanceof Client) {
+export function isOAuth2Client(input: unknown): input is OAuth2Client {
+    if (input instanceof OAuth2Client) {
         return true;
     }
 

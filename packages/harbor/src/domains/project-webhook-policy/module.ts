@@ -35,7 +35,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        const response = await this.driver
+        const response = await this.client
             .post(
                 `projects/${context.projectIdOrName}/webhook/policies`,
                 this.buildWebhook(context.data),
@@ -54,7 +54,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        const response = await this.driver
+        const response = await this.client
             .get(
                 `projects/${context.projectIdOrName}/webhook/policies${buildQueryString(context.query)}`,
                 headers,
@@ -75,7 +75,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        const response = await this.driver
+        const response = await this.client
             .get(
                 `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
                 headers,
@@ -106,7 +106,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        await this.driver.put(
+        await this.client.put(
             `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
             context.data,
             headers,
@@ -131,7 +131,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        await this.driver
+        await this.client
             .delete(`projects/${context.projectIdOrName}/webhook/policies/${context.id}`, headers);
     }
 

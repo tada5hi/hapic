@@ -23,7 +23,7 @@ export class ProjectArtifactAPI extends BaseAPI {
     }
 
     async getMany(context: ProjectArtifactGetManyContext) : Promise<ProjectArtifact[]> {
-        const { data } = await this.driver
+        const { data } = await this.client
             .get(`projects/${context.projectName}/repositories/${context.repositoryName}/artifacts${buildQueryString(context.query)}`);
 
         return data;
@@ -41,7 +41,7 @@ export class ProjectArtifactAPI extends BaseAPI {
             from = buildProjectRepositoryLongName(source);
         }
 
-        await this.driver
+        await this.client
             .post(
                 `projects/${destination.projectName}/repositories/${destination.repositoryName}/artifacts?` +
                 `from=${from}`,
@@ -49,7 +49,7 @@ export class ProjectArtifactAPI extends BaseAPI {
     }
 
     async delete(context: ProjectArtifactDeleteContext) {
-        await this.driver
+        await this.client
             .delete(`projects/${context.projectName}/repositories/${context.repositoryName}/artifacts/${context.tagOrDigest || 'latest'}`);
     }
 }

@@ -28,7 +28,7 @@ export class ProjectAPI extends BaseAPI {
     }
 
     async create(data: ProjectCreatePayload) : Promise<ProjectCreateResponse> {
-        const response = await this.driver
+        const response = await this.client
             .post('projects', data);
 
         return {
@@ -46,7 +46,7 @@ export class ProjectAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        await this.driver
+        await this.client
             .delete(`projects/${id}`, headers);
     }
 
@@ -61,13 +61,13 @@ export class ProjectAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        await this.driver
+        await this.client
             .put(`projects/${id}`, data, headers);
     }
 
     async getMany(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
         options = options || {};
-        const response = await this.driver
+        const response = await this.client
             .get(`projects${buildQueryString(options.query)}`);
 
         return {
@@ -86,7 +86,7 @@ export class ProjectAPI extends BaseAPI {
             headers[HeaderName.IS_RESOURCE_NAME] = true;
         }
 
-        const { data } = await this.driver
+        const { data } = await this.client
             .get(`projects/${id}`, headers);
 
         return data;

@@ -5,19 +5,21 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { DriverResponse } from 'hapic';
+import type { Response } from 'hapic';
 import { HeaderName } from '../constants';
 
-export function extractResourceIDOfResponse(response: Pick<DriverResponse, 'headers'>) {
+export function extractResourceIDOfResponse(response: Pick<Response, 'headers'>) {
     if (
         response &&
         response.headers &&
-        typeof response.headers[HeaderName.LOCATION] === 'string'
+        response.headers.has(HeaderName.LOCATION)
     ) {
-        const value = response.headers[HeaderName.LOCATION];
-        const id = parseInt(value.substring(value.lastIndexOf('/') + 1), 10);
-        if (!Number.isNaN(id)) {
-            return id;
+        const value = response.headers.get(HeaderName.LOCATION);
+        if (value) {
+            const id = parseInt(value.substring(value.lastIndexOf('/') + 1), 10);
+            if (!Number.isNaN(id)) {
+                return id;
+            }
         }
     }
 

@@ -5,21 +5,21 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ConfigInput } from 'hapic';
 import {
     hasOwnProperty,
     verifyInstanceBySymbol,
 } from 'hapic';
-import { Client } from './module';
+import type { ConfigInput } from './config';
+import { HarborClient } from './module';
 
-const instances: Record<string, Client> = {};
+const instances: Record<string, HarborClient> = {};
 
 /**
  * Verify if a harbor client singleton instance exists.
  *
  * @param key
  */
-export function hasClient(
+export function hasHarborClient(
     key?: string,
 ) : boolean {
     return hasOwnProperty(instances, key || 'default');
@@ -31,10 +31,10 @@ export function hasClient(
  * @param client
  * @param key
  */
-export function setClient(
-    client: Client,
+export function setHarborClient(
+    client: HarborClient,
     key?: string,
-) : Client {
+) : HarborClient {
     key = key || 'default';
 
     instances[key] = client;
@@ -47,16 +47,16 @@ export function setClient(
  *
  * @param key
  */
-export function useClient(
+export function useHarborClient(
     key?: string,
-) : Client {
+) : HarborClient {
     key = key || 'default';
 
     if (Object.prototype.hasOwnProperty.call(instances, key)) {
         return instances[key];
     }
 
-    const instance = createClient();
+    const instance = createHarborClient();
 
     instances[key] = instance;
 
@@ -68,7 +68,7 @@ export function useClient(
  *
  * @param key
  */
-export function unsetClient(key?: string) {
+export function unsetHarborClient(key?: string) {
     key = key || 'default';
     if (hasOwnProperty(instances, key)) {
         delete instances[key];
@@ -80,8 +80,8 @@ export function unsetClient(key?: string) {
  *
  * @param input
  */
-export function createClient(input?: ConfigInput) {
-    return new Client(input);
+export function createHarborClient(input?: ConfigInput) {
+    return new HarborClient(input);
 }
 
 /**
@@ -89,8 +89,8 @@ export function createClient(input?: ConfigInput) {
  *
  * @param input
  */
-export function isClient(input: unknown): input is Client {
-    if (input instanceof Client) {
+export function isHarborClient(input: unknown): input is HarborClient {
+    if (input instanceof HarborClient) {
         return true;
     }
 

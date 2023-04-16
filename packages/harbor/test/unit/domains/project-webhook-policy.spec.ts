@@ -8,17 +8,17 @@
 import type { ProjectWebhookPolicy } from '../../../src';
 import {
     ProjectWebhookPolicyAPI,
-    createDriver,
+    createClient,
 } from '../../../src';
 
 describe('src/domains/project-webhook-policy', () => {
     it('should create resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.post = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ driver });
+        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.create({
             projectIdOrName: 1,
             data: {
@@ -42,12 +42,12 @@ describe('src/domains/project-webhook-policy', () => {
         );
     });
     it('should get resources', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: [] });
         driver.get = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ driver });
+        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.getMany({
             projectIdOrName: 'foo',
             query: {
@@ -62,12 +62,12 @@ describe('src/domains/project-webhook-policy', () => {
     });
 
     it('should get resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: { name: 'foo/bar' } });
         driver.get = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ driver });
+        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.getOne({
             projectIdOrName: 1,
             id: 1,
@@ -80,12 +80,12 @@ describe('src/domains/project-webhook-policy', () => {
     });
 
     it('should find resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: [] });
         driver.get = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ driver });
+        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.findOne({
             projectIdOrName: 1,
             name: 'bar',
@@ -98,12 +98,12 @@ describe('src/domains/project-webhook-policy', () => {
     });
 
     it('should update resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.put = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ driver });
+        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.update({
             projectIdOrName: 1,
             id: 1,
@@ -122,12 +122,12 @@ describe('src/domains/project-webhook-policy', () => {
     });
 
     it('should delete resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.delete = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ driver });
+        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.delete({
             projectIdOrName: 1,
             id: 1,

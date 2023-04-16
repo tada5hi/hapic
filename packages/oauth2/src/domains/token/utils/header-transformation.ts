@@ -4,7 +4,6 @@
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
  */
-import type { DriverHeaders } from 'hapic';
 import { stringifyAuthorizationHeader } from 'hapic';
 import type { TokenBaseOptions } from '../type';
 
@@ -15,7 +14,7 @@ import type { TokenBaseOptions } from '../type';
  * @param options
  */
 export function transformHeadersForTokenAPIRequest(
-    headers: DriverHeaders,
+    headers: Headers,
     options?: TokenBaseOptions,
 ) : void {
     options = options || {};

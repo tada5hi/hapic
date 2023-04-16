@@ -61,7 +61,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
             context = input;
         }
 
-        const { data } : { data: ProjectRepository } = await this.driver.get(
+        const { data } : { data: ProjectRepository } = await this.client.get(
             `projects/${context.projectName}/repositories/${context.repositoryName}`,
         );
 
@@ -75,7 +75,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
     }
 
     async getMany(context: ProjectRepositoryGetManyContext): Promise<ResourceCollectionResponse<ProjectRepository>> {
-        const result = await this.driver
+        const result = await this.client
             .get(`projects/${context.projectName}/repositories${buildQueryString(context.query)}`);
 
         return {
@@ -94,7 +94,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
     }
 
     async update(context: ProjectRepositoryUpdateContext) : Promise<void> {
-        await this.driver
+        await this.client
             .put(`projects/${context.projectName}/repositories/${context.repositoryName}`, context.data);
     }
 
@@ -110,7 +110,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
             context = input;
         }
 
-        await this.driver
+        await this.client
             .delete(`projects/${context.projectName}/repositories/${context.repositoryName}`);
     }
 }

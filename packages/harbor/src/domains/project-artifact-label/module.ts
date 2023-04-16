@@ -19,7 +19,7 @@ export class ProjectArtifactLabelAPI extends BaseAPI {
     }
 
     async create(options: ProjectArtifactLabelCreateContext) : Promise<void> {
-        await this.driver
+        await this.client
             .post(
                 `projects/${options.projectName}/repositories/${options.repositoryName}` +
                 `/artifacts/${options.tagOrDigest || 'latest'}/labels`,
@@ -30,7 +30,7 @@ export class ProjectArtifactLabelAPI extends BaseAPI {
     }
 
     async delete(options: ProjectArtifactLabelDeleteContext) {
-        await this.driver
+        await this.client
             .delete(`projects/${options.projectName}/repositories/${options.repositoryName}` +
                 `/artifacts/${options.tagOrDigest || 'latest'}/labels/${options.labelId}`);
     }

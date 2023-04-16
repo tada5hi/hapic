@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { DriverRequestTransformer } from 'hapic';
+import type { RequestTransformer } from 'hapic';
 import type { JwtPayload } from '../../type';
 
 import { BaseAPI } from '../base';
@@ -99,11 +99,11 @@ export class TokenAPI extends BaseAPI {
 
         const urlSearchParams = this.buildURLSearchParams(parameters);
 
-        const { data } = await this.driver.post(
+        const { data } = await this.client.post(
             (this.options.tokenEndpoint || '/token'),
             urlSearchParams,
             {
-                transformRequest: this.buildRequestTransformers(parameters, options),
+                transform: this.buildRequestTransformers(parameters, options),
             },
         );
 
@@ -140,11 +140,11 @@ export class TokenAPI extends BaseAPI {
 
         const urlSearchParams = this.buildURLSearchParams(parameters);
 
-        const { data } = await this.driver.post(
+        const { data } = await this.client.post(
             this.options.introspectionEndpoint || '/token/introspect',
             urlSearchParams,
             {
-                transformRequest: this.buildRequestTransformers(parameters, options),
+                transform: this.buildRequestTransformers(parameters, options),
             },
         );
 
@@ -154,8 +154,8 @@ export class TokenAPI extends BaseAPI {
     protected buildRequestTransformers(
         parameters: ClientAuthenticationParameters,
         options?: TokenBaseOptions,
-    ) : DriverRequestTransformer[] {
-        const transformers : DriverRequestTransformer[] = [];
+    ) : RequestTransformer[] {
+        const transformers : RequestTransformer[] = [];
 
         options = options || {};
         if (!options.clientId) {
@@ -170,11 +170,11 @@ export class TokenAPI extends BaseAPI {
 
         transformers.push(createRequestTransformerForTokenAPIRequest(parameters, options));
 
-        if (this.driver.defaults.transformRequest) {
-            if (Array.isArray(this.driver.defaults.transformRequest)) {
-                transformers.push(...this.driver.defaults.transformRequest);
+        if (this.client.defaults.transform) {
+            if (Array.isArray(this.client.defaults.transform)) {
+                transformers.push(...this.client.defaults.transform);
             } else {
-                transformers.push(this.driver.defaults.transformRequest);
+                transformers.push(this.client.defaults.transform);
             }
         }
 

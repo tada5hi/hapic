@@ -20,24 +20,24 @@ export class MountAPI extends BaseAPI {
         const { data, path } = context;
         data.options = data.options || {};
         data.config = data.config || {};
-        const response = await this.driver.post(`sys/mounts/${path}`, data);
+        const response = await this.client.post(`sys/mounts/${path}`, data);
 
         return response.data;
     }
 
     async getMany() : Promise<ResourceResponse<Record<string, MountCreatePayload>>> {
-        const response = await this.driver.get('sys/mounts');
+        const response = await this.client.get('sys/mounts');
 
         return response.data;
     }
 
     async getOne(path: string) : Promise<ResourceResponse<MountCreatePayload>> {
-        const response = await this.driver.get(`sys/mounts/${path}`);
+        const response = await this.client.get(`sys/mounts/${path}`);
 
         return response.data;
     }
 
     async delete(path: string) {
-        await this.driver.delete(`sys/mounts/${path}`);
+        await this.client.delete(`sys/mounts/${path}`);
     }
 }

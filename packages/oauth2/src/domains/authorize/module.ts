@@ -31,7 +31,7 @@ export class AuthorizeAPI extends BaseAPI {
         if (this.options.authorizationEndpoint) {
             input = this.options.authorizationEndpoint;
         } else {
-            const clientURL = this.driver.defaults.baseURL;
+            const clientURL = this.client.defaults.baseURL;
             if (clientURL) {
                 baseURL = clientURL;
             }

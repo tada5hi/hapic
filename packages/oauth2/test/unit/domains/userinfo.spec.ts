@@ -18,7 +18,7 @@ const userInfoResponse : Record<string, any> = {
 getFn.mockResolvedValue({ data: userInfoResponse });
 
 const client = createClient();
-client.driver.get = getFn;
+client.get = getFn;
 
 describe('src/domains/userinfo', () => {
     it('should get user info', async () => {
@@ -30,7 +30,7 @@ describe('src/domains/userinfo', () => {
             },
         });
 
-        api.setDriver(client.driver);
+        api.setClient(client);
 
         const userInfo = await api.get('token');
         expect(userInfo).toEqual(userInfoResponse);
@@ -45,7 +45,7 @@ describe('src/domains/userinfo', () => {
             },
         });
 
-        api.setDriver(client.driver);
+        api.setClient(client);
 
         const userInfo = await api.get('token');
         expect(userInfo).toEqual(userInfoResponse);

@@ -18,7 +18,7 @@ import {
 import type { SearchResult } from './type';
 import { parseConnectionString } from './utils';
 
-export class Client extends BaseClient {
+export class HarborClient extends BaseClient {
     public readonly project: ProjectAPI;
 
     public readonly projectArtifact: ProjectArtifactAPI;
@@ -34,23 +34,23 @@ export class Client extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
-        super(input);
+        input = input || {};
 
-        this.project = new ProjectAPI({ driver: this.driver });
-        this.projectArtifact = new ProjectArtifactAPI({ driver: this.driver });
-        this.projectArtifactLabel = new ProjectArtifactLabelAPI({ driver: this.driver });
-        this.projectWebhookPolicy = new ProjectWebhookPolicyAPI({ driver: this.driver });
-        this.projectRepository = new ProjectRepositoryAPI({ driver: this.driver });
-        this.robot = new RobotAPI({ driver: this.driver });
+        super(input.request);
 
-        this.setConfig(input);
+        this.project = new ProjectAPI({ client: this });
+        this.projectArtifact = new ProjectArtifactAPI({ client: this });
+        this.projectArtifactLabel = new ProjectArtifactLabelAPI({ client: this });
+        this.projectWebhookPolicy = new ProjectWebhookPolicyAPI({ client: this });
+        this.projectRepository = new ProjectRepositoryAPI({ client: this });
+        this.robot = new RobotAPI({ client: this });
+
+        this.applyConfig(input);
     }
 
     // -----------------------------------------------------------------------------------
 
-    override setConfig(input?: ConfigInput) {
-        super.setConfig(input);
-
+    applyConfig(input?: ConfigInput) {
         input = input || {};
 
         let connectionOptions : ConnectionOptions | undefined;
@@ -72,36 +72,12 @@ export class Client extends BaseClient {
                 password: connectionOptions.password,
             });
         }
-
-        if (this.project) {
-            this.project.setDriver(this.driver);
-        }
-
-        if (this.projectArtifact) {
-            this.projectArtifact.setDriver(this.driver);
-        }
-
-        if (this.projectArtifactLabel) {
-            this.projectArtifactLabel.setDriver(this.driver);
-        }
-
-        if (this.projectWebhookPolicy) {
-            this.projectWebhookPolicy.setDriver(this.driver);
-        }
-
-        if (this.projectRepository) {
-            this.projectRepository.setDriver(this.driver);
-        }
-
-        if (this.robot) {
-            this.robot.setDriver(this.driver);
-        }
     }
 
     // -----------------------------------------------------------------------------------
 
     async search(q: string): Promise<SearchResult> {
-        const { data } = await this.driver
+        const { data } = await this
             .get(`search?q=${q}`);
 
         return data;

@@ -5,12 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { DriverRequestConfig } from 'hapic';
-import { createDriver } from 'hapic';
+import type { RequestOptions } from 'hapic';
+import { createClient } from 'hapic';
 import type { TokenGrantParameters, TokenGrantResponse } from '../../../../src';
 import { TokenAPI } from '../../../../src';
 
-const driver = createDriver();
+const driver = createClient();
 const postFn = jest.fn();
 
 const tokenGrantResponse : TokenGrantResponse = {
@@ -26,7 +26,7 @@ const tokenGrantResponse : TokenGrantResponse = {
 postFn.mockImplementation((
     _url: string,
     _data?: any,
-    config?: DriverRequestConfig,
+    config?: RequestOptions,
 ) => Promise.resolve({ data: tokenGrantResponse, request: { config } }));
 
 driver.post = postFn;
@@ -87,7 +87,7 @@ describe('src/domains/token', () => {
             },
         });
 
-        api.setDriver(driver);
+        api.setClient(driver);
 
         let token = await api.createWithRefreshToken({ refresh_token: 'refresh_token' });
         expect(token).toEqual({ ...tokenGrantResponse });
@@ -116,7 +116,7 @@ describe('src/domains/token', () => {
             },
         });
 
-        api.setDriver(driver);
+        api.setClient(driver);
 
         const token = await api.createWithPasswordGrant({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...tokenGrantResponse });

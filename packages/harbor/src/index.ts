@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from './instance';
+import { createHarborClient } from './instance';
 
 export * from './constants';
 export * from './client';
@@ -16,5 +16,5 @@ export * from './module';
 export * from './type';
 export * from './utils';
 
-const client = createClient();
+const client = createHarborClient();
 export default client;

@@ -6,15 +6,15 @@
  */
 
 import { isObject } from 'hapic';
-import type { DriverHeaders, DriverRequestTransformer } from 'hapic';
+import type { RequestTransformer } from 'hapic';
 import type { ClientAuthenticationParameters, TokenBaseOptions } from '../type';
 import { transformHeadersForTokenAPIRequest } from './header-transformation';
 
 export function createRequestTransformerForTokenAPIRequest(
     parameters: ClientAuthenticationParameters,
     options?: TokenBaseOptions,
-) : DriverRequestTransformer {
-    return (data: any, headers: DriverHeaders) => {
+) : RequestTransformer {
+    return (data: any, headers: Headers) => {
         options = options || {};
 
         if (!options.clientId) {

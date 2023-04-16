@@ -58,7 +58,7 @@ describe('src/domains/authorize', () => {
 
     it('should build authorize url by base client url', () => {
         const api = new AuthorizeAPI({
-            driver: {
+            client: {
                 baseURL: 'http://localhost:3000',
             },
         });

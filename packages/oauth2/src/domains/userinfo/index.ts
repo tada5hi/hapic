@@ -29,7 +29,7 @@ export class UserInfoAPI extends BaseAPI {
         if (header) {
             if (typeof header === 'string') {
                 if (header.indexOf(' ') === -1) {
-                    headers.Authroization = `Bearer ${header}`;
+                    headers.Authorization = `Bearer ${header}`;
                 } else {
                     headers.Authorization = header;
                 }
@@ -38,7 +38,7 @@ export class UserInfoAPI extends BaseAPI {
             }
         }
 
-        const { data } = await this.driver.get(
+        const { data } = await this.client.get(
             (this.options.userinfoEndpoint || '/userinfo'),
             {
                 headers,

@@ -5,18 +5,18 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createDriver } from 'hapic';
+import { createClient } from 'hapic';
 import { HeaderName, ProjectAPI } from '../../../src';
 import type { Project, ProjectCreatePayload } from '../../../src';
 
 describe('src/domains/project', () => {
     it('should create resource', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockImplementation((_url, data) => ({ data: { ...data } satisfies Project }));
-        driver.post = fn;
+        client.post = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         const payload = {
             project_name: 'project-x',
             public: true,
@@ -27,24 +27,24 @@ describe('src/domains/project', () => {
     });
 
     it('should delete resource', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        client.delete = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         await api.delete(1);
 
         expect(fn).toHaveBeenCalledWith('projects/1', {});
     });
 
     it('should delete resource by name', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        client.delete = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         await api.delete('name', true);
 
         expect(fn).toHaveBeenCalledWith('projects/name', {
@@ -53,12 +53,12 @@ describe('src/domains/project', () => {
     });
 
     it('should update resource', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
-        driver.put = fn;
+        client.put = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         const payload : ProjectCreatePayload = {
             project_name: 'name',
         };
@@ -68,12 +68,12 @@ describe('src/domains/project', () => {
     });
 
     it('should update resource by name', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
-        driver.put = fn;
+        client.put = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         const payload : ProjectCreatePayload = {
             project_name: 'name',
         };
@@ -85,12 +85,12 @@ describe('src/domains/project', () => {
     });
 
     it('should get resources', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: [] });
-        driver.get = fn;
+        client.get = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         await api.getMany({
             query: {
                 page_size: 10,
@@ -102,24 +102,24 @@ describe('src/domains/project', () => {
     });
 
     it('should get resource', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: {} });
-        driver.get = fn;
+        client.get = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         await api.getOne(1);
 
         expect(fn).toHaveBeenCalledWith('projects/1', {});
     });
 
     it('should get resource by name', async () => {
-        const driver = createDriver();
+        const client = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: {} });
-        driver.get = fn;
+        client.get = fn;
 
-        const api = new ProjectAPI({ driver });
+        const api = new ProjectAPI({ client });
         await api.getOne('name', true);
 
         expect(fn).toHaveBeenCalledWith('projects/name', {

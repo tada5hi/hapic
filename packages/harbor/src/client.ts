@@ -5,26 +5,21 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import {
-    Client as BaseClient,
-} from 'hapic';
+import { Client as BaseClient } from 'hapic';
 
 export type {
-    DriverRequestConfig,
-    DriverResponse,
-    ClientInterface,
-    Driver,
-    DriverError,
-    DriverRetryConfig,
-
+    RequestOptions,
+    Response,
+    ClientError,
     ErrorCode,
 } from 'hapic';
+
 export {
-    isDriverError,
-    hasDriverFailedWithStausCode,
-    hasDriverFailedDueNetworkError,
-    isDriver,
-    createDriver,
+    createClient,
+    isClient,
+    isClientError,
+    hasClientFailedWithStausCode,
+    hasClientFailedDueNetworkError,
 } from 'hapic';
 export {
     BaseClient,

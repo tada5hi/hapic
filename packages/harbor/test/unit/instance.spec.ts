@@ -7,17 +7,17 @@
 
 import { stringifyAuthorizationHeader } from 'hapic';
 import {
-    Client,
-    createClient,
-    hasClient,
-    setClient,
-    unsetClient,
-    useClient,
+    HarborClient,
+    createHarborClient,
+    hasHarborClient,
+    setHarborClient,
+    unsetHarborClient,
+    useHarborClient,
 } from '../../src';
 
 describe('src/instance', () => {
     it('should create client by connectionString', () => {
-        const client = new Client({
+        const client = new HarborClient({
             connectionString: 'admin:start123@https://example.com/api/v2.0/',
         });
 
@@ -29,22 +29,22 @@ describe('src/instance', () => {
         }));
     });
     it('should be manageable by singleton', () => {
-        expect(hasClient()).toBeFalsy();
+        expect(hasHarborClient()).toBeFalsy();
 
-        const client = setClient(createClient());
-        expect(client).toEqual(useClient());
+        const client = setHarborClient(createHarborClient());
+        expect(client).toEqual(useHarborClient());
 
-        expect(hasClient()).toBeTruthy();
+        expect(hasHarborClient()).toBeTruthy();
 
-        unsetClient();
+        unsetHarborClient();
     });
 
     it('should have client properties', () => {
-        const client = useClient();
+        const client = useHarborClient();
 
         expect(client.project).toBeDefined();
         expect(client.search).toBeDefined();
 
-        unsetClient();
+        unsetHarborClient();
     });
 });

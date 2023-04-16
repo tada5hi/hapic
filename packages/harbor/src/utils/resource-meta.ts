@@ -5,20 +5,23 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { DriverResponse } from 'hapic';
+import type { Response } from 'hapic';
 import { HeaderName } from '../constants';
 
 type Meta = {
     total?: number
 };
-export function extractResourceMetaOfResponse(response: DriverResponse) : Meta {
+export function extractResourceMetaOfResponse(response: Response) : Meta {
     const meta : Meta = {};
 
     if (
         response.headers &&
-        typeof response.headers[HeaderName.TOTAL_COUNT] === 'number'
+        response.headers.has(HeaderName.TOTAL_COUNT)
     ) {
-        meta.total = response.headers[HeaderName.TOTAL_COUNT];
+        const total = parseInt(response.headers.get(HeaderName.TOTAL_COUNT) || '0', 10);
+        if (!Number.isNaN(total)) {
+            meta.total = total;
+        }
     }
 
     return meta;

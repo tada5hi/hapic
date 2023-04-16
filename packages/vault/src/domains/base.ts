@@ -5,28 +5,30 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createDriver, isClient } from 'hapic';
-import type { Client, Driver, DriverRequestConfig } from 'hapic';
+import { createClient, isClient } from 'hapic';
+import type {
+    Client, RequestOptions,
+} from 'hapic';
 import type { BaseAPIContext } from './type';
 
 export abstract class BaseAPI {
-    protected driver!: Driver;
+    protected client!: Client;
 
     // -----------------------------------------------------------------------------------
 
     protected constructor(context?: BaseAPIContext) {
         context = context || {};
 
-        this.setDriver(context.driver);
+        this.setDriver(context.client);
     }
 
     // -----------------------------------------------------------------------------------
 
-    setDriver(input?: Client | Driver | DriverRequestConfig) {
+    setDriver(input?: Client | RequestOptions) {
         if (isClient(input)) {
-            this.driver = input.driver;
+            this.client = input;
         } else {
-            this.driver = createDriver(input);
+            this.client = createClient(input);
         }
     }
 }

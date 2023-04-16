@@ -7,7 +7,7 @@
 
 import {
     ProjectRepositoryAPI,
-    createDriver,
+    createClient,
     parseLongProjectRepositoryName,
 } from '../../../src';
 
@@ -20,12 +20,12 @@ describe('src/domains/project-repository', () => {
     });
 
     it('should get resources', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: [] });
         driver.get = fn;
 
-        const api = new ProjectRepositoryAPI({ driver });
+        const api = new ProjectRepositoryAPI({ client: driver });
         await api.getMany({
             projectName: 'proj',
             query: {
@@ -39,12 +39,12 @@ describe('src/domains/project-repository', () => {
     });
 
     it('should get resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: { name: 'foo/bar' } });
         driver.get = fn;
 
-        const api = new ProjectRepositoryAPI({ driver });
+        const api = new ProjectRepositoryAPI({ client: driver });
         await api.getOne({
             projectName: 'foo',
             repositoryName: 'bar',
@@ -56,12 +56,12 @@ describe('src/domains/project-repository', () => {
     });
 
     it('should find resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: [] });
         driver.get = fn;
 
-        const api = new ProjectRepositoryAPI({ driver });
+        const api = new ProjectRepositoryAPI({ client: driver });
         await api.findOne({
             projectName: 'foo',
             repositoryName: 'bar',
@@ -73,12 +73,12 @@ describe('src/domains/project-repository', () => {
     });
 
     it('should update resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.put = fn;
 
-        const api = new ProjectRepositoryAPI({ driver });
+        const api = new ProjectRepositoryAPI({ client: driver });
         await api.update({
             projectName: 'foo',
             repositoryName: 'bar',
@@ -96,12 +96,12 @@ describe('src/domains/project-repository', () => {
     });
 
     it('should delete resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.delete = fn;
 
-        const api = new ProjectRepositoryAPI({ driver });
+        const api = new ProjectRepositoryAPI({ client: driver });
         await api.delete({
             projectName: 'foo',
             repositoryName: 'bar',

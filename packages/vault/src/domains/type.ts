@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client, Driver, DriverRequestConfig } from 'hapic';
+import type { Client, RequestOptions } from 'hapic';
 
 export type BaseAPIContext = {
-    driver?: Client | Driver | DriverRequestConfig
+    client?: Client | RequestOptions
 };

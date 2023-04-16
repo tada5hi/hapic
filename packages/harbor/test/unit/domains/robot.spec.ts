@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createDriver } from 'hapic';
+import { createClient } from 'hapic';
 import { RobotAPI, buildRobotPermissionForAllResources } from '../../../src';
 import type { Project } from '../../../src';
 
@@ -18,12 +18,12 @@ describe('src/domains/robot', () => {
     });
 
     it('should create resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockImplementation((_url, data) => ({ data: { ...data } satisfies Project }));
         driver.post = fn;
 
-        const api = new RobotAPI({ driver });
+        const api = new RobotAPI({ client: driver });
         await api.create({
             name: 'robi',
         });
@@ -32,24 +32,24 @@ describe('src/domains/robot', () => {
     });
 
     it('should delete resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.delete = fn;
 
-        const api = new RobotAPI({ driver });
+        const api = new RobotAPI({ client: driver });
         await api.delete(1);
 
         expect(fn).toHaveBeenCalledWith('robots/1');
     });
 
     it('should update resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue(undefined);
         driver.put = fn;
 
-        const api = new RobotAPI({ driver });
+        const api = new RobotAPI({ client: driver });
         await api.update(1, {
             name: 'robus',
         });
@@ -61,12 +61,12 @@ describe('src/domains/robot', () => {
     });
 
     it('should get resources', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: [] });
         driver.get = fn;
 
-        const api = new RobotAPI({ driver });
+        const api = new RobotAPI({ client: driver });
         await api.getMany({
             query: {
                 page_size: 10,
@@ -77,12 +77,12 @@ describe('src/domains/robot', () => {
     });
 
     it('should get resource', async () => {
-        const driver = createDriver();
+        const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: {} });
         driver.get = fn;
 
-        const api = new RobotAPI({ driver });
+        const api = new RobotAPI({ client: driver });
         await api.getOne(1);
 
         expect(fn).toHaveBeenCalledWith('robots/1');

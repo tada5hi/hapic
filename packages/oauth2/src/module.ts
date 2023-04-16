@@ -5,15 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client as BaseClient } from 'hapic';
+import { Client } from 'hapic';
 import type { ConfigInput, Options } from './config';
 
 import { AuthorizeAPI, TokenAPI, UserInfoAPI } from './domains';
 
-export class Client extends BaseClient {
+export class OAuth2Client extends Client {
     override readonly '@instanceof' = Symbol.for('OAuth2Client');
 
-    public options!: Options;
+    public readonly options : Options;
 
     public authorize: AuthorizeAPI;
 
@@ -24,39 +24,16 @@ export class Client extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     constructor(input?: ConfigInput) {
-        super(input);
-
-        this.token = new TokenAPI({ driver: this.driver });
-        this.authorize = new AuthorizeAPI({ driver: this.driver });
-        this.userInfo = new UserInfoAPI({ driver: this.driver });
-
-        this.setConfig(input);
-    }
-
-    // -----------------------------------------------------------------------------------
-
-    override setConfig(input?: ConfigInput) {
-        super.setConfig(input);
-
         input = input || {};
 
-        if (!this.options || input.options) {
-            this.options = input.options || {};
-        }
+        super(input.request);
 
-        if (this.authorize) {
-            this.authorize.setDriver(this.driver);
-            this.authorize.setOptions(this.options);
-        }
+        const options = input.options || {};
 
-        if (this.token) {
-            this.token.setDriver(this.driver);
-            this.token.setOptions(this.options);
-        }
+        this.options = options;
 
-        if (this.userInfo) {
-            this.userInfo.setOptions(this.options);
-            this.userInfo.setDriver(this.driver);
-        }
+        this.token = new TokenAPI({ client: this, options });
+        this.authorize = new AuthorizeAPI({ client: this, options });
+        this.userInfo = new UserInfoAPI({ client: this, options });
     }
 }

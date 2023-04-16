@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from './instance';
+import { createOAuth2Client } from './instance';
 
 export * from './config';
 export * from './client';
@@ -17,5 +17,5 @@ export * from './module';
 export * from './type';
 export * from './utils';
 
-const client = createClient();
+const client = createOAuth2Client();
 export default client;

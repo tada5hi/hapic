@@ -8,21 +8,16 @@
 import { Client as BaseClient } from 'hapic';
 
 export type {
-    DriverRequestConfig,
-    DriverResponse,
-    ClientInterface,
-    Driver,
-    DriverError,
-    DriverRetryConfig,
-
+    RequestOptions,
+    Response,
+    ClientError,
     ErrorCode,
 } from 'hapic';
 export {
-    isDriverError,
-    hasDriverFailedWithStausCode,
-    hasDriverFailedDueNetworkError,
-    isDriver,
-    createDriver,
+    createClient,
+    isClientError,
+    hasClientFailedWithStausCode,
+    hasClientFailedDueNetworkError,
 } from 'hapic';
 export {
     BaseClient,
