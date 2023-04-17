@@ -5,5 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export * from './module';
-export * from './type';
+export type HookFn<T = any> = (input: T) => Promise<T> | T;
+export type HookOptions = {
+    returnOnResponse?: boolean,
+    continueOnError?: boolean
+};

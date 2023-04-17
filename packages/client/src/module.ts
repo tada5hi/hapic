@@ -10,17 +10,20 @@ import { withBase, withQuery } from 'ufo';
 
 import { MethodName, ResponseType } from './constants';
 import type {
-    ClientContext,
-    InterceptorErrorHandler, InterceptorHandler,
+    ClientContext, ClientContextWithError,
+    HookFn,
+    HookOptions,
     RequestOptions,
     RequestOptionsWithURL,
     Response,
     ResponseData,
 } from './core';
 import {
-    InterceptorManager,
-    detectResponseType,
-    extendRequestOptionsWithDefaults, isRequestPayloadSupported,
+    HookManager,
+    HookName,
+    detectResponseType, extendRequestOptionsWithDefaults,
+
+    isRequestPayloadSupported,
 } from './core';
 import type { ClientError } from './error';
 import { ErrorCode, createClientError } from './error';
@@ -34,9 +37,7 @@ export class Client {
 
     protected headers : Headers;
 
-    protected requestInterceptors : InterceptorManager;
-
-    protected responseInterceptors : InterceptorManager;
+    protected hookManager : HookManager;
 
     // ---------------------------------------------------------------------------------
 
@@ -46,8 +47,7 @@ export class Client {
         this.defaults = extendRequestOptionsWithDefaults(input || {});
         this.headers = new Headers(this.defaults.headers);
 
-        this.requestInterceptors = new InterceptorManager();
-        this.responseInterceptors = new InterceptorManager();
+        this.hookManager = new HookManager();
     }
 
     // ---------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ export class Client {
         });
 
         const baseURL = config.baseURL || this.defaults.baseURL;
-        const context : ClientContext<RT, T> = {
+        let context : ClientContext<RT, T> = {
             request: baseURL ? withBase(config.url, baseURL) : config.url,
             options: { ...this.defaults as RequestOptionsWithURL<RT>, ...config, headers },
         };
@@ -186,7 +186,7 @@ export class Client {
             });
         }
 
-        await this.requestInterceptors.run(context as ClientContext);
+        context = await this.hookManager.callHook(HookName.REQUEST, context);
 
         if (context.options.transform) {
             const transformers = Array.isArray(context.options.transform) ?
@@ -230,9 +230,9 @@ export class Client {
 
             let output : ClientContext | undefined;
             if (step === 'request') {
-                output = await this.requestInterceptors.run(ctx as ClientContext);
+                output = await this.hookManager.callHook(HookName.REQUEST_ERROR, ctx as ClientContext);
             } else {
-                output = await this.responseInterceptors.run(ctx as ClientContext);
+                output = await this.hookManager.callHook(HookName.RESPONSE_ERROR, ctx as ClientContext);
             }
 
             if (
@@ -307,7 +307,7 @@ export class Client {
             return handleError('response', context);
         }
 
-        return response as R;
+        return await this.hookManager.callHook(HookName.RESPONSE, context.response) as R;
     }
 
     // ---------------------------------------------------------------------------------
@@ -439,118 +439,51 @@ export class Client {
     //---------------------------------------------------------------------------------
 
     /**
-     * Mount a response interceptor.
+     * Register a hook fn.
      *
-     * @param interceptor
+     * @param name
+     * @param fn
      */
-    public mountResponseInterceptor(interceptor: InterceptorHandler) : number {
-        return this.responseInterceptors.registerHandler(interceptor);
+
+    on(
+        name: `${HookName.RESPONSE}` | `${HookName.REQUEST}`,
+        fn: HookFn<ClientContext>
+    ) : number;
+
+    on(
+        name: `${HookName.RESPONSE_ERROR}` | `${HookName.REQUEST_ERROR}`,
+        fn: HookFn<ClientContext | ClientContextWithError>
+    ) : number;
+
+    on(name: `${HookName}`, fn: HookFn) : number {
+        const options : HookOptions = {};
+        if (
+            name === HookName.REQUEST_ERROR ||
+            name === HookName.RESPONSE_ERROR
+        ) {
+            options.continueOnError = true;
+            options.returnOnResponse = true;
+        }
+
+        this.hookManager.setOptions(name, options);
+
+        return this.hookManager.hook(name, fn);
     }
 
     /**
-     * Unmount a response interceptor.
+     * Remove single or specific hook fn(s).
      *
-     * @param id
+     * @param name
+     * @param fn
      */
-    public unmountResponseInterceptor(id: number) {
-        this.responseInterceptors.ejectHandler(id);
+    off(name: `${HookName}`, fn?: HookFn | number) : this {
+        if (typeof fn === 'undefined') {
+            this.hookManager.removeHooks(name);
 
+            return this;
+        }
+
+        this.hookManager.removeHook(name, fn);
         return this;
-    }
-
-    /**
-     * Unmount all response interceptors.
-     */
-    public unmountResponseInterceptors() {
-        this.responseInterceptors.clearHandlers();
-    }
-
-    //---------------------------------------------------------------------------------
-
-    /**
-     * Mount a response error interceptor.
-     *
-     * @param interceptor
-     */
-    public mountResponseErrorInterceptor(interceptor: InterceptorErrorHandler) : number {
-        return this.responseInterceptors.registerErrorHandler(interceptor);
-    }
-
-    /**
-     * Unmount a response error interceptor.
-     *
-     * @param id
-     */
-    public unmountResponseErrorInterceptor(id: number) {
-        this.responseInterceptors.ejectErrorHandler(id);
-
-        return this;
-    }
-
-    /**
-     * Unmount all error interceptors.
-     */
-    public unmountResponseErrorInterceptors() {
-        this.responseInterceptors.clearErrorHandlers();
-
-        return this;
-    }
-
-    //---------------------------------------------------------------------------------
-
-    /**
-     * Mount a request interceptor.
-     *
-     * @param interceptor
-     */
-    public mountRequestInterceptor(interceptor: InterceptorHandler) : number {
-        return this.requestInterceptors.registerHandler(interceptor);
-    }
-
-    /**
-     * Unmount a request interceptor.
-     *
-     * @param id
-     */
-    public unmountRequestInterceptor(id: number) {
-        this.requestInterceptors.ejectHandler(id);
-
-        return this;
-    }
-
-    /**
-     * Unmount all request interceptors.
-     */
-    public unmountRequestInterceptors() {
-        this.requestInterceptors.clearHandlers();
-    }
-
-    //---------------------------------------------------------------------------------
-
-    /**
-     * Mount a request error interceptor.
-     *
-     * @param interceptor
-     */
-    public mountRequestErrorInterceptor(interceptor: InterceptorHandler) : number {
-        return this.requestInterceptors.registerErrorHandler(interceptor);
-    }
-
-    /**
-     * Unmount a request error interceptor.
-     *
-     * @param id
-     */
-    public unmountRequestErrorInterceptor(id: number) {
-        this.requestInterceptors.ejectErrorHandler(id);
-
-        return this;
-    }
-
-    /**
-     * Unmount all request interceptors.
-     */
-    public unmountRequestErrorInterceptors() {
-        this.requestInterceptors.clearErrorHandlers();
     }
 }

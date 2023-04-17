@@ -5,7 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, HeaderName } from '../../src';
+import {
+    Client, HeaderName, HookName,
+} from '../../src';
 
 describe('src/module', () => {
     it('should set/unset header', () => {
@@ -46,29 +48,37 @@ describe('src/module', () => {
         expect(client.getBaseURL()).toEqual('http://localhost:3000/');
     });
 
-    it('should mount/unmount response interceptor', () => {
+    it('should mount/unmount hook', () => {
         const client = new Client();
 
-        const interceptorId = client.mountResponseInterceptor((ctx) => {
-            throw ctx.error;
-        });
+        const hookId = client.on(
+            HookName.RESPONSE,
+            (ctx) => client.request({
+                url: 'https://localhost/token',
+                method: 'POST',
+                body: ctx.options.body,
+            }),
+        );
 
-        expect(interceptorId).toBeDefined();
+        expect(hookId).toBeDefined();
 
-        client.unmountResponseInterceptor(interceptorId);
-        client.unmountResponseInterceptors();
+        client.off(HookName.RESPONSE, hookId);
+        client.off(HookName.RESPONSE);
     });
 
-    it('should mount/unmount request interceptor', () => {
+    it('should mount/unmount error hook', () => {
         const client = new Client();
 
-        const interceptorId = client.mountRequestInterceptor((ctx) => {
-            throw ctx.error;
-        });
+        const interceptorId = client.on(
+            HookName.REQUEST_ERROR,
+            (ctx) => {
+                throw ctx.error;
+            },
+        );
 
         expect(interceptorId).toBeDefined();
 
-        client.unmountRequestInterceptor(interceptorId);
-        client.unmountRequestInterceptors();
+        client.off(HookName.REQUEST_ERROR, interceptorId);
+        client.off(HookName.REQUEST_ERROR);
     });
 });

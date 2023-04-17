@@ -5,7 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export * from './context';
-export * from './hook';
-export * from './request';
-export * from './response';
+export enum HookName {
+    REQUEST = 'request',
+    REQUEST_ERROR = 'requestError',
+
+    RESPONSE = 'response',
+    RESPONSE_ERROR = 'responseError',
+}
