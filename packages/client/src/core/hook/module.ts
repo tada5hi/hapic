@@ -57,6 +57,8 @@ export class HookManager {
         const options = this.options[name];
         const items = this.items[name] || [];
 
+        let error : unknown | undefined;
+
         for (let i = 0; i < items.length; i++) {
             const hook = items[i];
             if (!hook) {
@@ -73,10 +75,16 @@ export class HookManager {
                     return output;
                 }
             } catch (e) {
-                if (!options.continueOnError) {
+                if (options.continueOnError) {
+                    error = e;
+                } else {
                     throw e;
                 }
             }
+        }
+
+        if (error) {
+            throw error;
         }
 
         return input;
