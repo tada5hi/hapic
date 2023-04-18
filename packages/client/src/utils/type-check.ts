@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { FormData } from '../fetch';
+import { Blob, File, FormData } from '../fetch';
 
 function kindOf(input: unknown) {
     return Object.prototype.toString.call(input)
