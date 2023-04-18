@@ -57,6 +57,7 @@ export class HookManager {
         const options = this.options[name];
         const items = this.items[name] || [];
 
+        let temp = input;
         let error : unknown | undefined;
 
         for (let i = 0; i < items.length; i++) {
@@ -71,8 +72,12 @@ export class HookManager {
                     output = await (output as Promise<ClientContext>);
                 }
 
-                if (options.returnOnResponse && output) {
-                    return output;
+                if (output) {
+                    if (options.returnOnResponse) {
+                        return output;
+                    }
+
+                    temp = output;
                 }
             } catch (e) {
                 if (options.continueOnError) {
@@ -87,6 +92,6 @@ export class HookManager {
             throw error;
         }
 
-        return input;
+        return temp;
     }
 }
