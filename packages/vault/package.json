@@ -1,6 +1,6 @@
 {
     "name": "@hapic/vault",
-    "version": "2.0.0-alpha.6",
+    "version": "2.0.0-alpha.7",
     "description": "A vault http api client.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
@@ -48,7 +48,7 @@
         "smob": "^1.0.0"
     },
     "devDependencies": {
-        "hapic": "^2.0.0-alpha.6"
+        "hapic": "^2.0.0-alpha.7"
     },
     "peerDependencies": {
         "hapic": "^2.x || >= 2.0.0-alpha.7"

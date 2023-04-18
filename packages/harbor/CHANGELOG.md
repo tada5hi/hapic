@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.7](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2023-04-18)
+
+
+### Bug Fixes
+
+* default request transformer for patch, put & post ([06525b8](https://github.com/Tada5hi/hapi/commit/06525b8918c8583a8cd23d66c4fd199f4c60f0b6))
+
+
+
+
+
 # [2.0.0-alpha.6](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2023-04-18)
 
 
