@@ -11,7 +11,7 @@ import type { RequestOptions } from './type';
 export function extendRequestOptionsWithDefaults(options: RequestOptions) : RequestOptions {
     if (!options.transform) {
         options.transform = [
-            createDefaultRequestTransformer,
+            createDefaultRequestTransformer(),
         ];
     }
 
