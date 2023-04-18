@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.8](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2023-04-18)
+
+
+### Bug Fixes
+
+* imports for type check ([75ba0de](https://github.com/Tada5hi/hapic/commit/75ba0def0c83bc037b4d0496775e3ceb13fab9b7))
+
+
+
+
+
 # [2.0.0-alpha.7](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2023-04-18)
 
 
