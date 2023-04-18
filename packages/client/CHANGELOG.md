@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.6](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2023-04-18)
+
+
+### Bug Fixes
+
+* context assignment & target build version ([900ff2a](https://github.com/Tada5hi/hapic/commit/900ff2aab2879af21a36042f8cde50dee0eae72d))
+
+
+
+
+
 # [2.0.0-alpha.5](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2023-04-18)
 
 
