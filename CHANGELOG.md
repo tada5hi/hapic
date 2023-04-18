@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.4](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2023-04-18)
+
+
+### Bug Fixes
+
+* build temp output for non return on response hooks ([ec61e65](https://github.com/Tada5hi/hapic/commit/ec61e6576c1f01f46734aff8bf6070f3160a2973))
+* throw last error of error hook chain ([31e740e](https://github.com/Tada5hi/hapic/commit/31e740e5837953824125a11717a6e4536e0b1c60))
+
+
+### Features
+
+* replaced interceptors with hook aproach ([27b3e24](https://github.com/Tada5hi/hapic/commit/27b3e2439a52ef35a4afcd40bd57dad95023f227))
+
+
+
+
+
 # [2.0.0-alpha.3](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2023-04-16)
 
 
