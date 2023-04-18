@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Headers, fetch } from 'node-fetch-native';
 import { withBase, withQuery } from 'ufo';
+import { Headers, fetch } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type {
@@ -298,12 +298,12 @@ export class Client {
             },
         });
 
+        context.response = response;
+
         if (
             response.status >= 400 &&
             response.status < 600
         ) {
-            context.response = response;
-
             return handleError('response', context);
         }
 

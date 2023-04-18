@@ -47,7 +47,7 @@ export function createConfig({ pkg, external = [], defaultExport = false }) {
                 transform(code) {
                     return transform(code, {
                         jsc: {
-                            target: 'es2016',
+                            target: 'es2020',
                             parser: {
                                 syntax: 'typescript',
                                 decorators: true
