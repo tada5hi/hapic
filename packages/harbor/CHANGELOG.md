@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.5](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2023-04-18)
+
+**Note:** Version bump only for package @hapic/harbor
+
+
+
+
+
 # [2.0.0-alpha.4](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2023-04-18)
 
 **Note:** Version bump only for package @hapic/harbor

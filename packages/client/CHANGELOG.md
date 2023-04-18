@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.5](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2023-04-18)
+
+
+### Bug Fixes
+
+* add request options typing for nodejs http(s) agent ([e56ab20](https://github.com/Tada5hi/hapic/commit/e56ab203985d88120925872a77f4935407103ecf))
+
+
+
+
+
 # [2.0.0-alpha.4](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2023-04-18)
 
 
