@@ -13,13 +13,38 @@ export type RequestInfo = globalThis.RequestInfo;
 
 export type RequestTransformer = (data: any, headers: Headers) => any;
 export type RequestOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`> = Omit<RequestInit, 'body'> & {
+    /**
+     * The base URL for the HTTP endpoints.
+     */
     baseURL?: string,
+    /**
+     * The request body.
+     */
     body?: RequestInit['body'] | Record<string, any>,
+    /**
+     * The desired response type.
+     */
     responseType?: R,
+    /**
+     * A function or array of functions to transform the response data.
+     */
     responseTransform?: ResponseTransformer | ResponseTransformer[],
+    /**
+     * Query string parameters for the request.
+     */
     params?: Record<string, any>,
+    /**
+     * Query string parameters for the request.
+     */
     query?: Record<string, any>,
-    transform?: RequestTransformer | RequestTransformer[]
+    /**
+     * A function or array of functions to transform the request data.
+     */
+    transform?: RequestTransformer | RequestTransformer[],
+    /**
+     * Proxy agent configuration (NodeJS only).
+     */
+    agent?: ((url: URL) => any) | any
 };
 
 export type RequestOptionsWithURL<R extends `${ResponseType}` = `${ResponseType}`> = RequestOptions<R> & {
