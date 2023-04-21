@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.9](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2023-04-21)
+
+
+### Features
+
+* refactored, simplified and enhanced hook management/interaction ([71f68b6](https://github.com/Tada5hi/hapi/commit/71f68b60eca9aa8826fff8058f3a43a3c9d663b3))
+
+
+
+
+
 # [2.0.0-alpha.8](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2023-04-18)
 
 
