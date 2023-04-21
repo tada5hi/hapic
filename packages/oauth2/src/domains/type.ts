@@ -5,10 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client, RequestOptions } from 'hapic';
+import type { Client, RequestBaseOptions } from 'hapic';
 import type { Options } from '../config';
 
 export type BaseAPIContext = {
-    client?: Client | RequestOptions,
+    client?: Client | RequestBaseOptions,
     options?: Options,
 };

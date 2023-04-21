@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HeaderName } from '../../../header';
+import { HeaderName } from '../../header';
 import {
     isArrayBuffer,
     isBlob,
@@ -14,7 +14,7 @@ import {
     isJSONSerializable,
     isStream,
     isURLSearchParams,
-} from '../../../utils';
+} from '../../utils';
 import type { RequestTransformer } from '../type';
 
 export function createDefaultRequestTransformer() : RequestTransformer {

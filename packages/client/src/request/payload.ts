@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { MethodName } from '../../constants';
+import { MethodName } from '../constants';
 
 export function isRequestPayloadSupported(method = 'GET') {
     method = method.toUpperCase();

@@ -6,7 +6,10 @@
  */
 
 import {
-    ClientError, hasClientFailedDueNetworkError, hasClientFailedWithStausCode, isClientError,
+    ClientError,
+    isClientError,
+    isClientErrorDueNetworkIssue,
+    isClientErrorWithStatusCode,
 } from '../../../src';
 
 describe('src/utils/error', () => {
@@ -14,18 +17,21 @@ describe('src/utils/error', () => {
         expect(isClientError()).toBeFalsy();
 
         const error = new ClientError({
-            request: '',
+            request: {
+                url: 'http://localhost:3000/',
+            },
             message: '',
         });
 
         expect(isClientError(error)).toBeTruthy();
+        expect(error.request.url).toEqual('http://localhost:3000/');
     });
 
     it('should detect request error with status code', () => {
-        expect(hasClientFailedWithStausCode(undefined, 400)).toBeFalsy();
+        expect(isClientErrorWithStatusCode(undefined, 400)).toBeFalsy();
     });
 
     it('should detect network error', () => {
-        expect(hasClientFailedDueNetworkError()).toBeFalsy();
+        expect(isClientErrorDueNetworkIssue()).toBeFalsy();
     });
 });

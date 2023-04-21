@@ -7,7 +7,7 @@
 
 import { createClient, isClient } from 'hapic';
 import type {
-    Client, RequestOptions,
+    Client, RequestBaseOptions,
 } from 'hapic';
 import type { BaseAPIContext } from './type';
 
@@ -24,7 +24,7 @@ export abstract class BaseAPI {
 
     // -----------------------------------------------------------------------------------
 
-    setDriver(input?: Client | RequestOptions) {
+    setDriver(input?: Client | RequestBaseOptions) {
         if (isClient(input)) {
             this.client = input;
         } else {

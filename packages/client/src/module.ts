@@ -6,34 +6,45 @@
  */
 
 import { withBase, withQuery } from 'ufo';
+import type { ClientErrorCreateContext } from './error/type';
 import { Headers, fetch } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type {
-    ClientContext, ClientContextWithError,
+    HookErrorFn,
     HookFn,
     HookOptions,
+    HookReqFn,
+    HookResFn,
+} from './hook';
+import type {
+    RequestBaseOptions,
     RequestOptions,
-    RequestOptionsWithURL,
+} from './request';
+import type {
     Response,
     ResponseData,
-} from './core';
+} from './response';
 import {
     HookManager,
     HookName,
-    detectResponseType, extendRequestOptionsWithDefaults,
-
+} from './hook';
+import {
+    detectResponseType,
+    isResponse,
+} from './response';
+import {
+    extendRequestOptionsWithDefaults,
     isRequestPayloadSupported,
-} from './core';
-import type { ClientError } from './error';
-import { ErrorCode, createClientError } from './error';
+} from './request';
+import { createClientError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 
 export class Client {
     readonly '@instanceof' = Symbol.for('BaseClient');
 
-    public defaults : RequestOptions;
+    public defaults : RequestBaseOptions;
 
     protected headers : Headers;
 
@@ -41,7 +52,7 @@ export class Client {
 
     // ---------------------------------------------------------------------------------
 
-    constructor(input?: RequestOptions) {
+    constructor(input?: RequestBaseOptions) {
         input = input || {};
 
         this.defaults = extendRequestOptionsWithDefaults(input || {});
@@ -137,7 +148,7 @@ export class Client {
      */
     public getAuthorizationHeader() {
         const header = this.getHeader(HeaderName.AUTHORIZATION);
-        if (typeof header === 'string') {
+        if (header !== null) {
             return header;
         }
 
@@ -164,7 +175,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(config: RequestOptionsWithURL<RT>): Promise<R> {
+    >(config: RequestOptions<RT>): Promise<R> {
         const headers = new Headers(config.headers);
 
         this.headers.forEach((value, key) => {
@@ -174,72 +185,61 @@ export class Client {
         });
 
         const baseURL = config.baseURL || this.defaults.baseURL;
-        let context : ClientContext<RT, T> = {
-            request: baseURL ? withBase(config.url, baseURL) : config.url,
-            options: { ...this.defaults as RequestOptionsWithURL<RT>, ...config, headers },
+        let options : RequestOptions<RT> = {
+            ...this.defaults as RequestBaseOptions<RT>,
+            ...config,
+            headers,
+            url: baseURL ? withBase(config.url, baseURL) : config.url,
         };
 
-        if (context.options.query || context.options.params) {
-            context.request = withQuery(context.request, {
-                ...context.options.params,
-                ...context.options.query,
+        if (options.query || options.params) {
+            options.url = withQuery(options.url, {
+                ...options.params,
+                ...options.query,
             });
         }
 
-        context = await this.hookManager.callHook(HookName.REQUEST, context);
+        options = await this.hookManager.callReqHook(
+            options,
+        ) as RequestOptions<RT>;
 
-        if (context.options.transform) {
-            const transformers = Array.isArray(context.options.transform) ?
-                context.options.transform :
-                [context.options.transform];
+        if (options.transform) {
+            const transformers = Array.isArray(options.transform) ?
+                options.transform :
+                [options.transform];
 
             for (let i = 0; i < transformers.length; i++) {
                 const transformer = transformers[i];
-                context.options.body = transformer(
-                    context.options.body,
-                    context.options.headers as Headers,
+                options.body = transformer(
+                    options.body,
+                    options.headers as Headers,
                 );
             }
         }
 
         const handleError = async (
             step: 'request' | 'response',
-            ctx: Omit<ClientContext<RT, T>, 'error'> & { error?: Error },
+            ctx: ClientErrorCreateContext,
         ) : Promise<R> => {
-            const isAbort = (!!ctx.error && ctx.error.name === 'AbortError');
-
-            let code : ErrorCode | undefined;
-            if (!ctx.response) {
-                if (isAbort) {
-                    code = ErrorCode.CONNECTION_ABORTED;
-                } else {
-                    code = ErrorCode.CONNECTION_CLOSED;
-                }
-            }
-
-            const error = createClientError({
-                ...ctx,
-                code,
-            });
+            const error = createClientError(ctx);
 
             if (Error.captureStackTrace) {
                 Error.captureStackTrace(error);
             }
 
-            ctx.error = error as ClientError<T>;
-
-            let output : ClientContext | undefined;
+            let output : RequestOptions | Response | undefined;
             if (step === 'request') {
-                output = await this.hookManager.callHook(HookName.REQUEST_ERROR, ctx as ClientContext);
+                output = await this.hookManager.callErrorHook(HookName.REQUEST_ERROR, error);
             } else {
-                output = await this.hookManager.callHook(HookName.RESPONSE_ERROR, ctx as ClientContext);
+                output = await this.hookManager.callErrorHook(HookName.RESPONSE_ERROR, error);
             }
 
-            if (
-                output &&
-                output.response
-            ) {
-                return output.response as R;
+            if (output) {
+                if (isResponse(output)) {
+                    return output as R;
+                }
+
+                return this.request(output);
             }
 
             throw error;
@@ -248,19 +248,21 @@ export class Client {
         let response : Response<ResponseData<RT, T>>;
 
         try {
-            if (!isRequestPayloadSupported(context.options.method)) {
-                delete context.options.body;
+            if (!isRequestPayloadSupported(options.method)) {
+                delete options.body;
             }
 
-            response = await fetch(context.request, context.options as RequestInit);
+            const { url, ...data } = options;
+
+            response = await fetch(url, data as RequestInit);
         } catch (error: any) {
             return handleError('request', {
-                ...context,
+                request: options,
                 ...(error instanceof Error ? { error } : {}),
             });
         }
 
-        const responseType = context.options.responseType ||
+        const responseType = options.responseType ||
             detectResponseType(response.headers.get(HeaderName.CONTENT_TYPE));
 
         let data : ResponseData<RT, T>;
@@ -296,18 +298,22 @@ export class Client {
             get() {
                 return data;
             },
+            set(value: RT) {
+                this.data = value;
+            },
         });
-
-        context.response = response;
 
         if (
             response.status >= 400 &&
             response.status < 600
         ) {
-            return handleError('response', context);
+            return handleError('response', {
+                response,
+                request: options,
+            });
         }
 
-        return await this.hookManager.callHook(HookName.RESPONSE, context.response) as R;
+        return await this.hookManager.callResHook(response) as R;
     }
 
     // ---------------------------------------------------------------------------------
@@ -322,7 +328,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(url: string, config?: RequestOptions<RT>): Promise<R> {
+    >(url: string, config?: RequestBaseOptions<RT>): Promise<R> {
         return this.request({
             ...(config || {}),
             method: MethodName.GET,
@@ -342,7 +348,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(url: string, config?: RequestOptions<RT>): Promise<R> {
+    >(url: string, config?: RequestBaseOptions<RT>): Promise<R> {
         return this.request({
             ...(config || {}),
             method: MethodName.DELETE,
@@ -362,7 +368,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(url: string, config?: RequestOptions<RT>): Promise<R> {
+    >(url: string, config?: RequestBaseOptions<RT>): Promise<R> {
         return this.request({
             ...(config || {}),
             method: MethodName.HEAD,
@@ -383,7 +389,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(url: string, body?: any, config?: RequestOptions<RT>): Promise<R> {
+    >(url: string, body?: any, config?: RequestBaseOptions<RT>): Promise<R> {
         return this.request({
             ...(config || {}),
             method: MethodName.POST,
@@ -405,7 +411,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(url: string, body?: any, config?: RequestOptions<RT>): Promise<R> {
+    >(url: string, body?: any, config?: RequestBaseOptions<RT>): Promise<R> {
         return this.request({
             ...(config || {}),
             method: MethodName.PUT,
@@ -427,7 +433,7 @@ export class Client {
         T = any,
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
-    >(url: string, body?: any, config?: RequestOptions<RT>): Promise<R> {
+    >(url: string, body?: any, config?: RequestBaseOptions<RT>): Promise<R> {
         return this.request({
             ...(config || {}),
             method: MethodName.PATCH,
@@ -446,13 +452,18 @@ export class Client {
      */
 
     on(
-        name: `${HookName.RESPONSE}` | `${HookName.REQUEST}`,
-        fn: HookFn<ClientContext>
+        name: `${HookName.REQUEST}`,
+        fn: HookReqFn
+    ) : number;
+
+    on(
+        name: `${HookName.RESPONSE}`,
+        fn: HookResFn
     ) : number;
 
     on(
         name: `${HookName.RESPONSE_ERROR}` | `${HookName.REQUEST_ERROR}`,
-        fn: HookFn<ClientContext | ClientContextWithError>
+        fn: HookErrorFn
     ) : number;
 
     on(name: `${HookName}`, fn: HookFn) : number {

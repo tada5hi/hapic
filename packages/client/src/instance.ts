@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestOptions } from './core';
+import type { RequestBaseOptions } from './request';
 import { Client } from './module';
 import { hasOwnProperty, verifyInstanceBySymbol } from './utils';
 
@@ -49,7 +49,7 @@ export function unsetClient(key?: string) {
     }
 }
 
-export function createClient(input?: RequestOptions) {
+export function createClient(input?: RequestBaseOptions) {
     return new Client(input);
 }
 

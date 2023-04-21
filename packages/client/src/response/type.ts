@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ResponseType } from '../../constants';
+import type { ResponseType } from '../constants';
 
 export type ResponseData<RT extends `${ResponseType}` = `${ResponseType.JSON}`, T = any> =
     RT extends `${ResponseType.ARRAY_BUFFER}` ?

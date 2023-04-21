@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestOptions } from 'hapic';
+import type { RequestBaseOptions } from 'hapic';
 import {
     createClient,
 } from 'hapic';
@@ -38,7 +38,7 @@ const payload : JwtPayload = {
 postFn.mockImplementation((
     _url: string,
     _data?: any,
-    config?: RequestOptions,
+    config?: RequestBaseOptions,
 ) => Promise.resolve({ data: payload, request: { config } }));
 
 driver.post = postFn;

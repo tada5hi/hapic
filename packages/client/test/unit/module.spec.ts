@@ -48,16 +48,38 @@ describe('src/module', () => {
         expect(client.getBaseURL()).toEqual('http://localhost:3000/');
     });
 
-    it('should mount/unmount hook', () => {
+    it('should mount/unmount request hook', () => {
+        const client = new Client();
+
+        const hookId = client.on(
+            HookName.REQUEST,
+            (options) => {
+                options.transform = (data, headers) => {
+                    headers.set(HeaderName.AUTHORIZATION, 'Bearer foo');
+
+                    return data;
+                };
+
+                return options;
+            },
+        );
+
+        expect(hookId).toBeDefined();
+
+        client.off(HookName.REQUEST, hookId);
+        client.off(HookName.REQUEST);
+    });
+
+    it('should mount/unmount response hook', () => {
         const client = new Client();
 
         const hookId = client.on(
             HookName.RESPONSE,
-            (ctx) => client.request({
-                url: 'https://localhost/token',
-                method: 'POST',
-                body: ctx.options.body,
-            }),
+            (res) => {
+                res.data = 'foo';
+
+                return res;
+            },
         );
 
         expect(hookId).toBeDefined();
@@ -71,8 +93,8 @@ describe('src/module', () => {
 
         const interceptorId = client.on(
             HookName.REQUEST_ERROR,
-            (ctx) => {
-                throw ctx.error;
+            (error) => {
+                throw error;
             },
         );
 

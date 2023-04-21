@@ -6,9 +6,9 @@
  */
 
 import { createDefaultRequestTransformer } from './transformer';
-import type { RequestOptions } from './type';
+import type { RequestBaseOptions } from './type';
 
-export function extendRequestOptionsWithDefaults(options: RequestOptions) : RequestOptions {
+export function extendRequestOptionsWithDefaults(options: RequestBaseOptions) : RequestBaseOptions {
     if (!options.transform) {
         options.transform = [
             createDefaultRequestTransformer(),

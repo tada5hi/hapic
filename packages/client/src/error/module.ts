@@ -6,13 +6,14 @@
  */
 
 import { BaseError } from 'ebec';
-import type { RequestInfo, Response } from '../core';
+import type { RequestOptions } from '../request';
+import type { Response } from '../response';
 import type { ClientErrorContext } from './type';
 
 export class ClientError<T = any> extends BaseError {
     readonly '@instanceof' = Symbol.for('ClientError');
 
-    readonly request?: RequestInfo;
+    readonly request: RequestOptions;
 
     readonly response?: Response<T>;
 

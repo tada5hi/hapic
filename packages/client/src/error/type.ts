@@ -5,16 +5,17 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestInfo, Response } from '../core';
+import type { RequestOptions } from '../request';
+import type { Response } from '../response';
 import type { ErrorCode } from './constants';
 
 export type ClientErrorCreateContext<T = any> = {
-    request: RequestInfo,
+    request: RequestOptions,
     error?: Error,
     response?: Response<T>,
     code?: ErrorCode,
 };
 
-export type ClientErrorContext<T = any> = ClientErrorCreateContext< T> & {
+export type ClientErrorContext<T = any> = ClientErrorCreateContext<T> & {
     message: string
 };

@@ -6,15 +6,13 @@
  */
 
 export type {
-    RequestOptions,
+    RequestBaseOptions,
     Response,
     ResponseData,
     ClientError,
     ErrorCode,
 } from 'hapic';
 
-export {
-    isClientError,
-    hasClientFailedWithStausCode,
-    hasClientFailedDueNetworkError,
-} from 'hapic';
+export { isClientErrorDueNetworkIssue } from 'hapic';
+export { isClientErrorWithStatusCode } from 'hapic';
+export { isClientError } from 'hapic';

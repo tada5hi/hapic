@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ResponseType } from '../../constants';
+import type { ResponseType } from '../constants';
 import type { ResponseTransformer } from '../response';
 
 export type RequestInit = globalThis.RequestInit;
 export type RequestInfo = globalThis.RequestInfo;
 
 export type RequestTransformer = (data: any, headers: Headers) => any;
-export type RequestOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`> = Omit<RequestInit, 'body'> & {
+export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`> = Omit<RequestInit, 'body'> & {
     /**
      * The base URL for the HTTP endpoints.
      */
@@ -47,6 +47,6 @@ export type RequestOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`>
     agent?: ((url: URL) => any) | any
 };
 
-export type RequestOptionsWithURL<R extends `${ResponseType}` = `${ResponseType}`> = RequestOptions<R> & {
+export type RequestOptions<R extends `${ResponseType}` = `${ResponseType}`> = RequestBaseOptions<R> & {
     url: string
 };

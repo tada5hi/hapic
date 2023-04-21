@@ -5,7 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export * from './error';
 export * from './has-own-property';
 export * from './instance';
 export * from './json-serializable';

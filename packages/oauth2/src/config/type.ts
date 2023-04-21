@@ -1,4 +1,4 @@
-import type { RequestOptions } from 'hapic';
+import type { RequestBaseOptions } from 'hapic';
 
 export type Options = {
     /**
@@ -43,7 +43,7 @@ export type Options = {
 };
 
 export type Config = {
-    request: RequestOptions,
+    request: RequestBaseOptions,
     options: Options
 };
 export type ConfigInput = Partial<Config>;

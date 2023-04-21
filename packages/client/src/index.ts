@@ -7,7 +7,9 @@
 
 import { createClient } from './instance';
 
-export * from './core';
+export * from './hook';
+export * from './request';
+export * from './response';
 export * from './constants';
 export * from './error';
 export * from './header';
