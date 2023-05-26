@@ -13,7 +13,7 @@ import nodeFetch, {
     Headers as _Headers,
 } from 'node-fetch-native';
 
-const gT = (function () {
+const gT = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -33,7 +33,7 @@ const gT = (function () {
     }
 
     throw new Error('unable to locate global object');
-}());
+})();
 
 export const File = gT.File ||
     _File;

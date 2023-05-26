@@ -13,7 +13,7 @@ export type ResponseData<RT extends `${ResponseType}` = `${ResponseType.JSON}`, 
         RT extends `${ResponseType.TEXT}` ?
             string :
             RT extends `${ResponseType.STREAM}` ?
-                ReadableStream<Uint8Array> :
+                ReadableStream :
                 RT extends `${ResponseType.BLOB}` ?
                     Blob :
                     T;

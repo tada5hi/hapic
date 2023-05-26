@@ -14,7 +14,8 @@ import { HookName } from './constants';
 import type {
     HookErrorFn,
     HookFn,
-    HookOptions, HookReqFn,
+    HookOptions,
+    HookReqFn,
 } from './type';
 
 export class HookManager {
