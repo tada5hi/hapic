@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.10](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2023-05-26)
+
+
+### Bug Fixes
+
+* **deps:** bump node-fetch-native from 1.1.0 to 1.1.1 ([#297](https://github.com/Tada5hi/hapic/issues/297)) ([9fa4a15](https://github.com/Tada5hi/hapic/commit/9fa4a15a31f428875cf06100fee8fb6989b95f01))
+* **deps:** bump ufo from 1.1.1 to 1.1.2 ([#268](https://github.com/Tada5hi/hapic/issues/268)) ([646cb82](https://github.com/Tada5hi/hapic/commit/646cb82d1850dfb0f8cb978858e3ff35b166f971))
+
+
+### Features
+
+* add header utility methods + set readable-stream to any ([856ecea](https://github.com/Tada5hi/hapic/commit/856ecea43a6bbd339770ef4b5a1b79ca95ac1e37))
+
+
+
+
+
 # [2.0.0-alpha.9](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2023-04-21)
 
 

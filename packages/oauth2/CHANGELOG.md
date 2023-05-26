@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.10](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2023-05-26)
+
+
+### Features
+
+* add header utility methods + set readable-stream to any ([856ecea](https://github.com/Tada5hi/hapic/commit/856ecea43a6bbd339770ef4b5a1b79ca95ac1e37))
+
+
+
+
+
 # [2.0.0-alpha.9](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2023-04-21)
 
 

@@ -1,6 +1,6 @@
 {
     "name": "@hapic/harbor",
-    "version": "2.0.0-alpha.9",
+    "version": "2.0.0-alpha.10",
     "description": "A harbor http api client.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
@@ -49,7 +49,7 @@
         "smob": "^1.1.1"
     },
     "devDependencies": {
-        "hapic": "^2.0.0-alpha.9"
+        "hapic": "^2.0.0-alpha.10"
     },
     "peerDependencies": {
         "hapic": "^2.x || >= 2.0.0-alpha.10"
