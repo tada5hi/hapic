@@ -19,6 +19,10 @@ import type { RequestTransformer } from '../type';
 
 export function createDefaultRequestTransformer() : RequestTransformer {
     return (data, headers) => {
+        if (isFormData(data)) {
+            headers.delete(HeaderName.CONTENT_TYPE);
+        }
+
         if (
             isArrayBuffer(data) ||
             isFile(data) ||
