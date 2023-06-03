@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.11](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2023-06-03)
+
+
+### Bug Fixes
+
+* delete content-type for form-data request ([e247546](https://github.com/Tada5hi/hapic/commit/e24754697fd07848ed0dd03ed9e226c1ead3fe9c))
+* **deps:** bump ebec from 1.0.0 to 1.1.0 ([#301](https://github.com/Tada5hi/hapic/issues/301)) ([3fe4a35](https://github.com/Tada5hi/hapic/commit/3fe4a35e911a763734e59ef84c721151d773e3d2))
+
+
+
+
+
 # [2.0.0-alpha.10](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2023-05-26)
 
 

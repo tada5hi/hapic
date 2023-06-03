@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.11](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2023-06-03)
+
+
+### Bug Fixes
+
+* **deps:** bump smob from 1.1.1 to 1.4.0 ([#300](https://github.com/Tada5hi/hapi/issues/300)) ([3967830](https://github.com/Tada5hi/hapi/commit/39678303d6ce907a0540b7c8d77447148c298b9d))
+
+
+
+
+
 # [2.0.0-alpha.10](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2023-05-26)
 
 
