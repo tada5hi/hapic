@@ -8,7 +8,7 @@
 import type { ResourceResponse } from '../../type';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../type';
-import type { MountCreateContext, MountCreatePayload } from './type';
+import type { MountCreateContext, MountCreatePayload, MountUpdatePayload } from './type';
 
 export class MountAPI extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
@@ -22,6 +22,11 @@ export class MountAPI extends BaseAPI {
         data.config = data.config || {};
         const response = await this.client.post(`sys/mounts/${path}`, data);
 
+        return response.data;
+    }
+
+    async update(path: string, payload: MountUpdatePayload) {
+        const response = await this.client.post(`sys/mounts/${path}`, payload);
         return response.data;
     }
 

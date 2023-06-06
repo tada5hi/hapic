@@ -23,6 +23,14 @@ export type MountCreatePayloadConfig = {
     plugin_version?: string
 };
 
+export type MountUpdatePayload = Omit<
+MountCreatePayloadConfig,
+'allowed_response_headers'
+> & {
+    description?: string,
+    allowed_managed_keys?: string[],
+};
+
 export type MountCreatePayload = {
     type: `${MountType}`,
     description?: string,
