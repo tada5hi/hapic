@@ -18,20 +18,11 @@ export type KeyValueBaseContext = {
     path: string
 };
 
-export type KeyValueV1CreateContext = KeyValueBaseContext & {
-    data: Record<string, any>
-};
-
-type KeyValueV2Payload = {
+export type KeyValueV2Payload = {
     options?: {
         cas?: number
     },
     data: Record<string, any>
-};
-
-export type KeyValueV2CreateContext = KeyValueBaseContext & {
-    data: KeyValueV2Payload,
-    version?: number
 };
 
 export type KeyValueV2CreateResponse = {
@@ -41,16 +32,6 @@ export type KeyValueV2CreateResponse = {
         destroyed: boolean,
         version: number,
     }
-};
-
-export type KeyValueV2UpdateContext = KeyValueBaseContext & {
-    data: KeyValueV2Payload,
-    version?: number
-};
-
-export type KeyValueV2SaveContext = KeyValueBaseContext & {
-    data: KeyValueV2Payload,
-    version?: number
 };
 
 export type KeyValueV2GetOneResponse<

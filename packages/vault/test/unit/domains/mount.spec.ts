@@ -16,12 +16,12 @@ describe('src/domains/key-value/v1', () => {
         driver.post = fn;
 
         const api = new MountAPI({ client: driver });
-        await api.create({
-            path: 'key',
-            data: {
+        await api.create(
+            'key',
+            {
                 type: 'kv',
             },
-        });
+        );
 
         expect(fn).toHaveBeenCalledWith('sys/mounts/key', {
             type: 'kv',

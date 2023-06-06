@@ -8,12 +8,9 @@
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../type';
 import type {
-    KeyValueBaseContext,
-    KeyValueV2CreateContext,
     KeyValueV2CreateResponse,
     KeyValueV2GetOneResponse,
-    KeyValueV2SaveContext,
-    KeyValueV2UpdateContext,
+    KeyValueV2Payload,
 } from './type';
 
 export class KeyValueV2API extends BaseAPI {
@@ -22,35 +19,74 @@ export class KeyValueV2API extends BaseAPI {
         super(context);
     }
 
-    async create(context: KeyValueV2CreateContext) : Promise<KeyValueV2CreateResponse> {
+    /**
+     * Create a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param data
+     */
+    async create(mount: string, path: string, data: KeyValueV2Payload) : Promise<KeyValueV2CreateResponse> {
         const response = await this.client.post(
-            `${context.mount}/data/${context.path}`,
-            context.data,
+            `${mount}/data/${path}`,
+            data,
         );
         return response.data;
     }
 
+    /**
+     * Get a secret (version).
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param version
+     */
     async getOne<T extends Record<string, any> = Record<string, any>>(
-        context: KeyValueBaseContext,
+        mount: string,
+        path: string,
+        version?: number,
     ) : Promise<KeyValueV2GetOneResponse<T>> {
-        const { data } = await this.client.get(`${context.mount}/data/${context.path}`);
+        const { data } = await this.client.get(`${mount}/data/${path}?version=${version || 0}`);
 
         return data;
     }
 
-    async update(context: KeyValueV2UpdateContext) : Promise<any> {
+    /**
+     * Update a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param data
+     */
+    async update(mount: string, path: string, data: KeyValueV2Payload) : Promise<any> {
         const response = await this.client.patch(
-            `${context.mount}/data/${context.path}`,
-            context.data,
+            `${mount}/data/${path}`,
+            data,
         );
         return response.data;
     }
 
-    async delete(context: KeyValueBaseContext) {
-        await this.client.delete(`${context.mount}/metadata/${context.path}`);
+    /**
+     * Delete a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     */
+    async delete(
+        mount: string,
+        path: string,
+    ) {
+        await this.client.delete(`${mount}/metadata/${path}`);
     }
 
-    async save(context: KeyValueV2SaveContext) : Promise<KeyValueV2CreateResponse> {
-        return this.create(context);
+    /**
+     * Create or update a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param data
+     */
+    async save(mount: string, path: string, data: KeyValueV2Payload) : Promise<KeyValueV2CreateResponse> {
+        return this.create(mount, path, data);
     }
 }

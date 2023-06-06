@@ -8,7 +8,6 @@
 import type { BaseAPIContext } from '../type';
 import { BaseAPI } from '../base';
 import type { ResourceResponse } from '../../type';
-import type { KeyValueBaseContext, KeyValueV1CreateContext } from './type';
 
 export class KeyValueV1API extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
@@ -16,23 +15,46 @@ export class KeyValueV1API extends BaseAPI {
         super(context);
     }
 
-    async create(context: KeyValueV1CreateContext) : Promise<any> {
+    /**
+     * Create a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param data
+     */
+    async create(mount: string, path: string, data: Record<string, any>) : Promise<any> {
         const response = await this.client.post(
-            `${context.mount}/${context.path}`,
-            context.data,
+            `${mount}/${path}`,
+            data,
         );
         return response.data;
     }
 
+    /**
+     * Get a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     */
     async getOne<T extends Record<string, any> = Record<string, any>>(
-        context: KeyValueBaseContext,
+        mount: string,
+        path: string,
     ) : Promise<ResourceResponse<T>> {
-        const { data } = await this.client.get(`${context.mount}/${context.path}`);
+        const { data } = await this.client.get(`${mount}/${path}`);
 
         return data;
     }
 
-    async delete(context: KeyValueBaseContext) {
-        await this.client.delete(`${context.mount}/${context.path}`);
+    /**
+     * Delete a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     */
+    async delete(
+        mount: string,
+        path: string,
+    ) {
+        await this.client.delete(`${mount}/${path}`);
     }
 }

@@ -63,13 +63,13 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV1.create({
-    engine: 'engine',
-    path: 'path',
-    data: {
+await client.keyValueV1.create(
+    'engine',
+    'path',
+    {
         foo: 'bar'
     }
-});
+);
 ```
 
 **`GetOne`**
@@ -81,10 +81,10 @@ const client = new VaultClient({
     // ...
 });
 
-const data = await client.keyValueV1.getOne({
-    engine: 'engine',
-    path: 'path',
-});
+const data = await client.keyValueV1.getOne(
+    'engine',
+    'path',
+);
 console.log(data);
 // { data: { foo: 'bar' }, lease_duration: 0, ... }
 ```
@@ -98,10 +98,10 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV1.delete({
-    engine: 'engine',
-    path: 'path',
-});
+await client.keyValueV1.delete(
+    'engine',
+    'path',
+);
 ```
 
 ### KeyValue V2
@@ -115,15 +115,15 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV2.create({
-    engine: 'engine',
-    path: 'path',
-    data: {
+await client.keyValueV2.create(
+    'engine',
+    'path',
+    {
         data: {
             foo: 'bar'
         }
     }
-});
+);
 ```
 
 **`GetOne`**
@@ -135,10 +135,7 @@ const client = new VaultClient({
     // ...
 });
 
-const data = await client.keyValueV2.getOne({
-    engine: 'engine',
-    path: 'path',
-});
+const data = await client.keyValueV2.getOne('engine', 'path');
 console.log(data);
 // { data: { data: { foo: 'bar' }, ... } }
 ```
@@ -152,15 +149,15 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV2.create({
-    engine: 'engine',
-    path: 'path',
-    data: {
+await client.keyValueV2.create(
+    'engine',
+    'path',
+    {
         data: {
             baz: 'boz'
         }
     }
-});
+);
 ```
 
 **`Delete`**
@@ -172,10 +169,7 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV2.delete({
-    engine: 'engine',
-    path: 'path',
-});
+await client.keyValueV2.delete('engine','path');
 ```
 
 **`Save`**
@@ -187,15 +181,15 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV2.save({
-    engine: 'engine',
-    path: 'path',
-    data: {
+await client.keyValueV2.save(
+    'engine',
+    'path',
+    {
         data: {
             foo: 'bar'
         }
     }
-});
+);
 ```
 
 ### Mount
@@ -209,13 +203,13 @@ const client = new VaultClient({
     // ...
 });
 
-await client.mount.create({
-    path: 'secrets',
-    data: {
+await client.mount.create(
+    'engine',
+    {
         type: 'kv',
         generate_signing_key: true
     }
-});
+);
 ```
 
 **`GetMany`**
@@ -264,7 +258,7 @@ const client = new VaultClient({
     // ...
 });
 
-await client.mount.create('engine');
+await client.mount.delete('engine');
 ```
 
 ## License

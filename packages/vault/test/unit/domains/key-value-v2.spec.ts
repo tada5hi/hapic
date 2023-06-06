@@ -16,15 +16,15 @@ describe('src/domains/key-value/v2', () => {
         driver.post = fn;
 
         const api = new KeyValueV2API({ client: driver });
-        await api.create({
-            mount: 'secrets',
-            path: 'key',
-            data: {
+        await api.create(
+            'secrets',
+            'key',
+            {
                 data: {
                     bar: 'baz',
                 },
             },
-        });
+        );
 
         expect(fn).toHaveBeenCalledWith('secrets/data/key', { data: { bar: 'baz' } });
     });
@@ -36,9 +36,9 @@ describe('src/domains/key-value/v2', () => {
         driver.get = fn;
 
         const api = new KeyValueV2API({ client: driver });
-        await api.getOne({ mount: 'foo', path: 'bar' });
+        await api.getOne('foo', 'bar');
 
-        expect(fn).toHaveBeenCalledWith('foo/data/bar');
+        expect(fn).toHaveBeenCalledWith('foo/data/bar?version=0');
     });
 
     it('should update resource', async () => {
@@ -48,15 +48,15 @@ describe('src/domains/key-value/v2', () => {
         driver.patch = fn;
 
         const api = new KeyValueV2API({ client: driver });
-        await api.update({
-            mount: 'secrets',
-            path: 'key',
-            data: {
+        await api.update(
+            'secrets',
+            'key',
+            {
                 data: {
                     boz: 'buz',
                 },
             },
-        });
+        );
 
         expect(fn).toHaveBeenCalledWith('secrets/data/key', { data: { boz: 'buz' } });
     });
@@ -68,7 +68,7 @@ describe('src/domains/key-value/v2', () => {
         driver.delete = fn;
 
         const api = new KeyValueV2API({ client: driver });
-        await api.delete({ mount: 'foo', path: 'bar' });
+        await api.delete('foo', 'bar');
 
         expect(fn).toHaveBeenCalledWith('foo/metadata/bar');
     });
@@ -80,15 +80,15 @@ describe('src/domains/key-value/v2', () => {
         driver.post = fn;
 
         const api = new KeyValueV2API({ client: driver });
-        await api.save({
-            mount: 'secrets',
-            path: 'key',
-            data: {
+        await api.save(
+            'secrets',
+            'key',
+            {
                 data: {
                     bar: 'baz',
                 },
             },
-        });
+        );
 
         expect(fn).toHaveBeenCalledWith('secrets/data/key', { data: { bar: 'baz' } });
     });
