@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProjectArtifactLabel } from '../project-artifact-label';
+import type { ProjectArtifactLabel } from '../project-repository-artifact-label';
 import type { ResourceCollectionQuery } from '../type';
 
 export type ProjectArtifactTag = {

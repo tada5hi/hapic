@@ -9,9 +9,9 @@ import { Client as BaseClient } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
 import {
     ProjectAPI,
-    ProjectArtifactAPI,
-    ProjectArtifactLabelAPI,
     ProjectRepositoryAPI,
+    ProjectRepositoryArtifactAPI,
+    ProjectRepositoryArtifactLabelAPI,
     ProjectWebhookPolicyAPI,
     RobotAPI,
 } from './domains';
@@ -21,9 +21,9 @@ import { parseConnectionString } from './utils';
 export class HarborClient extends BaseClient {
     public readonly project: ProjectAPI;
 
-    public readonly projectArtifact: ProjectArtifactAPI;
+    public readonly projectRepositoryArtifact: ProjectRepositoryArtifactAPI;
 
-    public readonly projectArtifactLabel : ProjectArtifactLabelAPI;
+    public readonly projectRepositoryArtifactLabel : ProjectRepositoryArtifactLabelAPI;
 
     public readonly projectRepository: ProjectRepositoryAPI;
 
@@ -39,10 +39,10 @@ export class HarborClient extends BaseClient {
         super(input.request);
 
         this.project = new ProjectAPI({ client: this });
-        this.projectArtifact = new ProjectArtifactAPI({ client: this });
-        this.projectArtifactLabel = new ProjectArtifactLabelAPI({ client: this });
-        this.projectWebhookPolicy = new ProjectWebhookPolicyAPI({ client: this });
         this.projectRepository = new ProjectRepositoryAPI({ client: this });
+        this.projectRepositoryArtifact = new ProjectRepositoryArtifactAPI({ client: this });
+        this.projectRepositoryArtifactLabel = new ProjectRepositoryArtifactLabelAPI({ client: this });
+        this.projectWebhookPolicy = new ProjectWebhookPolicyAPI({ client: this });
         this.robot = new RobotAPI({ client: this });
 
         this.applyConfig(input);

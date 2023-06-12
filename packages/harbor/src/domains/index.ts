@@ -6,8 +6,8 @@
  */
 
 export * from './project';
-export * from './project-artifact';
-export * from './project-artifact-label';
+export * from './project-repository-artifact';
+export * from './project-repository-artifact-label';
 export * from './project-repository';
 export * from './project-webhook-policy';
 export * from './robot';

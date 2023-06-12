@@ -16,7 +16,7 @@ import type {
     ProjectArtifactGetManyContext,
 } from './type';
 
-export class ProjectArtifactAPI extends BaseAPI {
+export class ProjectRepositoryArtifactAPI extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);

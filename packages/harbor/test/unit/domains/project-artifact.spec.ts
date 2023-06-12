@@ -6,7 +6,7 @@
  */
 
 import { createClient } from 'hapic';
-import { ProjectArtifactAPI } from '../../../src';
+import { ProjectRepositoryArtifactAPI } from '../../../src';
 
 describe('src/domains/project-artifact', () => {
     it('should delete resource', async () => {
@@ -15,7 +15,7 @@ describe('src/domains/project-artifact', () => {
         fn.mockReturnValue(undefined);
         driver.delete = fn;
 
-        const api = new ProjectArtifactAPI({ client: driver });
+        const api = new ProjectRepositoryArtifactAPI({ client: driver });
         await api.delete({
             projectName: 'foo',
             repositoryName: 'bar',
@@ -42,7 +42,7 @@ describe('src/domains/project-artifact', () => {
         fn.mockReturnValue(undefined);
         driver.post = fn;
 
-        const api = new ProjectArtifactAPI({ client: driver });
+        const api = new ProjectRepositoryArtifactAPI({ client: driver });
         await api.copy({
             repositoryName: 'bar',
             projectName: 'foo',
@@ -62,7 +62,7 @@ describe('src/domains/project-artifact', () => {
         fn.mockReturnValue({ data: [] });
         driver.get = fn;
 
-        const api = new ProjectArtifactAPI({ client: driver });
+        const api = new ProjectRepositoryArtifactAPI({ client: driver });
         await api.getMany({
             repositoryName: 'repo',
             projectName: 'proj',

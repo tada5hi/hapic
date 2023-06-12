@@ -6,7 +6,7 @@
  */
 
 import { createClient } from 'hapic';
-import { ProjectArtifactLabelAPI } from '../../../src';
+import { ProjectRepositoryArtifactLabelAPI } from '../../../src';
 
 describe('src/domains/project-artifact-label', () => {
     it('should delete resource', async () => {
@@ -15,7 +15,7 @@ describe('src/domains/project-artifact-label', () => {
         fn.mockReturnValue(undefined);
         driver.delete = fn;
 
-        const api = new ProjectArtifactLabelAPI({ client: driver });
+        const api = new ProjectRepositoryArtifactLabelAPI({ client: driver });
         await api.delete({
             labelId: 1,
             projectName: 'foo',
@@ -33,7 +33,7 @@ describe('src/domains/project-artifact-label', () => {
         fn.mockReturnValue(undefined);
         driver.post = fn;
 
-        const api = new ProjectArtifactLabelAPI({ client: driver });
+        const api = new ProjectRepositoryArtifactLabelAPI({ client: driver });
         const payload = {
             labelId: 1,
             repositoryName: 'bar',

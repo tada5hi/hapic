@@ -12,7 +12,7 @@ import type {
     ProjectArtifactLabelDeleteContext,
 } from './type';
 
-export class ProjectArtifactLabelAPI extends BaseAPI {
+export class ProjectRepositoryArtifactLabelAPI extends BaseAPI {
     // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);
