@@ -16,9 +16,9 @@ this API client is a powerful tool to get the most out of the platform.
 - [Installation](#installation)
 - [Usage](#usage)
   - [Project](#project)
-  - [ProjectArtifact](#project-artifact)
-  - [ProjectArtifactLabel](#project-artifact-label)
   - [ProjectRepository](#project-repository)
+  - [ProjectRepositoryArtifact](#project-repository-artifact)
+  - [ProjectRepositoryArtifactLabel](#project-repository-artifact-label)
   - [ProjectWebhookPolicy](#project-webhook-policy)
   - [RobotAccount](#robot)
 - [License](#license)
@@ -142,109 +142,6 @@ await harbor.project.update(1, {
 });
 ```
 
-### Project Artifact
-
-**`GetMany`**
-
-Retrieves a list of all project artifacts in Harbor.
-```typescript
-import { HarborClient } from '@hapic/harbor';
-
-const harbor = new HarborClient({
-    // ...
-});
-
-const data = await harbor.projectArtifact.getMany({
-    projectName: 'project-z',
-    repositoryName: 'repository-x',
-    query: {
-        // with_tag: true,
-        // with_label: true
-    }
-});
-console.log(data);
-// [ {...}, ... ]
-```
-
-**`Delete`**
-
-Deletes a specific project artifact in Harbor.
-```typescript
-import { HarborClient } from '@hapic/harbor';
-
-const harbor = new HarborClient({
-    // ...
-});
-
-await harbor.projectArtifact.delete({
-    projectName: 'project-z',
-    repositoryName: 'repository-x',
-    // tagOrDigest: 'latest'
-});
-```
-
-**`Copy`**
-
-Copy a specific project repository to another location.
-```typescript
-import { HarborClient } from '@hapic/harbor';
-
-const harbor = new HarborClient({
-    // ...
-});
-
-await harbor.projectArtifact.copy(
-    {
-        projectName: 'destination-project',
-        repositoryName: 'destination-repository',
-    },
-    {
-        projectName: 'source-project',
-        repositoryName: 'source-repository',
-    }
-);
-```
-
-### Project Artifact Label
-
-**`Create`**
-
-Assigns an existing label object to a project in Harbor.
-```typescript
-import { HarborClient } from '@hapic/harbor';
-
-const harbor = new HarborClient({
-    // ...
-});
-
-// assign a label object to a specific project & repo
-const data = await harbor.projectArtifactLabel.create({
-    labelId: 1,
-    projectName: 'project-name',
-    repositoryName: 'repository-name',
-    // tagOrDigest: 'latest',
-});
-```
-
-**`Delete`**
-
-Delete an assigned label of a project in Harbor.
-```typescript
-import { HarborClient } from '@hapic/harbor';
-
-const harbor = new HarborClient({
-    // ...
-});
-
-// delete an assigned label of a specific project & repo
-const data = await harbor.projectArtifactLabel.delete({
-    labelId: 1,
-    projectName: 'project-name',
-    repositoryName: 'repository-name',
-    // tagOrDigest: 'latest'
-});
-```
-
 ### Project Repository
 
 **`GetMany`**
@@ -360,6 +257,109 @@ await harbor.projectRepository.delete({
 await harbor.projectRepository.delete(
     'project-name/repository-name'
 );
+```
+
+### Project Repository Artifact
+
+**`GetMany`**
+
+Retrieves a list of all project repository artifacts in Harbor.
+```typescript
+import { HarborClient } from '@hapic/harbor';
+
+const harbor = new HarborClient({
+    // ...
+});
+
+const data = await harbor.projectRepositoryArtifact.getMany({
+    projectName: 'project-z',
+    repositoryName: 'repository-x',
+    query: {
+        // with_tag: true,
+        // with_label: true
+    }
+});
+console.log(data);
+// [ {...}, ... ]
+```
+
+**`Delete`**
+
+Deletes a specific project repository artifact in Harbor.
+```typescript
+import { HarborClient } from '@hapic/harbor';
+
+const harbor = new HarborClient({
+    // ...
+});
+
+await harbor.projectRepositoryArtifact.delete({
+    projectName: 'project-z',
+    repositoryName: 'repository-x',
+    // tagOrDigest: 'latest'
+});
+```
+
+**`Copy`**
+
+Copy a specific project repository artifact to another location.
+```typescript
+import { HarborClient } from '@hapic/harbor';
+
+const harbor = new HarborClient({
+    // ...
+});
+
+await harbor.projectRepositoryArtifact.copy(
+    {
+        projectName: 'destination-project',
+        repositoryName: 'destination-repository',
+    },
+    {
+        projectName: 'source-project',
+        repositoryName: 'source-repository',
+    }
+);
+```
+
+### Project Repository Artifact Label
+
+**`Create`**
+
+Assigns an existing label object to a project repository artifact in Harbor.
+```typescript
+import { HarborClient } from '@hapic/harbor';
+
+const harbor = new HarborClient({
+    // ...
+});
+
+// assign a label object to a specific project & repo
+const data = await harbor.projectRepositoryArtifactLabel.create({
+    labelId: 1,
+    projectName: 'project-name',
+    repositoryName: 'repository-name',
+    // tagOrDigest: 'latest',
+});
+```
+
+**`Delete`**
+
+Delete an assigned label of a project repository artifact in Harbor.
+```typescript
+import { HarborClient } from '@hapic/harbor';
+
+const harbor = new HarborClient({
+    // ...
+});
+
+// delete an assigned label of a specific project & repo
+const data = await harbor.projectRepositoryArtifactLabel.delete({
+    labelId: 1,
+    projectName: 'project-name',
+    repositoryName: 'repository-name',
+    // tagOrDigest: 'latest'
+});
 ```
 
 ### Project Webhook Policy
