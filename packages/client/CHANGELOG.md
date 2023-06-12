@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.11...v2.0.0) (2023-06-12)
+
+
+### Bug Fixes
+
+* **deps:** bump node-fetch-native from 1.1.1 to 1.2.0 ([#309](https://github.com/Tada5hi/hapic/issues/309)) ([05e33dc](https://github.com/Tada5hi/hapic/commit/05e33dc9273ff9597f43013906abd96b099314c5))
+
+
+
+
+
 # [2.0.0-alpha.11](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2023-06-03)
 
 

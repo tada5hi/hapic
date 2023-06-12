@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.11...v2.0.0) (2023-06-12)
+
+**Note:** Version bump only for package @hapic/oauth2
+
+
+
+
+
 # [2.0.0-alpha.11](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2023-06-03)
 
 **Note:** Version bump only for package @hapic/oauth2

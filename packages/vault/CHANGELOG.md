@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.11...v2.0.0) (2023-06-12)
+
+
+### Features
+
+* add method to update mount ([434f6ae](https://github.com/Tada5hi/hapic/commit/434f6aea262c6ff4e1642419a912724abb851c2f))
+* change method signature of key-value engine & mount api client ([5476d96](https://github.com/Tada5hi/hapic/commit/5476d96bfbf5523bc40687b1dbd229f2ad70016b))
+
+
+### BREAKING CHANGES
+
+* Public API changed
+
+
+
+
+
 # [2.0.0-alpha.11](https://github.com/Tada5hi/hapic/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2023-06-03)
 
 
