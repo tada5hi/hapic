@@ -11,6 +11,7 @@ import { buildQueryString, extractResourceIDOfResponse, extractResourceMetaOfRes
 import { BaseAPI } from '../base';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
 import type {
+    ProjectWebhookEventType,
     ProjectWebhookPolicy,
     ProjectWebhookPolicyCreateContext,
     ProjectWebhookPolicyCreateResponse,
@@ -38,7 +39,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
         const response = await this.client
             .post(
                 `projects/${context.projectIdOrName}/webhook/policies`,
-                this.buildWebhook(context.data),
+                this.extendPayload(context.data),
                 headers,
             );
 
@@ -108,7 +109,10 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
 
         await this.client.put(
             `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
-            context.data,
+            this.extendPayload({
+                ...context.data,
+                id: context.id,
+            }),
             headers,
         );
     }
@@ -135,12 +139,23 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             .delete(`projects/${context.projectIdOrName}/webhook/policies/${context.id}`, headers);
     }
 
-    protected buildWebhook(data: Partial<ProjectWebhookPolicy>) : Partial<ProjectWebhookPolicy> {
-        return merge(data, {
-            name: (Math.random() + 1).toString(36).substring(7),
-            enabled: true,
-            targets: [],
-            event_types: ['PUSH_ARTIFACT'],
-        });
+    protected extendPayload(data: Partial<ProjectWebhookPolicy>) : Partial<ProjectWebhookPolicy> {
+        data.name = data.name || (Math.random() + 1).toString(36).substring(7);
+
+        if (typeof data.enabled === 'undefined') {
+            data.enabled = true;
+        }
+
+        if (typeof data.targets === 'undefined') {
+            data.targets = [];
+        }
+
+        if (typeof data.event_types === 'undefined') {
+            data.event_types = ['PUSH_ARTIFACT'];
+        } else {
+            data.event_types = merge(['PUSH_ARTIFACT'] satisfies ProjectWebhookEventType[], data.event_types);
+        }
+
+        return data;
     }
 }
