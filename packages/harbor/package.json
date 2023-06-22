@@ -1,6 +1,6 @@
 {
     "name": "@hapic/harbor",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "A harbor http api client.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",

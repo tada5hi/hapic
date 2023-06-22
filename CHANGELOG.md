@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/Tada5hi/hapic/compare/v2.1.0...v2.1.1) (2023-06-22)
+
+
+### Bug Fixes
+
+* apply extend payload for update project-webhook-polify fn ([52a93ed](https://github.com/Tada5hi/hapic/commit/52a93ed2d273fdd95ae48d6b4eaf24c493d3bc53))
+
+
+
+
+
 # [2.1.0](https://github.com/Tada5hi/hapic/compare/v2.0.0...v2.1.0) (2023-06-22)
 
 
