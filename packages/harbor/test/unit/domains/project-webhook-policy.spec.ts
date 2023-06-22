@@ -115,7 +115,11 @@ describe('src/domains/project-webhook-policy', () => {
         expect(fn).toHaveBeenCalledWith(
             'projects/1/webhook/policies/1',
             {
+                enabled: true,
+                event_types: ['PUSH_ARTIFACT'],
+                id: 1,
                 name: 'baz',
+                targets: [],
             },
             {},
         );
