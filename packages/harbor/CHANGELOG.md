@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/Tada5hi/hapi/compare/v2.0.0...v2.1.0) (2023-06-22)
+
+
+### Features
+
+* add get-all domain utility fn for project & project-repository ([502e3c3](https://github.com/Tada5hi/hapi/commit/502e3c39a86a44c499687457593850cecf75be68))
+
+
+
+
+
 # [2.0.0](https://github.com/Tada5hi/hapi/compare/v2.0.0-alpha.11...v2.0.0) (2023-06-12)
 
 **Note:** Version bump only for package @hapic/harbor
