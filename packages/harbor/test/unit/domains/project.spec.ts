@@ -101,6 +101,22 @@ describe('src/domains/project', () => {
         expect(fn).toHaveBeenCalledWith('projects?page_size=10&with_detail=true');
     });
 
+    it('should get all resources', async () => {
+        const client = createClient();
+        const fn = jest.fn();
+        fn.mockReturnValue({ data: [] });
+        client.get = fn;
+
+        const api = new ProjectAPI({ client });
+        await api.getAll({
+            query: {
+                with_detail: true,
+            },
+        });
+
+        expect(fn).toHaveBeenCalledWith('projects?with_detail=true&page_size=50&page=1');
+    });
+
     it('should get resource', async () => {
         const client = createClient();
         const fn = jest.fn();

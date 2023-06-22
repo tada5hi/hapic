@@ -93,6 +93,29 @@ export class ProjectRepositoryAPI extends BaseAPI {
         };
     }
 
+    async getAll(context: ProjectRepositoryGetManyContext) : Promise<ResourceCollectionResponse<ProjectRepository>> {
+        context.query = context.query || {};
+
+        if (!context.query.page_size) {
+            context.query.page_size = 50;
+        }
+
+        if (!context.query.page) {
+            context.query.page = 1;
+        }
+
+        const response = await this.getMany(context);
+        if (response.data.length === context.query.page_size) {
+            context.query.page++;
+
+            const next = await this.getAll(context);
+
+            response.data.push(...next.data);
+        }
+
+        return response;
+    }
+
     async update(context: ProjectRepositoryUpdateContext) : Promise<void> {
         await this.client
             .put(`projects/${context.projectName}/repositories/${context.repositoryName}`, context.data);

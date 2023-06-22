@@ -76,6 +76,30 @@ export class ProjectAPI extends BaseAPI {
         };
     }
 
+    async getAll(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
+        options = options || {};
+        options.query = options.query || {};
+
+        if (!options.query.page_size) {
+            options.query.page_size = 50;
+        }
+
+        if (!options.query.page) {
+            options.query.page = 1;
+        }
+
+        const response = await this.getMany(options);
+        if (response.data.length === options.query.page_size) {
+            options.query.page++;
+
+            const next = await this.getAll(options);
+
+            response.data.push(...next.data);
+        }
+
+        return response;
+    }
+
     async getOne(
         id: string | number,
         isProjectName = false,

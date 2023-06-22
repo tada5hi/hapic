@@ -38,6 +38,22 @@ describe('src/domains/project-repository', () => {
         );
     });
 
+    it('should get all resources', async () => {
+        const driver = createClient();
+        const fn = jest.fn();
+        fn.mockReturnValue({ data: [] });
+        driver.get = fn;
+
+        const api = new ProjectRepositoryAPI({ client: driver });
+        await api.getAll({
+            projectName: 'proj',
+        });
+
+        expect(fn).toHaveBeenCalledWith(
+            'projects/proj/repositories?page_size=50&page=1',
+        );
+    });
+
     it('should get resource', async () => {
         const driver = createClient();
         const fn = jest.fn();
