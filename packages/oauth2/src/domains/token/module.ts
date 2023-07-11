@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { HeaderName } from 'hapic';
 import type { RequestTransformer } from 'hapic';
 import type { JwtPayload } from '../../type';
 
@@ -104,6 +105,9 @@ export class TokenAPI extends BaseAPI {
             urlSearchParams,
             {
                 transform: this.buildRequestTransformers(parameters, options),
+                headers: {
+                    [HeaderName.ACCEPT]: 'application/json',
+                },
             },
         );
 
@@ -145,6 +149,9 @@ export class TokenAPI extends BaseAPI {
             urlSearchParams,
             {
                 transform: this.buildRequestTransformers(parameters, options),
+                headers: {
+                    [HeaderName.ACCEPT]: 'application/json',
+                },
             },
         );
 

@@ -6,7 +6,7 @@
  */
 
 import type { AuthorizationHeader } from 'hapic';
-import { stringifyAuthorizationHeader } from 'hapic';
+import { HeaderName, stringifyAuthorizationHeader } from 'hapic';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../type';
 
@@ -25,7 +25,10 @@ export class UserInfoAPI extends BaseAPI {
     async get<T extends Record<string, any> = Record<string, any>>(
         header?: string | AuthorizationHeader,
     ) : Promise<T> {
-        const headers : Record<string, string> = {};
+        const headers : Record<string, string> = {
+            [HeaderName.ACCEPT]: 'application/json',
+        };
+
         if (header) {
             if (typeof header === 'string') {
                 if (header.indexOf(' ') === -1) {
