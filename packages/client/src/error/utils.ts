@@ -5,10 +5,28 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { RequestOptions } from '../request';
 import { isObject, verifyInstanceBySymbol } from '../utils';
 import { ErrorCode } from './constants';
 import { ClientError } from './module';
 import type { ClientErrorCreateContext } from './type';
+
+function formatRequestOptions(input: RequestOptions) : string {
+    if (input.url) {
+        let output = input.url;
+        if (input.query) {
+            const searchParams = new URLSearchParams(input.query);
+            const searchQuery = searchParams.toString();
+            if (searchQuery.length > 0) {
+                output += `?${searchQuery}`;
+            }
+        }
+
+        return output;
+    }
+
+    return input.toString();
+}
 
 export function createClientError<T = any >(
     context: ClientErrorCreateContext<T>,
@@ -18,9 +36,9 @@ export function createClientError<T = any >(
     if (context.request && context.response) {
         message = `${context.response.status} ${
             context.response.statusText
-        } (${context.request.toString()})`;
+        } (${formatRequestOptions(context.request)})`;
     } else if (context.request) {
-        message = `${context.request.toString()}`;
+        message = `${formatRequestOptions(context.request)}`;
     }
 
     if (
