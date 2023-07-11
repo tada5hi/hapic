@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/Tada5hi/hapic/compare/v2.1.1...v2.2.0) (2023-07-11)
+
+
+### Bug Fixes
+
+* set default accept header for token & user info endpoint to apÃplication/json ([9fee4bb](https://github.com/Tada5hi/hapic/commit/9fee4bbc450bd7cecd21ede4755bc797fa58acc7))
+
+
+### Features
+
+* better formating for request-options on error ([bc7f41a](https://github.com/Tada5hi/hapic/commit/bc7f41a8d06de6f7d6bb682077a0c937c4bed7e7))
+
+
+
+
+
 ## [2.1.1](https://github.com/Tada5hi/hapic/compare/v2.1.0...v2.1.1) (2023-06-22)
 
 
