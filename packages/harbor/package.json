@@ -52,7 +52,7 @@
         "hapic": "^2.2.0"
     },
     "peerDependencies": {
-        "hapic": "^2.2.0"
+        "hapic": "^2.3.0"
     },
     "publishConfig": {
         "access": "public"
