@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/Tada5hi/hapic/compare/v2.2.0...v2.3.0) (2023-08-31)
+
+
+### Bug Fixes
+
+* **deps:** bump ebec from 1.1.0 to 1.1.1 ([#383](https://github.com/Tada5hi/hapic/issues/383)) ([9cd059e](https://github.com/Tada5hi/hapic/commit/9cd059ec0838d0e696314ae8dd191ea046d9905a))
+* **deps:** bump node-fetch-native from 1.2.0 to 1.4.0 ([#390](https://github.com/Tada5hi/hapic/issues/390)) ([6e57356](https://github.com/Tada5hi/hapic/commit/6e57356d7693a7e174b092c49449c1eaf58a9f14))
+* **deps:** bump ufo from 1.1.2 to 1.3.0 ([#385](https://github.com/Tada5hi/hapic/issues/385)) ([383850e](https://github.com/Tada5hi/hapic/commit/383850e28a24a1bbe20bf823679c3ae353ea95a5))
+
+
+### Features
+
+* safer instanceof check for maybe undefined values ([321c88b](https://github.com/Tada5hi/hapic/commit/321c88b4d20f49642da94d3e2ac5d640ff1ee532))
+
+
+
+
+
 # [2.2.0](https://github.com/Tada5hi/hapic/compare/v2.1.1...v2.2.0) (2023-07-11)
 
 
