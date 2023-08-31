@@ -31,7 +31,10 @@ export function isStream(input: unknown) : boolean {
 }
 
 export function isFormData(input: unknown) : input is FormData {
-    if (input instanceof FormData) {
+    if (
+        typeof FormData !== 'undefined' &&
+        input instanceof FormData
+    ) {
         return true;
     }
 
@@ -44,7 +47,10 @@ export function isFormData(input: unknown) : input is FormData {
 }
 
 export function isArrayBuffer(input: unknown) : input is ArrayBuffer {
-    if (input instanceof ArrayBuffer) {
+    if (
+        typeof ArrayBuffer !== 'undefined' &&
+        input instanceof ArrayBuffer
+    ) {
         return true;
     }
 
@@ -52,7 +58,10 @@ export function isArrayBuffer(input: unknown) : input is ArrayBuffer {
 }
 
 export function isFile(input: unknown) : input is File {
-    if (input instanceof File) {
+    if (
+        typeof File !== 'undefined' &&
+        input instanceof File
+    ) {
         return true;
     }
 
@@ -60,7 +69,10 @@ export function isFile(input: unknown) : input is File {
 }
 
 export function isBlob(input: unknown) : input is Blob {
-    if (input instanceof Blob) {
+    if (
+        typeof Blob !== 'undefined' &&
+        input instanceof Blob
+    ) {
         return true;
     }
 
@@ -68,7 +80,10 @@ export function isBlob(input: unknown) : input is Blob {
 }
 
 export function isURLSearchParams(input: unknown) {
-    if (input instanceof URLSearchParams) {
+    if (
+        typeof URLSearchParams !== 'undefined' &&
+        input instanceof URLSearchParams
+    ) {
         return true;
     }
 

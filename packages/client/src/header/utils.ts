@@ -14,7 +14,10 @@ export function setHeader(
 ) {
     key = key.toLowerCase();
 
-    if (headers instanceof Headers) {
+    if (
+        typeof Headers !== 'undefined' &&
+        headers instanceof Headers
+    ) {
         headers.set(key, value);
 
         return;
@@ -33,9 +36,9 @@ export function setHeader(
     const keys = Object.keys(headers);
     const index = keys.findIndex((el) => el.toLowerCase() === key);
     if (index !== -1) {
-        headers[keys[index]] = value;
+        (headers as Record<string, any>)[keys[index]] = value;
     } else {
-        headers[key] = value;
+        (headers as Record<string, any>)[key] = value;
     }
 }
 
@@ -45,7 +48,10 @@ export function getHeader(
 ) : undefined | any {
     key = key.toLowerCase();
 
-    if (headers instanceof Headers) {
+    if (
+        typeof Headers !== 'undefined' &&
+        headers instanceof Headers
+    ) {
         const value = headers.get(key);
         return value === null ? undefined : value;
     }
@@ -62,7 +68,7 @@ export function getHeader(
     const keys = Object.keys(headers);
     const index = keys.findIndex((el) => el.toLowerCase() === key);
     if (index !== -1) {
-        return headers[keys[index]];
+        return (headers as Record<string, any>)[keys[index]];
     }
 
     return undefined;
@@ -74,7 +80,10 @@ export function unsetHeader(
 ) {
     key = key.toLowerCase();
 
-    if (headers instanceof Headers) {
+    if (
+        typeof Headers !== 'undefined' &&
+        headers instanceof Headers
+    ) {
         headers.delete(key);
         return;
     }
@@ -91,6 +100,6 @@ export function unsetHeader(
     const keys = Object.keys(headers);
     const index = keys.findIndex((el) => el.toLowerCase() === key);
     if (index !== -1) {
-        delete headers[keys[index]];
+        delete (headers as Record<string, any>)[keys[index]];
     }
 }
