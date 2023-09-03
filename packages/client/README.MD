@@ -1,17 +1,22 @@
-# hapic 🚀
+# HAPIC 🚀
 
 [![npm version](https://badge.fury.io/js/hapic.svg)](https://badge.fury.io/js/hapic)
 [![main](https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg)](https://github.com/Tada5hi/hapic/actions/workflows/main.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hapic/badge.svg)](https://snyk.io/test/github/Tada5hi/hapic)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
-This package contains a HTTP-Client based on fetch.
-IT provides a convenient way to make HTTP requests.
+"**H**TTP **API** **C**lient" is a tiny & simple fetch based http client.
+It provides a convenient way to make HTTP requests.
 
-The client is extended by the [Harbor](https://www.npmjs.com/package/@hapic/harbor),
-[Vault](https://www.npmjs.com/package/@hapic/vault),
-and [OAuth2](https://www.npmjs.com/package/@hapic/oauth2) clients,
-which provide additional functionality specific to those services.
+## Features
+
+- ✨ Simple API
+- 🔄 Transform request payload & headers
+- 🛑 Hooks to intercept request and response
+- 🌐 Works in Node.Js, browser & workers environment
+- ❌ Throws an error on responses with a non 2xx status code
+- 🚀 Method shortcuts for GET, POST, PUT, ...
+- ⚙️ Extended options (e.g. baseURL)
 
 **Table of Contents**
 

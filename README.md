@@ -5,8 +5,18 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
 ## What is it?
-"**H**TTP **API** **C**lient" is a small collection of different API Clients.
+"**H**TTP **API** **C**lient" is a tiny & simple fetch based http client.
+It provides a convenient way to make HTTP requests.
 
+## Features
+
+- ✨ Simple API
+- 🔄 Transform request payload & headers
+- 🛑 Hooks to intercept request and response 
+- 🌐 Works in Node.Js, browser & workers environment
+- ❌ Throws an error on responses with a non 2xx status code
+- 🚀 Method shortcuts for GET, POST, PUT, ...
+- ⚙️ Extended options (e.g. baseURL)
 
 **Table of Contents**
 

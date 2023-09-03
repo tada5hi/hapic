@@ -298,8 +298,8 @@ export class Client {
             get() {
                 return data;
             },
-            set(value: RT) {
-                this.data = value;
+            set(value: ResponseData<RT, T>) {
+                data = value;
             },
         });
 
