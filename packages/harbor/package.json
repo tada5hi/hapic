@@ -46,7 +46,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapi#readme",
     "dependencies": {
-        "smob": "^1.4.0"
+        "smob": "^1.4.1"
     },
     "devDependencies": {
         "hapic": "^2.3.0"
