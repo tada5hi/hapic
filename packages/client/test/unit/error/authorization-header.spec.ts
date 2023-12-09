@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { AuthorizationHeaderError } from '../../../src';
+import { AuthorizationHeaderError, ErrorCode } from '../../../src';
 
 describe('src/http/error/authorization-header.ts', () => {
     it('should throw error', () => {
@@ -16,6 +16,7 @@ describe('src/http/error/authorization-header.ts', () => {
             message: 'foo',
         });
 
-        expect(simpleError.getOption('message')).toEqual('foo');
+        expect(simpleError.message).toEqual('foo');
+        expect(simpleError.code).toEqual(ErrorCode.AUTHORIZATION_HEADER_INVALID);
     });
 });

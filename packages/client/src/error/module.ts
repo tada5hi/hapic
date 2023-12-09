@@ -17,8 +17,6 @@ export class ClientError<T = any> extends BaseError {
 
     readonly response?: Response<T>;
 
-    readonly code?: string;
-
     readonly status?: number;
 
     readonly statusCode?: number;

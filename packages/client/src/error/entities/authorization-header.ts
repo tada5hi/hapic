@@ -6,15 +6,15 @@
  */
 
 import type { Options } from 'ebec';
-import { BaseError, mergeOptions } from 'ebec';
+import { BaseError } from 'ebec';
 import { ErrorCode } from '../constants';
 
 export class AuthorizationHeaderError extends BaseError {
     constructor(options?: Options) {
-        super(mergeOptions((options || {})), {
+        super({
             code: ErrorCode.AUTHORIZATION_HEADER_INVALID,
             message: 'The authorization header is not valid.',
-        });
+        }, options || {});
     }
 
     /* istanbul ignore next */
