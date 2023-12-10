@@ -1,0 +1,6 @@
+{
+    "packages/client": "2.3.0",
+    "packages/harbor": "2.3.0",
+    "packages/oauth2": "2.3.0",
+    "packages/vault": "2.3.0"
+}
