@@ -13,7 +13,6 @@ import { MethodName, ResponseType } from './constants';
 import type {
     HookErrorFn,
     HookFn,
-    HookOptions,
     HookReqFn,
     HookResFn,
 } from './hook';
@@ -199,7 +198,7 @@ export class Client {
             });
         }
 
-        options = await this.hookManager.callReqHook(
+        options = await this.hookManager.triggerReqHook(
             options,
         ) as RequestOptions<RT>;
 
@@ -229,9 +228,9 @@ export class Client {
 
             let output : RequestOptions | Response | undefined;
             if (step === 'request') {
-                output = await this.hookManager.callErrorHook(HookName.REQUEST_ERROR, error);
+                output = await this.hookManager.triggerErrorHook(HookName.REQUEST_ERROR, error);
             } else {
-                output = await this.hookManager.callErrorHook(HookName.RESPONSE_ERROR, error);
+                output = await this.hookManager.triggerErrorHook(HookName.RESPONSE_ERROR, error);
             }
 
             if (output) {
@@ -313,7 +312,7 @@ export class Client {
             });
         }
 
-        return await this.hookManager.callResHook(response) as R;
+        return await this.hookManager.triggerResHook(response) as R;
     }
 
     // ---------------------------------------------------------------------------------
@@ -467,18 +466,7 @@ export class Client {
     ) : number;
 
     on(name: `${HookName}`, fn: HookFn) : number {
-        const options : HookOptions = {};
-        if (
-            name === HookName.REQUEST_ERROR ||
-            name === HookName.RESPONSE_ERROR
-        ) {
-            options.continueOnError = true;
-            options.returnOnResponse = true;
-        }
-
-        this.hookManager.setOptions(name, options);
-
-        return this.hookManager.hook(name, fn);
+        return this.hookManager.addListener(name, fn);
     }
 
     /**
@@ -489,12 +477,12 @@ export class Client {
      */
     off(name: `${HookName}`, fn?: HookFn | number) : this {
         if (typeof fn === 'undefined') {
-            this.hookManager.removeHooks(name);
+            this.hookManager.removeListeners(name);
 
             return this;
         }
 
-        this.hookManager.removeHook(name, fn);
+        this.hookManager.removeListener(name, fn);
         return this;
     }
 }

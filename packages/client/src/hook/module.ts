@@ -14,32 +14,24 @@ import { HookName } from './constants';
 import type {
     HookErrorFn,
     HookFn,
-    HookOptions,
     HookReqFn,
 } from './type';
 
 export class HookManager {
     protected items : Record<string, (undefined | HookFn)[]>;
 
-    protected options : Record<string, HookOptions>;
-
     constructor() {
         this.items = {};
-        this.options = {};
     }
 
-    setOptions(name: `${HookName}`, options: HookOptions) {
-        this.options[name] = options;
-    }
-
-    hook(name: `${HookName}`, fn: HookFn) : number {
+    addListener(name: `${HookName}`, fn: HookFn) : number {
         this.items[name] = this.items[name] || [];
         this.items[name].push(fn);
 
         return this.items[name].length - 1;
     }
 
-    removeHook(name: `${HookName}`, fn: HookFn | number) {
+    removeListener(name: `${HookName}`, fn: HookFn | number) {
         if (!this.items[name]) {
             return;
         }
@@ -55,12 +47,11 @@ export class HookManager {
         }
     }
 
-    removeHooks(name: `${HookName}`) {
+    removeListeners(name: `${HookName}`) {
         delete this.items[name];
-        delete this.options[name];
     }
 
-    async callReqHook(
+    async triggerReqHook(
         input: RequestOptions,
     ) : Promise<RequestOptions> {
         const items = (this.items[HookName.REQUEST] || []) as HookReqFn[];
@@ -85,7 +76,7 @@ export class HookManager {
         return temp;
     }
 
-    async callResHook(
+    async triggerResHook(
         input: Response,
     ) : Promise<Response> {
         const items = (this.items[HookName.RESPONSE] || []) as HookReqFn[];
@@ -110,7 +101,7 @@ export class HookManager {
         return temp;
     }
 
-    async callErrorHook(
+    async triggerErrorHook(
         name: `${HookName.RESPONSE_ERROR}` | `${HookName.REQUEST_ERROR}`,
         input: ClientError,
     ) : Promise<RequestOptions | Response> {
