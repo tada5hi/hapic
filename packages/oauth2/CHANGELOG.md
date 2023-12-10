@@ -175,6 +175,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.4.0](https://github.com/tada5hi/hapic/compare/oauth2-v2.3.0...oauth2-v2.4.0) (2023-12-10)
+
+
+### Features
+
+* add token revocation endpoint method ([82a4125](https://github.com/tada5hi/hapic/commit/82a41259eb66b35e20e962e64d62e156893bddca))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.3.0 to ^2.4.0
+  * peerDependencies
+    * hapic bumped from ^2.3.0 to ^2.4.0
+
 ## [1.6.1](https://github.com/Tada5hi/hapic/compare/v1.6.0...v1.6.1) (2023-04-03)
 
 

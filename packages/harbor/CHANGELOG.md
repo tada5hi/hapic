@@ -19,6 +19,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.3.1](https://github.com/tada5hi/hapic/compare/harbor-v2.3.0...harbor-v2.3.1) (2023-12-10)
+
+
+### Bug Fixes
+
+* **deps:** bump smob from 1.4.0 to 1.4.1 ([#459](https://github.com/tada5hi/hapic/issues/459)) ([0cf0ff3](https://github.com/tada5hi/hapic/commit/0cf0ff379a64615c45999b8a4f97149e3695282f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.3.0 to ^2.4.0
+  * peerDependencies
+    * hapic bumped from ^2.3.0 to ^2.4.0
+
 ## [2.1.1](https://github.com/Tada5hi/hapi/compare/v2.1.0...v2.1.1) (2023-06-22)
 
 
