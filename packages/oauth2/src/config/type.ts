@@ -27,6 +27,11 @@ export type Options = {
     tokenEndpoint?: string,
 
     /**
+     * The token revoke endpoint URL provided by the OAuth2 server.
+     */
+    revocationEndpoint?: string,
+
+    /**
      * The introspection endpoint URL provided by the OAuth2 server.
      */
     introspectionEndpoint?: string,

@@ -28,5 +28,9 @@ export function parseOpenIDProviderMetadata(
         options.userinfoEndpoint = data.userinfo_endpoint;
     }
 
+    if (data.revocation_endpoint) {
+        options.revocationEndpoint = data.revocation_endpoint;
+    }
+
     return options;
 }

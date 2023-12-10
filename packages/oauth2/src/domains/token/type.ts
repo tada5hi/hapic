@@ -114,6 +114,13 @@ export type TokenBaseOptions = {
 
 // ------------------------------------------------------------------
 
+export type TokenRevokeParameters = {
+    token?: string,
+    token_type_hint?: string
+} & ClientAuthenticationParameters;
+
+// ------------------------------------------------------------------
+
 export type TokenIntrospectParameters = {
     token?: string,
     token_type_hint?: string,

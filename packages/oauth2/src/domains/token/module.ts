@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HeaderName } from 'hapic';
 import type { RequestTransformer } from 'hapic';
+import { HeaderName } from 'hapic';
 import type { JwtPayload } from '../../type';
 
 import { BaseAPI } from '../base';
@@ -21,6 +21,7 @@ import type {
     TokenIntrospectParameters,
     TokenPasswordGrantParameters,
     TokenRefreshTokenGrantParameters,
+    TokenRevokeParameters,
     TokenRobotCredentialsGrantParameters,
 } from './type';
 import { createRequestTransformerForTokenAPIRequest } from './utils';
@@ -136,12 +137,28 @@ export class TokenAPI extends BaseAPI {
         return tokenResponse;
     }
 
-    async introspect<T extends JwtPayload>(
-        parameters: TokenIntrospectParameters,
-        options?: TokenBaseOptions,
-    ): Promise<T> {
-        options = options || {};
+    async revoke(
+        parameters: TokenRevokeParameters = {},
+        options: TokenBaseOptions = {},
+    ) {
+        const urlSearchParams = this.buildURLSearchParams(parameters);
 
+        return this.client.post(
+            (this.options.revocationEndpoint || '/token/revoke'),
+            urlSearchParams,
+            {
+                transform: this.buildRequestTransformers(parameters, options),
+                headers: {
+                    [HeaderName.ACCEPT]: 'application/json',
+                },
+            },
+        );
+    }
+
+    async introspect<T extends JwtPayload>(
+        parameters: TokenIntrospectParameters = {},
+        options: TokenBaseOptions = {},
+    ): Promise<T> {
         const urlSearchParams = this.buildURLSearchParams(parameters);
 
         const { data } = await this.client.post(
@@ -160,11 +177,10 @@ export class TokenAPI extends BaseAPI {
 
     protected buildRequestTransformers(
         parameters: ClientAuthenticationParameters,
-        options?: TokenBaseOptions,
+        options: TokenBaseOptions = {},
     ) : RequestTransformer[] {
         const transformers : RequestTransformer[] = [];
 
-        options = options || {};
         if (!options.clientId) {
             if (this.options.clientId) {
                 options.clientId = this.options.clientId;
@@ -225,13 +241,13 @@ export class TokenAPI extends BaseAPI {
 
     // ------------------------------------------------------------------
 
-    protected buildURLSearchParams<T extends ClientAuthenticationParameters>(
-        input: T,
+    protected buildURLSearchParams(
+        input: Record<string, any>,
     ) : URLSearchParams {
         const urlSearchParams = new URLSearchParams();
         const keys = Object.keys(input);
         for (let i = 0; i < keys.length; i++) {
-            const value = input[keys[i] as keyof T];
+            const value = input[keys[i]];
 
             if (typeof value === 'string' && !!value) {
                 urlSearchParams.append(keys[i], value);
