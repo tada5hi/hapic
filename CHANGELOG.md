@@ -37,6 +37,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.4.0](https://github.com/tada5hi/hapic/compare/v2.3.0...v2.4.0) (2023-12-10)
+
+
+### Features
+
+* add token revocation endpoint method ([82a4125](https://github.com/tada5hi/hapic/commit/82a41259eb66b35e20e962e64d62e156893bddca))
+* cleanup hook module ([efc5626](https://github.com/tada5hi/hapic/commit/efc5626331613381ad48ff4e41e0139d9bf93b33))
+
+
+### Bug Fixes
+
+* **deps:** bump ebec to v2 ([48fb702](https://github.com/tada5hi/hapic/commit/48fb702534222ae5401f1a0cefa8f9de922ed7b0))
+* **deps:** bump node-fetch-native from 1.4.0 to 1.4.1 ([#460](https://github.com/tada5hi/hapic/issues/460)) ([9e904f0](https://github.com/tada5hi/hapic/commit/9e904f0b3c9cb63b14d78b7340946231eec4019e))
+* **deps:** bump smob from 1.4.0 to 1.4.1 ([#459](https://github.com/tada5hi/hapic/issues/459)) ([0cf0ff3](https://github.com/tada5hi/hapic/commit/0cf0ff379a64615c45999b8a4f97149e3695282f))
+* **deps:** bump ufo from 1.3.0 to 1.3.2 ([#467](https://github.com/tada5hi/hapic/issues/467)) ([14fb958](https://github.com/tada5hi/hapic/commit/14fb958716dd9f5a0ed067d3679a037255595d9c))
+* setter for response data + added feature list to README.md(s) ([03e60bb](https://github.com/tada5hi/hapic/commit/03e60bbabbeab5aa49e81f8e904b3dc1ea02b164))
+
 ## [2.1.1](https://github.com/Tada5hi/hapic/compare/v2.1.0...v2.1.1) (2023-06-22)
 
 
