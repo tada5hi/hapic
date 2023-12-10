@@ -103,7 +103,6 @@ jobs:
                 id: release
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}
-                    include-component-in-tag: true
 
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -117,6 +116,6 @@ jobs:
                 uses: ./.github/actions/build
 
             -   name: Publish
-                run: npx lerna publish from-package --no-push --no-git-reset --no-private --yes
+                run: npx lerna publish from-package --yes
                 env:
                      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
