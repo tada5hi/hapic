@@ -117,6 +117,6 @@ jobs:
                 uses: ./.github/actions/build
 
             -   name: Publish
-                run: npx lerna publish from-package --no-push --no-private --no-verify-access --yes
+                run: npx lerna publish from-package --no-push --no-git-reset --no-private --yes
                 env:
                      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
