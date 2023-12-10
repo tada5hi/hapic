@@ -12,3 +12,4 @@ npm-debug.log*
 reports
 coveralls.yml
 tsconfig.tsbuildinfo
+.nx
