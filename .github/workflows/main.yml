@@ -116,7 +116,11 @@ jobs:
                 uses: ./.github/actions/build
 
             -   name: Publish
-                run: npx lerna publish from-package --yes
                 env:
-                     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-                     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                run: |
+                    git config user.name "${{ github.actor }}"
+                    git config user.email "${{ github.actor}}@users.noreply.github.com"
+
+                    npx lerna publish from-package --yes
+                    exit 0
