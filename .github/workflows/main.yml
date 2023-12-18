@@ -118,9 +118,4 @@ jobs:
             -   name: Publish
                 env:
                     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-                run: |
-                    git config user.name "${{ github.actor }}"
-                    git config user.email "${{ github.actor}}@users.noreply.github.com"
-
-                    npx lerna publish from-package --yes
-                    exit 0
+                run: npx workspaces-publish
