@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { ProxyOptions } from 'node-fetch-native/proxy';
 import type { ResponseType } from '../constants';
 import type { ResponseTransformer } from '../response';
 
@@ -34,6 +35,10 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     params?: Record<string, any>,
     /**
+     * Proxy options.
+     */
+    proxy?: ProxyOptions,
+    /**
      * Query string parameters for the request.
      */
     query?: Record<string, any>,
@@ -42,7 +47,7 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     transform?: RequestTransformer | RequestTransformer[],
     /**
-     * Proxy agent configuration (NodeJS only).
+     * Proxy agent configuration (Node.JS only).
      */
     agent?: ((url: URL) => any) | any
 };

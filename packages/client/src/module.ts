@@ -5,9 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { createFetch } from 'node-fetch-native/proxy';
 import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/type';
-import { Headers, fetch } from './fetch';
+import { Headers } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type {
@@ -51,9 +52,7 @@ export class Client {
 
     // ---------------------------------------------------------------------------------
 
-    constructor(input?: RequestBaseOptions) {
-        input = input || {};
-
+    constructor(input: RequestBaseOptions = {}) {
         this.defaults = extendRequestOptionsWithDefaults(input || {});
         this.headers = new Headers(this.defaults.headers);
 
@@ -251,9 +250,10 @@ export class Client {
                 delete options.body;
             }
 
-            const { url, ...data } = options;
+            const { url, proxy, ...data } = options;
+            const fet = createFetch(proxy);
 
-            response = await fetch(url, data as RequestInit);
+            response = await fet(url, data as RequestInit);
         } catch (error: any) {
             return handleError('request', {
                 request: options,
