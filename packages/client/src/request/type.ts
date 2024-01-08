@@ -35,9 +35,11 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     params?: Record<string, any>,
     /**
-     * Proxy options.
+     * Activate or deactivate the use of proxies or enter customized options.
+     *
+     * default: true
      */
-    proxy?: ProxyOptions,
+    proxy?: ProxyOptions | boolean,
     /**
      * Query string parameters for the request.
      */

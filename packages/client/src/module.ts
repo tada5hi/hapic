@@ -5,10 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createFetch } from 'node-fetch-native/proxy';
+import type { ProxyOptions } from 'node-fetch-native/proxy';
+import { createProxy } from 'node-fetch-native/proxy';
 import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/type';
-import { Headers } from './fetch';
+import { Headers, fetch } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type {
@@ -251,9 +252,23 @@ export class Client {
             }
 
             const { url, proxy, ...data } = options;
-            const fet = createFetch(proxy);
+            if (proxy === false) {
+                response = await fetch(url, data as RequestInit);
+            } else {
+                let proxyOptions : ProxyOptions | undefined;
 
-            response = await fet(url, data as RequestInit);
+                if (
+                    typeof proxy !== 'boolean' &&
+                    typeof proxy !== 'undefined'
+                ) {
+                    proxyOptions = proxy;
+                }
+
+                response = await fetch(url, {
+                    ...data,
+                    ...createProxy(proxyOptions),
+                } as RequestInit);
+            }
         } catch (error: any) {
             return handleError('request', {
                 request: options,
