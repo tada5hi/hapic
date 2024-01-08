@@ -247,6 +247,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.5.0](https://github.com/tada5hi/hapic/compare/client-v2.4.0...client-v2.5.0) (2024-01-08)
+
+
+### Features
+
+* activate/deactivate proxy usage by option ([94a67ea](https://github.com/tada5hi/hapic/commit/94a67ea5062503ffb9c4a6ffd44bbcece7e1e103))
+* built-in proxy support ([5097ddb](https://github.com/tada5hi/hapic/commit/5097ddb0d4e05965c0a8ef9dff8a81d770503049))
+
+
+### Bug Fixes
+
+* **deps:** bump node-fetch-native from 1.4.1 to 1.6.1 ([#483](https://github.com/tada5hi/hapic/issues/483)) ([6a0a962](https://github.com/tada5hi/hapic/commit/6a0a962c9c73a49d5fb626f9768c3bee1fce06f6))
+
 ## [2.4.0](https://github.com/tada5hi/hapic/compare/client-v2.3.0...client-v2.4.0) (2023-12-10)
 
 
