@@ -120,6 +120,6 @@ jobs:
 
             -   name: Publish
                 if: steps.release.outputs.releases_created == 'true'
-                uses: tada5hi/monorepo-publish-action@v1
+                run: npx workspaces-publish
                 env:
                     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
