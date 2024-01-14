@@ -24,6 +24,8 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
     body?: RequestInit['body'] | Record<string, any>,
     /**
      * The desired response type.
+     *
+     * default: CONTENT_TYPE header
      */
     responseType?: R,
     /**
@@ -36,8 +38,9 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
     params?: Record<string, any>,
     /**
      * Activate or deactivate the use of proxies or enter customized options.
+     * By default, https_proxy, http_proxy, HTTPS_PROXY, and HTTP_PROXY environment variables will be checked and used.
      *
-     * default: true
+     * default: true (disable with false)
      */
     proxy?: ProxyOptions | boolean,
     /**
@@ -49,7 +52,7 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     transform?: RequestTransformer | RequestTransformer[],
     /**
-     * Proxy agent configuration (Node.JS only).
+     * Proxy agent configuration (Node.js only).
      */
     agent?: ((url: URL) => any) | any
 };

@@ -17,15 +17,15 @@ It provides a convenient way to make HTTP requests.
 - ❌ Throws an error on responses with a non 2xx status code
 - 🚀 Method shortcuts for GET, POST, PUT, ...
 - ⚙️ Extended options (e.g. baseURL)
+- 🎭 Proxy support
 
 **Table of Contents**
 
 - [Installation](#installation)
 - [Usage](#usage)
   - [Config](#config)
-  - [Singleton](#singleton)
   - [Request](#request)
-  - [Header](#header)
+  - [Hooks](#hooks)
 - [License](#license)
 
 ## Installation
@@ -47,37 +47,100 @@ import { Client } from "hapic";
 const client = new Client({
     baseURL: 'http://localhost:3000/',
     credentials: 'include',
+    proxy: true
 });
 ```
 
-### Singleton
+These are the available configuration options for making requests and creating a client:
+The type for the configuration object can be inspected under [src/request/type.ts](./src/request/type.ts).
 
-A singleton instance can be associated to a key, to handle multiple singleton instances.
+> [!NOTE]
+> The configuration object extends the RequestInit type of the globalThis object.
+> This means that these options are also available.
 
-**`Registration`**
 ```typescript
-import { Client, setClient } from "hapic";
-
-const client = new Client({
-    //...
-});
-
-// This will register the client for the key "default",
-// which is also the default key.
-setClient(client, 'default');
-
-```
-
-**`Access`**
-```typescript
-import { useClient } from 'hapic';
-
-const client = useClient('default');
-
-// do something with the client
+export default {
+    /**
+     * globalThis.RequestInit
+     *
+     * A Headers object, an object literal, or an array of two-item arrays to set request's headers.
+     */
+    headers: {
+        'Authorization': 'Bearer foo'
+    },
+    /**
+     * globalThis.RequestInit
+     *
+     * A string indicating whether credentials will be sent with the request always, never,
+     * or only when sent to a same-origin URL. Sets request's credentials.
+     */
+    credentials: 'include',
+    /**
+     * A string to set request's method.
+     */
+    method: 'GET',
+    /**
+     * The base URL for the HTTP endpoints.
+     */
+    baseURL: 'https://example.com/',
+    /**
+     * The request body.
+     */
+    body: {
+        foo: 'bar'
+    },
+    /**
+     * The desired response type (json, .
+     *
+     * default: CONTENT_TYPE header
+     */
+    responseType: 'json',
+    /**
+     * A function or array of functions to transform the response data.
+     */
+    responseTransform: [
+        (data) => {
+            // transform the data
+            return data;
+        }
+    ],
+    /**
+     * Query string parameters for the request.
+     */
+    params: {
+        id: 123
+    },
+    /**
+     * Activate or deactivate the use of proxies or enter customized options.
+     * By default, https_proxy, http_proxy, HTTPS_PROXY, and HTTP_PROXY environment variables will be checked and used
+     *
+     * default: true (disable with false)
+     */
+    proxy: {
+        url: 'http://localhost:9080', // overrite env variables
+        noProxy: '.foo.bar'
+    },
+    /**
+     * Query string parameters for the request.
+     */
+    query: {
+        id: 123
+    },
+    /**
+     * A function or array of functions to transform the request data.
+     */
+    transform: [
+        (data) => {
+            // transform the data
+            return data;
+        }
+    ],
+};
 ```
 
 ### Request
+
+For the sake of simplicity, alias names have been provided for all supported request methods.
 
 **`DELETE`**
 ```typescript
@@ -124,42 +187,64 @@ console.log(data);
 // [{ id: 3, name: 'Hans' }]
 ```
 
-### Header
+### Hooks
 
-The main purpose of the header utils, is to parse and build HTTP headers.
+It is possible to intercept requests or responses before and after they are processed.
 
-**AuthorizationHeader**
+**Request Hooks**
 
 ```typescript
-import {
-    parseAuthorizationHeader,
-    stringifyAuthorizationHeader
-} from "hapic";
+import client, { ClientError, RequestOptions } from 'hapic';
 
-const basicValue = Buffer
-    .from('admin:start123')
-    .toString('base64');
+client.on('request', (options: RequestOptions) => {
+    // Do something with the request options before the request is sent
+    options.transform = (data, headers) => {
+        headers.set(HeaderName.AUTHORIZATION, 'Bearer foo');
 
-const value = parseAuthorizationHeader(`Basic ${basicValue}`);
-console.log(value);
-// {type: 'Basic', username: 'admin', password: 'start123'}
+        return data;
+    };
 
-// -------------------------------------------------
-
-let headerValue = stringifyAuthorizationHeader({
-    type: 'Basic',
-    username: 'admin',
-    password: 'start123'
+    return options;
 });
-console.log(headerValue);
-// Basic xxxxxxx
 
-headerValue = stringifyAuthorizationHeader({
-    type: 'Bearer',
-    token: 'start123'
+client.on('requestError', (error: ClientError) => {
+    // Do something with the request error
+    throw error;
+})
+```
+
+**Response Hooks**
+
+```typescript
+import client, { ClientError, Response } from 'hapic';
+
+client.on('response', (res: Response) => {
+    // Any status code that is not in the range 400-599 triggers this function.
+    // Do something with the response data
+
+    return res;
+})
+
+import client, { ClientError, Response } from 'hapic';
+
+client.on('responseError', (error: ClientError) => {
+    // Any status code that is in the range 400-599 triggers this function.
+    // Do something with the response error
+
+    return res;
+})
+```
+
+**Unsubscribe**
+
+```typescript
+import client from 'hapic';
+
+const hook = client.on('xxx', () => {
+    // ...
 });
-console.log(headerValue);
-// Bearer start123
+
+client.off(hook);
 ```
 
 ## License
