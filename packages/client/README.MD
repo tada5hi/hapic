@@ -237,6 +237,8 @@ client.on('responseError', (error: ClientError) => {
 
 **Unsubscribe**
 
+The hook can also be removed in the following way:
+
 ```typescript
 import client from 'hapic';
 

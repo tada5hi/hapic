@@ -17,6 +17,7 @@ It provides a convenient way to make HTTP requests.
 - ❌ Throws an error on responses with a non 2xx status code
 - 🚀 Method shortcuts for GET, POST, PUT, ...
 - ⚙️ Extended options (e.g. baseURL)
+- 🎭 Proxy support
 
 **Table of Contents**
 
