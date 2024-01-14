@@ -13,6 +13,7 @@ this API client is a powerful tool to get the most out of the platform.
 
 **Table of Contents**
 
+- [Documentation](#documentation)
 - [Installation](#installation)
 - [Usage](#usage)
   - [Project](#project)
@@ -22,6 +23,10 @@ this API client is a powerful tool to get the most out of the platform.
   - [ProjectWebhookPolicy](#project-webhook-policy)
   - [RobotAccount](#robot)
 - [License](#license)
+
+## Documentation
+
+To read the docs, visit [https://hapic.tada5hi.net](https://hapic.tada5hi.net)
 
 ## Installation
 

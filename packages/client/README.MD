@@ -8,6 +8,17 @@
 "**H**TTP **API** **C**lient" is a tiny & simple fetch based http client.
 It provides a convenient way to make HTTP requests.
 
+**Table of Contents**
+
+- [Features](#features)
+- [Documentation](#documentation)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Config](#config)
+    - [Request](#request)
+    - [Hooks](#hooks)
+- [License](#license)
+
 ## Features
 
 - ✨ Simple API
@@ -19,14 +30,9 @@ It provides a convenient way to make HTTP requests.
 - ⚙️ Extended options (e.g. baseURL)
 - 🎭 Proxy support
 
-**Table of Contents**
+## Documentation
 
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Config](#config)
-  - [Request](#request)
-  - [Hooks](#hooks)
-- [License](#license)
+To read the docs, visit [https://hapic.tada5hi.net](https://hapic.tada5hi.net)
 
 ## Installation
 

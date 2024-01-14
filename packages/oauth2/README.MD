@@ -17,12 +17,17 @@ and authorization in your applications.
 
 **Table of Contents**
 
+- [Documentation](#documentation)
 - [Installation](#installation)
 - [Usage](#usage)
   - [Authorize](#authorize)
   - [Token](#token)
   - [UserInfo](#userInfo)
 - [License](#license)
+
+## Documentation
+
+To read the docs, visit [https://hapic.tada5hi.net](https://hapic.tada5hi.net)
 
 ## Installation
 

@@ -16,6 +16,7 @@ this API client is a powerful tool to help you get the most out of Vault.
 
 **Table of Contents**
 
+- [Documentation](#documentation)
 - [Installation](#installation)
 - [Usage](#usage)
   - [Config](#config)
@@ -23,6 +24,10 @@ this API client is a powerful tool to help you get the most out of Vault.
   - [KeyValue V2](#keyvalue-v2)
   - [Mount](#mount)
 - [License](#license)
+
+## Documentation
+
+To read the docs, visit [https://hapic.tada5hi.net](https://hapic.tada5hi.net)
 
 ## Installation
 
