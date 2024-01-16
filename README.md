@@ -34,6 +34,22 @@ It provides a convenient way to make HTTP requests.
 
 To read the docs, visit [https://hapic.tada5hi.net](https://hapic.tada5hi.net)
 
+## Usage
+
+The following code snippet should serve as a simple example and first impression.
+
+```typescript
+import hapic from 'hapic';
+
+const response = await hapic.post('https://example.com/users', {
+    firstName: 'Max',
+    lastName: 'Mustermann'
+});
+
+console.log(response);
+// { data: xxx, headers: xxx, status: xxx, statusText: xxx }
+```
+
 
 ## Packages
 The repository contains the following packages:
