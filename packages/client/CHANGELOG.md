@@ -247,6 +247,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.5.1](https://github.com/tada5hi/hapic/compare/client-v2.5.0...client-v2.5.1) (2024-03-27)
+
+
+### Bug Fixes
+
+* **deps:** bump node-fetch-native from 1.6.1 to 1.6.2 ([#537](https://github.com/tada5hi/hapic/issues/537)) ([2f1dbc1](https://github.com/tada5hi/hapic/commit/2f1dbc1feeeb9199fa77f4486ae71e45696aea47))
+* **deps:** bump node-fetch-native from 1.6.2 to 1.6.4 ([#558](https://github.com/tada5hi/hapic/issues/558)) ([7b14c9d](https://github.com/tada5hi/hapic/commit/7b14c9d9d985a84d2d5681f5aebe74a7e39da145))
+* **deps:** bump ufo from 1.3.2 to 1.4.0 ([#536](https://github.com/tada5hi/hapic/issues/536)) ([088a919](https://github.com/tada5hi/hapic/commit/088a919eefbc18bac937ffbaeb78a76d7faf093c))
+* **deps:** bump ufo from 1.4.0 to 1.5.3 ([#556](https://github.com/tada5hi/hapic/issues/556)) ([fc59a6d](https://github.com/tada5hi/hapic/commit/fc59a6d46abab5350f35245c4c466157ef2eb32f))
+
 ## [2.5.0](https://github.com/tada5hi/hapic/compare/client-v2.4.0...client-v2.5.0) (2024-01-08)
 
 
