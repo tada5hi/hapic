@@ -1,6 +1,6 @@
 {
     "name": "@hapic/vault",
-    "version": "2.3.3",
+    "version": "2.3.4",
     "description": "A vault http api client.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
