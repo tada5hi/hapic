@@ -27,6 +27,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [2.4.0](https://github.com/tada5hi/hapic/compare/harbor-v2.3.4...harbor-v2.4.0) (2024-07-16)
+
+
+### Features
+
+* adjusted harbor permissions for v2.11.0 ([6edbd6c](https://github.com/tada5hi/hapic/commit/6edbd6ca7d3c353a5378d93d05b2164f65936c65))
+
 ## [2.3.4](https://github.com/tada5hi/hapic/compare/harbor-v2.3.3...harbor-v2.3.4) (2024-06-29)
 
 
