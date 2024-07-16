@@ -6,16 +6,11 @@
  */
 
 import type { ResourceCollectionQuery } from '../type';
+import type { RobotPermissionAction, RobotPermissionResource } from './constants';
 
 export type RobotPermissionAccess = {
-    resource: 'artifact' |
-    'artifact-label' |
-    'helm-chart' |
-    'helm-chart-version' |
-    'repository' |
-    'scan' |
-    'tag',
-    action: 'delete' | 'read' | 'create' | 'pull' | 'push' | 'list' | 'stop'
+    resource: `${RobotPermissionResource}`,
+    action: `${RobotPermissionAction}`
 };
 
 export type RobotPermission = {

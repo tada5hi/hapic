@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { RobotPermissionAction, RobotPermissionResource } from './constants';
 import type { RobotPermission } from './type';
 
 /**
@@ -17,26 +18,62 @@ export function buildRobotPermissionForAllResources(
 ) : RobotPermission {
     return {
         access: [
-            { resource: 'repository', action: 'push' },
-            { resource: 'repository', action: 'pull' },
+            { resource: RobotPermissionResource.ARTIFACT, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.ARTIFACT, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.ARTIFACT, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.ARTIFACT, action: RobotPermissionAction.READ },
 
-            { resource: 'artifact', action: 'delete' },
+            { resource: RobotPermissionResource.ARTIFACT_LABEL, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.ARTIFACT_LABEL, action: RobotPermissionAction.DELETE },
 
-            { resource: 'helm-chart', action: 'read' },
+            { resource: RobotPermissionResource.IMMUTABLE_TAG, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.IMMUTABLE_TAG, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.IMMUTABLE_TAG, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.IMMUTABLE_TAG, action: RobotPermissionAction.UPDATE },
 
-            { resource: 'helm-chart-version', action: 'create' },
-            { resource: 'helm-chart-version', action: 'delete' },
+            { resource: RobotPermissionResource.REPOSITORY, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.REPOSITORY, action: RobotPermissionAction.PULL },
+            { resource: RobotPermissionResource.REPOSITORY, action: RobotPermissionAction.PUSH },
+            { resource: RobotPermissionResource.REPOSITORY, action: RobotPermissionAction.UPDATE },
+            { resource: RobotPermissionResource.REPOSITORY, action: RobotPermissionAction.DELETE },
 
-            { resource: 'tag', action: 'create' },
-            { resource: 'tag', action: 'delete' },
+            { resource: RobotPermissionResource.TAG, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.TAG, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.TAG, action: RobotPermissionAction.LIST },
 
-            { resource: 'artifact-label', action: 'create' },
+            { resource: RobotPermissionResource.SCAN, action: RobotPermissionAction.READ },
+            { resource: RobotPermissionResource.SCAN, action: RobotPermissionAction.STOP },
+            { resource: RobotPermissionResource.SCAN, action: RobotPermissionAction.CREATE },
 
-            { resource: 'scan', action: 'create' },
-            { resource: 'scan', action: 'stop' },
+            { resource: RobotPermissionResource.LABEL, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.LABEL, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.LABEL, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.LABEL, action: RobotPermissionAction.READ },
+            { resource: RobotPermissionResource.LABEL, action: RobotPermissionAction.UPDATE },
 
-            { resource: 'artifact', action: 'list' },
-            { resource: 'repository', action: 'list' },
+            { resource: RobotPermissionResource.METADATA, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.METADATA, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.METADATA, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.METADATA, action: RobotPermissionAction.READ },
+            { resource: RobotPermissionResource.METADATA, action: RobotPermissionAction.UPDATE },
+
+            { resource: RobotPermissionResource.LOG, action: RobotPermissionAction.LIST },
+
+            { resource: RobotPermissionResource.NOTIFICATION_POLICY, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.NOTIFICATION_POLICY, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.NOTIFICATION_POLICY, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.NOTIFICATION_POLICY, action: RobotPermissionAction.READ },
+            { resource: RobotPermissionResource.NOTIFICATION_POLICY, action: RobotPermissionAction.UPDATE },
+
+            { resource: RobotPermissionResource.PREHEAT_POLICY, action: RobotPermissionAction.CREATE },
+            { resource: RobotPermissionResource.PREHEAT_POLICY, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.PREHEAT_POLICY, action: RobotPermissionAction.LIST },
+            { resource: RobotPermissionResource.PREHEAT_POLICY, action: RobotPermissionAction.READ },
+            { resource: RobotPermissionResource.PREHEAT_POLICY, action: RobotPermissionAction.UPDATE },
+
+            { resource: RobotPermissionResource.PROJECT, action: RobotPermissionAction.DELETE },
+            { resource: RobotPermissionResource.PROJECT, action: RobotPermissionAction.READ },
+            { resource: RobotPermissionResource.PROJECT, action: RobotPermissionAction.UPDATE },
         ],
         kind: 'project',
         namespace,
