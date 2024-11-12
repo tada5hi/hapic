@@ -47,7 +47,7 @@
         "lint:fix": "npm run lint -- --fix"
     },
     "devDependencies": {
-        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-node-resolve": "^15.3.0",
         "@swc/core": "^1.6.13",
         "@tada5hi/commitlint-config": "^1.2.1",
         "@tada5hi/eslint-config-typescript": "^1.2.11",
