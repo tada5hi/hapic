@@ -54,7 +54,7 @@
     "dependencies": {
         "ebec": "^2.3.0",
         "node-fetch-native": "^1.6.4",
-        "ufo": "^1.5.3"
+        "ufo": "^1.5.4"
     },
     "publishConfig": {
         "access": "public"
