@@ -5,67 +5,34 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { scopeToArray, scopeToString } from '../../utils';
-import type { BaseAPIContext } from '../type';
-import type { AuthorizeParametersInput } from './type';
+import { buildAuthorizeURL } from './helper';
+import type { AuthorizeParameters } from './types';
 import { BaseAPI } from '../base';
 
 export class AuthorizeAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
-    constructor(context?: BaseAPIContext) {
-        super(context);
-    }
-
     /**
      * Build authorize url based on
      * input parameters.
      *
      * @param parameters
      */
-    buildURL(parameters?: Partial<AuthorizeParametersInput>) : string {
-        parameters = parameters || {};
-
-        let baseURL : string | undefined;
-        let input : string | undefined;
+    buildURL(parameters: Partial<AuthorizeParameters> = {}) : string {
+        let baseURL : string;
 
         if (this.options.authorizationEndpoint) {
-            input = this.options.authorizationEndpoint;
+            baseURL = this.options.authorizationEndpoint;
         } else {
             const clientURL = this.client.defaults.baseURL;
-            if (clientURL) {
-                baseURL = clientURL;
-            }
+
+            baseURL = new URL('authorize', clientURL).href;
         }
 
-        const url = new URL(input || 'authorize', baseURL);
-        url.searchParams.set('response_type', parameters.response_type || 'code');
-
-        if (this.options.clientId) {
-            url.searchParams.set('client_id', this.options.clientId);
-        }
-
-        const redirectUri = parameters.redirect_uri || this.options.redirectUri;
-        if (redirectUri) {
-            url.searchParams.set('redirect_uri', redirectUri);
-        }
-
-        const scope : string[] = [];
-        if (this.options.scope) {
-            const input = scopeToArray(this.options.scope);
-
-            scope.push(...input);
-        }
-
-        if (parameters.scope) {
-            const input = scopeToArray(parameters.scope);
-
-            scope.push(...input);
-        }
-
-        if (scope.length > 0) {
-            url.searchParams.set('scope', scopeToString(scope));
-        }
-
-        return url.href;
+        return buildAuthorizeURL(baseURL, {
+            ...parameters,
+            redirect_uri: parameters.redirect_uri || this.options.redirectUri,
+            client_id: parameters.client_id || this.options.clientId,
+            scope: parameters.scope || this.options.scope,
+            response_type: parameters.response_type || 'code',
+        });
     }
 }

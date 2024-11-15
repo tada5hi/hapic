@@ -17,9 +17,7 @@ export abstract class BaseAPI {
 
     // -----------------------------------------------------------------------------------
 
-    protected constructor(context?: BaseAPIContext) {
-        context = context || {};
-
+    constructor(context: BaseAPIContext = {}) {
         this.setClient(context.client);
         this.setOptions(context.options);
     }

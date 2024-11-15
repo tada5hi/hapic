@@ -5,17 +5,18 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { AuthorizeResponseMode } from './constants';
+import type { AuthorizeCodeChallenge, AuthorizeResponseMode } from './constants';
 
 export type AuthorizeParameters = {
     client_id?: string,
-    redirect_uri: string,
+    redirect_uri?: string,
     response_mode?: `${AuthorizeResponseMode}`,
-    response_type: string,
-    scope?: string,
-    state?: string
-};
-
-export type AuthorizeParametersInput = Omit<AuthorizeParameters, 'scope'> & {
+    /**
+     * default: code
+     */
+    response_type?: string,
     scope?: string | string[],
+    state?: string,
+    code_challenge?: string,
+    code_challenge_method?: `${AuthorizeCodeChallenge}`
 };

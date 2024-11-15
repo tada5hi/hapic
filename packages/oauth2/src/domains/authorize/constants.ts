@@ -11,3 +11,19 @@ export enum AuthorizeResponseMode {
     FORM_POST = 'form_post',
     WEB_MESSAGE = 'web_message',
 }
+
+export enum AuthorizeCodeChallenge {
+    SHA_256 = 'S256',
+    PLAIN = 'plain',
+}
+
+export enum AuthorizeParameterName {
+    CLIENT_ID = 'client_id',
+    REDIRECT_URI = 'redirect_uri',
+    RESPONSE_MODE = 'response_mode',
+    RESPONSE_TYPE = 'response_type',
+    SCOPE = 'scope',
+    STATE = 'state',
+    CODE_CHALLENGE = 'code_challenge',
+    CODE_CHALLENGE_METHOD = 'code_challenge_method',
+}
