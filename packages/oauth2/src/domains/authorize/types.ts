@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { AuthorizeCodeChallenge, AuthorizeResponseMode } from './constants';
+import type { AuthorizeCodeChallengeMethod, AuthorizeResponseMode, AuthorizeResponseType } from './constants';
 
 export type AuthorizeParameters = {
     client_id?: string,
@@ -14,9 +14,9 @@ export type AuthorizeParameters = {
     /**
      * default: code
      */
-    response_type?: string,
+    response_type?: `${AuthorizeResponseType}` | `${AuthorizeResponseType}`[],
     scope?: string | string[],
     state?: string,
     code_challenge?: string,
-    code_challenge_method?: `${AuthorizeCodeChallenge}`
+    code_challenge_method?: `${AuthorizeCodeChallengeMethod}`
 };

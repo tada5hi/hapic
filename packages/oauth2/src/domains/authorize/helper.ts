@@ -15,7 +15,12 @@ export function buildAuthorizeURL(
     const output = new URL(url);
 
     if (parameters.response_type) {
-        output.searchParams.set('response_type', parameters.response_type);
+        output.searchParams.set(
+            'response_type',
+            Array.isArray(parameters.response_type) ?
+                scopeToString(parameters.response_type) :
+                parameters.response_type,
+        );
     } else {
         output.searchParams.set('response_type', 'code');
     }

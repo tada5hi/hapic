@@ -12,18 +12,14 @@ export enum AuthorizeResponseMode {
     WEB_MESSAGE = 'web_message',
 }
 
-export enum AuthorizeCodeChallenge {
+export enum AuthorizeCodeChallengeMethod {
     SHA_256 = 'S256',
     PLAIN = 'plain',
 }
 
-export enum AuthorizeParameterName {
-    CLIENT_ID = 'client_id',
-    REDIRECT_URI = 'redirect_uri',
-    RESPONSE_MODE = 'response_mode',
-    RESPONSE_TYPE = 'response_type',
-    SCOPE = 'scope',
-    STATE = 'state',
-    CODE_CHALLENGE = 'code_challenge',
-    CODE_CHALLENGE_METHOD = 'code_challenge_method',
+export enum AuthorizeResponseType {
+    NONE = 'none',
+    CODE = 'code',
+    TOKEN = 'token',
+    ID_TOKEN = 'id_token',
 }
