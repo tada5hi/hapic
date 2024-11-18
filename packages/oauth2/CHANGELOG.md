@@ -183,6 +183,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [3.0.1](https://github.com/tada5hi/hapic/compare/oauth2-v3.0.0...oauth2-v3.0.1) (2024-11-18)
+
+
+### Bug Fixes
+
+* typing of authorization code request ([4ec26af](https://github.com/tada5hi/hapic/commit/4ec26af6d319d3de7279e259ec389499da734134))
+* use omit instead of pick type for token fn signatures ([3e1ed33](https://github.com/tada5hi/hapic/commit/3e1ed33caa6b0c49f8cc34f8e88a04fc539f5485))
+
 ## [3.0.0](https://github.com/tada5hi/hapic/compare/oauth2-v2.5.0...oauth2-v3.0.0) (2024-11-18)
 
 
