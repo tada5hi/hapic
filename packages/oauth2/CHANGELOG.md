@@ -183,6 +183,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [3.0.0](https://github.com/tada5hi/hapic/compare/oauth2-v2.5.0...oauth2-v3.0.0) (2024-11-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* oauth2 token methods changed
+
+### Features
+
+* align oauth2 token grant methods + add code_verifier typing to grant payload ([a4dcc8b](https://github.com/tada5hi/hapic/commit/a4dcc8bbfcacebf432aaa85818888905ce1eb0f2))
+
 ## [2.5.0](https://github.com/tada5hi/hapic/compare/oauth2-v2.4.2...oauth2-v2.5.0) (2024-11-18)
 
 
