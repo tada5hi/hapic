@@ -183,6 +183,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [2.5.0](https://github.com/tada5hi/hapic/compare/oauth2-v2.4.2...oauth2-v2.5.0) (2024-11-18)
+
+
+### Features
+
+* add code_challenge(_method) option to authorize url building ([0792faf](https://github.com/tada5hi/hapic/commit/0792fafcfde514ad40adbd8fcc2d1021bcb817cc))
+* add enum for authorize response type ([ababd0e](https://github.com/tada5hi/hapic/commit/ababd0e626de4d9e78d6199c8118a8ed153878c5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.5.1 to ^2.5.2
+  * peerDependencies
+    * hapic bumped from ^2.5.1 to ^2.5.2
+
 ## [2.4.2](https://github.com/tada5hi/hapic/compare/oauth2-v2.4.1...oauth2-v2.4.2) (2024-03-27)
 
 
