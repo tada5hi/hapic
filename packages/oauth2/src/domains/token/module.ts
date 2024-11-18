@@ -13,7 +13,7 @@ import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../type';
 import type {
     ClientAuthenticationParameters,
-    TokenAuthorizationGrantParameters,
+    TokenAuthorizationCodeGrantParameters,
     TokenBaseOptions,
     TokenClientCredentialsGrantParameters,
     TokenGrantParameters,
@@ -34,7 +34,7 @@ export class TokenAPI extends BaseAPI {
 
     // ------------------------------------------------------------------
 
-    async createWithRefreshToken(
+    async createWithRefreshTokenGrant(
         parameters: Pick<TokenRefreshTokenGrantParameters, 'refresh_token' | 'scope'>,
         options?: TokenBaseOptions,
     ) {
@@ -44,7 +44,7 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithClientCredentials(
+    async createWithClientCredentialsGrant(
         parameters?: Pick<TokenClientCredentialsGrantParameters, 'scope'>,
         options?: TokenBaseOptions,
     ) {
@@ -64,8 +64,8 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithAuthorizeGrant(
-        parameters: Pick<TokenAuthorizationGrantParameters, 'state' | 'code' | 'redirect_uri'>,
+    async createWithAuthorizationCodeGrant(
+        parameters: Pick<TokenAuthorizationCodeGrantParameters, 'state' | 'code' | 'redirect_uri'>,
         options?: TokenBaseOptions,
     ): Promise<TokenGrantResponse> {
         return this.create({
@@ -74,7 +74,7 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithRobotCredentials(
+    async createWithRobotCredentialsGrant(
         parameters: Pick<TokenRobotCredentialsGrantParameters, 'id' | 'secret'>,
         options?: TokenBaseOptions,
     ) {
@@ -93,10 +93,8 @@ export class TokenAPI extends BaseAPI {
      */
     async create(
         parameters: TokenGrantParameters,
-        options?: TokenBaseOptions,
+        options: TokenBaseOptions = {},
     ): Promise<TokenGrantResponse> {
-        options = options || {};
-
         this.extendCreateParameters(parameters);
 
         const urlSearchParams = this.buildURLSearchParams(parameters);

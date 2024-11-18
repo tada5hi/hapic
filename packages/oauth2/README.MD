@@ -88,23 +88,27 @@ const client = new OAuth2Client({
     }
 });
 
-let token = await api.createWithRefreshToken({
+let token = await client.token.createWithRefreshTokenGrant({
     refresh_token: 'refresh_token'
 });
 
-token = await api.createWithOAuth2ClientCredentials();
+token = await client.token.createWithClientCredentialsGrant({
+    // optional, if defined globally
+    client_id: 'foo',
+    client_secret: 'bar',
+});
 
-token = await api.createWithPasswordGrant({
+token = await client.token.createWithPasswordGrant({
     username: 'admin',
     password: 'start123'
 });
 
-token = await api.createWithAuthorizeGrant({
+token = await client.token.createWithAuthorizationCodeGrant({
     state: 'state',
     code: 'code'
 });
 
-token = await api.createWithRobotCredentials({
+token = await client.token.createWithRobotCredentialsGrant({
     id: 'system',
     secret: 'start123'
 });

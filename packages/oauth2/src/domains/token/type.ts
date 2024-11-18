@@ -26,10 +26,11 @@ export type TokenPasswordGrantParameters = {
     realm_name?: string,
 } & ClientAuthenticationParameters;
 
-export type TokenAuthorizationGrantParameters = {
+export type TokenAuthorizationCodeGrantParameters = {
     grant_type: 'authorization_code',
     state: string,
     code: string,
+    code_verifier?: string,
     redirect_uri?: string,
 } & ClientAuthenticationParameters;
 
@@ -48,7 +49,7 @@ export type TokenRobotCredentialsGrantParameters = {
 export type TokenGrantParameters =
     TokenClientCredentialsGrantParameters |
     TokenPasswordGrantParameters |
-    TokenAuthorizationGrantParameters |
+    TokenAuthorizationCodeGrantParameters |
     TokenRefreshTokenGrantParameters |
     TokenRobotCredentialsGrantParameters;
 
