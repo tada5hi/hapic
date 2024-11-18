@@ -63,13 +63,11 @@ describe('src/domains/token', () => {
         parameters = api.extendCreateParameters({
             grant_type: 'authorization_code',
             code: 'code',
-            state: 'state',
         });
 
         expect(parameters).toEqual({
             grant_type: 'authorization_code',
             code: 'code',
-            state: 'state',
             client_id: 'client',
             redirect_uri: redirectUri,
             client_secret: 'secret',
@@ -104,7 +102,6 @@ describe('src/domains/token', () => {
         expect(token).toEqual({ ...tokenGrantResponse });
 
         token = await api.createWithAuthorizationCodeGrant({
-            state: 'state',
             code: 'code',
         });
         expect(token).toEqual({ ...tokenGrantResponse });
