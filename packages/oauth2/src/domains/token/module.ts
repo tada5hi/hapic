@@ -35,7 +35,7 @@ export class TokenAPI extends BaseAPI {
     // ------------------------------------------------------------------
 
     async createWithRefreshTokenGrant(
-        parameters: Pick<TokenRefreshTokenGrantParameters, 'refresh_token' | 'scope'>,
+        parameters: Omit<TokenRefreshTokenGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
         return this.create({
@@ -45,7 +45,7 @@ export class TokenAPI extends BaseAPI {
     }
 
     async createWithClientCredentialsGrant(
-        parameters?: Pick<TokenClientCredentialsGrantParameters, 'scope'>,
+        parameters?: Omit<TokenClientCredentialsGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
         return this.create({
@@ -55,7 +55,7 @@ export class TokenAPI extends BaseAPI {
     }
 
     async createWithPasswordGrant(
-        parameters: Pick<TokenPasswordGrantParameters, 'username' | 'password' | 'scope'>,
+        parameters: Omit<TokenPasswordGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
         return this.create({
@@ -65,7 +65,7 @@ export class TokenAPI extends BaseAPI {
     }
 
     async createWithAuthorizationCodeGrant(
-        parameters: Pick<TokenAuthorizationCodeGrantParameters, 'state' | 'code' | 'redirect_uri'>,
+        parameters: Omit<TokenAuthorizationCodeGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ): Promise<TokenGrantResponse> {
         return this.create({
@@ -75,7 +75,7 @@ export class TokenAPI extends BaseAPI {
     }
 
     async createWithRobotCredentialsGrant(
-        parameters: Pick<TokenRobotCredentialsGrantParameters, 'id' | 'secret'>,
+        parameters: Omit<TokenRobotCredentialsGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
         return this.create({
