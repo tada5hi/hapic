@@ -28,7 +28,6 @@ export type TokenPasswordGrantParameters = {
 
 export type TokenAuthorizationCodeGrantParameters = {
     grant_type: 'authorization_code',
-    state: string,
     code: string,
     code_verifier?: string,
     redirect_uri?: string,
