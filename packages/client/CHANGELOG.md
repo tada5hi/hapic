@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.5.2](https://github.com/tada5hi/hapic/compare/client-v2.5.1...client-v2.5.2) (2024-11-18)
+
+
+### Bug Fixes
+
+* **deps:** bump ufo from 1.5.3 to 1.5.4 ([#697](https://github.com/tada5hi/hapic/issues/697)) ([57a2000](https://github.com/tada5hi/hapic/commit/57a2000a6a780235f2451727b12e2322825f5b2a))
+
 ## [2.5.1](https://github.com/tada5hi/hapic/compare/client-v2.5.0...client-v2.5.1) (2024-03-27)
 
 

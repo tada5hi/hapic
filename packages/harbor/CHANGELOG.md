@@ -27,6 +27,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [2.5.0](https://github.com/tada5hi/hapic/compare/harbor-v2.4.0...harbor-v2.5.0) (2024-11-18)
+
+
+### Features
+
+* add code_challenge(_method) option to authorize url building ([0792faf](https://github.com/tada5hi/hapic/commit/0792fafcfde514ad40adbd8fcc2d1021bcb817cc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.5.1 to ^2.5.2
+  * peerDependencies
+    * hapic bumped from ^2.5.1 to ^2.5.2
+
 ## [2.4.0](https://github.com/tada5hi/hapic/compare/harbor-v2.3.4...harbor-v2.4.0) (2024-07-16)
 
 
