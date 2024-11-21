@@ -87,26 +87,26 @@ describe('src/domains/token', () => {
 
         api.setClient(driver);
 
-        let token = await api.createWithRefreshTokenGrant({
+        let token = await api.createWithRefreshToken({
             refresh_token: 'refresh_token',
         });
         expect(token).toEqual({ ...tokenGrantResponse });
 
-        token = await api.createWithClientCredentialsGrant();
+        token = await api.createWithClientCredentials();
         expect(token).toEqual({ ...tokenGrantResponse });
 
-        token = await api.createWithPasswordGrant({
+        token = await api.createWithPassword({
             username: 'admin',
             password: 'start123',
         });
         expect(token).toEqual({ ...tokenGrantResponse });
 
-        token = await api.createWithAuthorizationCodeGrant({
+        token = await api.createWithAuthorizationCode({
             code: 'code',
         });
         expect(token).toEqual({ ...tokenGrantResponse });
 
-        token = await api.createWithRobotCredentialsGrant({
+        token = await api.createWithRobotCredentials({
             id: 'system',
             secret: 'start123',
         });
@@ -126,7 +126,7 @@ describe('src/domains/token', () => {
 
         api.setClient(driver);
 
-        const token = await api.createWithPasswordGrant({ username: 'admin', password: 'start123' });
+        const token = await api.createWithPassword({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...tokenGrantResponse });
     });
 });

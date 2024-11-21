@@ -10,7 +10,6 @@ import { HeaderName } from 'hapic';
 import type { JwtPayload } from '../../type';
 
 import { BaseAPI } from '../base';
-import type { BaseAPIContext } from '../type';
 import type {
     ClientAuthenticationParameters,
     TokenAuthorizationCodeGrantParameters,
@@ -27,14 +26,9 @@ import type {
 import { createRequestTransformerForTokenAPIRequest } from './utils';
 
 export class TokenAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
-    constructor(context?: BaseAPIContext) {
-        super(context);
-    }
-
     // ------------------------------------------------------------------
 
-    async createWithRefreshTokenGrant(
+    async createWithRefreshToken(
         parameters: Omit<TokenRefreshTokenGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
@@ -44,7 +38,7 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithClientCredentialsGrant(
+    async createWithClientCredentials(
         parameters?: Omit<TokenClientCredentialsGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
@@ -54,7 +48,7 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithPasswordGrant(
+    async createWithPassword(
         parameters: Omit<TokenPasswordGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
@@ -64,7 +58,7 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithAuthorizationCodeGrant(
+    async createWithAuthorizationCode(
         parameters: Omit<TokenAuthorizationCodeGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ): Promise<TokenGrantResponse> {
@@ -74,7 +68,7 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithRobotCredentialsGrant(
+    async createWithRobotCredentials(
         parameters: Omit<TokenRobotCredentialsGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
     ) {
