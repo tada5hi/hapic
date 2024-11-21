@@ -183,6 +183,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [3.1.0](https://github.com/tada5hi/hapic/compare/oauth2-v3.0.1...oauth2-v3.1.0) (2024-11-21)
+
+
+### Features
+
+* remove redundand suffix grant in token api class ([82d0aaf](https://github.com/tada5hi/hapic/commit/82d0aaf87e7abb2bf68ea4280d8690cf7072c269))
+
 ## [3.0.1](https://github.com/tada5hi/hapic/compare/oauth2-v3.0.0...oauth2-v3.0.1) (2024-11-18)
 
 

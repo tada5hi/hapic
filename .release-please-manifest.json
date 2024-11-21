@@ -1,6 +1,6 @@
 {
     "packages/client": "2.5.2",
     "packages/harbor": "2.5.0",
-    "packages/oauth2": "3.0.1",
+    "packages/oauth2": "3.1.0",
     "packages/vault": "2.3.5"
 }
