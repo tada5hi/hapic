@@ -6,10 +6,9 @@
  */
 
 import type { ProxyOptions } from 'node-fetch-native/proxy';
-import { createProxy } from 'node-fetch-native/proxy';
 import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/type';
-import { Headers, fetch } from './fetch';
+import { Headers, createProxy, fetch } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type {

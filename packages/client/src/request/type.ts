@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from 'node-fetch-native/proxy';
+import type { ProxyOptions } from '../fetch';
 import type { ResponseType } from '../constants';
 import type { ResponseTransformer } from '../response';
 

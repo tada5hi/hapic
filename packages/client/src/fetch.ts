@@ -12,6 +12,8 @@ import nodeFetch, {
     FormData as _FormData,
     Headers as _Headers,
 } from 'node-fetch-native';
+import type { ProxyOptions as ProxyOptionsBase } from 'node-fetch-native/proxy';
+import { createProxy as createProxyBase } from 'node-fetch-native/proxy';
 
 const gT = (() => {
     if (typeof globalThis !== 'undefined') {
@@ -47,3 +49,9 @@ export const AbortController = gT.AbortController ||
 export const fetch = gT.fetch || nodeFetch;
 export const Headers = gT.Headers || _Headers;
 export const Blob = gT.Blob || _Blob;
+
+export type ProxyOptions = ProxyOptionsBase;
+
+export function createProxy(options?: ProxyOptions) {
+    return createProxyBase(options);
+}

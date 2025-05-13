@@ -15,5 +15,9 @@ export function extendRequestOptionsWithDefaults(options: RequestBaseOptions) : 
         ];
     }
 
+    if (typeof options.proxy === 'undefined') {
+        options.proxy = true;
+    }
+
     return options;
 }
