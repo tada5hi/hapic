@@ -247,6 +247,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.6.0](https://github.com/tada5hi/hapic/compare/client-v2.5.3...client-v2.6.0) (2025-05-13)
+
+
+### Features
+
+* enable proxy by default & export createProxy config ([805ea7c](https://github.com/tada5hi/hapic/commit/805ea7c05213918dda5ac73bc6255c377efab3f5))
+
+
+### Bug Fixes
+
+* **deps:** bump the minorandpatch group across 1 directory with 8 updates ([#922](https://github.com/tada5hi/hapic/issues/922)) ([e6ad720](https://github.com/tada5hi/hapic/commit/e6ad72050aaa5abf405d601db3f0529a8b7a56cb))
+
 ## [2.5.3](https://github.com/tada5hi/hapic/compare/client-v2.5.2...client-v2.5.3) (2025-03-31)
 
 

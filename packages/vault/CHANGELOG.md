@@ -195,6 +195,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [2.3.7](https://github.com/tada5hi/hapic/compare/vault-v2.3.6...vault-v2.3.7) (2025-05-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.5.3 to ^2.6.0
+  * peerDependencies
+    * hapic bumped from ^2.5.3 to ^2.6.0
+
 ## [2.3.6](https://github.com/tada5hi/hapic/compare/vault-v2.3.5...vault-v2.3.6) (2025-03-31)
 
 
