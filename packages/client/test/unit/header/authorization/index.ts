@@ -12,9 +12,9 @@ import {
 
 describe('src/http/header/authorization/authorization-header.ts', () => {
     it('should throw error', () => {
-        expect(() => parseAuthorizationHeader('abc')).toThrowError();
+        expect(() => parseAuthorizationHeader('abc')).toThrow();
 
-        expect(() => parseAuthorizationHeader('Secret start123')).toThrowError();
+        expect(() => parseAuthorizationHeader('Secret start123')).toThrow();
     });
 
     it('should parse basic', () => {
@@ -32,7 +32,7 @@ describe('src/http/header/authorization/authorization-header.ts', () => {
     it('should not parse basic', () => {
         const basicValue = Buffer.from('admin').toString('base64');
 
-        expect(() => parseAuthorizationHeader(`Basic ${basicValue}`)).toThrowError();
+        expect(() => parseAuthorizationHeader(`Basic ${basicValue}`)).toThrow();
     });
 
     it('should parse bearer', () => {
