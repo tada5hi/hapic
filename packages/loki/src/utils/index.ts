@@ -6,3 +6,4 @@
  */
 
 export * from './href';
+export * from './search-params';

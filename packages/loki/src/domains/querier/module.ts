@@ -6,7 +6,7 @@
  */
 
 import { HeaderName } from 'hapic';
-import { buildHref } from '../../utils';
+import { buildHref, toSearchParams } from '../../utils';
 import { BaseAPI } from '../base';
 import type { QuerierQueryOptions, QuerierQueryRangeOptions, QuerierQueryResult } from './types';
 
@@ -24,18 +24,11 @@ export class QuerierAPI extends BaseAPI {
             [HeaderName.ACCEPT]: 'application/json',
         };
 
-        const params = new URLSearchParams();
-
-        const keys = Object.keys(options);
-        for (let i = 0; i < keys.length; i++) {
-            params.set(keys[i], `${options[keys[i] as keyof QuerierQueryOptions]}`);
-        }
-
         const { data } = await this.client.get(
             buildHref('/loki/api/v1/query', this.options.querierURL),
             {
                 headers,
-                params,
+                params: toSearchParams(options),
             },
         );
 
@@ -57,18 +50,11 @@ export class QuerierAPI extends BaseAPI {
             [HeaderName.ACCEPT]: 'application/json',
         };
 
-        const params = new URLSearchParams();
-
-        const keys = Object.keys(options);
-        for (let i = 0; i < keys.length; i++) {
-            params.set(keys[i], `${options[keys[i] as keyof QuerierQueryRangeOptions]}`);
-        }
-
         const { data } = await this.client.get(
             buildHref('/loki/api/v1/query_range', this.options.querierURL),
             {
                 headers,
-                params,
+                params: toSearchParams(options),
             },
         );
 
