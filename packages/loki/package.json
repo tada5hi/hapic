@@ -1,0 +1,56 @@
+{
+    "name": "@hapic/loki",
+    "version": "0.0.0",
+    "description": "A http client for grafana loki.",
+    "main": "dist/index.cjs",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist/"
+    ],
+    "scripts": {
+        "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+        "build:js": "rollup -c",
+        "build": "rimraf dist && npm run build:types && npm run build:js",
+        "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js",
+        "test:coverage": "npm run test -- --coverage"
+    },
+    "author": {
+        "name": "Peter Placzek",
+        "email": "contact@tada5hi.net",
+        "url": "https://github.com/tada5hi"
+    },
+    "license": "MIT",
+    "keywords": [
+        "grafana",
+        "loki",
+        "logs",
+        "aggregatrion"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Tada5hi/hapic.git",
+        "directory": "packages/loki"
+    },
+    "bugs": {
+        "url": "https://github.com/Tada5hi/hapic/issues"
+    },
+    "homepage": "https://github.com/Tada5hi/hapic#readme",
+    "devDependencies": {
+        "hapic": "^2.6.0"
+    },
+    "peerDependencies": {
+        "hapic": "^2.6.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

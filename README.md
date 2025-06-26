@@ -15,6 +15,7 @@ It provides a convenient way to make HTTP requests.
 - [Packages](#packages)
     - [Base](#base-)
     - [Harbor](#harbor-)
+    - [Loki](#loki-)
     - [OAuth2](#oauth2-)
     - [Vault](#vault-)
 - [License](#license)
@@ -77,6 +78,16 @@ Whether you are an experienced developer or new to the world of container images
 this API client is a powerful tool to get the most out of the platform.
 
 [Documentation](./packages/harbor)
+
+### Loki 📊
+
+This client provides an easy way to interact with Grafana Loki,
+a log aggregation system designed for efficient, scalable, and cost-effective log management.
+With this API client, developers can easily send, query, and analyze logs using Loki’s HTTP endpoints.
+It offers a range of abstractions to simplify integration with Loki’s API,
+whether you’re pushing structured logs or building dashboards and alerting rules.
+Whether you're just starting with observability or already operating complex monitoring stacks,
+this client helps you get the most out of your logging infrastructure.
 
 ### OAuth2 🛡️
 
