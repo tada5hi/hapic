@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.7.0](https://github.com/tada5hi/hapic/compare/client-v2.6.0...client-v2.7.0) (2025-06-26)
+
+
+### Features
+
+* enhance error handling & fixed error suites ([#936](https://github.com/tada5hi/hapic/issues/936)) ([95151d5](https://github.com/tada5hi/hapic/commit/95151d5fcf749849ca80ec1838724c23ef690e54))
+
 ## [2.6.0](https://github.com/tada5hi/hapic/compare/client-v2.5.3...client-v2.6.0) (2025-05-13)
 
 
