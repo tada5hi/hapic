@@ -11,6 +11,9 @@
         "packages/harbor": {
             "component": "harbor"
         },
+        "packages/loki": {
+            "component": "loki"
+        },
         "packages/oauth2": {
             "component": "oauth2"
         },

@@ -1,4 +1,4 @@
-# @hapic/loki 🧾
+# @hapic/loki 📊
 
 [![npm version](https://badge.fury.io/js/@hapic%2Floki.svg)](https://badge.fury.io/js/@hapic%2Floki)
 [![main](https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg)](https://github.com/Tada5hi/hapic/actions/workflows/main.yml)
