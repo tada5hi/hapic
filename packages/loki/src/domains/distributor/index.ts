@@ -29,12 +29,8 @@ export class DistributorAPI extends BaseAPI {
 
         const { data } = await this.client.post(
             buildHref('/loki/api/v1/push', this.options.distributorURL),
-            {
-                streams,
-            },
-            {
-                headers,
-            },
+            { streams },
+            { headers },
         );
 
         return data;

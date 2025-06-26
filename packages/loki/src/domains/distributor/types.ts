@@ -7,5 +7,5 @@
 
 export type DistributorPushStream = {
     stream?: Record<string, string>,
-    values: [string, string] | [string, string, Record<string, string>]
+    values: ([string, string] | [string, string, Record<string, string>])[]
 };
