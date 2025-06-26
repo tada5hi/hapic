@@ -26,7 +26,7 @@ describe('src/domains/distributor', () => {
         };
 
         const api = new DistributorAPI({ client: driver });
-        await api.pushOne(payload);
+        await api.push(payload);
 
         expect(fn).toHaveBeenCalledWith(
             'loki/api/v1/push',

@@ -38,7 +38,7 @@ export class DistributorAPI extends BaseAPI {
      *
      * @param stream
      */
-    async pushOne(stream: DistributorPushStream) : Promise<void> {
+    async push(stream: DistributorPushStream) : Promise<void> {
         return this.pushMany([stream]);
     }
 }
