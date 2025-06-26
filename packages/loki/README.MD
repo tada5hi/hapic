@@ -7,6 +7,10 @@
 
 This client provides a convenient way to interact with various endpoints in grafana loki.
 
+> 🚧 **Work in Progress**
+>
+> The package is currently under active development and the API still can change.
+
 **Table of Contents**
 
 - [Documentation](#documentation)
