@@ -6,7 +6,7 @@
  */
 
 import { HeaderName, createClient } from 'hapic';
-import { DistributorAPI } from '../../../src';
+import { DistributorAPI, QuerierAPI, nanoSeconds } from '../../../src';
 import type { DistributorPushStream } from '../../../src/domains/distributor/types';
 
 describe('src/domains/distributor', () => {
@@ -21,7 +21,7 @@ describe('src/domains/distributor', () => {
                 app: 'foo',
             },
             values: [
-                ['0', 'This is a log message.'],
+                [nanoSeconds(), 'This is a log message.'],
             ],
         };
 
@@ -29,7 +29,7 @@ describe('src/domains/distributor', () => {
         await api.pushStream(payload);
 
         expect(fn).toHaveBeenCalledWith(
-            '/loki/api/v1/push',
+            'loki/api/v1/push',
             {
                 streams: [
                     payload,
@@ -37,7 +37,6 @@ describe('src/domains/distributor', () => {
             },
             {
                 headers: {
-                    [HeaderName.ACCEPT]: 'application/json',
                     [HeaderName.CONTENT_TYPE]: 'application/json',
                 },
             },

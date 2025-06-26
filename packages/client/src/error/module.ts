@@ -26,7 +26,7 @@ export class ClientError<T = any> extends BaseError {
     readonly statusText?: string;
 
     constructor(ctx: ClientErrorContext<T>) {
-        super();
+        super({ cause: ctx.error });
 
         this.request = ctx.request;
         this.response = ctx.response;
@@ -38,5 +38,9 @@ export class ClientError<T = any> extends BaseError {
         this.statusText = ctx.response && ctx.response.statusText;
 
         this.message = ctx.message;
+
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, ClientError);
+        }
     }
 }

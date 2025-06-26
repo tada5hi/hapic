@@ -7,7 +7,7 @@
 
 import { HeaderName, createClient } from 'hapic';
 import type { QuerierQueryOptions, QuerierQueryRangeOptions } from '../../../src';
-import { QuerierAPI, toSearchParams } from '../../../src';
+import { QuerierAPI } from '../../../src';
 
 describe('src/domains/distributor', () => {
     it('should query', async () => {
@@ -17,7 +17,7 @@ describe('src/domains/distributor', () => {
         driver.get = fn;
 
         const payload : QuerierQueryOptions = {
-            query: 'foo',
+            query: '{app="foo"}',
             limit: 10,
             direction: 'backward',
             time: 0,
@@ -27,25 +27,24 @@ describe('src/domains/distributor', () => {
         await api.query(payload);
 
         expect(fn).toHaveBeenCalledWith(
-            '/loki/api/v1/query',
+            'loki/api/v1/query',
             {
                 headers: {
                     [HeaderName.ACCEPT]: 'application/json',
-                    [HeaderName.CONTENT_TYPE]: 'application/json',
                 },
-                params: toSearchParams(payload),
+                params: payload,
             },
         );
     });
 
-    it('should query_range', async () => {
+    it('should query range', async () => {
         const driver = createClient();
         const fn = jest.fn();
         fn.mockReturnValue({ data: {} });
         driver.get = fn;
 
         const payload : QuerierQueryRangeOptions = {
-            query: 'foo',
+            query: '{app="foo"}',
             limit: 10,
             direction: 'backward',
             start: 0,
@@ -56,13 +55,12 @@ describe('src/domains/distributor', () => {
         await api.queryRange(payload);
 
         expect(fn).toHaveBeenCalledWith(
-            '/loki/api/v1/query_range',
+            'loki/api/v1/query_range',
             {
                 headers: {
                     [HeaderName.ACCEPT]: 'application/json',
-                    [HeaderName.CONTENT_TYPE]: 'application/json',
                 },
-                params: toSearchParams(payload),
+                params: payload,
             },
         );
     });
