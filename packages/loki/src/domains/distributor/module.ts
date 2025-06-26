@@ -10,15 +10,13 @@ import { BaseAPI } from '../base';
 import type { DistributorPushStream } from './types';
 
 export class DistributorAPI extends BaseAPI {
-    // -----------------------------------------------------------------------------------
-
     /**
      * Push multiple streams to the API.
      *
      * @throws Error
      * @param streams
      */
-    async push(
+    async pushMany(
         streams: DistributorPushStream[],
     ) : Promise<void> {
         const headers : Record<string, string> = {
@@ -40,7 +38,7 @@ export class DistributorAPI extends BaseAPI {
      *
      * @param stream
      */
-    async pushStream(stream: DistributorPushStream) : Promise<void> {
-        return this.push([stream]);
+    async pushOne(stream: DistributorPushStream) : Promise<void> {
+        return this.pushMany([stream]);
     }
 }
