@@ -6,7 +6,6 @@
  */
 
 import { HeaderName } from 'hapic';
-import { buildHref } from '../../utils';
 import { BaseAPI } from '../base';
 import type { DistributorPushStream } from './types';
 
@@ -21,19 +20,19 @@ export class DistributorAPI extends BaseAPI {
      */
     async push(
         streams: DistributorPushStream[],
-    ) : Promise<any> {
+    ) : Promise<void> {
         const headers : Record<string, string> = {
             [HeaderName.CONTENT_TYPE]: 'application/json',
-            [HeaderName.ACCEPT]: 'application/json',
         };
 
-        const { data } = await this.client.post(
-            buildHref('/loki/api/v1/push', this.options.distributorURL),
+        await this.client.post(
+            'loki/api/v1/push',
             { streams },
-            { headers },
+            {
+                ...(this.options.distributorURL ? { baseURL: this.options.distributorURL } : {}),
+                headers,
+            },
         );
-
-        return data;
     }
 
     /**
@@ -41,7 +40,7 @@ export class DistributorAPI extends BaseAPI {
      *
      * @param stream
      */
-    async pushStream(stream: DistributorPushStream) : Promise<any> {
+    async pushStream(stream: DistributorPushStream) : Promise<void> {
         return this.push([stream]);
     }
 }

@@ -8,4 +8,4 @@
 export * from './constants';
 export * from './entities';
 export * from './module';
-export * from './utils';
+export * from './helpers';

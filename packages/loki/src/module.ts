@@ -20,6 +20,9 @@ export class LokiClient extends Client {
     // -----------------------------------------------------------------------------------
 
     constructor(input: ConfigInput = {}) {
+        input.request ||= {};
+        input.request.baseURL = input.request.baseURL || 'http://localhost:3100/';
+
         super(input.request);
 
         this.distributor = new DistributorAPI({ client: this, options: input.options });

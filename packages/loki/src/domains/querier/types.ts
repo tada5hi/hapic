@@ -38,11 +38,11 @@ export type QuerierQueryOptions = {
 export type QuerierQueryVectorResult = {
     resultType: 'vector',
     result: {
-        'metric': {
+        metric: {
             [key: string]: any
         },
-        'value': [
-            number,
+        value: [
+            string,
             string,
         ][]
     }[],
@@ -52,11 +52,11 @@ export type QuerierQueryVectorResult = {
 export type QuerierQueryStreamsResult = {
     resultType: 'streams',
     result: {
-        'stream': {
+        stream: {
             [key: string]: any
         },
-        'value': [
-            number,
+        value: [
+            string,
             string,
         ][]
     }[],

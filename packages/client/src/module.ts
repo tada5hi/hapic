@@ -37,7 +37,7 @@ import {
     extendRequestOptionsWithDefaults,
     isRequestPayloadSupported,
 } from './request';
-import { createClientError } from './error';
+import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 
@@ -220,9 +220,8 @@ export class Client {
             ctx: ClientErrorCreateContext,
         ) : Promise<R> => {
             const error = createClientError(ctx);
-
             if (Error.captureStackTrace) {
-                Error.captureStackTrace(error);
+                Error.captureStackTrace(error, this.request);
             }
 
             let output : RequestOptions | Response | undefined;
@@ -268,10 +267,10 @@ export class Client {
                     ...createProxy(proxyOptions),
                 } as RequestInit);
             }
-        } catch (error: any) {
+        } catch (e: any) {
             return handleError('request', {
                 request: options,
-                ...(error instanceof Error ? { error } : {}),
+                error: toError(e),
             });
         }
 

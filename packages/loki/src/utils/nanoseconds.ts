@@ -5,7 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type DistributorPushStream = {
-    stream?: Record<string, string>,
-    values: ([string | bigint, string] | [string | bigint, string, Record<string, string>])[]
-};
+export function nanoSeconds() : bigint {
+    return BigInt(Math.floor(performance.timeOrigin)) * 1_000_000n + BigInt(Math.floor(performance.now() * 1_000_000));
+}

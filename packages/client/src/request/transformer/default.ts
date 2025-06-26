@@ -44,7 +44,12 @@ export function createDefaultRequestTransformer() : RequestTransformer {
         if (isJSONSerializable(data) || contentTypeIsJson) {
             data = typeof data === 'string' ?
                 data :
-                JSON.stringify(data);
+                JSON.stringify(
+                    data,
+                    (_key, value) => (typeof value === 'bigint' ?
+                        value.toString() :
+                        value),
+                );
 
             if (!headers.has(HeaderName.CONTENT_TYPE)) {
                 headers.set(HeaderName.CONTENT_TYPE, 'application/json');
