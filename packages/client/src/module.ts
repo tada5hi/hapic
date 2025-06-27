@@ -198,7 +198,7 @@ export class Client {
                     ...options.params,
                     ...options.query,
                 }, (value) => {
-                    if (value instanceof BigInt) {
+                    if (typeof value === 'bigint') {
                         return value.toString();
                     }
 
