@@ -11,9 +11,9 @@ import {
     isBlob,
     isFile,
     isFormData,
-    isJSONSerializable,
+    isSerializable,
     isStream,
-    isURLSearchParams,
+    isURLSearchParams, serialize,
 } from '../../utils';
 import type { RequestTransformer } from '../type';
 
@@ -41,15 +41,10 @@ export function createDefaultRequestTransformer() : RequestTransformer {
         const contentType = headers.get(HeaderName.CONTENT_TYPE) || '';
         const contentTypeIsJson = contentType.indexOf('application/json') !== -1;
 
-        if (isJSONSerializable(data) || contentTypeIsJson) {
+        if (isSerializable(data) || contentTypeIsJson) {
             data = typeof data === 'string' ?
                 data :
-                JSON.stringify(
-                    data,
-                    (_key, value) => (typeof value === 'bigint' ?
-                        value.toString() :
-                        value),
-                );
+                serialize(data);
 
             if (!headers.has(HeaderName.CONTENT_TYPE)) {
                 headers.set(HeaderName.CONTENT_TYPE, 'application/json');

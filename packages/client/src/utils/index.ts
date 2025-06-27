@@ -7,7 +7,7 @@
 
 export * from './has-own-property';
 export * from './instance';
-export * from './json-serializable';
+export * from './serialize';
 export * from './promise';
 export * from './type-check';
 export * from './traverse';
