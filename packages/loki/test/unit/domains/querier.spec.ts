@@ -20,7 +20,7 @@ describe('src/domains/distributor', () => {
             query: '{app="foo"}',
             limit: 10,
             direction: 'backward',
-            time: 0,
+            time: BigInt(1000),
         };
 
         const api = new QuerierAPI({ client: driver });
@@ -47,8 +47,8 @@ describe('src/domains/distributor', () => {
             query: '{app="foo"}',
             limit: 10,
             direction: 'backward',
-            start: 0,
-            end: 1,
+            start: BigInt(1000),
+            end: BigInt(10001),
         };
 
         const api = new QuerierAPI({ client: driver });

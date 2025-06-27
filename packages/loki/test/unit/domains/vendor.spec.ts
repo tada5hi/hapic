@@ -6,8 +6,8 @@
  */
 
 import { HeaderName, createClient } from 'hapic';
-import { DistributorAPI, QuerierAPI, nanoSeconds } from '../../../src';
-import type { DistributorPushStream } from '../../../src/domains/distributor/types';
+import { DistributorAPI, nanoSeconds } from '../../../src';
+import type { DistributorPushStream } from '../../../src';
 
 describe('src/domains/distributor', () => {
     it('should create resource', async () => {
