@@ -10,3 +10,4 @@ export * from './instance';
 export * from './json-serializable';
 export * from './promise';
 export * from './type-check';
+export * from './traverse';

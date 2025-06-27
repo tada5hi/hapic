@@ -25,7 +25,7 @@ export type QuerierQueryOptions = {
      *
      * default: now
      */
-    time?: number,
+    time?: bigint | string,
 
     /**
      * Determines the sort order of logs.
@@ -33,6 +33,33 @@ export type QuerierQueryOptions = {
      * default: backward
      */
     direction?: `${QuerierQueryDirection}`
+};
+
+export type QuerierQueryRangeOptions = Omit<QuerierQueryOptions, 'time'> & {
+    /**
+     * The start time for the query as a nanosecond Unix epoc
+     *
+     * default: -1h
+     */
+    start?: bigint | string,
+
+    /**
+     * The end time for the query as a nanosecond Unix epoch
+     *
+     * default: now
+     */
+    end?: bigint | string,
+
+    /**
+     * Prometheus' duration strings of the form [0-9]+[smhdwy]
+     */
+    step?: string,
+
+    /**
+     *  Only return entries at (or greater than) the specified interval,
+     *  can be a duration format or float number of seconds
+     */
+    interval?: number
 };
 
 export type QuerierQueryVectorResult = {
@@ -66,31 +93,4 @@ export type QuerierQueryStreamsResult = {
 export type QuerierQueryResult = {
     status: 'success' | 'error',
     data: QuerierQueryVectorResult | QuerierQueryStreamsResult
-};
-
-export type QuerierQueryRangeOptions = Omit<QuerierQueryOptions, 'time'> & {
-    /**
-     * The start time for the query as a nanosecond Unix epoc
-     *
-     * default: -1h
-     */
-    start?: number,
-
-    /**
-     * The end time for the query as a nanosecond Unix epoch
-     *
-     * default: now
-     */
-    end?: number,
-
-    /**
-     * Prometheus duration strings of the form [0-9]+[smhdwy]
-     */
-    step?: string,
-
-    /**
-     *  Only return entries at (or greater than) the specified interval,
-     *  can be a duration format or float number of seconds
-     */
-    interval?: number
 };

@@ -40,6 +40,7 @@ import {
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
+import { traverse } from './utils';
 
 export class Client {
     readonly '@instanceof' = Symbol.for('BaseClient');
@@ -191,10 +192,19 @@ export class Client {
         };
 
         if (options.query || options.params) {
-            options.url = withQuery(options.url, {
-                ...options.params,
-                ...options.query,
-            });
+            options.url = withQuery(
+                options.url,
+                traverse({
+                    ...options.params,
+                    ...options.query,
+                }, (value) => {
+                    if (value instanceof BigInt) {
+                        return value.toString();
+                    }
+
+                    return value;
+                }),
+            );
         }
 
         options = await this.hookManager.triggerReqHook(
