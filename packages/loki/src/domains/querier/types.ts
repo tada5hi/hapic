@@ -41,14 +41,14 @@ export type QuerierQueryRangeOptions = Omit<QuerierQueryOptions, 'time'> & {
      *
      * default: -1h
      */
-    start?: bigint | string,
+    start?: number | bigint | string,
 
     /**
      * The end time for the query as a nanosecond Unix epoch
      *
      * default: now
      */
-    end?: bigint | string,
+    end?: number | bigint | string,
 
     /**
      * Prometheus' duration strings of the form [0-9]+[smhdwy]

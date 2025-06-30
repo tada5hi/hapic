@@ -7,11 +7,12 @@
 
 import { Client } from 'hapic';
 import type { ConfigInput } from './config';
-import { DistributorAPI } from './domains';
-import { QuerierAPI } from './domains/querier';
+import { CompactorAPI, DistributorAPI, QuerierAPI } from './domains';
 
 export class LokiClient extends Client {
     override readonly '@instanceof' = Symbol.for('LokiClient');
+
+    public readonly compactor: CompactorAPI;
 
     public readonly distributor: DistributorAPI;
 
@@ -25,6 +26,7 @@ export class LokiClient extends Client {
 
         super(input.request);
 
+        this.compactor = new CompactorAPI({ client: this, options: input.options });
         this.distributor = new DistributorAPI({ client: this, options: input.options });
         this.querier = new QuerierAPI({ client: this, options: input.options });
     }
