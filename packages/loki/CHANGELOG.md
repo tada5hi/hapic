@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0](https://github.com/tada5hi/hapic/compare/loki-v1.0.0...loki-v1.1.0) (2025-06-30)
+
+
+### Features
+
+* add bigint support for query parameters ([#938](https://github.com/tada5hi/hapic/issues/938)) ([3b4325f](https://github.com/tada5hi/hapic/commit/3b4325f0871326de87855405d3513dae766abd34))
+* initial compactor api implementation ([073bc06](https://github.com/tada5hi/hapic/commit/073bc06b7b92b29a611cc62022cd89a3e1181893))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.7.0 to ^2.8.0
+  * peerDependencies
+    * hapic bumped from ^2.7.0 to ^2.8.0
+
 ## 1.0.0 (2025-06-26)
 
 

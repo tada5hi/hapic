@@ -1,6 +1,6 @@
 {
     "name": "@hapic/vault",
-    "version": "2.3.8",
+    "version": "2.3.9",
     "description": "A vault http api client.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
@@ -47,10 +47,10 @@
         "smob": "^1.5.0"
     },
     "devDependencies": {
-        "hapic": "^2.7.0"
+        "hapic": "^2.8.0"
     },
     "peerDependencies": {
-        "hapic": "^2.7.0"
+        "hapic": "^2.8.0"
     },
     "publishConfig": {
         "access": "public"
