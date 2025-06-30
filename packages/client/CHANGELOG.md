@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.8.0](https://github.com/tada5hi/hapic/compare/client-v2.7.0...client-v2.8.0) (2025-06-30)
+
+
+### Features
+
+* add bigint support for query parameters ([#938](https://github.com/tada5hi/hapic/issues/938)) ([3b4325f](https://github.com/tada5hi/hapic/commit/3b4325f0871326de87855405d3513dae766abd34))
+
 ## [2.7.0](https://github.com/tada5hi/hapic/compare/client-v2.6.0...client-v2.7.0) (2025-06-26)
 
 
