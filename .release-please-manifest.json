@@ -1,7 +1,7 @@
 {
     "packages/client": "2.8.0",
     "packages/harbor": "2.5.4",
-    "packages/loki": "1.1.0",
+    "packages/loki": "1.2.0",
     "packages/oauth2": "3.1.4",
     "packages/vault": "2.3.9"
 }
