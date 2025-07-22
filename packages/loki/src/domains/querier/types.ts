@@ -66,12 +66,12 @@ export type QuerierQueryVectorResult = {
     resultType: 'vector',
     result: {
         metric: {
-            [key: string]: any
+            [key: string]: string
         },
         value: [
+            number,
             string,
-            string,
-        ][]
+        ]
     }[],
     stats : Record<string, any>
 };
@@ -80,9 +80,9 @@ export type QuerierQueryStreamsResult = {
     resultType: 'streams',
     result: {
         stream: {
-            [key: string]: any
+            [key: string]: string
         },
-        value: [
+        values: [
             string,
             string,
         ][]
