@@ -65,7 +65,12 @@ export type QuerierQueryRangeOptions = Omit<QuerierQueryOptions, 'time'> & {
 export type QuerierQueryVectorResult = {
     resultType: 'vector',
     result: {
+        /**
+         * @see https://grafana.com/docs/loki/latest/get-started/labels/#default-labels-for-all-users
+         */
         metric: {
+            detected_level: string,
+            service_name: string,
             [key: string]: string
         },
         value: [
@@ -79,7 +84,12 @@ export type QuerierQueryVectorResult = {
 export type QuerierQueryStreamsResult = {
     resultType: 'streams',
     result: {
+        /**
+         * @see https://grafana.com/docs/loki/latest/get-started/labels/#default-labels-for-all-users
+         */
         stream: {
+            detected_level: string,
+            service_name: string,
             [key: string]: string
         },
         values: [
