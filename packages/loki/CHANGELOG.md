@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/tada5hi/hapic/compare/loki-v1.1.0...loki-v1.2.0) (2025-07-22)
+
+
+### Features
+
+* add default labels ([c24bb29](https://github.com/tada5hi/hapic/commit/c24bb29092fb31ec07696bd64f4ad4c3987ae64b))
+
+
+### Bug Fixes
+
+* querier query result typing ([73892da](https://github.com/tada5hi/hapic/commit/73892da3d5c7285f8f46e19b75d08364c5304c16))
+
 ## [1.1.0](https://github.com/tada5hi/hapic/compare/loki-v1.0.0...loki-v1.1.0) (2025-06-30)
 
 
