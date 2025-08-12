@@ -26,7 +26,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
             - name: Install
               uses: ./.github/actions/install
               with:
@@ -38,7 +38,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
             - name: Install
               uses: ./.github/actions/install
               with:
@@ -52,7 +52,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
 
             -   name: Install
                 uses: ./.github/actions/install
@@ -79,7 +79,7 @@ jobs:
                 ]
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
                 with:
                     fetch-depth: 2
 
@@ -106,7 +106,7 @@ jobs:
 
             -   name: Checkout
                 if: steps.release.outputs.releases_created == 'true'
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
 
             -   name: Install
                 if: steps.release.outputs.releases_created == 'true'
@@ -131,7 +131,7 @@ jobs:
         if: ${{ github.ref_name == 'master' }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Install
               uses: ./.github/actions/install
