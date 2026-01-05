@@ -18,6 +18,7 @@ It provides a convenient way to make HTTP requests.
     - [Loki](#loki-)
     - [OAuth2](#oauth2-)
     - [Vault](#vault-)
+    - [VictoriaLogs](#victorialogs-)
 - [License](#license)
 
 ## Features
@@ -119,6 +120,15 @@ Whether you are a seasoned developer or new to the world of secrets management,
 this API client is a powerful tool to help you get the most out of Vault.
 
 [Documentation](./packages/vault)
+
+### VictoriaLogs 🔒
+
+**`@hapic/vault`**
+
+...
+
+
+[Documentation](./packages/victorialogs)
 
 ## License
 

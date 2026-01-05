@@ -19,6 +19,9 @@
         },
         "packages/vault": {
             "component": "vault"
+        },
+        "packages/victorialogs": {
+            "component": "victorialogs"
         }
     },
     "plugins": [
