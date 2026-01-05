@@ -1,6 +1,6 @@
 {
     "name": "@hapic/loki",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "A http client for grafana loki.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
@@ -45,10 +45,10 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "hapic": "^2.8.0"
+        "hapic": "^2.8.1"
     },
     "peerDependencies": {
-        "hapic": "^2.8.0"
+        "hapic": "^2.8.1"
     },
     "publishConfig": {
         "access": "public"
