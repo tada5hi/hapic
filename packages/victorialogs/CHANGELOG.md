@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/tada5hi/hapic/compare/victorialogs-v1.0.1...victorialogs-v1.0.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* use constant for instance name check ([4e796a4](https://github.com/tada5hi/hapic/commit/4e796a4170bf130c8ba22db690cdfd212bc067ba))
+
 ## [1.0.1](https://github.com/tada5hi/hapic/compare/victorialogs-v1.0.0...victorialogs-v1.0.1) (2026-01-07)
 
 
