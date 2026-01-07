@@ -27,9 +27,16 @@ export class QuerierAPI extends BaseAPI {
                 ...(this.options.querierURL ? { baseURL: this.options.querierURL } : {}),
                 headers,
                 params: options,
+                responseType: 'stream',
             },
         );
 
-        return data;
+        const raw = await new Response(data).text();
+
+        const lines = raw
+            .split(/\r?\n/)
+            .filter((l) => l.trim().length > 0);
+
+        return lines.map((line) => JSON.parse(line));
     }
 }

@@ -6,5 +6,7 @@
  */
 
 export enum HeaderName {
-    CONTENT_TYPE = 'Content-Type',
+    ACCEPT = 'accept',
+    CONTENT_TYPE = 'content-type',
+    CONTENT_LENGTH = 'content-length',
 }
