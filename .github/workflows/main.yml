@@ -10,7 +10,7 @@ on:
         branches: [ master ]
 
 env:
-    PRIMARY_NODE_VERSION: 18
+    PRIMARY_NODE_VERSION: 22
 
 defaults:
     run:
@@ -19,6 +19,7 @@ defaults:
 permissions:
     contents: write
     pull-requests: write
+    id-token: write
 
 jobs:
     install:
@@ -121,8 +122,6 @@ jobs:
             -   name: Publish
                 if: steps.release.outputs.releases_created == 'true'
                 run: npx workspaces-publish
-                env:
-                    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     docs:
         name: Build & deploy docs
