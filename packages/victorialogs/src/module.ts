@@ -7,10 +7,11 @@
 
 import { Client } from 'hapic';
 import type { ConfigInput } from './config';
+import { CLIENT_INSTANCE_NAME } from './constants';
 import { IngestorAPI, QuerierAPI } from './domains';
 
 export class VictoriaLogsClient extends Client {
-    override readonly '@instanceof' = Symbol.for('VictoriaLogs');
+    override readonly '@instanceof' = Symbol.for(CLIENT_INSTANCE_NAME);
 
     public readonly ingestor: IngestorAPI;
 

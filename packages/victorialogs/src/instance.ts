@@ -10,6 +10,7 @@ import {
     verifyInstanceBySymbol,
 } from 'hapic';
 import type { ConfigInput } from './config';
+import { CLIENT_INSTANCE_NAME } from './constants';
 import { VictoriaLogsClient } from './module';
 
 const instances: Record<string, VictoriaLogsClient> = {};
@@ -94,5 +95,5 @@ export function isClient(input: unknown): input is VictoriaLogsClient {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'VictoriaLogs');
+    return verifyInstanceBySymbol(input, CLIENT_INSTANCE_NAME);
 }
