@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/tada5hi/hapic/compare/victorialogs-v1.0.0...victorialogs-v1.0.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* process queriery query response stream ([f854ec3](https://github.com/tada5hi/hapic/commit/f854ec3ba7932e319861d2fa6b8be87fdd492588))
+
 ## 1.0.0 (2026-01-05)
 
 

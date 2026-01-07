@@ -4,5 +4,5 @@
     "packages/loki": "1.2.1",
     "packages/oauth2": "3.1.5",
     "packages/vault": "2.3.10",
-    "packages/victorialogs": "1.0.0"
+    "packages/victorialogs": "1.0.1"
 }

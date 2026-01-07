@@ -1,6 +1,6 @@
 {
     "name": "@hapic/victorialogs",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A http client for victoria-logs.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
