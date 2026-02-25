@@ -12,6 +12,11 @@ export type Options = {
     clientSecret?: string,
 
     /**
+     * The realm ID provided by the OAuth2 server.
+     */
+    realmId?: string,
+
+    /**
      * The scopes to request from the OAuth2 server.
      */
     scope?: string | string[],

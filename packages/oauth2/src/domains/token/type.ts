@@ -10,11 +10,13 @@ import type { AuthorizationHeader } from 'hapic';
 export type ClientAuthenticationParameters = {
     client_id?: string,
     client_secret?: string,
+    realm_id?: string,
 };
 
 export type TokenClientCredentialsGrantParameters = {
     grant_type: 'client_credentials',
-    scope?: string | string[]
+    scope?: string | string[],
+    realm_name?: string,
 } & ClientAuthenticationParameters;
 
 export type TokenPasswordGrantParameters = {
@@ -22,7 +24,6 @@ export type TokenPasswordGrantParameters = {
     username: string,
     password: string,
     scope?: string | string[],
-    realm_id?: string,
     realm_name?: string,
 } & ClientAuthenticationParameters;
 
@@ -82,6 +83,7 @@ export type TokenBaseOptions = {
      * default: false
      */
     authorizationHeaderInherit?: boolean,
+
     /**
      * Set a custom authorization header or disable
      * setting an authorization at all for the current request.
@@ -89,6 +91,7 @@ export type TokenBaseOptions = {
      * default: undefined
      */
     authorizationHeader?: string | AuthorizationHeader,
+
     /**
      * Custom client id for
      * current request.
@@ -96,6 +99,7 @@ export type TokenBaseOptions = {
      * default: undefined
      */
     clientId?: string,
+
     /**
      * Custom client secret for
      * current request.
@@ -103,6 +107,15 @@ export type TokenBaseOptions = {
      * default: undefined
      */
     clientSecret?: string
+
+    /**
+     * Custom realm for
+     * current request.
+     *
+     * default: undefined
+     */
+    realmId?: string,
+
     /**
      * If this options is enabled, the client credentials will
      * be stripped as request parameters and set as header if present.

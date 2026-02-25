@@ -26,8 +26,6 @@ import type {
 import { createRequestTransformerForTokenAPIRequest } from './utils';
 
 export class TokenAPI extends BaseAPI {
-    // ------------------------------------------------------------------
-
     async createWithRefreshToken(
         parameters: Omit<TokenRefreshTokenGrantParameters, 'grant_type'>,
         options?: TokenBaseOptions,
@@ -39,18 +37,18 @@ export class TokenAPI extends BaseAPI {
     }
 
     async createWithClientCredentials(
-        parameters?: Omit<TokenClientCredentialsGrantParameters, 'grant_type'>,
-        options?: TokenBaseOptions,
+        parameters: Omit<TokenClientCredentialsGrantParameters, 'grant_type'> = {},
+        options: TokenBaseOptions = {},
     ) {
         return this.create({
             grant_type: 'client_credentials',
-            ...(parameters || {}),
+            ...parameters,
         }, options);
     }
 
     async createWithPassword(
         parameters: Omit<TokenPasswordGrantParameters, 'grant_type'>,
-        options?: TokenBaseOptions,
+        options: TokenBaseOptions = {},
     ) {
         return this.create({
             grant_type: 'password',
@@ -60,7 +58,7 @@ export class TokenAPI extends BaseAPI {
 
     async createWithAuthorizationCode(
         parameters: Omit<TokenAuthorizationCodeGrantParameters, 'grant_type'>,
-        options?: TokenBaseOptions,
+        options: TokenBaseOptions = {},
     ): Promise<TokenGrantResponse> {
         return this.create({
             grant_type: 'authorization_code',
@@ -70,7 +68,7 @@ export class TokenAPI extends BaseAPI {
 
     async createWithRobotCredentials(
         parameters: Omit<TokenRobotCredentialsGrantParameters, 'grant_type'>,
-        options?: TokenBaseOptions,
+        options: TokenBaseOptions = {},
     ) {
         return this.create({
             grant_type: 'robot_credentials',
@@ -183,6 +181,10 @@ export class TokenAPI extends BaseAPI {
             }
         }
 
+        if (!options.realmId && this.options.realmId) {
+            options.realmId = this.options.realmId;
+        }
+
         transformers.push(createRequestTransformerForTokenAPIRequest(parameters, options));
 
         if (this.client.defaults.transform) {
@@ -226,6 +228,10 @@ export class TokenAPI extends BaseAPI {
             if (this.options.clientSecret) {
                 parameters.client_secret = this.options.clientSecret;
             }
+        }
+
+        if (!parameters.realm_id && this.options.realmId) {
+            parameters.realm_id = this.options.realmId;
         }
 
         return parameters;
