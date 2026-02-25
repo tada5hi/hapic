@@ -12,14 +12,16 @@ import { transformHeadersForTokenAPIRequest } from './header-transformation';
 
 export function createRequestTransformerForTokenAPIRequest(
     parameters: ClientAuthenticationParameters,
-    options?: TokenBaseOptions,
+    options: TokenBaseOptions = {},
 ) : RequestTransformer {
     return (data: any, headers: Headers) => {
-        options = options || {};
-
         if (!options.clientId) {
             options.clientId = parameters.client_id;
             options.clientSecret = parameters.client_secret;
+        }
+
+        if (!options.realmId) {
+            options.realmId = parameters.realm_id;
         }
 
         transformHeadersForTokenAPIRequest(headers, options);

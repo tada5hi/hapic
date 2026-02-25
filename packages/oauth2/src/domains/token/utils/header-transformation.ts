@@ -15,10 +15,8 @@ import type { TokenBaseOptions } from '../type';
  */
 export function transformHeadersForTokenAPIRequest(
     headers: Headers,
-    options?: TokenBaseOptions,
+    options: TokenBaseOptions = {},
 ) : void {
-    options = options || {};
-
     // set content type
     headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
