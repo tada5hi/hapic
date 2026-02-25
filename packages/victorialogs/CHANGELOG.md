@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.3](https://github.com/tada5hi/hapic/compare/victorialogs-v1.0.2...victorialogs-v1.0.3) (2026-02-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.8.1 to ^2.8.2
+  * peerDependencies
+    * hapic bumped from ^2.8.1 to ^2.8.2
+
 ## [1.0.2](https://github.com/tada5hi/hapic/compare/victorialogs-v1.0.1...victorialogs-v1.0.2) (2026-01-07)
 
 
