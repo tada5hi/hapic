@@ -183,6 +183,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [3.2.0](https://github.com/tada5hi/hapic/compare/oauth2-v3.1.5...oauth2-v3.2.0) (2026-02-25)
+
+
+### Features
+
+* allow passing realm_id ([#996](https://github.com/tada5hi/hapic/issues/996)) ([47e9a31](https://github.com/tada5hi/hapic/commit/47e9a3161fd3590be5da612214a96fc4ae8fbe98))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.8.1 to ^2.8.2
+  * peerDependencies
+    * hapic bumped from ^2.8.1 to ^2.8.2
+
 ## [3.1.5](https://github.com/tada5hi/hapic/compare/oauth2-v3.1.4...oauth2-v3.1.5) (2026-01-05)
 
 

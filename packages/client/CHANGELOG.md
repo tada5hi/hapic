@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [2.8.2](https://github.com/tada5hi/hapic/compare/client-v2.8.1...client-v2.8.2) (2026-02-25)
+
+
+### Bug Fixes
+
+* **deps:** bump the minorandpatch group across 1 directory with 8 updates ([#993](https://github.com/tada5hi/hapic/issues/993)) ([b61a400](https://github.com/tada5hi/hapic/commit/b61a40068b9da5bf63fda6653e8ab4aeb1b43ef0))
+
 ## [2.8.1](https://github.com/tada5hi/hapic/compare/client-v2.8.0...client-v2.8.1) (2026-01-05)
 
 

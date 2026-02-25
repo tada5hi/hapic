@@ -1,6 +1,6 @@
 {
     "name": "@hapic/victorialogs",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A http client for victoria-logs.",
     "main": "dist/index.cjs",
     "module": "dist/index.mjs",
@@ -45,10 +45,10 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "hapic": "^2.8.1"
+        "hapic": "^2.8.2"
     },
     "peerDependencies": {
-        "hapic": "^2.8.1"
+        "hapic": "^2.8.2"
     },
     "publishConfig": {
         "access": "public"

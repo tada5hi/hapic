@@ -195,6 +195,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [2.3.11](https://github.com/tada5hi/hapic/compare/vault-v2.3.10...vault-v2.3.11) (2026-02-25)
+
+
+### Bug Fixes
+
+* **deps:** bump the minorandpatch group across 1 directory with 8 updates ([#993](https://github.com/tada5hi/hapic/issues/993)) ([b61a400](https://github.com/tada5hi/hapic/commit/b61a40068b9da5bf63fda6653e8ab4aeb1b43ef0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^2.8.1 to ^2.8.2
+  * peerDependencies
+    * hapic bumped from ^2.8.1 to ^2.8.2
+
 ## [2.3.10](https://github.com/tada5hi/hapic/compare/vault-v2.3.9...vault-v2.3.10) (2026-01-05)
 
 
