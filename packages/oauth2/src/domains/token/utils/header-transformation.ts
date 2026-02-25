@@ -20,10 +20,6 @@ export function transformHeadersForTokenAPIRequest(
     // set content type
     headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
-    if (options.realmId) {
-        headers.set('WWW-Authenticate', `Basic realm="${options.realmId}"`);
-    }
-
     if (
         options.authorizationHeaderInherit &&
         headers.has('Authorization')
