@@ -62,6 +62,8 @@ export type TokenGrantResponse = {
 
     expires_in: number,
 
+    refresh_token_expires_in?: number,
+
     token_type: string,
 
     id_token?: string,

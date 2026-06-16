@@ -112,6 +112,10 @@ export class TokenAPI extends BaseAPI {
             tokenResponse.refresh_token = data.refresh_token;
         }
 
+        if (typeof data.refresh_token_expires_in === 'number') {
+            tokenResponse.refresh_token_expires_in = data.refresh_token_expires_in;
+        }
+
         if (typeof data.id_token === 'string') {
             tokenResponse.id_token = data.id_token;
         }
