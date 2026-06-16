@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 2026.
+ * Author Peter Placzek (tada5hi)
+ * For the full copyright and license information,
+ * view the LICENSE file that was distributed with this source code.
+ */
+
+/*
+ * hapic design tokens. The marketing components on the landing page read
+ * every color/border/radius through these custom properties, so dark-mode
+ * flips work without per-component overrides.
+ *
+ * VitePress's `--vp-c-brand-*` tokens are aliased to the hapic primary
+ * scale so the docs chrome (sidebar accents, hero buttons, heading
+ * underlines) follows the marketing palette.
+ */
+:root {
+    --hc-color-bg: #ffffff;
+    --hc-color-bg-elevated: #f8fafc;
+    --hc-color-bg-muted: #f1f5f9;
+
+    --hc-color-fg: #0f172a;
+    --hc-color-fg-muted: #475569;
+
+    --hc-color-border: #e2e8f0;
+    --hc-color-border-muted: #f1f5f9;
+
+    --hc-color-primary-300: #a5b4fc;
+    --hc-color-primary-400: #818cf8;
+    --hc-color-primary-500: #6366f1;
+    --hc-color-primary-600: #4f46e5;
+    --hc-color-primary-700: #4338ca;
+
+    --hc-color-accent-400: #22d3ee;
+    --hc-color-accent-500: #06b6d4;
+    --hc-color-accent-600: #0891b2;
+
+    --hc-color-warning-500: #f59e0b;
+    --hc-color-error-500: #ef4444;
+    --hc-color-success-500: #22c55e;
+
+    --hc-color-on-primary: #ffffff;
+
+    --hc-method-get: #22c55e;
+    --hc-method-post: #6366f1;
+    --hc-method-put: #f59e0b;
+    --hc-method-patch: #06b6d4;
+    --hc-method-delete: #ef4444;
+
+    --vp-c-brand-1: var(--hc-color-primary-600);
+    --vp-c-brand-2: var(--hc-color-primary-700);
+    --vp-c-brand-3: var(--hc-color-primary-500);
+    --vp-c-brand-soft: color-mix(in oklab, var(--hc-color-primary-500) 15%, transparent);
+    --vp-c-brand-next: var(--hc-color-primary-500);
+
+    --vp-button-brand-bg: var(--hc-color-primary-600);
+    --vp-button-brand-hover-bg: var(--hc-color-primary-500);
+    --vp-button-brand-active-bg: var(--hc-color-primary-700);
+    --vp-button-brand-border: var(--hc-color-primary-600);
+    --vp-button-brand-hover-border: var(--hc-color-primary-500);
+    --vp-button-brand-active-border: var(--hc-color-primary-700);
+
+    --vp-home-hero-name-color: transparent;
+    --vp-home-hero-name-background: linear-gradient(120deg, var(--hc-color-primary-500), var(--hc-color-accent-500));
+}
+
+.dark {
+    --hc-color-bg: #171717;
+    --hc-color-bg-elevated: #262626;
+    --hc-color-bg-muted: #1d1d1d;
+
+    --hc-color-fg: #f1f5f9;
+    --hc-color-fg-muted: #a3a3a3;
+
+    --hc-color-border: #333333;
+    --hc-color-border-muted: #262626;
+
+    --hc-color-primary-300: #a5b4fc;
+    --hc-color-primary-400: #818cf8;
+    --hc-color-primary-500: #6366f1;
+    --hc-color-primary-600: #4f46e5;
+    --hc-color-primary-700: #4338ca;
+
+    --vp-c-brand-1: var(--hc-color-primary-400);
+    --vp-c-brand-2: var(--hc-color-primary-300);
+    --vp-c-brand-3: var(--hc-color-primary-500);
+    --vp-c-brand-soft: color-mix(in oklab, var(--hc-color-primary-400) 18%, transparent);
+
+    /*
+     * Align VitePress's own surface tokens to the graphite palette so the
+     * docs chrome (nav, sidebar, code blocks, elevated surfaces) matches the
+     * marketing sections — no seam between the landing page and the chrome.
+     */
+    --vp-c-bg: #171717;
+    --vp-c-bg-alt: #101010;
+    --vp-c-bg-soft: #262626;
+    --vp-c-bg-elv: #262626;
+}
