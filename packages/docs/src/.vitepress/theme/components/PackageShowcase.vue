@@ -76,7 +76,7 @@ const packages: PackageCard[] = [
         summary: 'The foundation. Build your own typed client on the same Client, hooks and instance registry.',
         bullets: [
             'extend Client',
-            'compose domain *API classes',
+            'compose domain API classes',
             'reuse one transport',
         ],
     },

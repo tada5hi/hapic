@@ -36,10 +36,13 @@ const body = `{ name: 'Peter' }`;
 
 const call = computed(() => {
     const m = state.method;
+    // serialize the user-typed endpoint so a stray quote/newline can't produce
+    // invalid copyable code
+    const endpoint = JSON.stringify(state.url);
     if (m.payload) {
-        return `await client.${m.name}('${state.url}', ${body});`;
+        return `await client.${m.name}(${endpoint}, ${body});`;
     }
-    return `await client.${m.name}('${state.url}');`;
+    return `await client.${m.name}(${endpoint});`;
 });
 
 const responseBody = computed(() => {
@@ -133,10 +136,7 @@ const toggleDark = () => {
                 </div>
 
                 <div class="hc-hero-card-body">
-                    <div
-                        class="hc-hero-methods"
-                        role="tablist"
-                    >
+                    <div class="hc-hero-methods">
                         <button
                             v-for="m in methods"
                             :key="m.name"

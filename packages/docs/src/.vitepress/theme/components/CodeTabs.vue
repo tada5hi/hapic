@@ -89,18 +89,14 @@ const copy = async (code: string) => {
             </p>
 
             <div class="hc-codetabs-card">
-                <div
-                    class="hc-codetabs-tabs"
-                    role="tablist"
-                >
+                <div class="hc-codetabs-tabs">
                     <button
                         v-for="(tab, i) in tabs"
                         :key="tab.label"
                         type="button"
                         class="hc-codetabs-tab"
                         :class="{ 'hc-codetabs-tab-active': active === i }"
-                        :aria-selected="active === i"
-                        role="tab"
+                        :aria-pressed="active === i"
                         @click="active = i"
                     >
                         {{ tab.label }}
