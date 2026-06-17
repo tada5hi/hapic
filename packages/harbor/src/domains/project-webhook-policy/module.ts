@@ -40,7 +40,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             .post(
                 `projects/${context.projectIdOrName}/webhook/policies`,
                 this.extendPayload(context.data),
-                headers,
+                { headers },
             );
 
         return {
@@ -58,7 +58,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
         const response = await this.client
             .get(
                 `projects/${context.projectIdOrName}/webhook/policies${buildQueryString(context.query)}`,
-                headers,
+                { headers },
             );
 
         return {
@@ -79,7 +79,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
         const response = await this.client
             .get(
                 `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
-                headers,
+                { headers },
             );
 
         return response.data;
@@ -113,7 +113,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
                 ...context.data,
                 id: context.id,
             }),
-            headers,
+            { headers },
         );
     }
 
@@ -136,7 +136,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
         }
 
         await this.client
-            .delete(`projects/${context.projectIdOrName}/webhook/policies/${context.id}`, headers);
+            .delete(`projects/${context.projectIdOrName}/webhook/policies/${context.id}`, { headers });
     }
 
     protected extendPayload(data: Partial<ProjectWebhookPolicy>) : Partial<ProjectWebhookPolicy> {
