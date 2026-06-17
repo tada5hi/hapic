@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { MemoryTransport, createClient } from 'hapic';
 import {
     ProjectRepositoryAPI,
-    createClient,
     parseLongProjectRepositoryName,
 } from '../../../src';
 
@@ -20,111 +20,96 @@ describe('src/domains/project-repository', () => {
     });
 
     it('should get resources', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
-
-        const api = new ProjectRepositoryAPI({ client: driver });
-        await api.getMany({
-            projectName: 'proj',
-            query: {
-                page_size: 10,
-            },
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: [],
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/proj/repositories?page_size=10',
-        );
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+        await api.getMany({
+            projectName: 'proj',
+            query: { page_size: 10 },
+        });
+
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('GET');
+        expect(request.url).toBe('projects/proj/repositories?page_size=10');
     });
 
     it('should get all resources', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
-
-        const api = new ProjectRepositoryAPI({ client: driver });
-        await api.getAll({
-            projectName: 'proj',
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: [],
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/proj/repositories?page_size=50&page=1',
-        );
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+        await api.getAll({ projectName: 'proj' });
+
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('GET');
+        expect(request.url).toBe('projects/proj/repositories?page_size=50&page=1');
     });
 
     it('should get resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: { name: 'foo/bar' } });
-        driver.get = fn;
-
-        const api = new ProjectRepositoryAPI({ client: driver });
-        await api.getOne({
-            projectName: 'foo',
-            repositoryName: 'bar',
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: { name: 'foo/bar' },
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar',
-        );
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+        const result = await api.getOne({ projectName: 'foo', repositoryName: 'bar' });
+
+        expect(result.name).toBe('foo/bar');
+
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('GET');
+        expect(request.url).toBe('projects/foo/repositories/bar');
     });
 
     it('should find resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
-
-        const api = new ProjectRepositoryAPI({ client: driver });
-        await api.findOne({
-            projectName: 'foo',
-            repositoryName: 'bar',
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: [],
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories?q=name%3D%257Ebar&page_size=1',
-        );
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+        await api.findOne({ projectName: 'foo', repositoryName: 'bar' });
+
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('GET');
+        expect(request.url).toBe('projects/foo/repositories?q=name%3D%257Ebar&page_size=1');
     });
 
     it('should update resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.put = fn;
-
-        const api = new ProjectRepositoryAPI({ client: driver });
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
         await api.update({
             projectName: 'foo',
             repositoryName: 'bar',
-            data: {
-                name: 'baz',
-            },
+            data: { name: 'baz' },
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar',
-            {
-                name: 'baz',
-            },
-        );
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('PUT');
+        expect(request.url).toBe('projects/foo/repositories/bar');
+        expect(JSON.parse(request.init.body as string)).toEqual({ name: 'baz' });
     });
 
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+        await api.delete({ projectName: 'foo', repositoryName: 'bar' });
 
-        const api = new ProjectRepositoryAPI({ client: driver });
-        await api.delete({
-            projectName: 'foo',
-            repositoryName: 'bar',
-        });
-
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar',
-        );
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('DELETE');
+        expect(request.url).toBe('projects/foo/repositories/bar');
     });
 });

@@ -5,23 +5,23 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { UserInfoAPI } from '../../../src';
-
-const getFn = jest.fn();
 
 const userInfoResponse : Record<string, any> = {
     name: 'admin',
     email: 'admin@example.com',
 };
 
-getFn.mockResolvedValue({ data: userInfoResponse });
-
-const client = createClient();
-client.get = getFn;
-
 describe('src/domains/userinfo', () => {
     it('should get user info', async () => {
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: userInfoResponse,
+        });
+
         const api = new UserInfoAPI({
             options: {
                 clientId: 'client',
@@ -30,13 +30,25 @@ describe('src/domains/userinfo', () => {
             },
         });
 
-        api.setClient(client);
+        api.setClient(createClient({ transport }));
 
         const userInfo = await api.get('token');
         expect(userInfo).toEqual(userInfoResponse);
+
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('GET');
+        expect(request.url).toBe('https://example.com/userinfo');
+        expect((request.init.headers as Headers).get('authorization')).toBe('Bearer token');
     });
 
     it('should get user info with non default path', async () => {
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: userInfoResponse,
+        });
+
         const api = new UserInfoAPI({
             options: {
                 clientId: 'client',
@@ -45,9 +57,10 @@ describe('src/domains/userinfo', () => {
             },
         });
 
-        api.setClient(client);
+        api.setClient(createClient({ transport }));
 
         const userInfo = await api.get('token');
         expect(userInfo).toEqual(userInfoResponse);
+        expect(transport.lastRequest!.url).toBe('https://example.com/users/@me');
     });
 });

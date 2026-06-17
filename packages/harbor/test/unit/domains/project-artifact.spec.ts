@@ -5,44 +5,29 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { ProjectRepositoryArtifactAPI } from '../../../src';
 
 describe('src/domains/project-artifact', () => {
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectRepositoryArtifactAPI({ client: driver });
-        await api.delete({
-            projectName: 'foo',
-            repositoryName: 'bar',
-        });
+        await api.delete({ projectName: 'foo', repositoryName: 'bar' });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar/artifacts/latest',
-        );
+        expect(transport.requests[0].init.method).toBe('DELETE');
+        expect(transport.requests[0].url).toBe('projects/foo/repositories/bar/artifacts/latest');
 
-        await api.delete({
-            projectName: 'foo',
-            repositoryName: 'bar',
-            tagOrDigest: 'base',
-        });
+        await api.delete({ projectName: 'foo', repositoryName: 'bar', tagOrDigest: 'base' });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar/artifacts/base',
-        );
+        expect(transport.requests[1].init.method).toBe('DELETE');
+        expect(transport.requests[1].url).toBe('projects/foo/repositories/bar/artifacts/base');
     });
 
     it('should copy resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.post = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectRepositoryArtifactAPI({ client: driver });
         await api.copy({
             repositoryName: 'bar',
             projectName: 'foo',
@@ -51,18 +36,20 @@ describe('src/domains/project-artifact', () => {
             projectName: 'baz',
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar/artifacts?from=baz/biz:latest',
-        );
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('POST');
+        expect(request.url).toBe('projects/foo/repositories/bar/artifacts?from=baz/biz:latest');
     });
 
     it('should get resources', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: [],
+        });
 
-        const api = new ProjectRepositoryArtifactAPI({ client: driver });
+        const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
         await api.getMany({
             repositoryName: 'repo',
             projectName: 'proj',
@@ -73,8 +60,8 @@ describe('src/domains/project-artifact', () => {
             },
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/proj/repositories/repo/artifacts?page_size=10&with_label=true&with_tag=true',
-        );
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('GET');
+        expect(request.url).toBe('projects/proj/repositories/repo/artifacts?page_size=10&with_label=true&with_tag=true');
     });
 });

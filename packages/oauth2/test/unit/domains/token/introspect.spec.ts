@@ -5,15 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestBaseOptions } from 'hapic';
-import {
-    createClient,
-} from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { TokenAPI } from '../../../../src';
 import type { JwtPayload } from '../../../../src';
-
-const driver = createClient();
-const postFn = jest.fn();
 
 const payload : JwtPayload = {
     active: true,
@@ -35,19 +29,22 @@ const payload : JwtPayload = {
     email_verified: true,
 };
 
-postFn.mockImplementation((
-    _url: string,
-    _data?: any,
-    config?: RequestBaseOptions,
-) => Promise.resolve({ data: payload, request: { config } }));
-
-driver.post = postFn;
-
 describe('src/domains/token', () => {
     it('should introspect token', async () => {
-        const tokenAPI = new TokenAPI({ client: driver });
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: payload,
+        });
+
+        const tokenAPI = new TokenAPI({ client: createClient({ transport }) });
 
         const response = await tokenAPI.introspect({ token: 'foo' });
         expect(response).toEqual(payload);
+
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('POST');
+        expect(request.url).toBe('/token/introspect');
     });
 });

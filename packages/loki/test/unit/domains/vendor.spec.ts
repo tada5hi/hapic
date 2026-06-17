@@ -5,41 +5,48 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HeaderName, createClient } from 'hapic';
-import { DistributorAPI, nanoSeconds } from '../../../src';
+import { HeaderName, MemoryTransport, createClient } from 'hapic';
+import { DistributorAPI } from '../../../src';
 import type { DistributorPushStream } from '../../../src';
 
 describe('src/domains/distributor', () => {
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.post = fn;
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: {},
+        });
 
         const payload : DistributorPushStream = {
             stream: {
                 app: 'foo',
             },
             values: [
-                [nanoSeconds(), 'This is a log message.'],
+                [BigInt(1000), 'This is a log message.'],
             ],
         };
 
-        const api = new DistributorAPI({ client: driver });
+        const api = new DistributorAPI({ client: createClient({ transport }) });
         await api.push(payload);
 
-        expect(fn).toHaveBeenCalledWith(
-            'loki/api/v1/push',
-            {
-                streams: [
-                    payload,
-                ],
-            },
-            {
-                headers: {
-                    [HeaderName.CONTENT_TYPE]: 'application/json',
+        const req = transport.lastRequest!;
+        expect(req.init.method).toBe('POST');
+        expect(req.url).toBe('loki/api/v1/push');
+        expect(JSON.parse(req.init.body as string)).toEqual({
+            streams: [
+                {
+                    stream: {
+                        app: 'foo',
+                    },
+                    values: [
+                        ['1000', 'This is a log message.'],
+                    ],
                 },
-            },
-        );
+            ],
+        });
+
+        const headers = req.init.headers as Headers;
+        expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 });

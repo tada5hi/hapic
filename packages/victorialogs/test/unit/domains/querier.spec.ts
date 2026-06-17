@@ -5,37 +5,26 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
-import { HeaderName, QuerierAPI } from '../../../src';
+import { HeaderName, MemoryTransport, createClient } from 'hapic';
+import { QuerierAPI } from '../../../src';
 
 describe('src/domains/distributor', () => {
     it('should query', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-
         const text = '{"_time":"2026-01-07T10:56:35.399492947Z","_stream_id":"","_stream":"{}","_msg":"world!"}\n' +
             '{"_time":"2026-01-07T10:56:40.399492947Z","_stream_id":"","_stream":"{}","_msg":"Hello"}';
 
-        const bytes = new TextEncoder().encode(text);
-
-        fn.mockReturnValue({
+        const transport = new MemoryTransport();
+        transport.respondWith({
             status: 200,
             headers: {
                 [HeaderName.CONTENT_TYPE]: 'application/stream+json',
-                [HeaderName.CONTENT_LENGTH]: bytes.length,
             },
-            data: new ReadableStream({
-                start(controller) {
-                    controller.enqueue(bytes);
-                    controller.close();
-                },
-            }),
+            body: text,
         });
-        driver.get = fn;
 
         const query : string = 'log.level:*';
 
-        const api = new QuerierAPI({ client: driver });
+        const api = new QuerierAPI({ client: createClient({ transport }) });
         const response = await api.query({
             query,
             limit: 10,
@@ -43,18 +32,12 @@ describe('src/domains/distributor', () => {
 
         expect(response.length).toEqual(2);
 
-        expect(fn).toHaveBeenCalledWith(
-            'select/logsql/query',
-            {
-                headers: {
-                    [HeaderName.ACCEPT]: 'application/json',
-                },
-                params: {
-                    query,
-                    limit: 10,
-                },
-                responseType: 'stream',
-            },
-        );
+        const req = transport.lastRequest!;
+        expect(req.init.method).toBe('GET');
+        expect(req.url).toBe('select/logsql/query?query=log.level:*&limit=10');
+        expect(req.init.body).toBeUndefined();
+
+        const headers = new Headers(req.init.headers);
+        expect(headers.get(HeaderName.ACCEPT)).toBe('application/json');
     });
 });

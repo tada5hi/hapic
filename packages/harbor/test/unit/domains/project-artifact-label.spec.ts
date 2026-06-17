@@ -5,48 +5,38 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { ProjectRepositoryArtifactLabelAPI } from '../../../src';
 
 describe('src/domains/project-artifact-label', () => {
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryArtifactLabelAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectRepositoryArtifactLabelAPI({ client: driver });
         await api.delete({
             labelId: 1,
             projectName: 'foo',
             repositoryName: 'bar',
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar/artifacts/latest/labels/1',
-        );
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('DELETE');
+        expect(request.url).toBe('projects/foo/repositories/bar/artifacts/latest/labels/1');
     });
 
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.post = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryArtifactLabelAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectRepositoryArtifactLabelAPI({ client: driver });
-        const payload = {
+        await api.create({
             labelId: 1,
             repositoryName: 'bar',
             projectName: 'foo',
-        };
+        });
 
-        await api.create(payload);
-
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/repositories/bar/artifacts/latest/labels',
-            {
-                id: payload.labelId,
-            },
-        );
+        const request = transport.lastRequest!;
+        expect(request.init.method).toBe('POST');
+        expect(request.url).toBe('projects/foo/repositories/bar/artifacts/latest/labels');
+        expect(JSON.parse(request.init.body as string)).toEqual({ id: 1 });
     });
 });

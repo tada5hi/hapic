@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HeaderName, createClient } from 'hapic';
+import { HeaderName, MemoryTransport, createClient } from 'hapic';
 import type {
     CompactorDeletionRequestCancel,
     CompactorDeletionRequestCreate,
@@ -16,53 +16,52 @@ import {
 
 describe('src/domains/compactor', () => {
     it('should create deletion request', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.post = fn;
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: {},
+        });
 
         const payload : CompactorDeletionRequestCreate = {
             query: '{app="foo"}',
             start: BigInt(1000),
         };
 
-        const api = new CompactorAPI({ client: driver });
+        const api = new CompactorAPI({ client: createClient({ transport }) });
         await api.createDeletionRequest(payload);
 
-        expect(fn).toHaveBeenCalledWith(
-            'loki/api/v1/delete',
-            {},
-            {
-                headers: {
-                    [HeaderName.CONTENT_TYPE]: 'application/json',
-                },
-                params: payload,
-            },
-        );
+        const req = transport.lastRequest!;
+        expect(req.init.method).toBe('POST');
+        expect(req.url).toBe('loki/api/v1/delete?query=%7Bapp=%22foo%22%7D&start=1000');
+        expect(JSON.parse(req.init.body as string)).toEqual({});
+
+        const headers = req.init.headers as Headers;
+        expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 
     it('should cancel deletion request', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.delete = fn;
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: {},
+        });
 
         const payload : CompactorDeletionRequestCancel = {
             request_id: BigInt(1000),
             force: true,
         };
 
-        const api = new CompactorAPI({ client: driver });
+        const api = new CompactorAPI({ client: createClient({ transport }) });
         await api.cancelDeletionRequest(payload);
 
-        expect(fn).toHaveBeenCalledWith(
-            'loki/api/v1/delete',
-            {
-                headers: {
-                    [HeaderName.CONTENT_TYPE]: 'application/json',
-                },
-                params: payload,
-            },
-        );
+        const req = transport.lastRequest!;
+        expect(req.init.method).toBe('DELETE');
+        expect(req.url).toBe('loki/api/v1/delete?request_id=1000&force=true');
+        expect(req.init.body).toBeUndefined();
+
+        const headers = req.init.headers as Headers;
+        expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 });

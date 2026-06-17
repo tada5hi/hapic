@@ -5,33 +5,34 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HeaderName, createClient } from 'hapic';
+import { HeaderName, MemoryTransport, createClient } from 'hapic';
 import { IngestorAPI } from '../../../src';
 import type { IngestorData } from '../../../src';
 
-describe('src/domains/distributor', () => {
+describe('src/domains/ingestor', () => {
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.post = fn;
+        const transport = new MemoryTransport();
+        transport.respondWith({
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: {},
+        });
 
         const payload : IngestorData = {
             app: 'foo',
             _msg: 'This is a log message.',
         };
 
-        const api = new IngestorAPI({ client: driver });
+        const api = new IngestorAPI({ client: createClient({ transport }) });
         await api.insert(payload);
 
-        expect(fn).toHaveBeenCalledWith(
-            '/insert/jsonline',
-            payload,
-            {
-                headers: {
-                    [HeaderName.CONTENT_TYPE]: 'application/json',
-                },
-            },
-        );
+        const req = transport.lastRequest!;
+        expect(req.init.method).toBe('POST');
+        expect(req.url).toBe('/insert/jsonline');
+
+        const headers = new Headers(req.init.headers);
+        expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
+
+        expect(JSON.parse(req.init.body as string)).toEqual(payload);
     });
 });
