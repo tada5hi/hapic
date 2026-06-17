@@ -13,3 +13,5 @@ reports
 coveralls.yml
 tsconfig.tsbuildinfo
 .nx
+**/.vitepress/cache
+.agents/plans
