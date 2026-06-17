@@ -10,13 +10,13 @@ import type { ProxyOptions, fetch } from '../fetch';
 /**
  * A fully-resolved, ready-to-dispatch request handed to the transport.
  *
- * The url is already base-/query-resolved, and init already carries the merged
- * headers, the transformed body and the method. proxy is passed through so the
+ * Mirrors `RequestBaseOptions` by flattening `RequestInit` in directly (rather
+ * than nesting it): the merged headers, transformed body and method sit
+ * alongside the already base-/query-resolved url. proxy is passed through so the
  * adapter (not the request pipeline) owns proxy resolution.
  */
-export type TransportRequest = {
+export type TransportRequest = RequestInit & {
     url: string,
-    init: RequestInit,
     proxy?: ProxyOptions | boolean
 };
 

@@ -51,7 +51,7 @@ describe('src/transport', () => {
                 headers: { 'x-both': 'override', 'x-req': 'b' },
             });
 
-            const headers = transport.lastRequest!.init.headers as Headers;
+            const headers = transport.lastRequest!.headers as Headers;
             expect(headers.get('x-default')).toBe('a');
             expect(headers.get('x-both')).toBe('override');
             expect(headers.get('x-req')).toBe('b');
@@ -63,7 +63,7 @@ describe('src/transport', () => {
 
             await client.request({ method: 'GET', url: 'thing', body: { a: 1 } } as any);
 
-            expect(transport.lastRequest!.init.body).toBeUndefined();
+            expect(transport.lastRequest!.body).toBeUndefined();
         });
 
         it('should transform the body for write methods', async () => {
@@ -72,7 +72,7 @@ describe('src/transport', () => {
 
             await client.post('thing', { a: 1 });
 
-            const { init } = transport.lastRequest!;
+            const init = transport.lastRequest!;
             expect(init.body).toBe('{"a":1}');
             expect((init.headers as Headers).get(HeaderName.CONTENT_TYPE))
                 .toBe('application/json');
@@ -213,7 +213,7 @@ describe('src/transport', () => {
             expect(res.data).toEqual({ ok: true });
             expect(transport.requests).toHaveLength(2);
 
-            const retryHeaders = transport.requests[1].init.headers as Headers;
+            const retryHeaders = transport.requests[1].headers as Headers;
             expect(retryHeaders.get('authorization')).toBe('Bearer refreshed');
         });
     });
@@ -239,7 +239,7 @@ describe('src/transport', () => {
 
             const res = await client.get('x');
 
-            expect((transport.lastRequest!.init.headers as Headers).get('x-hooked')).toBe('1');
+            expect((transport.lastRequest!.headers as Headers).get('x-hooked')).toBe('1');
             expect(res.data).toEqual({ mutated: true });
         });
     });
@@ -305,7 +305,7 @@ describe('src/transport', () => {
 
             await client.post('x', { a: 1 }, { responseType: 'json', query: { p: 1 } });
 
-            const init = transport.lastRequest!.init as Record<string, unknown>;
+            const init = transport.lastRequest! as unknown as Record<string, unknown>;
             // real fetch fields survive
             expect(init.method).toBe('POST');
             expect(init.body).toBe('{"a":1}');

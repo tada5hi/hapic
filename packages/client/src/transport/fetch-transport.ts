@@ -24,7 +24,7 @@ export class FetchTransport implements ITransport {
     }
 
     async dispatch(request: TransportRequest) : Promise<Response> {
-        const { url, init, proxy } = request;
+        const { url, proxy, ...init } = request;
 
         if (proxy === false) {
             return this.fetch(url, init);

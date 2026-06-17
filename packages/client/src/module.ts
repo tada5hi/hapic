@@ -10,7 +10,7 @@ import type { ClientErrorCreateContext } from './error/type';
 import { Headers } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
-import type { ITransport } from './transport';
+import type { ITransport, TransportRequest } from './transport';
 import { FetchTransport, isTransport } from './transport';
 import type { ClientOptionsInput } from './type';
 import type {
@@ -270,24 +270,18 @@ export class Client {
                 delete options.body;
             }
 
-            // Keep pipeline-internal options out of the dispatched request; the
-            // transport boundary only sees real fetch init (plus agent / signal).
+            // Strip the pipeline-only options; the remainder (url, proxy and the
+            // merged fetch init) is the flattened TransportRequest.
             const {
-                url,
-                proxy,
                 baseURL,
                 responseType,
                 responseTransform,
                 params,
                 query,
                 transform,
-                ...init
+                ...transportRequest
             } = options;
-            response = await this.transport.dispatch({
-                url,
-                proxy,
-                init: init as RequestInit,
-            });
+            response = await this.transport.dispatch(transportRequest as TransportRequest);
         } catch (e: any) {
             return handleError('request', {
                 request: options,

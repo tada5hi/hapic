@@ -20,9 +20,10 @@ A transport implements a single method:
 
 ```typescript
 interface ITransport {
-    // url is base-/query-resolved; init carries merged headers, transformed body, method.
-    // Must resolve with a raw Response (body unread) and must NOT throw on a 4xx/5xx status.
-    dispatch(request: { url: string, init: RequestInit, proxy?: ProxyOptions | boolean }): Promise<Response>;
+    // request flattens RequestInit (merged headers, transformed body, method) alongside the
+    // base-/query-resolved url. Must resolve with a raw Response (body unread) and must NOT
+    // throw on a 4xx/5xx status.
+    dispatch(request: RequestInit & { url: string, proxy?: ProxyOptions | boolean }): Promise<Response>;
 }
 ```
 
@@ -49,7 +50,7 @@ expect(response.data).toEqual({ id: 1, name: 'Ada' });
 
 // and recorded the real request
 expect(transport.lastRequest?.url).toBe('https://api.test/users/1');
-expect(transport.lastRequest?.init.method).toBe('GET');
+expect(transport.lastRequest?.method).toBe('GET');
 ```
 
 This works for service clients too — point a `@hapic/*` client (or a single domain `*API`) at a `MemoryTransport` to test your code without a live backend:
