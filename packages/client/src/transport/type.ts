@@ -14,11 +14,11 @@ import type { ProxyOptions, fetch } from '../fetch';
  * headers, the transformed body and the method. proxy is passed through so the
  * adapter (not the request pipeline) owns proxy resolution.
  */
-export interface TransportRequest {
+export type TransportRequest = {
     url: string,
     init: RequestInit,
     proxy?: ProxyOptions | boolean
-}
+};
 
 /**
  * The single I/O boundary of the client.
@@ -33,7 +33,7 @@ export interface ITransport {
     dispatch(request: TransportRequest) : Promise<Response>
 }
 
-export interface FetchTransportOptions {
+export type FetchTransportOptions = {
     /**
      * Custom fetch implementation.
      *
@@ -43,9 +43,9 @@ export interface FetchTransportOptions {
      * default: the cross-environment fetch resolved in `fetch.ts`.
      */
     fetch?: typeof fetch
-}
+};
 
-export interface MemoryResponseInit {
+export type MemoryResponseInit = {
     status?: number,
     statusText?: string,
     headers?: Record<string, string> | [string, string][],
@@ -54,7 +54,7 @@ export interface MemoryResponseInit {
      * content-type when none is set). Everything else is passed through as-is.
      */
     body?: any
-}
+};
 
 export type MemoryResponseValue = Response | MemoryResponseInit | Error;
 export type MemoryResponder =
