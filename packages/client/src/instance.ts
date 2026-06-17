@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestBaseOptions } from './request';
 import { Client } from './module';
+import type { ClientOptionsInput } from './type';
 import { hasOwnProperty, verifyInstanceBySymbol } from './utils';
 
 const instanceMap: Record<string, Client> = {};
@@ -49,7 +49,7 @@ export function unsetClient(key?: string) {
     }
 }
 
-export function createClient(input?: RequestBaseOptions) {
+export function createClient(input?: ClientOptionsInput) {
     return new Client(input);
 }
 

@@ -5,12 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from 'node-fetch-native/proxy';
 import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/type';
-import { Headers, createProxy, fetch } from './fetch';
+import { Headers } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
+import type { ITransport, TransportRequest } from './transport';
+import { FetchTransport, isTransport } from './transport';
+import type { ClientOptionsInput } from './type';
 import type {
     HookErrorFn,
     HookFn,
@@ -51,13 +53,22 @@ export class Client {
 
     protected hookManager : HookManager;
 
+    protected transport : ITransport;
+
     // ---------------------------------------------------------------------------------
 
-    constructor(input: RequestBaseOptions = {}) {
-        this.defaults = extendRequestOptionsWithDefaults(input || {});
+    constructor(input: ClientOptionsInput = {}) {
+        const { transport, ...options } = input || {};
+
+        if (typeof transport !== 'undefined' && !isTransport(transport)) {
+            throw new TypeError('Invalid transport: expected an object with a dispatch(request): Promise<Response> method.');
+        }
+
+        this.defaults = extendRequestOptionsWithDefaults(options);
         this.headers = new Headers(this.defaults.headers);
 
         this.hookManager = new HookManager();
+        this.transport = transport ?? new FetchTransport();
     }
 
     // ---------------------------------------------------------------------------------
@@ -259,24 +270,18 @@ export class Client {
                 delete options.body;
             }
 
-            const { url, proxy, ...data } = options;
-            if (proxy === false) {
-                response = await fetch(url, data as RequestInit);
-            } else {
-                let proxyOptions : ProxyOptions | undefined;
-
-                if (
-                    typeof proxy !== 'boolean' &&
-                    typeof proxy !== 'undefined'
-                ) {
-                    proxyOptions = proxy;
-                }
-
-                response = await fetch(url, {
-                    ...data,
-                    ...createProxy(proxyOptions),
-                } as RequestInit);
-            }
+            // Strip the pipeline-only options; the remainder (url, proxy and the
+            // merged fetch init) is the flattened TransportRequest.
+            const {
+                baseURL,
+                responseType,
+                responseTransform,
+                params,
+                query,
+                transform,
+                ...transportRequest
+            } = options;
+            response = await this.transport.dispatch(transportRequest as TransportRequest);
         } catch (e: any) {
             return handleError('request', {
                 request: options,

@@ -47,7 +47,7 @@ export class ProjectAPI extends BaseAPI {
         }
 
         await this.client
-            .delete(`projects/${id}`, headers);
+            .delete(`projects/${id}`, { headers });
     }
 
     async update(
@@ -62,7 +62,7 @@ export class ProjectAPI extends BaseAPI {
         }
 
         await this.client
-            .put(`projects/${id}`, data, headers);
+            .put(`projects/${id}`, data, { headers });
     }
 
     async getMany(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
@@ -111,7 +111,7 @@ export class ProjectAPI extends BaseAPI {
         }
 
         const { data } = await this.client
-            .get(`projects/${id}`, headers);
+            .get(`projects/${id}`, { headers });
 
         return data;
     }

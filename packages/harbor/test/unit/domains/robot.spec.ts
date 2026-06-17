@@ -5,9 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { RobotAPI, buildRobotPermissionForAllResources } from '../../../src';
-import type { Project } from '../../../src';
 
 describe('src/domains/robot', () => {
     it('should build robot permission object for global access', () => {
@@ -18,73 +17,82 @@ describe('src/domains/robot', () => {
     });
 
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockImplementation((_url, data) => ({ data: { ...data } satisfies Project }));
-        driver.post = fn;
-
-        const api = new RobotAPI({ client: driver });
-        await api.create({
-            name: 'robi',
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 201,
+                headers: { 'content-type': 'application/json' },
+                body: { name: 'robi' },
+            }),
         });
 
-        expect(fn).toHaveBeenCalledWith('robots', api.extendPayload({ name: 'robi' }));
+        const api = new RobotAPI({ client: createClient({ transport }) });
+        await api.create({ name: 'robi' });
+
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
+        expect(request.url).toBe('robots');
+        expect(JSON.parse(request.body as string))
+            .toEqual(api.extendPayload({ name: 'robi' }));
     });
 
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport();
 
-        const api = new RobotAPI({ client: driver });
+        const api = new RobotAPI({ client: createClient({ transport }) });
         await api.delete(1);
 
-        expect(fn).toHaveBeenCalledWith('robots/1');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('DELETE');
+        expect(request.url).toBe('robots/1');
+        expect(request.body).toBeUndefined();
     });
 
     it('should update resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.put = fn;
+        const transport = new MemoryTransport();
 
-        const api = new RobotAPI({ client: driver });
-        await api.update(1, {
-            name: 'robus',
-        });
+        const api = new RobotAPI({ client: createClient({ transport }) });
+        await api.update(1, { name: 'robus' });
 
-        expect(fn).toHaveBeenCalledWith(
-            'robots/1',
-            api.extendPayload({ name: 'robus', id: 1 }),
-        );
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('PUT');
+        expect(request.url).toBe('robots/1');
+        expect(JSON.parse(request.body as string))
+            .toEqual(api.extendPayload({ name: 'robus', id: 1 }));
     });
 
     it('should get resources', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
-
-        const api = new RobotAPI({ client: driver });
-        await api.getMany({
-            query: {
-                page_size: 10,
-            },
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
-        expect(fn).toHaveBeenCalledWith('robots?page_size=10');
+        const api = new RobotAPI({ client: createClient({ transport }) });
+        const { data } = await api.getMany({ query: { page_size: 10 } });
+
+        expect(data).toEqual([]);
+
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
+        expect(request.url).toBe('robots?page_size=10');
     });
 
     it('should get resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.get = fn;
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
 
-        const api = new RobotAPI({ client: driver });
+        const api = new RobotAPI({ client: createClient({ transport }) });
         await api.getOne(1);
 
-        expect(fn).toHaveBeenCalledWith('robots/1');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
+        expect(request.url).toBe('robots/1');
     });
 });

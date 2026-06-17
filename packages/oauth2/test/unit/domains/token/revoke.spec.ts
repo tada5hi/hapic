@@ -5,28 +5,20 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestBaseOptions } from 'hapic';
-import {
-    createClient,
-} from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { TokenAPI } from '../../../../src';
 
-const driver = createClient();
-const postFn = jest.fn();
-
-postFn.mockImplementation((
-    _url: string,
-    _data?: any,
-    config?: RequestBaseOptions,
-) => Promise.resolve({ data: undefined, request: { config } }));
-
-driver.post = postFn;
-
 describe('src/domains/token', () => {
-    it('should introspect token', async () => {
-        const tokenAPI = new TokenAPI({ client: driver });
+    it('should revoke token', async () => {
+        const transport = new MemoryTransport();
+        const tokenAPI = new TokenAPI({ client: createClient({ transport }) });
 
         const response = await tokenAPI.revoke({ token: 'foo' });
         expect(response).toBeDefined();
+
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
+        expect(request.url).toBe('/token/revoke');
+        expect(new URLSearchParams(request.body as any).get('token')).toBe('foo');
     });
 });

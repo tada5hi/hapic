@@ -5,13 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestBaseOptions } from 'hapic';
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import type { TokenGrantParameters, TokenGrantResponse } from '../../../../src';
 import { TokenAPI } from '../../../../src';
-
-const driver = createClient();
-const postFn = jest.fn();
 
 const tokenGrantResponse : TokenGrantResponse = {
     mac_key: 'mac_key',
@@ -23,14 +19,6 @@ const tokenGrantResponse : TokenGrantResponse = {
     refresh_token: 'refresh_token',
     id_token: 'id_token',
 };
-
-postFn.mockImplementation((
-    _url: string,
-    _data?: any,
-    config?: RequestBaseOptions,
-) => Promise.resolve({ data: tokenGrantResponse, request: { config } }));
-
-driver.post = postFn;
 
 const redirectUri = 'https://example.com/redirect';
 
@@ -76,6 +64,14 @@ describe('src/domains/token', () => {
     });
 
     it('should get token', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: tokenGrantResponse,
+            }),
+        });
+
         const api = new TokenAPI({
             options: {
                 clientId: 'client',
@@ -86,7 +82,7 @@ describe('src/domains/token', () => {
             },
         });
 
-        api.setClient(driver);
+        api.setClient(createClient({ transport }));
 
         let token = await api.createWithRefreshToken({
             refresh_token: 'refresh_token',
@@ -112,9 +108,35 @@ describe('src/domains/token', () => {
             secret: 'start123',
         });
         expect(token).toEqual({ ...tokenGrantResponse });
+
+        // every grant flow posts (form-encoded) to the configured token endpoint
+        expect(transport.requests).toHaveLength(5);
+        transport.requests.forEach((request) => {
+            expect(request.method).toBe('POST');
+            expect(request.url).toBe('https://example.com/token');
+        });
+
+        const grantTypes = transport.requests.map(
+            (request) => new URLSearchParams(request.body as any).get('grant_type'),
+        );
+        expect(grantTypes).toEqual([
+            'refresh_token',
+            'client_credentials',
+            'password',
+            'authorization_code',
+            'robot_credentials',
+        ]);
     });
 
     it('should get token with non default path', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: tokenGrantResponse,
+            }),
+        });
+
         const api = new TokenAPI({
             options: {
                 clientId: 'client',
@@ -125,9 +147,10 @@ describe('src/domains/token', () => {
             },
         });
 
-        api.setClient(driver);
+        api.setClient(createClient({ transport }));
 
         const token = await api.createWithPassword({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...tokenGrantResponse });
+        expect(transport.requests.at(-1)!.url).toBe('https://example.com/oauth/token');
     });
 });

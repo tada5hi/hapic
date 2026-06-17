@@ -5,36 +5,29 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import type { OpenIDProviderMetadata } from '../../src';
 import { buildOpenIDDiscoveryURL, createClientWithOpenIDDiscoveryURL } from '../../src';
 
-const driver = createClient();
-const fn = jest.fn();
-
-fn.mockReturnValue({
-    data: {
-        authorization_endpoint: 'http://localhost:3000/auhtorize',
-        id_token_signing_alg_values_supported: [
-            'RS256',
-        ],
-        introspection_endpoint: 'http://localhost:3000/introspect',
-        issuer: 'api',
-        jwks_uri: 'http://localhost:3000/jwks',
-        registration_endpoint: 'http://localhost:3000/register',
-        response_type_supported: [
-            'token',
-            'id_token token',
-        ],
-        revocation_endpoint: 'http://localhost:3000/token',
-        service_documentation: 'http://localhost:3000/docs',
-        subject_types_supported: [],
-        token_endpoint: 'http://localhost:3000/token',
-        userinfo_endpoint: 'http://localhost:3000/userinfo',
-    } satisfies OpenIDProviderMetadata,
-});
-
-driver.get = fn;
+const metadata : OpenIDProviderMetadata = {
+    authorization_endpoint: 'http://localhost:3000/auhtorize',
+    id_token_signing_alg_values_supported: [
+        'RS256',
+    ],
+    introspection_endpoint: 'http://localhost:3000/introspect',
+    issuer: 'api',
+    jwks_uri: 'http://localhost:3000/jwks',
+    registration_endpoint: 'http://localhost:3000/register',
+    response_type_supported: [
+        'token',
+        'id_token token',
+    ],
+    revocation_endpoint: 'http://localhost:3000/token',
+    service_documentation: 'http://localhost:3000/docs',
+    subject_types_supported: [],
+    token_endpoint: 'http://localhost:3000/token',
+    userinfo_endpoint: 'http://localhost:3000/userinfo',
+};
 
 describe('src/open-id', () => {
     it('should build open id discovery url', () => {
@@ -49,11 +42,23 @@ describe('src/open-id', () => {
     });
 
     it('should create client by open-id endpoint', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: metadata,
+            }),
+        });
+
+        const driver = createClient({ transport });
+
         const url = buildOpenIDDiscoveryURL();
         const client = await createClientWithOpenIDDiscoveryURL(url, driver);
 
         expect(client.options.authorizationEndpoint).toEqual('http://localhost:3000/auhtorize');
         expect(client.options.tokenEndpoint).toEqual('http://localhost:3000/token');
         expect(client.options.userinfoEndpoint).toEqual('http://localhost:3000/userinfo');
+
+        expect(transport.requests.at(-1)!.url).toBe('/.well-known/openid-configuration');
     });
 });

@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { stringifyAuthorizationHeader } from 'hapic';
+import { MemoryTransport, stringifyAuthorizationHeader } from 'hapic';
 import {
     HarborClient,
     createClient,
@@ -37,6 +37,22 @@ describe('src/instance', () => {
         expect(hasClient()).toBeTruthy();
 
         unsetClient();
+    });
+
+    it('should dispatch through a transport injected via config', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
+        });
+
+        const client = new HarborClient({ request: { transport } });
+        await client.project.getMany({ query: { page_size: 10 } });
+
+        expect(transport.requests.at(-1)?.method).toBe('GET');
+        expect(transport.requests.at(-1)?.url).toBe('projects?page_size=10');
     });
 
     it('should have client properties', () => {

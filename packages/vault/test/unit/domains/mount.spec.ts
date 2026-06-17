@@ -5,17 +5,20 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { MountAPI } from '../../../src';
 
-describe('src/domains/key-value/v1', () => {
+describe('src/domains/mount', () => {
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.post = fn;
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
 
-        const api = new MountAPI({ client: driver });
+        const api = new MountAPI({ client: createClient({ transport }) });
         await api.create(
             'key',
             {
@@ -23,7 +26,10 @@ describe('src/domains/key-value/v1', () => {
             },
         );
 
-        expect(fn).toHaveBeenCalledWith('sys/mounts/key', {
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('POST');
+        expect(req.url).toBe('sys/mounts/key');
+        expect(JSON.parse(req.body as string)).toEqual({
             type: 'kv',
             config: {},
             options: {},
@@ -31,38 +37,50 @@ describe('src/domains/key-value/v1', () => {
     });
 
     it('should get resources', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.get = fn;
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
 
-        const api = new MountAPI({ client: driver });
+        const api = new MountAPI({ client: createClient({ transport }) });
         await api.getMany();
 
-        expect(fn).toHaveBeenCalledWith('sys/mounts');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('sys/mounts');
+        expect(req.body).toBeUndefined();
     });
 
     it('should get resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.get = fn;
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
 
-        const api = new MountAPI({ client: driver });
+        const api = new MountAPI({ client: createClient({ transport }) });
         await api.getOne('foo');
 
-        expect(fn).toHaveBeenCalledWith('sys/mounts/foo');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('sys/mounts/foo');
+        expect(req.body).toBeUndefined();
     });
 
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
 
-        const api = new MountAPI({ client: driver });
+        const api = new MountAPI({ client: createClient({ transport }) });
         await api.delete('foo');
 
-        expect(fn).toHaveBeenCalledWith('sys/mounts/foo');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('DELETE');
+        expect(req.url).toBe('sys/mounts/foo');
+        expect(req.body).toBeUndefined();
     });
 });

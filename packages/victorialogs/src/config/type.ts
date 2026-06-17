@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestBaseOptions } from 'hapic';
+import type { ClientOptionsInput } from 'hapic';
 
 export type Options = {
     ingesterURL?: string,
@@ -14,7 +14,7 @@ export type Options = {
 };
 
 export type Config = {
-    request: RequestBaseOptions,
+    request: ClientOptionsInput,
     connectionString: string,
     options: Options
 };

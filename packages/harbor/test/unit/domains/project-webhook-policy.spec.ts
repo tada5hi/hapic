@@ -5,20 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProjectWebhookPolicy } from '../../../src';
-import {
-    ProjectWebhookPolicyAPI,
-    createClient,
-} from '../../../src';
+import { MemoryTransport, createClient } from 'hapic';
+import { ProjectWebhookPolicyAPI } from '../../../src';
 
 describe('src/domains/project-webhook-policy', () => {
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.post = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.create({
             projectIdOrName: 1,
             data: {
@@ -28,118 +22,107 @@ describe('src/domains/project-webhook-policy', () => {
             },
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/1/webhook/policies',
-            {
-                project_id: 1,
-                enabled: true,
-                description: '',
-                event_types: ['PUSH_ARTIFACT'],
-                name: 'foo',
-                targets: [],
-            } satisfies Partial<ProjectWebhookPolicy>,
-            {},
-        );
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
+        expect(request.url).toBe('projects/1/webhook/policies');
+        expect(JSON.parse(request.body as string)).toEqual({
+            project_id: 1,
+            enabled: true,
+            description: '',
+            event_types: ['PUSH_ARTIFACT'],
+            name: 'foo',
+            targets: [],
+        });
     });
-    it('should get resources', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
 
-        const api = new ProjectWebhookPolicyAPI({ client: driver });
-        await api.getMany({
-            projectIdOrName: 'foo',
-            query: {
-                page_size: 10,
-            },
+    it('should get resources', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/foo/webhook/policies?page_size=10',
-            {},
-        );
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+        const { data } = await api.getMany({
+            projectIdOrName: 'foo',
+            query: { page_size: 10 },
+        });
+
+        expect(data).toEqual([]);
+
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
+        expect(request.url).toBe('projects/foo/webhook/policies?page_size=10');
     });
 
     it('should get resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: { name: 'foo/bar' } });
-        driver.get = fn;
-
-        const api = new ProjectWebhookPolicyAPI({ client: driver });
-        await api.getOne({
-            projectIdOrName: 1,
-            id: 1,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: { name: 'foo/bar' },
+            }),
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/1/webhook/policies/1',
-            {},
-        );
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+        const result = await api.getOne({ projectIdOrName: 1, id: 1 });
+
+        expect(result.name).toBe('foo/bar');
+
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
+        expect(request.url).toBe('projects/1/webhook/policies/1');
     });
 
     it('should find resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: [] });
-        driver.get = fn;
-
-        const api = new ProjectWebhookPolicyAPI({ client: driver });
-        await api.findOne({
-            projectIdOrName: 1,
-            name: 'bar',
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/1/webhook/policies?q=name%3Dbar&page_size=1',
-            {},
-        );
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+        await api.findOne({ projectIdOrName: 1, name: 'bar' });
+
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
+        expect(request.url).toBe('projects/1/webhook/policies?q=name%3Dbar&page_size=1');
     });
 
     it('should update resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.put = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectWebhookPolicyAPI({ client: driver });
         await api.update({
             projectIdOrName: 1,
             id: 1,
-            data: {
-                name: 'baz',
-            },
+            data: { name: 'baz' },
         });
 
-        expect(fn).toHaveBeenCalledWith(
-            'projects/1/webhook/policies/1',
-            {
-                enabled: true,
-                event_types: ['PUSH_ARTIFACT'],
-                id: 1,
-                name: 'baz',
-                targets: [],
-            },
-            {},
-        );
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('PUT');
+        expect(request.url).toBe('projects/1/webhook/policies/1');
+        expect(JSON.parse(request.body as string)).toEqual({
+            enabled: true,
+            event_types: ['PUSH_ARTIFACT'],
+            id: 1,
+            name: 'baz',
+            targets: [],
+        });
     });
 
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport();
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
 
-        const api = new ProjectWebhookPolicyAPI({ client: driver });
-        await api.delete({
-            projectIdOrName: 1,
-            id: 1,
-        });
+        await api.delete({ projectIdOrName: 1, id: 1 });
 
-        expect(fn).toHaveBeenLastCalledWith(
-            'projects/1/webhook/policies/1',
-            {},
-        );
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('DELETE');
+        expect(request.url).toBe('projects/1/webhook/policies/1');
     });
 });

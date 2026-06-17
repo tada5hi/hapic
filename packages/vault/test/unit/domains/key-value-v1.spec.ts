@@ -5,17 +5,20 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient } from 'hapic';
+import { MemoryTransport, createClient } from 'hapic';
 import { KeyValueV1API } from '../../../src';
 
 describe('src/domains/key-value/v1', () => {
     it('should create resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.post = fn;
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
 
-        const api = new KeyValueV1API({ client: driver });
+        const api = new KeyValueV1API({ client: createClient({ transport }) });
         await api.create(
             'secrets',
             'key',
@@ -24,30 +27,39 @@ describe('src/domains/key-value/v1', () => {
             },
         );
 
-        expect(fn).toHaveBeenCalledWith('secrets/key', { bar: 'baz' });
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('POST');
+        expect(req.url).toBe('secrets/key');
+        expect(JSON.parse(req.body as string)).toEqual({ bar: 'baz' });
     });
 
     it('should get resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue({ data: {} });
-        driver.get = fn;
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
 
-        const api = new KeyValueV1API({ client: driver });
+        const api = new KeyValueV1API({ client: createClient({ transport }) });
         await api.getOne('foo', 'bar');
 
-        expect(fn).toHaveBeenCalledWith('foo/bar');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('foo/bar');
+        expect(req.body).toBeUndefined();
     });
 
     it('should delete resource', async () => {
-        const driver = createClient();
-        const fn = jest.fn();
-        fn.mockReturnValue(undefined);
-        driver.delete = fn;
+        const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
 
-        const api = new KeyValueV1API({ client: driver });
+        const api = new KeyValueV1API({ client: createClient({ transport }) });
         await api.delete('foo', 'bar');
 
-        expect(fn).toHaveBeenCalledWith('foo/bar');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('DELETE');
+        expect(req.url).toBe('foo/bar');
+        expect(req.body).toBeUndefined();
     });
 });

@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestBaseOptions } from 'hapic';
+import type { ClientOptionsInput } from 'hapic';
 
 export type ConnectionOptions = {
     host: string,
     token: string
 };
 export type Config = {
-    request: RequestBaseOptions,
+    request: ClientOptionsInput,
     connectionString: string,
     connectionOptions: ConnectionOptions
 };

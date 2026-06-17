@@ -13,5 +13,5 @@ export function isRequestOptions(input: unknown) : input is RequestOptions {
         return false;
     }
 
-    return input.url === 'string';
+    return typeof input.url === 'string';
 }
