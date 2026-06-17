@@ -140,7 +140,7 @@ export class MemoryTransport implements ITransport {
         }
 
         return new ResponseCtor(body, {
-            status: input.status || 200,
+            status: input.status ?? 200,
             statusText: input.statusText,
             headers,
         }) as unknown as Response;

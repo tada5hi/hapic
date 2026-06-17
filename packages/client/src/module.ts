@@ -11,7 +11,7 @@ import { Headers } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type { ITransport } from './transport';
-import { FetchTransport } from './transport';
+import { FetchTransport, isTransport } from './transport';
 import type { ClientOptionsInput } from './type';
 import type {
     HookErrorFn,
@@ -60,11 +60,15 @@ export class Client {
     constructor(input: ClientOptionsInput = {}) {
         const { transport, ...options } = input || {};
 
+        if (typeof transport !== 'undefined' && !isTransport(transport)) {
+            throw new TypeError('Invalid transport: expected an object with a dispatch(request): Promise<Response> method.');
+        }
+
         this.defaults = extendRequestOptionsWithDefaults(options);
         this.headers = new Headers(this.defaults.headers);
 
         this.hookManager = new HookManager();
-        this.transport = transport || new FetchTransport();
+        this.transport = transport ?? new FetchTransport();
     }
 
     // ---------------------------------------------------------------------------------
