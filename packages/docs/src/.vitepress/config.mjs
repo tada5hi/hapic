@@ -91,6 +91,7 @@ export default defineConfig({
                     items: [
                         { text: 'Proxy & Environments', link: '/guide/proxy' },
                         { text: 'Building a Service Client', link: '/guide/building-a-client' },
+                        { text: 'Testing', link: '/guide/testing' },
                     ],
                 },
             ],
