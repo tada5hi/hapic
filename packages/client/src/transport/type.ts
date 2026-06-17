@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from '../fetch';
+import type { ProxyOptions, fetch } from '../fetch';
 
 /**
  * A fully-resolved, ready-to-dispatch request handed to the transport.
@@ -32,3 +32,31 @@ export interface TransportRequest {
 export interface ITransport {
     dispatch(request: TransportRequest) : Promise<Response>
 }
+
+export interface FetchTransportOptions {
+    /**
+     * Custom fetch implementation.
+     *
+     * Use this to supply a fetch bound to a specific engine / agent / dispatcher
+     * (e.g. for mTLS, a custom CA bundle or keep-alive connection pooling).
+     *
+     * default: the cross-environment fetch resolved in `fetch.ts`.
+     */
+    fetch?: typeof fetch
+}
+
+export interface MemoryResponseInit {
+    status?: number,
+    statusText?: string,
+    headers?: Record<string, string> | [string, string][],
+    /**
+     * Plain objects/arrays are JSON-serialized (and tagged with a JSON
+     * content-type when none is set). Everything else is passed through as-is.
+     */
+    body?: any
+}
+
+export type MemoryResponseValue = Response | MemoryResponseInit | Error;
+export type MemoryResponder =
+    MemoryResponseValue |
+    ((request: TransportRequest) => MemoryResponseValue | Promise<MemoryResponseValue>);

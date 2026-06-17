@@ -16,6 +16,7 @@ export * from './header';
 export * from './module';
 export * from './instance';
 export * from './transport';
+export * from './type';
 export * from './fetch';
 export * from './utils';
 

@@ -7,19 +7,7 @@
 
 import type { ProxyOptions } from '../fetch';
 import { createProxy, fetch } from '../fetch';
-import type { ITransport, TransportRequest } from './type';
-
-export interface FetchTransportOptions {
-    /**
-     * Custom fetch implementation.
-     *
-     * Use this to supply a fetch bound to a specific engine / agent / dispatcher
-     * (e.g. for mTLS, a custom CA bundle or keep-alive connection pooling).
-     *
-     * default: the cross-environment fetch resolved in `fetch.ts`.
-     */
-    fetch?: typeof fetch
-}
+import type { FetchTransportOptions, ITransport, TransportRequest } from './type';
 
 /**
  * Production transport: dispatches via `fetch` and owns proxy resolution.

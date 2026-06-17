@@ -12,6 +12,7 @@ import { Headers } from './fetch';
 import { MethodName, ResponseType } from './constants';
 import type { ITransport } from './transport';
 import { FetchTransport } from './transport';
+import type { ClientOptionsInput } from './type';
 import type {
     HookErrorFn,
     HookFn,
@@ -43,15 +44,6 @@ import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 import { traverse } from './utils';
 
-export type ClientInput = RequestBaseOptions & {
-    /**
-     * The transport used to dispatch requests.
-     *
-     * default: a {@link FetchTransport} bound to the cross-environment fetch.
-     */
-    transport?: ITransport
-};
-
 export class Client {
     readonly '@instanceof' = Symbol.for('BaseClient');
 
@@ -65,7 +57,7 @@ export class Client {
 
     // ---------------------------------------------------------------------------------
 
-    constructor(input: ClientInput = {}) {
+    constructor(input: ClientOptionsInput = {}) {
         const { transport, ...options } = input || {};
 
         this.defaults = extendRequestOptionsWithDefaults(options);
@@ -274,11 +266,23 @@ export class Client {
                 delete options.body;
             }
 
-            const { url, proxy, ...data } = options;
+            // Keep pipeline-internal options out of the dispatched request; the
+            // transport boundary only sees real fetch init (plus agent / signal).
+            const {
+                url,
+                proxy,
+                baseURL,
+                responseType,
+                responseTransform,
+                params,
+                query,
+                transform,
+                ...init
+            } = options;
             response = await this.transport.dispatch({
                 url,
                 proxy,
-                init: data as RequestInit,
+                init: init as RequestInit,
             });
         } catch (e: any) {
             return handleError('request', {
