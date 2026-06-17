@@ -11,11 +11,12 @@ import type { IngestorData } from '../../../src';
 
 describe('src/domains/ingestor', () => {
     it('should create resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const payload : IngestorData = {
@@ -26,13 +27,13 @@ describe('src/domains/ingestor', () => {
         const api = new IngestorAPI({ client: createClient({ transport }) });
         await api.insert(payload);
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('POST');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('POST');
         expect(req.url).toBe('/insert/jsonline');
 
-        const headers = new Headers(req.init.headers);
+        const headers = new Headers(req.headers);
         expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
 
-        expect(JSON.parse(req.init.body as string)).toEqual(payload);
+        expect(JSON.parse(req.body as string)).toEqual(payload);
     });
 });

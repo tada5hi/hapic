@@ -56,7 +56,17 @@ export type MemoryResponseInit = {
     body?: any
 };
 
-export type MemoryResponseValue = Response | MemoryResponseInit | Error;
-export type MemoryResponder =
-    MemoryResponseValue |
-    ((request: TransportRequest) => MemoryResponseValue | Promise<MemoryResponseValue>);
+export type MemoryTransportFetch = (request: TransportRequest) =>
+Response | MemoryResponseInit | Promise<Response | MemoryResponseInit>;
+
+export type MemoryTransportOptions = {
+    /**
+     * Handle every dispatched request. Return a `Response` to use as-is, or a
+     * `MemoryResponseInit` ({ status, statusText, headers, body }) that is turned
+     * into a `Response` via the same rules as the production transport. Throw (or
+     * reject) to drive the request-error path.
+     *
+     * default: an empty 200 response.
+     */
+    fetch?: MemoryTransportFetch
+};

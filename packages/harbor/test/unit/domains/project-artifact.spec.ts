@@ -15,12 +15,12 @@ describe('src/domains/project-artifact', () => {
 
         await api.delete({ projectName: 'foo', repositoryName: 'bar' });
 
-        expect(transport.requests[0].init.method).toBe('DELETE');
+        expect(transport.requests[0].method).toBe('DELETE');
         expect(transport.requests[0].url).toBe('projects/foo/repositories/bar/artifacts/latest');
 
         await api.delete({ projectName: 'foo', repositoryName: 'bar', tagOrDigest: 'base' });
 
-        expect(transport.requests[1].init.method).toBe('DELETE');
+        expect(transport.requests[1].method).toBe('DELETE');
         expect(transport.requests[1].url).toBe('projects/foo/repositories/bar/artifacts/base');
     });
 
@@ -36,17 +36,18 @@ describe('src/domains/project-artifact', () => {
             projectName: 'baz',
         });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('POST');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
         expect(request.url).toBe('projects/foo/repositories/bar/artifacts?from=baz/biz:latest');
     });
 
     it('should get resources', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: [],
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
         const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
@@ -60,8 +61,8 @@ describe('src/domains/project-artifact', () => {
             },
         });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/proj/repositories/repo/artifacts?page_size=10&with_label=true&with_tag=true');
     });
 });

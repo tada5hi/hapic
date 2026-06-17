@@ -15,11 +15,12 @@ const userInfoResponse : Record<string, any> = {
 
 describe('src/domains/userinfo', () => {
     it('should get user info', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: userInfoResponse,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: userInfoResponse,
+            }),
         });
 
         const api = new UserInfoAPI({
@@ -35,18 +36,19 @@ describe('src/domains/userinfo', () => {
         const userInfo = await api.get('token');
         expect(userInfo).toEqual(userInfoResponse);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('https://example.com/userinfo');
-        expect((request.init.headers as Headers).get('authorization')).toBe('Bearer token');
+        expect((request.headers as Headers).get('authorization')).toBe('Bearer token');
     });
 
     it('should get user info with non default path', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: userInfoResponse,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: userInfoResponse,
+            }),
         });
 
         const api = new UserInfoAPI({
@@ -61,6 +63,6 @@ describe('src/domains/userinfo', () => {
 
         const userInfo = await api.get('token');
         expect(userInfo).toEqual(userInfoResponse);
-        expect(transport.lastRequest!.url).toBe('https://example.com/users/@me');
+        expect(transport.requests.at(-1)!.url).toBe('https://example.com/users/@me');
     });
 });

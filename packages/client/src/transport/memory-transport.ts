@@ -20,8 +20,9 @@ import {
 import { isResponse } from '../response';
 import type {
     ITransport,
-    MemoryResponder,
     MemoryResponseInit,
+    MemoryTransportFetch,
+    MemoryTransportOptions,
     TransportRequest,
 } from './type';
 
@@ -52,54 +53,26 @@ function shouldSerializeBody(body: unknown) : boolean {
 
 /**
  * In-memory transport for tests (and for testing downstream code that builds on
- * a `@hapic/*` client). Records every dispatched request and serves a FIFO queue
- * of canned responders, while the real request pipeline (header merge, decode,
- * hooks, retry) runs unchanged.
+ * a `@hapic/*` client). Records every dispatched request and answers it with the
+ * `fetch` handler, while the real request pipeline (header merge, decode, hooks,
+ * retry) runs unchanged.
  */
 export class MemoryTransport implements ITransport {
     readonly '@instanceof' = Symbol.for('ClientTransport');
 
     public readonly requests : TransportRequest[] = [];
 
-    protected queue : MemoryResponder[] = [];
+    protected fetch : MemoryTransportFetch | undefined;
 
-    /**
-     * Append one or more responders to the queue. Each is consumed (FIFO) by a
-     * single dispatch.
-     */
-    enqueue(...responders: MemoryResponder[]) : this {
-        this.queue.push(...responders);
-
-        return this;
+    constructor(options: MemoryTransportOptions = {}) {
+        this.fetch = options.fetch;
     }
 
     /**
-     * Queue a single canned response.
-     */
-    respondWith(response: MemoryResponseInit | Response) : this {
-        return this.enqueue(response);
-    }
-
-    /**
-     * Queue a rejection to drive the request-error path.
-     */
-    failNext(error?: Error) : this {
-        return this.enqueue(error || new Error('Network request failed.'));
-    }
-
-    /**
-     * The most recently recorded request.
-     */
-    get lastRequest() : TransportRequest | undefined {
-        return this.requests[this.requests.length - 1];
-    }
-
-    /**
-     * Reset the recorded requests and the responder queue.
+     * Clear the recorded requests. The `fetch` handler is left in place.
      */
     reset() : this {
         this.requests.length = 0;
-        this.queue.length = 0;
 
         return this;
     }
@@ -107,20 +80,11 @@ export class MemoryTransport implements ITransport {
     async dispatch(request: TransportRequest) : Promise<Response> {
         this.requests.push(request);
 
-        let responder = this.queue.shift();
-        if (typeof responder === 'undefined') {
-            responder = { status: 200 };
-        }
+        const result = this.fetch ?
+            await this.fetch(request) :
+            { status: 200 };
 
-        if (typeof responder === 'function') {
-            responder = await responder(request);
-        }
-
-        if (responder instanceof Error) {
-            throw responder;
-        }
-
-        return this.toResponse(responder);
+        return this.toResponse(result);
     }
 
     protected toResponse(input: Response | MemoryResponseInit) : Response {

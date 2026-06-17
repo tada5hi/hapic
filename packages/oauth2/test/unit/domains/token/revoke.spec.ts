@@ -16,9 +16,9 @@ describe('src/domains/token', () => {
         const response = await tokenAPI.revoke({ token: 'foo' });
         expect(response).toBeDefined();
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('POST');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
         expect(request.url).toBe('/token/revoke');
-        expect(new URLSearchParams(request.init.body as any).get('token')).toBe('foo');
+        expect(new URLSearchParams(request.body as any).get('token')).toBe('foo');
     });
 });

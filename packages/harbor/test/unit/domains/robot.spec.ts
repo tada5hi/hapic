@@ -17,20 +17,21 @@ describe('src/domains/robot', () => {
     });
 
     it('should create resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 201,
-            headers: { 'content-type': 'application/json' },
-            body: { name: 'robi' },
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 201,
+                headers: { 'content-type': 'application/json' },
+                body: { name: 'robi' },
+            }),
         });
 
         const api = new RobotAPI({ client: createClient({ transport }) });
         await api.create({ name: 'robi' });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('POST');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
         expect(request.url).toBe('robots');
-        expect(JSON.parse(request.init.body as string))
+        expect(JSON.parse(request.body as string))
             .toEqual(api.extendPayload({ name: 'robi' }));
     });
 
@@ -40,10 +41,10 @@ describe('src/domains/robot', () => {
         const api = new RobotAPI({ client: createClient({ transport }) });
         await api.delete(1);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('DELETE');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('DELETE');
         expect(request.url).toBe('robots/1');
-        expect(request.init.body).toBeUndefined();
+        expect(request.body).toBeUndefined();
     });
 
     it('should update resource', async () => {
@@ -52,19 +53,20 @@ describe('src/domains/robot', () => {
         const api = new RobotAPI({ client: createClient({ transport }) });
         await api.update(1, { name: 'robus' });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('PUT');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('PUT');
         expect(request.url).toBe('robots/1');
-        expect(JSON.parse(request.init.body as string))
+        expect(JSON.parse(request.body as string))
             .toEqual(api.extendPayload({ name: 'robus', id: 1 }));
     });
 
     it('should get resources', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: [],
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
         const api = new RobotAPI({ client: createClient({ transport }) });
@@ -72,24 +74,25 @@ describe('src/domains/robot', () => {
 
         expect(data).toEqual([]);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('robots?page_size=10');
     });
 
     it('should get resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new RobotAPI({ client: createClient({ transport }) });
         await api.getOne(1);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('robots/1');
     });
 });

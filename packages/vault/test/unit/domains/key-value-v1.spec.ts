@@ -10,11 +10,12 @@ import { KeyValueV1API } from '../../../src';
 
 describe('src/domains/key-value/v1', () => {
     it('should create resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new KeyValueV1API({ client: createClient({ transport }) });
@@ -26,39 +27,39 @@ describe('src/domains/key-value/v1', () => {
             },
         );
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('POST');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('POST');
         expect(req.url).toBe('secrets/key');
-        expect(JSON.parse(req.init.body as string)).toEqual({ bar: 'baz' });
+        expect(JSON.parse(req.body as string)).toEqual({ bar: 'baz' });
     });
 
     it('should get resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new KeyValueV1API({ client: createClient({ transport }) });
         await api.getOne('foo', 'bar');
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('GET');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
         expect(req.url).toBe('foo/bar');
-        expect(req.init.body).toBeUndefined();
+        expect(req.body).toBeUndefined();
     });
 
     it('should delete resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({ status: 200 });
+        const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
 
         const api = new KeyValueV1API({ client: createClient({ transport }) });
         await api.delete('foo', 'bar');
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('DELETE');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('DELETE');
         expect(req.url).toBe('foo/bar');
-        expect(req.init.body).toBeUndefined();
+        expect(req.body).toBeUndefined();
     });
 });

@@ -31,11 +31,12 @@ const payload : JwtPayload = {
 
 describe('src/domains/token', () => {
     it('should introspect token', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: payload,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: payload,
+            }),
         });
 
         const tokenAPI = new TokenAPI({ client: createClient({ transport }) });
@@ -43,8 +44,8 @@ describe('src/domains/token', () => {
         const response = await tokenAPI.introspect({ token: 'foo' });
         expect(response).toEqual(payload);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('POST');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
         expect(request.url).toBe('/token/introspect');
     });
 });

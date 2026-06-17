@@ -10,11 +10,12 @@ import { MountAPI } from '../../../src';
 
 describe('src/domains/mount', () => {
     it('should create resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new MountAPI({ client: createClient({ transport }) });
@@ -25,10 +26,10 @@ describe('src/domains/mount', () => {
             },
         );
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('POST');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('POST');
         expect(req.url).toBe('sys/mounts/key');
-        expect(JSON.parse(req.init.body as string)).toEqual({
+        expect(JSON.parse(req.body as string)).toEqual({
             type: 'kv',
             config: {},
             options: {},
@@ -36,49 +37,50 @@ describe('src/domains/mount', () => {
     });
 
     it('should get resources', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new MountAPI({ client: createClient({ transport }) });
         await api.getMany();
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('GET');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
         expect(req.url).toBe('sys/mounts');
-        expect(req.init.body).toBeUndefined();
+        expect(req.body).toBeUndefined();
     });
 
     it('should get resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new MountAPI({ client: createClient({ transport }) });
         await api.getOne('foo');
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('GET');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
         expect(req.url).toBe('sys/mounts/foo');
-        expect(req.init.body).toBeUndefined();
+        expect(req.body).toBeUndefined();
     });
 
     it('should delete resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({ status: 200 });
+        const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
 
         const api = new MountAPI({ client: createClient({ transport }) });
         await api.delete('foo');
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('DELETE');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('DELETE');
         expect(req.url).toBe('sys/mounts/foo');
-        expect(req.init.body).toBeUndefined();
+        expect(req.body).toBeUndefined();
     });
 });

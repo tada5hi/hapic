@@ -29,16 +29,17 @@ interface ITransport {
 
 ## Testing with `MemoryTransport`
 
-`MemoryTransport` records every dispatched request and serves a FIFO queue of canned responses. Because the request runs through the real client, your test verifies the **actual** URL, method, headers and body that would hit the wire — and the response decoding/shaping on the way back.
+`MemoryTransport` records every dispatched request and answers it with a `fetch` handler you pass to the constructor. Because the request runs through the real client, your test verifies the **actual** URL, method, headers and body that would hit the wire — and the response decoding/shaping on the way back.
 
 ```typescript
 import { MemoryTransport, createClient } from 'hapic';
 
-const transport = new MemoryTransport();
-transport.respondWith({
-    status: 200,
-    headers: { 'content-type': 'application/json' },
-    body: { id: 1, name: 'Ada' }, // plain objects are JSON-serialized automatically
+const transport = new MemoryTransport({
+    fetch: () => ({
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+        body: { id: 1, name: 'Ada' }, // plain objects are JSON-serialized automatically
+    }),
 });
 
 const client = createClient({ baseURL: 'https://api.test/', transport });
@@ -49,8 +50,8 @@ const response = await client.get('users/1');
 expect(response.data).toEqual({ id: 1, name: 'Ada' });
 
 // and recorded the real request
-expect(transport.lastRequest?.url).toBe('https://api.test/users/1');
-expect(transport.lastRequest?.method).toBe('GET');
+expect(transport.requests.at(-1)?.url).toBe('https://api.test/users/1');
+expect(transport.requests.at(-1)?.method).toBe('GET');
 ```
 
 This works for service clients too — point a `@hapic/*` client (or a single domain `*API`) at a `MemoryTransport` to test your code without a live backend:
@@ -59,31 +60,29 @@ This works for service clients too — point a `@hapic/*` client (or a single do
 import { MemoryTransport, createClient } from 'hapic';
 import { ProjectAPI } from '@hapic/harbor';
 
-const transport = new MemoryTransport();
-transport.respondWith({
-    status: 200,
-    headers: { 'content-type': 'application/json' },
-    body: [],
+const transport = new MemoryTransport({
+    fetch: () => ({
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+        body: [],
+    }),
 });
 
 const api = new ProjectAPI({ client: createClient({ transport }) });
 await api.getMany({ query: { page_size: 10 } });
 
-expect(transport.lastRequest?.url).toBe('projects?page_size=10');
+expect(transport.requests.at(-1)?.url).toBe('projects?page_size=10');
 ```
 
 ### API
 
 | Member | Description |
 |--------|-------------|
-| `respondWith(init)` | Queue a single response. `init` is `{ status?, statusText?, headers?, body? }`; a plain object/array `body` is JSON-serialized (with a JSON `content-type` if none is set). A raw `Response` is also accepted. |
-| `enqueue(...responders)` | Queue one or more responders (FIFO, one consumed per dispatch). A responder may be a response init, a `Response`, an `Error` (→ rejection), or a function `(request) => responder`. |
-| `failNext(error?)` | Queue a rejection to drive the request-error path. |
-| `requests` | Array of every recorded `{ url, init, proxy }` in dispatch order. |
-| `lastRequest` | The most recently recorded request. |
-| `reset()` | Clear the recorded requests and the responder queue. |
+| `new MemoryTransport({ fetch })` | `fetch(request)` handles every dispatch. Return a `MemoryResponseInit` — `{ status?, statusText?, headers?, body? }` (a plain object/array `body` is JSON-serialized, with a JSON `content-type` if none is set) — or a raw `Response` to use as-is. **Throw** (or reject) to drive the request-error path. |
+| `requests` | Array of every recorded request (`RequestInit & { url, proxy }`) in dispatch order; use `requests.at(-1)` for the most recent. |
+| `reset()` | Clear the recorded requests. The `fetch` handler is left in place. |
 
-When the queue is empty, a dispatch resolves with an empty `200` response.
+With no `fetch` handler, every dispatch resolves with an empty `200` response. To vary the response by request, branch inside the handler (e.g. on `request.url` / `request.method`); for different responses on successive calls, keep a counter in the handler's closure.
 
 ## Custom transports in production
 

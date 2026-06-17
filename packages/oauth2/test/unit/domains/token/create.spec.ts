@@ -64,14 +64,13 @@ describe('src/domains/token', () => {
     });
 
     it('should get token', async () => {
-        const transport = new MemoryTransport();
-        transport.enqueue(
-            ...Array.from({ length: 5 }, () => ({
+        const transport = new MemoryTransport({
+            fetch: () => ({
                 status: 200,
                 headers: { 'content-type': 'application/json' },
                 body: tokenGrantResponse,
-            })),
-        );
+            }),
+        });
 
         const api = new TokenAPI({
             options: {
@@ -113,12 +112,12 @@ describe('src/domains/token', () => {
         // every grant flow posts (form-encoded) to the configured token endpoint
         expect(transport.requests).toHaveLength(5);
         transport.requests.forEach((request) => {
-            expect(request.init.method).toBe('POST');
+            expect(request.method).toBe('POST');
             expect(request.url).toBe('https://example.com/token');
         });
 
         const grantTypes = transport.requests.map(
-            (request) => new URLSearchParams(request.init.body as any).get('grant_type'),
+            (request) => new URLSearchParams(request.body as any).get('grant_type'),
         );
         expect(grantTypes).toEqual([
             'refresh_token',
@@ -130,11 +129,12 @@ describe('src/domains/token', () => {
     });
 
     it('should get token with non default path', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: tokenGrantResponse,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: tokenGrantResponse,
+            }),
         });
 
         const api = new TokenAPI({
@@ -151,6 +151,6 @@ describe('src/domains/token', () => {
 
         const token = await api.createWithPassword({ username: 'admin', password: 'start123' });
         expect(token).toEqual({ ...tokenGrantResponse });
-        expect(transport.lastRequest!.url).toBe('https://example.com/oauth/token');
+        expect(transport.requests.at(-1)!.url).toBe('https://example.com/oauth/token');
     });
 });

@@ -13,13 +13,14 @@ describe('src/domains/distributor', () => {
         const text = '{"_time":"2026-01-07T10:56:35.399492947Z","_stream_id":"","_stream":"{}","_msg":"world!"}\n' +
             '{"_time":"2026-01-07T10:56:40.399492947Z","_stream_id":"","_stream":"{}","_msg":"Hello"}';
 
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: {
-                [HeaderName.CONTENT_TYPE]: 'application/stream+json',
-            },
-            body: text,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: {
+                    [HeaderName.CONTENT_TYPE]: 'application/stream+json',
+                },
+                body: text,
+            }),
         });
 
         const query : string = 'log.level:*';
@@ -32,12 +33,12 @@ describe('src/domains/distributor', () => {
 
         expect(response.length).toEqual(2);
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('GET');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('GET');
         expect(req.url).toBe('select/logsql/query?query=log.level:*&limit=10');
-        expect(req.init.body).toBeUndefined();
+        expect(req.body).toBeUndefined();
 
-        const headers = new Headers(req.init.headers);
+        const headers = new Headers(req.headers);
         expect(headers.get(HeaderName.ACCEPT)).toBe('application/json');
     });
 });

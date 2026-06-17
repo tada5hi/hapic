@@ -11,11 +11,12 @@ import type { DistributorPushStream } from '../../../src';
 
 describe('src/domains/distributor', () => {
     it('should create resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const payload : DistributorPushStream = {
@@ -30,10 +31,10 @@ describe('src/domains/distributor', () => {
         const api = new DistributorAPI({ client: createClient({ transport }) });
         await api.push(payload);
 
-        const req = transport.lastRequest!;
-        expect(req.init.method).toBe('POST');
+        const req = transport.requests.at(-1)!;
+        expect(req.method).toBe('POST');
         expect(req.url).toBe('loki/api/v1/push');
-        expect(JSON.parse(req.init.body as string)).toEqual({
+        expect(JSON.parse(req.body as string)).toEqual({
             streams: [
                 {
                     stream: {
@@ -46,7 +47,7 @@ describe('src/domains/distributor', () => {
             ],
         });
 
-        const headers = req.init.headers as Headers;
+        const headers = req.headers as Headers;
         expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 });

@@ -22,10 +22,10 @@ describe('src/domains/project-webhook-policy', () => {
             },
         });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('POST');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
         expect(request.url).toBe('projects/1/webhook/policies');
-        expect(JSON.parse(request.init.body as string)).toEqual({
+        expect(JSON.parse(request.body as string)).toEqual({
             project_id: 1,
             enabled: true,
             description: '',
@@ -36,11 +36,12 @@ describe('src/domains/project-webhook-policy', () => {
     });
 
     it('should get resources', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: [],
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
@@ -51,17 +52,18 @@ describe('src/domains/project-webhook-policy', () => {
 
         expect(data).toEqual([]);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/foo/webhook/policies?page_size=10');
     });
 
     it('should get resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: { name: 'foo/bar' },
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: { name: 'foo/bar' },
+            }),
         });
 
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
@@ -69,24 +71,25 @@ describe('src/domains/project-webhook-policy', () => {
 
         expect(result.name).toBe('foo/bar');
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/1/webhook/policies/1');
     });
 
     it('should find resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: [],
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
         await api.findOne({ projectIdOrName: 1, name: 'bar' });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/1/webhook/policies?q=name%3Dbar&page_size=1');
     });
 
@@ -100,10 +103,10 @@ describe('src/domains/project-webhook-policy', () => {
             data: { name: 'baz' },
         });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('PUT');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/1/webhook/policies/1');
-        expect(JSON.parse(request.init.body as string)).toEqual({
+        expect(JSON.parse(request.body as string)).toEqual({
             enabled: true,
             event_types: ['PUSH_ARTIFACT'],
             id: 1,
@@ -118,8 +121,8 @@ describe('src/domains/project-webhook-policy', () => {
 
         await api.delete({ projectIdOrName: 1, id: 1 });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('DELETE');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/1/webhook/policies/1');
     });
 });

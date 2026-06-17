@@ -11,20 +11,21 @@ import type { ProjectCreatePayload } from '../../../src';
 
 describe('src/domains/project', () => {
     it('should create resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 201,
-            headers: { location: '/projects/42' },
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 201,
+                headers: { location: '/projects/42' },
+            }),
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
         const payload = { project_name: 'project-x', public: true };
         const result = await api.create(payload);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('POST');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('POST');
         expect(request.url).toBe('projects');
-        expect(JSON.parse(request.init.body as string)).toEqual(payload);
+        expect(JSON.parse(request.body as string)).toEqual(payload);
 
         // the Location header is now parsed by the real lifecycle
         expect(result.id).toBe(42);
@@ -35,10 +36,10 @@ describe('src/domains/project', () => {
         const api = new ProjectAPI({ client: createClient({ transport }) });
         await api.delete(1);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('DELETE');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/1');
-        expect((request.init.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
+        expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
     });
 
     it('should delete resource by name', async () => {
@@ -46,10 +47,10 @@ describe('src/domains/project', () => {
         const api = new ProjectAPI({ client: createClient({ transport }) });
         await api.delete('name', true);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('DELETE');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/name');
-        expect((request.init.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
+        expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
     });
 
     it('should update resource', async () => {
@@ -58,11 +59,11 @@ describe('src/domains/project', () => {
         const payload : ProjectCreatePayload = { project_name: 'name' };
         await api.update(1, payload);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('PUT');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/1');
-        expect(JSON.parse(request.init.body as string)).toEqual(payload);
-        expect((request.init.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
+        expect(JSON.parse(request.body as string)).toEqual(payload);
+        expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
     });
 
     it('should update resource by name', async () => {
@@ -71,19 +72,20 @@ describe('src/domains/project', () => {
         const payload : ProjectCreatePayload = { project_name: 'name' };
         await api.update('name', payload, true);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('PUT');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/name');
-        expect(JSON.parse(request.init.body as string)).toEqual(payload);
-        expect((request.init.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
+        expect(JSON.parse(request.body as string)).toEqual(payload);
+        expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
     });
 
     it('should get resources', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: [],
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
@@ -93,58 +95,61 @@ describe('src/domains/project', () => {
 
         expect(data).toEqual([]);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects?page_size=10&with_detail=true');
     });
 
     it('should get all resources', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: [],
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
         await api.getAll({ query: { with_detail: true } });
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects?with_detail=true&page_size=50&page=1');
     });
 
     it('should get resource', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
         await api.getOne(1);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/1');
-        expect((request.init.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
+        expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
     });
 
     it('should get resource by name', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: {},
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
         await api.getOne('name', true);
 
-        const request = transport.lastRequest!;
-        expect(request.init.method).toBe('GET');
+        const request = transport.requests.at(-1)!;
+        expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/name');
-        expect((request.init.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
+        expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
     });
 });

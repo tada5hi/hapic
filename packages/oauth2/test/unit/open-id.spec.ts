@@ -42,11 +42,12 @@ describe('src/open-id', () => {
     });
 
     it('should create client by open-id endpoint', async () => {
-        const transport = new MemoryTransport();
-        transport.respondWith({
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-            body: metadata,
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: metadata,
+            }),
         });
 
         const driver = createClient({ transport });
@@ -58,6 +59,6 @@ describe('src/open-id', () => {
         expect(client.options.tokenEndpoint).toEqual('http://localhost:3000/token');
         expect(client.options.userinfoEndpoint).toEqual('http://localhost:3000/userinfo');
 
-        expect(transport.lastRequest!.url).toBe('/.well-known/openid-configuration');
+        expect(transport.requests.at(-1)!.url).toBe('/.well-known/openid-configuration');
     });
 });

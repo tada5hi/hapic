@@ -18,11 +18,12 @@ import {
 describe('src/transport', () => {
     describe('request construction', () => {
         it('should resolve baseURL + query (incl. bigint coercion)', async () => {
-            const transport = new MemoryTransport();
-            transport.respondWith({
-                status: 200,
-                headers: { 'content-type': 'application/json' },
-                body: { id: 1 },
+            const transport = new MemoryTransport({
+                fetch: () => ({
+                    status: 200,
+                    headers: { 'content-type': 'application/json' },
+                    body: { id: 1 },
+                }),
             });
 
             const client = new Client({ baseURL: 'https://api.test/', transport });
@@ -33,7 +34,7 @@ describe('src/transport', () => {
             expect(res.data).toEqual({ id: 1 });
             expect(transport.requests).toHaveLength(1);
 
-            const url = new URL(transport.lastRequest!.url);
+            const url = new URL(transport.requests.at(-1)!.url);
             expect(url.origin + url.pathname).toBe('https://api.test/users');
             expect(url.searchParams.get('page')).toBe('2');
             expect(url.searchParams.get('big')).toBe('9007199254740993');
@@ -51,7 +52,7 @@ describe('src/transport', () => {
                 headers: { 'x-both': 'override', 'x-req': 'b' },
             });
 
-            const headers = transport.lastRequest!.headers as Headers;
+            const headers = transport.requests.at(-1)!.headers as Headers;
             expect(headers.get('x-default')).toBe('a');
             expect(headers.get('x-both')).toBe('override');
             expect(headers.get('x-req')).toBe('b');
@@ -63,7 +64,7 @@ describe('src/transport', () => {
 
             await client.request({ method: 'GET', url: 'thing', body: { a: 1 } } as any);
 
-            expect(transport.lastRequest!.body).toBeUndefined();
+            expect(transport.requests.at(-1)!.body).toBeUndefined();
         });
 
         it('should transform the body for write methods', async () => {
@@ -72,7 +73,7 @@ describe('src/transport', () => {
 
             await client.post('thing', { a: 1 });
 
-            const init = transport.lastRequest!;
+            const init = transport.requests.at(-1)!;
             expect(init.body).toBe('{"a":1}');
             expect((init.headers as Headers).get(HeaderName.CONTENT_TYPE))
                 .toBe('application/json');
@@ -81,12 +82,13 @@ describe('src/transport', () => {
 
     describe('decode', () => {
         it('should decode JSON by content-type', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'application/json' },
                     body: { hello: 'world' },
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x');
@@ -94,12 +96,13 @@ describe('src/transport', () => {
         });
 
         it('should decode text by content-type', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'text/plain' },
                     body: 'plain',
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x');
@@ -107,12 +110,13 @@ describe('src/transport', () => {
         });
 
         it('should honor an explicit responseType override', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'application/json' },
                     body: { a: 1 },
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x', { responseType: 'text' });
@@ -120,12 +124,13 @@ describe('src/transport', () => {
         });
 
         it('should expose a writable lazy data property', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'application/json' },
                     body: { a: 1 },
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x');
@@ -138,12 +143,13 @@ describe('src/transport', () => {
 
     describe('errors & recovery', () => {
         it('should throw a ClientError for a 4xx/5xx status', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 404,
                     headers: { 'content-type': 'application/json' },
                     body: { error: 'not-found' },
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             let error: any;
@@ -158,7 +164,9 @@ describe('src/transport', () => {
         });
 
         it('should throw a ClientError on a dispatch failure', async () => {
-            const transport = new MemoryTransport().failNext(new Error('boom'));
+            const transport = new MemoryTransport({
+                fetch: () => { throw new Error('boom'); },
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             let error: any;
@@ -173,8 +181,9 @@ describe('src/transport', () => {
         });
 
         it('should let an error hook recover by returning a Response', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({ status: 500, body: {} });
+            const transport = new MemoryTransport({
+                fetch: () => ({ status: 500, body: {} }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             client.on(HookName.RESPONSE_ERROR, () => new Response(null, {
@@ -188,18 +197,20 @@ describe('src/transport', () => {
         });
 
         it('should let an error hook retry by returning request options', async () => {
-            const transport = new MemoryTransport().enqueue(
-                {
-                    status: 401,
-                    headers: { 'content-type': 'application/json' },
-                    body: { error: 'unauthorized' },
-                },
-                {
-                    status: 200,
-                    headers: { 'content-type': 'application/json' },
-                    body: { ok: true },
-                },
-            );
+            let call = 0;
+            const transport = new MemoryTransport({
+                fetch: () => (call++ === 0 ?
+                    {
+                        status: 401,
+                        headers: { 'content-type': 'application/json' },
+                        body: { error: 'unauthorized' },
+                    } :
+                    {
+                        status: 200,
+                        headers: { 'content-type': 'application/json' },
+                        body: { ok: true },
+                    }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             client.on(HookName.RESPONSE_ERROR, (error) => ({
@@ -220,12 +231,13 @@ describe('src/transport', () => {
 
     describe('hooks', () => {
         it('should run request and response hooks against the pipeline', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'application/json' },
                     body: { ok: 1 },
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             client.on(HookName.REQUEST, (options) => {
@@ -239,7 +251,7 @@ describe('src/transport', () => {
 
             const res = await client.get('x');
 
-            expect((transport.lastRequest!.headers as Headers).get('x-hooked')).toBe('1');
+            expect((transport.requests.at(-1)!.headers as Headers).get('x-hooked')).toBe('1');
             expect(res.data).toEqual({ mutated: true });
         });
     });
@@ -295,17 +307,18 @@ describe('src/transport', () => {
 
     describe('boundary', () => {
         it('should keep pipeline-internal options out of the dispatched request', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'application/json' },
                     body: {},
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             await client.post('x', { a: 1 }, { responseType: 'json', query: { p: 1 } });
 
-            const init = transport.lastRequest! as unknown as Record<string, unknown>;
+            const init = transport.requests.at(-1)! as unknown as Record<string, unknown>;
             // real fetch fields survive
             expect(init.method).toBe('POST');
             expect(init.body).toBe('{"a":1}');
@@ -317,16 +330,17 @@ describe('src/transport', () => {
             expect(init.query).toBeUndefined();
             expect(init.params).toBeUndefined();
             // the query was applied to the URL, not passed through as an option
-            expect(transport.lastRequest!.url).toBe('https://api.test/x?p=1');
+            expect(transport.requests.at(-1)!.url).toBe('https://api.test/x?p=1');
         });
 
         it('should pass a binary response body through without JSON serialization', async () => {
-            const transport = new MemoryTransport()
-                .respondWith({
+            const transport = new MemoryTransport({
+                fetch: () => ({
                     status: 200,
                     headers: { 'content-type': 'application/octet-stream' },
                     body: new Uint8Array([1, 2, 3]),
-                });
+                }),
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x', { responseType: 'arrayBuffer' });
