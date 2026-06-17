@@ -16,6 +16,7 @@ import {
     isObject,
     isStream,
     isURLSearchParams,
+    markInstanceof,
 } from '../utils';
 import { isResponse } from '../response';
 import type {
@@ -25,6 +26,7 @@ import type {
     MemoryTransportOptions,
     TransportRequest,
 } from './type';
+import { CLIENT_TRANSPORT_INSTANCE } from './utils';
 
 const ResponseCtor : typeof NodeResponse = (
     typeof globalThis !== 'undefined' &&
@@ -58,14 +60,14 @@ function shouldSerializeBody(body: unknown) : boolean {
  * retry) runs unchanged.
  */
 export class MemoryTransport implements ITransport {
-    readonly '@instanceof' = Symbol.for('ClientTransport');
-
     public readonly requests : TransportRequest[] = [];
 
     protected fetch : MemoryTransportFetch | undefined;
 
     constructor(options: MemoryTransportOptions = {}) {
         this.fetch = options.fetch;
+
+        markInstanceof(this, CLIENT_TRANSPORT_INSTANCE);
     }
 
     /**

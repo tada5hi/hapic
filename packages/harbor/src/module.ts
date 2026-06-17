@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client as BaseClient } from 'hapic';
+import { Client as BaseClient, markInstanceof } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
 import {
     ProjectAPI,
@@ -17,6 +17,8 @@ import {
 } from './domains';
 import type { SearchResult } from './type';
 import { parseConnectionString } from './utils';
+
+export const HARBOR_CLIENT_INSTANCE = Symbol.for('@hapic/harbor/HarborClient');
 
 export class HarborClient extends BaseClient {
     public readonly project: ProjectAPI;
@@ -37,6 +39,8 @@ export class HarborClient extends BaseClient {
         input = input || {};
 
         super(input.request);
+
+        markInstanceof(this, HARBOR_CLIENT_INSTANCE);
 
         this.project = new ProjectAPI({ client: this });
         this.projectRepository = new ProjectRepositoryAPI({ client: this });

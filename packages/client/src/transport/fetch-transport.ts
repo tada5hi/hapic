@@ -7,7 +7,9 @@
 
 import type { ProxyOptions } from '../fetch';
 import { createProxy, fetch } from '../fetch';
+import { markInstanceof } from '../utils';
 import type { FetchTransportOptions, ITransport, TransportRequest } from './type';
+import { CLIENT_TRANSPORT_INSTANCE } from './utils';
 
 /**
  * Production transport: dispatches via `fetch` and owns proxy resolution.
@@ -15,12 +17,12 @@ import type { FetchTransportOptions, ITransport, TransportRequest } from './type
  * This is the only module besides `fetch.ts` that touches `fetch`/`createProxy`.
  */
 export class FetchTransport implements ITransport {
-    readonly '@instanceof' = Symbol.for('ClientTransport');
-
     protected fetch : typeof fetch;
 
     constructor(options: FetchTransportOptions = {}) {
         this.fetch = options.fetch || fetch;
+
+        markInstanceof(this, CLIENT_TRANSPORT_INSTANCE);
     }
 
     async dispatch(request: TransportRequest) : Promise<Response> {

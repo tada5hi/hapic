@@ -123,16 +123,24 @@ const created = await client.order.create({ userId: users[0].id });
 
 ## Cross-realm `instanceof`
 
-If you publish your client, give it its own `@instanceof` symbol and a matching `isClient` guard so duplicate bundled copies still recognize each other:
+If you publish your client, register its own cross-realm marker in the constructor and ship a matching `isClient` guard so duplicate bundled copies still recognize each other:
 
 ```typescript
+import { Client, hasInstanceof, markInstanceof } from 'hapic';
+
 export class MyClient extends Client {
-    override readonly '@instanceof' = Symbol.for('MyClient');
-    // …
+    constructor(/* … */) {
+        super(/* … */);
+        markInstanceof(this, Symbol.for('MyClient'));
+    }
+}
+
+export function isMyClient(input: unknown): input is MyClient {
+    return hasInstanceof(input, Symbol.for('MyClient'));
 }
 ```
 
-See [Instance Registry](/guide/instance#cross-realm-isclient) for why this matters.
+Register the marker with `markInstanceof` — do **not** assign an `'@instanceof'` class field. The base `Client` stores the marker chain in a non-writable property, so a field initializer of that name throws at construction. Because the chain accumulates one marker per ancestor, `MyClient` is matched by both `isMyClient` and the base `isClient`. See [Instance Registry](/guide/instance#cross-realm-isclient) for why this matters.
 
 ## Standalone domain APIs
 

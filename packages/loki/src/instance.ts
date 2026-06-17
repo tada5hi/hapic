@@ -6,11 +6,11 @@
  */
 
 import {
+    hasInstanceof,
     hasOwnProperty,
-    verifyInstanceBySymbol,
 } from 'hapic';
 import type { ConfigInput } from './config';
-import { LokiClient } from './module';
+import { LOKI_CLIENT_INSTANCE, LokiClient } from './module';
 
 const instances: Record<string, LokiClient> = {};
 
@@ -94,5 +94,5 @@ export function isClient(input: unknown): input is LokiClient {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'VaultClient');
+    return hasInstanceof(input, LOKI_CLIENT_INSTANCE);
 }

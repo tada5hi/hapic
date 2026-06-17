@@ -70,7 +70,7 @@ await useClient('api').get('resources');
 
 ## Cross-realm `isClient`
 
-A consumer may end up with two bundled copies of hapic — a plain `instanceof Client` would then return `false` for a client created by the "other" copy. To guard against that, every client carries an `@instanceof` property set to a well-known `Symbol.for(...)`, and `isClient` falls back to that symbol:
+A consumer may end up with two bundled copies of hapic — a plain `instanceof Client` would then return `false` for a client created by the "other" copy. To guard against that, every client registers a cross-realm marker in its constructor (`markInstanceof(this, Symbol.for(...))`), and `isClient` checks that marker chain:
 
 ```typescript
 import { isClient } from 'hapic';
@@ -79,4 +79,4 @@ isClient(useClient());     // true
 isClient({});              // false
 ```
 
-Service packages override the symbol with their own (e.g. `Symbol.for('OAuth2Client')`) and ship a matching `isClient`. See [Building a Service Client](/guide/building-a-client).
+Service packages register their own marker *in addition* to the inherited `Client` marker (e.g. `markInstanceof(this, Symbol.for('@hapic/oauth2/OAuth2Client'))`) and ship a matching `isClient`. Because the marker chain accumulates one entry per ancestor, the base `isClient` recognises a service client too. See [Building a Service Client](/guide/building-a-client).

@@ -48,8 +48,8 @@ packages/client/src/
 ├── response/           # Response type, response-type detection, status/type checks
 ├── hook/               # HookManager, HookName enum, request/response/error hook fn types
 ├── header/             # Header name constants + authorization header (Basic / Bearer / api-key)
-├── error/              # ClientError (ebec-based), ErrorCode, isClientError* helpers
-└── utils/              # has-own-property, verifyInstanceBySymbol, promise, serialize, traverse, type-check
+├── error/              # ClientError + NetworkError/HttpResponseError (@ebec/core BaseError), ErrorCode, isClientError* helpers
+└── utils/              # has-own-property, markInstanceof/hasInstanceof (re-exported from @ebec/core), promise, serialize, traverse, type-check
 ```
 
 ## Service Client Layout (e.g. `packages/harbor`)

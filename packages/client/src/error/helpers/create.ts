@@ -7,7 +7,7 @@
 
 import type { RequestOptions } from '../../request';
 import { ErrorCode } from '../constants';
-import { ClientError } from '../module';
+import { HttpResponseError, NetworkError } from '../entities';
 import type { ClientErrorCreateContext } from '../type';
 
 function formatRequestOptions(input: RequestOptions): string {
@@ -59,15 +59,11 @@ export function createClientError<T = any>(
         }
     }
 
-    const error = new ClientError<T>({
+    const ErrorCtor = context.response ? HttpResponseError : NetworkError;
+
+    return new ErrorCtor<T>({
         ...context,
         code,
         message,
     });
-
-    if (Error.captureStackTrace) {
-        Error.captureStackTrace(error, createClientError);
-    }
-
-    return error;
 }

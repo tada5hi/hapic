@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client } from './module';
+import { CLIENT_INSTANCE, Client } from './module';
 import type { ClientOptionsInput } from './type';
-import { hasOwnProperty, verifyInstanceBySymbol } from './utils';
+import { hasInstanceof, hasOwnProperty } from './utils';
 
 const instanceMap: Record<string, Client> = {};
 
@@ -58,5 +58,5 @@ export function isClient(input: unknown): input is Client {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'Client');
+    return hasInstanceof(input, CLIENT_INSTANCE);
 }

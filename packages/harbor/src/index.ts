@@ -12,6 +12,7 @@ export * from './client';
 export * from './config';
 export * from './instance';
 export * from './domains';
+export * from './error';
 export * from './module';
 export * from './type';
 export * from './utils';

@@ -42,11 +42,11 @@ import {
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
-import { traverse } from './utils';
+import { markInstanceof, traverse } from './utils';
+
+export const CLIENT_INSTANCE = Symbol.for('hapic/Client');
 
 export class Client {
-    readonly '@instanceof' = Symbol.for('BaseClient');
-
     public defaults : RequestBaseOptions;
 
     protected headers : Headers;
@@ -69,6 +69,8 @@ export class Client {
 
         this.hookManager = new HookManager();
         this.transport = transport ?? new FetchTransport();
+
+        markInstanceof(this, CLIENT_INSTANCE);
     }
 
     // ---------------------------------------------------------------------------------

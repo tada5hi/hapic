@@ -9,10 +9,16 @@ export type {
     RequestBaseOptions,
     Response,
     ResponseData,
+    HapicError,
     ClientError,
+    NetworkError,
+    HttpResponseError,
     ErrorCode,
 } from 'hapic';
 
 export { isClientErrorDueNetworkIssue } from 'hapic';
 export { isClientErrorWithStatusCode } from 'hapic';
+export { isHapicError } from 'hapic';
 export { isClientError } from 'hapic';
+export { isNetworkError } from 'hapic';
+export { isHttpResponseError } from 'hapic';

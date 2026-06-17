@@ -103,5 +103,5 @@ GitHub Actions (`.github/workflows/main.yml`) on push/PR to `master`: **install 
 - Use **ESM** and modern TypeScript; keep code cross-environment safe (Node, browser, workers) — go through `fetch.ts` rather than referencing `node:`/global APIs directly.
 - Before adding code, study the surrounding domain for its naming, file layout, and how it threads the `client` through `BaseAPI`.
 - Domain `*API` methods must route through `this.client`; never call `fetch` directly.
-- Add an `@instanceof` symbol and a matching `is*` guard when introducing a new client or error class (see [architecture.md](architecture.md#cross-realm-instanceof-instanceof-symbol)).
+- Register an `@instanceof` marker (`markInstanceof(this, Symbol.for(...))` in the constructor) and add a matching `is*` guard built on `hasInstanceof` when introducing a new client or error class (see [architecture.md](architecture.md#cross-realm-instanceof-instanceof-marker-chain)).
 - Keep the public surface intentional: only export from `src/index.ts` what consumers should use.

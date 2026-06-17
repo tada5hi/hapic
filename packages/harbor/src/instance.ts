@@ -6,11 +6,11 @@
  */
 
 import {
+    hasInstanceof,
     hasOwnProperty,
-    verifyInstanceBySymbol,
 } from 'hapic';
 import type { ConfigInput } from './config';
-import { HarborClient } from './module';
+import { HARBOR_CLIENT_INSTANCE, HarborClient } from './module';
 
 const instances: Record<string, HarborClient> = {};
 
@@ -94,5 +94,5 @@ export function isClient(input: unknown): input is HarborClient {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'HarborClient');
+    return hasInstanceof(input, HARBOR_CLIENT_INSTANCE);
 }

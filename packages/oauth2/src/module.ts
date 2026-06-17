@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client } from 'hapic';
+import { Client, markInstanceof } from 'hapic';
 import type { ConfigInput, Options } from './config';
 
 import { AuthorizeAPI, TokenAPI, UserInfoAPI } from './domains';
 
-export class OAuth2Client extends Client {
-    override readonly '@instanceof' = Symbol.for('OAuth2Client');
+export const OAUTH2_CLIENT_INSTANCE = Symbol.for('@hapic/oauth2/OAuth2Client');
 
+export class OAuth2Client extends Client {
     public readonly options : Options;
 
     public authorize: AuthorizeAPI;
@@ -27,6 +27,8 @@ export class OAuth2Client extends Client {
         input = input || {};
 
         super(input.request);
+
+        markInstanceof(this, OAUTH2_CLIENT_INSTANCE);
 
         const options = input.options || {};
 
