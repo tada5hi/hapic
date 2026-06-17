@@ -292,4 +292,46 @@ describe('src/transport', () => {
             expect(calls[0].url).toBe('https://api.test/x');
         });
     });
+
+    describe('boundary', () => {
+        it('should keep pipeline-internal options out of the dispatched request', async () => {
+            const transport = new MemoryTransport()
+                .respondWith({
+                    status: 200,
+                    headers: { 'content-type': 'application/json' },
+                    body: {},
+                });
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+
+            await client.post('x', { a: 1 }, { responseType: 'json', query: { p: 1 } });
+
+            const init = transport.lastRequest!.init as Record<string, unknown>;
+            // real fetch fields survive
+            expect(init.method).toBe('POST');
+            expect(init.body).toBe('{"a":1}');
+            // pipeline-internal options do not leak across the boundary
+            expect(init.baseURL).toBeUndefined();
+            expect(init.responseType).toBeUndefined();
+            expect(init.responseTransform).toBeUndefined();
+            expect(init.transform).toBeUndefined();
+            expect(init.query).toBeUndefined();
+            expect(init.params).toBeUndefined();
+            // the query was applied to the URL, not passed through as an option
+            expect(transport.lastRequest!.url).toBe('https://api.test/x?p=1');
+        });
+
+        it('should pass a binary response body through without JSON serialization', async () => {
+            const transport = new MemoryTransport()
+                .respondWith({
+                    status: 200,
+                    headers: { 'content-type': 'application/octet-stream' },
+                    body: new Uint8Array([1, 2, 3]),
+                });
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+
+            const res = await client.get('x', { responseType: 'arrayBuffer' });
+
+            expect(Array.from(new Uint8Array(res.data as ArrayBuffer))).toEqual([1, 2, 3]);
+        });
+    });
 });

@@ -18,7 +18,12 @@ import {
     isURLSearchParams,
 } from '../utils';
 import { isResponse } from '../response';
-import type { ITransport, TransportRequest } from './type';
+import type {
+    ITransport,
+    MemoryResponder,
+    MemoryResponseInit,
+    TransportRequest,
+} from './type';
 
 const ResponseCtor : typeof NodeResponse = (
     typeof globalThis !== 'undefined' &&
@@ -27,24 +32,13 @@ const ResponseCtor : typeof NodeResponse = (
     (globalThis as unknown as { Response: typeof NodeResponse }).Response :
     NodeResponse;
 
-export interface MemoryResponseInit {
-    status?: number,
-    statusText?: string,
-    headers?: Record<string, string> | [string, string][],
-    /**
-     * Plain objects/arrays are JSON-serialized (and tagged with a JSON
-     * content-type when none is set). Everything else is passed through as-is.
-     */
-    body?: any
-}
-
-export type MemoryResponseValue = Response | MemoryResponseInit | Error;
-export type MemoryResponder =
-    MemoryResponseValue |
-    ((request: TransportRequest) => MemoryResponseValue | Promise<MemoryResponseValue>);
-
 function shouldSerializeBody(body: unknown) : boolean {
     if (!isObject(body) && !Array.isArray(body)) {
+        return false;
+    }
+
+    // typed arrays / DataView / Node Buffer are valid binary bodies, not JSON.
+    if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView(body)) {
         return false;
     }
 
