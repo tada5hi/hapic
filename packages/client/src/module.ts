@@ -5,12 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from 'node-fetch-native/proxy';
 import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/type';
-import { Headers, createProxy, fetch } from './fetch';
+import { Headers } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
+import type { ITransport } from './transport';
+import { FetchTransport } from './transport';
 import type {
     HookErrorFn,
     HookFn,
@@ -42,6 +43,15 @@ import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 import { traverse } from './utils';
 
+export type ClientInput = RequestBaseOptions & {
+    /**
+     * The transport used to dispatch requests.
+     *
+     * default: a {@link FetchTransport} bound to the cross-environment fetch.
+     */
+    transport?: ITransport
+};
+
 export class Client {
     readonly '@instanceof' = Symbol.for('BaseClient');
 
@@ -51,13 +61,18 @@ export class Client {
 
     protected hookManager : HookManager;
 
+    protected transport : ITransport;
+
     // ---------------------------------------------------------------------------------
 
-    constructor(input: RequestBaseOptions = {}) {
-        this.defaults = extendRequestOptionsWithDefaults(input || {});
+    constructor(input: ClientInput = {}) {
+        const { transport, ...options } = input || {};
+
+        this.defaults = extendRequestOptionsWithDefaults(options);
         this.headers = new Headers(this.defaults.headers);
 
         this.hookManager = new HookManager();
+        this.transport = transport || new FetchTransport();
     }
 
     // ---------------------------------------------------------------------------------
@@ -260,23 +275,11 @@ export class Client {
             }
 
             const { url, proxy, ...data } = options;
-            if (proxy === false) {
-                response = await fetch(url, data as RequestInit);
-            } else {
-                let proxyOptions : ProxyOptions | undefined;
-
-                if (
-                    typeof proxy !== 'boolean' &&
-                    typeof proxy !== 'undefined'
-                ) {
-                    proxyOptions = proxy;
-                }
-
-                response = await fetch(url, {
-                    ...data,
-                    ...createProxy(proxyOptions),
-                } as RequestInit);
-            }
+            response = await this.transport.dispatch({
+                url,
+                proxy,
+                init: data as RequestInit,
+            });
         } catch (e: any) {
             return handleError('request', {
                 request: options,
