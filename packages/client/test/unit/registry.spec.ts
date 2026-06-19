@@ -81,6 +81,20 @@ describe('src/registry', () => {
         expect(() => registry.unsetClient('missing')).not.toThrow();
     });
 
+    it('should treat reserved keys like __proto__ as ordinary storage', () => {
+        const registry = buildRegistry();
+        const client = registry.createClient();
+
+        // a plain-object map would route this to the prototype instead of storing it
+        registry.setClient(client, '__proto__');
+
+        expect(registry.hasClient('__proto__')).toBeTruthy();
+        expect(registry.useClient('__proto__')).toBe(client);
+
+        registry.unsetClient('__proto__');
+        expect(registry.hasClient('__proto__')).toBeFalsy();
+    });
+
     it('should keep registries isolated from each other', () => {
         const a = buildRegistry();
         const b = buildRegistry();

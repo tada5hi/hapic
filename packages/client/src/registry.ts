@@ -68,7 +68,9 @@ export type ClientRegistryOptions<T extends Client, I> = {
 export function createClientRegistry<T extends Client, I>(
     options: ClientRegistryOptions<T, I>,
 ) : ClientRegistry<T, I> {
-    const instances : Record<string, T> = {};
+    // null-prototype storage: registry keys are arbitrary strings, so a key
+    // like `__proto__` must be stored as plain data rather than mutate the map.
+    const instances : Record<string, T> = Object.create(null) as Record<string, T>;
 
     const createClient = (input?: I) : T => options.create(input);
 
