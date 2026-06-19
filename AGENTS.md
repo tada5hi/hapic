@@ -11,13 +11,13 @@
 npm ci
 
 # Development
-npm run build          # nx run-many -t build — build all packages (CJS + ESM + .d.ts)
-npm run test           # nx run-many -t test — run all package test suites
-npm run lint           # eslint --ext .ts ./packages/
+npm run build          # nx run-many -t build — build all packages with tsdown (ESM + .d.mts)
+npm run test           # nx run-many -t test — run all package test suites (Vitest)
+npm run lint           # eslint (flat config)
 npm run lint:fix       # eslint --fix
 ```
 
-- **Node.js**: `>=16.0.0` (CI builds/tests on Node 22)
+- **Node.js**: `>=22.0.0` (CI builds/tests on Node 22)
 - **Package manager**: npm (workspaces — `packages/*`)
 - **Build orchestration**: [Nx](https://nx.dev) (`build`, `lint`, `test` are cached; `build` depends on `^build`)
 
@@ -36,8 +36,8 @@ npm run build --workspace=packages/docs   # build the docs site for production
 
 - **[Project Structure](.agents/structure.md)** — Workspace layout, package inventory, dependency layers, and per-package directory conventions
 - **[Architecture](.agents/architecture.md)** — Base `Client`, hook pipeline, domain `*API` / `BaseAPI` pattern, singleton instance management, and cross-realm `@instanceof` checks
-- **[Testing](.agents/testing.md)** — Jest + ts-jest setup, per-package config, coverage thresholds, and the CI test matrix
-- **[Conventions](.agents/conventions.md)** — Code style, naming, tooling (ESLint/TS/Rollup/Nx), Conventional Commits, and the release-please flow
+- **[Testing](.agents/testing.md)** — Vitest setup, per-package config, coverage thresholds, and the CI test matrix
+- **[Conventions](.agents/conventions.md)** — Code style, naming, tooling (ESLint/TS/tsdown/Nx), Conventional Commits, and the release-please flow
 
 ## Commits, Issues & Pull Requests
 

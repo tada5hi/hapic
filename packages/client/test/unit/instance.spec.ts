@@ -7,7 +7,12 @@
 
 import {
     Client,
-    createClient, hasClient, isClient, setClient, unsetClient, useClient,
+    createClient, 
+    hasClient, 
+    isClient, 
+    setClient, 
+    unsetClient, 
+    useClient,
     verifyInstanceBySymbol,
 } from '../../src';
 
@@ -29,9 +34,7 @@ describe('src/instance', () => {
 
         // simulate a Client constructed by a duplicate package copy: cross-realm
         // identity travels in the `@instanceof` marker chain (a symbol[]).
-        const fakeClient = {
-            '@instanceof': [Symbol.for('hapic/Client')],
-        };
+        const fakeClient = { '@instanceof': [Symbol.for('hapic/Client')] };
         expect(isClient(fakeClient)).toBeTruthy();
     });
 

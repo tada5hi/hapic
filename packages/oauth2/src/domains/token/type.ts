@@ -46,8 +46,7 @@ export type TokenRobotCredentialsGrantParameters = {
     secret: string,
 } & ClientAuthenticationParameters;
 
-export type TokenGrantParameters =
-    TokenClientCredentialsGrantParameters |
+export type TokenGrantParameters =    TokenClientCredentialsGrantParameters |
     TokenPasswordGrantParameters |
     TokenAuthorizationCodeGrantParameters |
     TokenRefreshTokenGrantParameters |

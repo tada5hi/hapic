@@ -18,9 +18,7 @@ export class QuerierAPI extends BaseAPI {
      * @param options
      */
     async query(options: QuerierQueryOptions): Promise<QuerierQueryResult> {
-        const headers : Record<string, string> = {
-            [HeaderName.ACCEPT]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.ACCEPT]: 'application/json' };
 
         const { data } = await this.client.get(
             'loki/api/v1/query',
@@ -44,9 +42,7 @@ export class QuerierAPI extends BaseAPI {
      * @param options
      */
     async queryRange(options: QuerierQueryRangeOptions): Promise<QuerierQueryResult> {
-        const headers : Record<string, string> = {
-            [HeaderName.ACCEPT]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.ACCEPT]: 'application/json' };
 
         const { data } = await this.client.get(
             'loki/api/v1/query_range',

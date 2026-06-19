@@ -27,7 +27,7 @@ export function detectResponseType(input?: string | null) : ResponseType {
         'application/html',
     ];
 
-    if (textTypes.indexOf(contentType) !== -1 || contentType.startsWith('text/')) {
+    if (textTypes.includes(contentType) || contentType.startsWith('text/')) {
         return ResponseType.TEXT;
     }
 

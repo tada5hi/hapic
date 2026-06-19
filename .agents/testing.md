@@ -2,12 +2,12 @@
 
 ## Setup
 
-- **Runner**: [Jest](https://jestjs.io/) with [`ts-jest`](https://kulshekhar.github.io/ts-jest/) (TypeScript compiled at test time — no build step required to test source).
-- **Test location**: `packages/<pkg>/test/unit/**/*.spec.ts`
-- **Config**: `packages/<pkg>/test/jest.config.js` (one per package; `rootDir` is the package root)
-- **Environment**: `NODE_ENV=test` (set via `cross-env`), `testEnvironment: 'node'`
+- **Runner**: [Vitest](https://vitest.dev/) (TypeScript handled by Vite/esbuild — no build step required to test a package's own source).
+- **Test location**: `packages/<pkg>/test/unit/**/*.{spec,test}.{ts,js}`
+- **Config**: `packages/<pkg>/test/vitest.config.ts` (one per package). `globals: true` exposes `describe` / `it` / `expect` without imports (so the Jest-style specs run unchanged).
+- **Environment**: `node` (Vitest default); `NODE_ENV=test` is set automatically.
 
-`testRegex` matches files under a `/unit/` directory and any `*.spec.ts` / `*.test.ts`.
+The `include` glob matches `*.spec.ts` / `*.test.ts` under each package's `test/unit/` directory.
 
 ## Running Tests
 
@@ -18,7 +18,7 @@ npm run test --workspace=packages/client -- --coverage   # with coverage
 cd packages/client && npm run test:coverage    # equivalent, per-package
 ```
 
-Tests import from the package's `src` directly (e.g. `import { Client } from '../../src'`), so changes are picked up without rebuilding.
+Tests import from the package's `src` directly (e.g. `import { Client } from '../../src'`), so changes are picked up without rebuilding. Service-client tests additionally import the built `hapic` package (resolved to `packages/client/dist`), so build the base client first (`npm run build`) before running them.
 
 ## Test Layers
 
@@ -34,7 +34,7 @@ There are **no integration tests** against live services and **no Docker/infrast
 ## Test Helpers & Fixtures
 
 - Shared fixture data lives under `packages/<pkg>/test/data/` (e.g. `packages/client/test/data/`).
-- `testPathIgnorePatterns` excludes `writable`, `dist`, and `/unit/mock-util.ts` — name shared helpers `mock-util.ts` (or place them outside `unit/`) so they aren't collected as test suites.
+- The `include` glob only matches `*.spec.ts` / `*.test.ts`, so a `mock-util.ts` helper is naturally excluded — name shared helpers `mock-util.ts` (or place them outside `unit/`) so they aren't collected as test suites.
 
 ## Testing Philosophy
 
@@ -45,10 +45,10 @@ When testing a domain `*API`, prefer constructing the API with a real `Client` (
 ## Code Coverage
 
 ```bash
-npm run test:coverage --workspace=packages/client   # reports to packages/client/writable/coverage
+npm run test:coverage --workspace=packages/client   # reports to packages/client/coverage
 ```
 
-The base package enforces global thresholds in `packages/client/test/jest.config.js`:
+The base package enforces global thresholds in `packages/client/test/vitest.config.ts`:
 
 | Metric     | Threshold |
 |------------|-----------|
@@ -57,7 +57,7 @@ The base package enforces global thresholds in `packages/client/test/jest.config
 | lines      | 73%       |
 | statements | 73%       |
 
-Coverage is collected from `src/**/*.{ts,tsx,js,jsx}` (excluding `*.d.ts`). Coverage output goes to each package's `writable/coverage/` (git-ignored).
+Coverage uses the V8 provider, collected from `src/**/*.{ts,tsx,js,jsx}` (excluding `*.d.ts`). Coverage output goes to each package's `coverage/` (git-ignored).
 
 ## CI Pipeline
 

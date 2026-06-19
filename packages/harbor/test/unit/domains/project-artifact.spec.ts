@@ -18,7 +18,11 @@ describe('src/domains/project-artifact', () => {
         expect(transport.requests[0].method).toBe('DELETE');
         expect(transport.requests[0].url).toBe('projects/foo/repositories/bar/artifacts/latest');
 
-        await api.delete({ projectName: 'foo', repositoryName: 'bar', tagOrDigest: 'base' });
+        await api.delete({
+            projectName: 'foo', 
+            repositoryName: 'bar', 
+            tagOrDigest: 'base', 
+        });
 
         expect(transport.requests[1].method).toBe('DELETE');
         expect(transport.requests[1].url).toBe('projects/foo/repositories/bar/artifacts/base');

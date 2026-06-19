@@ -24,8 +24,8 @@ export type MountCreatePayloadConfig = {
 };
 
 export type MountUpdatePayload = Omit<
-MountCreatePayloadConfig,
-'allowed_response_headers'
+    MountCreatePayloadConfig,
+    'allowed_response_headers'
 > & {
     description?: string,
     allowed_managed_keys?: string[],

@@ -17,9 +17,7 @@ describe('src/utils/error', () => {
         expect(isClientError()).toBeFalsy();
 
         const error = new ClientError({
-            request: {
-                url: 'http://localhost:3000/',
-            },
+            request: { url: 'http://localhost:3000/' },
             message: '',
         });
 

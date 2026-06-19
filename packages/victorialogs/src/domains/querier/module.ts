@@ -17,9 +17,7 @@ export class QuerierAPI extends BaseAPI {
      * @param options
      */
     async query(options: QuerierQueryOptions): Promise<QuerierQueryResult> {
-        const headers : Record<string, string> = {
-            [HeaderName.ACCEPT]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.ACCEPT]: 'application/json' };
 
         const { data } = await this.client.get(
             'select/logsql/query',

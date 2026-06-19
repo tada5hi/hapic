@@ -6,7 +6,10 @@
  */
 
 import {
-    Headers, getHeader, setHeader, unsetHeader,
+    Headers, 
+    getHeader, 
+    setHeader, 
+    unsetHeader,
 } from '../../../src';
 
 const checkSetUnset = (a : HeadersInit) => {

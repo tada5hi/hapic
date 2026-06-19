@@ -17,14 +17,14 @@ export function parseLongProjectRepositoryName(name: string) : ProjectRepository
     let repositoryName = name.substring(projectName.length + 1);
 
     let artifactDigest : string | undefined;
-    if (repositoryName.indexOf('@') !== -1) {
+    if (repositoryName.includes('@')) {
         const index = repositoryName.indexOf('@');
         artifactDigest = repositoryName.substring(index + 1);
         repositoryName = repositoryName.substring(0, index);
     }
 
     let artifactTag : string | undefined;
-    if (repositoryName.indexOf(':') !== -1) {
+    if (repositoryName.includes(':')) {
         const index = repositoryName.indexOf(':');
         artifactTag = repositoryName.substring(index + 1);
         repositoryName = repositoryName.substring(0, index);

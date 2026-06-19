@@ -1,8 +1,10 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "paths": {
-            "hapic": ["./packages/client/src"]
-        }
-    }
+        "types": ["node", "vitest/globals"]
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*"
+    ]
 }

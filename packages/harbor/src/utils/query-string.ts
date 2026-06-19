@@ -18,25 +18,25 @@ export function buildQueryString(
     const searchParams = new URLSearchParams();
 
     const keys = Object.keys(input);
-    for (let i = 0; i < keys.length; i++) {
-        const value = input[keys[i]];
+    for (const key of keys) {
+        const value = input[key];
         if (isObject(value)) {
             const childKeys = Object.keys(value);
             if (childKeys.length > 0) {
                 const childSearchParams = new URLSearchParams();
-                for (let j = 0; j < childKeys.length; j++) {
+                for (const childKey of childKeys) {
                     childSearchParams.append(
-                        childKeys[j],
-                        `${encodeURIComponent(value[childKeys[j]])}`,
+                        childKey,
+                        `${encodeURIComponent(value[childKey])}`,
                     );
                 }
 
-                searchParams.append(keys[i], childSearchParams.toString());
+                searchParams.append(key, childSearchParams.toString());
             }
         } else if (Array.isArray(value)) {
-            searchParams.append(keys[i], `${value.join(',')}`);
+            searchParams.append(key, `${value.join(',')}`);
         } else {
-            searchParams.append(keys[i], `${value}`);
+            searchParams.append(key, `${value}`);
         }
     }
 

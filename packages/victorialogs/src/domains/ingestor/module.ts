@@ -16,9 +16,7 @@ export class IngestorAPI extends BaseAPI {
      * @param data
      */
     async insert(data: IngestorData) : Promise<void> {
-        const headers : Record<string, string> = {
-            [HeaderName.CONTENT_TYPE]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.CONTENT_TYPE]: 'application/json' };
 
         await this.client.post(
             '/insert/jsonline',

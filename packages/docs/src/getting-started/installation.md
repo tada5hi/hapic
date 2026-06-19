@@ -20,9 +20,9 @@ npm install hapic @hapic/victorialogs --save   # VictoriaLogs
 
 | Requirement | Version |
 |-------------|---------|
-| Node.js     | `>=16.0.0` |
-| TypeScript  | 4.x+ recommended (the library ships its own type declarations) |
-| Module format | ESM **and** CommonJS — `main` (`dist/index.cjs`), `module` (`dist/index.mjs`), `types` (`dist/index.d.ts`) |
+| Node.js     | `>=22.0.0` |
+| TypeScript  | 5.x+ recommended (the library ships its own type declarations) |
+| Module format | **ESM only** — `main` (`dist/index.mjs`), `types` (`dist/index.d.mts`). Use `import` (or a dynamic `import()` from CommonJS); `require()` is not supported. |
 
 hapic resolves `fetch`, `Headers`, `Blob`, `FormData`, and `AbortController` from `globalThis` when they exist, and falls back to [`node-fetch-native`](https://www.npmjs.com/package/node-fetch-native) otherwise. There is **no** environment-specific entry point — the same import works in Node.js, the browser, and worker runtimes.
 

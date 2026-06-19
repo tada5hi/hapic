@@ -24,7 +24,6 @@ import type {
 } from './type';
 
 export class ProjectWebhookPolicyAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);
     }
@@ -43,9 +42,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
                 { headers },
             );
 
-        return {
-            id: extractResourceIDOfResponse(response),
-        };
+        return { id: extractResourceIDOfResponse(response) };
     }
 
     async getMany(context: ProjectWebhookPolicyGetManyContext) : Promise<ResourceCollectionResponse<ProjectWebhookPolicy>> {
@@ -90,9 +87,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             projectIdOrName: context.projectIdOrName,
             isProjectName: context.isProjectName,
             query: {
-                q: {
-                    name: context.name,
-                },
+                q: { name: context.name },
                 page_size: 1,
             },
         });

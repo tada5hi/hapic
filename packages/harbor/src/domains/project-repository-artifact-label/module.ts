@@ -13,7 +13,6 @@ import type {
 } from './type';
 
 export class ProjectRepositoryArtifactLabelAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);
     }
@@ -23,9 +22,7 @@ export class ProjectRepositoryArtifactLabelAPI extends BaseAPI {
             .post(
                 `projects/${options.projectName}/repositories/${options.repositoryName}` +
                 `/artifacts/${options.tagOrDigest || 'latest'}/labels`,
-                {
-                    id: options.labelId,
-                },
+                { id: options.labelId },
             );
     }
 

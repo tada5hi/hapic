@@ -2,26 +2,26 @@
     "name": "hapic",
     "version": "2.8.2",
     "description": "A http api client based on axios.",
-    "main": "dist/index.cjs",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.ts",
+    "type": "module",
+    "main": "dist/index.mjs",
+    "types": "dist/index.d.mts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "types": "./dist/index.d.mts",
+            "import": "./dist/index.mjs"
         }
     },
     "files": [
         "dist/"
     ],
+    "engines": {
+        "node": ">=22.0.0"
+    },
     "scripts": {
-        "build:types": "tsc  -p tsconfig.build.json --emitDeclarationOnly",
-        "build:js": "rollup -c",
-        "build": "rimraf dist && npm run build:types && npm run build:js",
-        "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js",
-        "test:coverage": "npm run test -- --coverage"
+        "build": "tsdown",
+        "test": "vitest --config test/vitest.config.ts --run",
+        "test:coverage": "vitest --config test/vitest.config.ts --run --coverage"
     },
     "author": {
         "name": "Peter Placzek",

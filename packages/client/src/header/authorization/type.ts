@@ -27,7 +27,6 @@ export interface APIKeyAuthorizationHeader extends AbstractAuthorizationHeader {
     key: string
 }
 
-export type AuthorizationHeader =
-    BasicAuthorizationHeader |
+export type AuthorizationHeader =    BasicAuthorizationHeader |
     BearerAuthorizationHeader |
     APIKeyAuthorizationHeader;

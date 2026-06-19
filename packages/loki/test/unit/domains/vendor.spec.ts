@@ -20,9 +20,7 @@ describe('src/domains/distributor', () => {
         });
 
         const payload : DistributorPushStream = {
-            stream: {
-                app: 'foo',
-            },
+            stream: { app: 'foo' },
             values: [
                 [BigInt(1000), 'This is a log message.'],
             ],
@@ -37,9 +35,7 @@ describe('src/domains/distributor', () => {
         expect(JSON.parse(req.body as string)).toEqual({
             streams: [
                 {
-                    stream: {
-                        app: 'foo',
-                    },
+                    stream: { app: 'foo' },
                     values: [
                         ['1000', 'This is a log message.'],
                     ],

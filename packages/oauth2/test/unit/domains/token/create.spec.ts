@@ -84,9 +84,7 @@ describe('src/domains/token', () => {
 
         api.setClient(createClient({ transport }));
 
-        let token = await api.createWithRefreshToken({
-            refresh_token: 'refresh_token',
-        });
+        let token = await api.createWithRefreshToken({ refresh_token: 'refresh_token' });
         expect(token).toEqual({ ...tokenGrantResponse });
 
         token = await api.createWithClientCredentials();
@@ -98,9 +96,7 @@ describe('src/domains/token', () => {
         });
         expect(token).toEqual({ ...tokenGrantResponse });
 
-        token = await api.createWithAuthorizationCode({
-            code: 'code',
-        });
+        token = await api.createWithAuthorizationCode({ code: 'code' });
         expect(token).toEqual({ ...tokenGrantResponse });
 
         token = await api.createWithRobotCredentials({

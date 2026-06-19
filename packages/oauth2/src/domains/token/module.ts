@@ -96,9 +96,7 @@ export class TokenAPI extends BaseAPI {
             urlSearchParams,
             {
                 transform: this.buildRequestTransformers(parameters, options),
-                headers: {
-                    [HeaderName.ACCEPT]: 'application/json',
-                },
+                headers: { [HeaderName.ACCEPT]: 'application/json' },
             },
         );
 
@@ -142,9 +140,7 @@ export class TokenAPI extends BaseAPI {
             urlSearchParams,
             {
                 transform: this.buildRequestTransformers(parameters, options),
-                headers: {
-                    [HeaderName.ACCEPT]: 'application/json',
-                },
+                headers: { [HeaderName.ACCEPT]: 'application/json' },
             },
         );
     }
@@ -160,9 +156,7 @@ export class TokenAPI extends BaseAPI {
             urlSearchParams,
             {
                 transform: this.buildRequestTransformers(parameters, options),
-                headers: {
-                    [HeaderName.ACCEPT]: 'application/json',
-                },
+                headers: { [HeaderName.ACCEPT]: 'application/json' },
             },
         );
 
@@ -248,15 +242,15 @@ export class TokenAPI extends BaseAPI {
     ) : URLSearchParams {
         const urlSearchParams = new URLSearchParams();
         const keys = Object.keys(input);
-        for (let i = 0; i < keys.length; i++) {
-            const value = input[keys[i]];
+        for (const key of keys) {
+            const value = input[key];
 
             if (typeof value === 'string' && !!value) {
-                urlSearchParams.append(keys[i], value);
+                urlSearchParams.append(key, value);
             } else if (Array.isArray(value)) {
                 const str = value.filter((el) => el).join(' ');
                 if (str) {
-                    urlSearchParams.append(keys[i], str);
+                    urlSearchParams.append(key, str);
                 }
             }
         }

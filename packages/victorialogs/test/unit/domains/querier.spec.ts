@@ -16,9 +16,7 @@ describe('src/domains/distributor', () => {
         const transport = new MemoryTransport({
             fetch: () => ({
                 status: 200,
-                headers: {
-                    [HeaderName.CONTENT_TYPE]: 'application/stream+json',
-                },
+                headers: { [HeaderName.CONTENT_TYPE]: 'application/stream+json' },
                 body: text,
             }),
         });

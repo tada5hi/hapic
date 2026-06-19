@@ -31,15 +31,15 @@ export function traverse<T extends Record<string, any> | unknown[]>(
     }
 
     const keys = Object.keys(input);
-    for (let i = 0; i < keys.length; i++) {
-        const value = input[keys[i]];
+    for (const key of keys) {
+        const value = input[key];
 
         if (isObject(value) || Array.isArray(value)) {
-            input[keys[i]] = fn(traverse(value, fn), keys[i]);
+            input[key] = fn(traverse(value, fn), key);
             continue;
         }
 
-        input[keys[i]] = fn(value, keys[i]);
+        input[key] = fn(value, key);
     }
 
     return input;

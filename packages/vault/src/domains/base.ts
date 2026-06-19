@@ -7,7 +7,8 @@
 
 import { createClient, isClient } from 'hapic';
 import type {
-    IClient, RequestBaseOptions,
+    IClient, 
+    RequestBaseOptions,
 } from 'hapic';
 import type { BaseAPIContext } from './type';
 

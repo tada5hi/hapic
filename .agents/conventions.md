@@ -6,10 +6,9 @@
 |----------------------------------------|-------------------------------------------------------------------------|
 | npm workspaces                         | Monorepo package management (`packages/*`)                              |
 | [Nx](https://nx.dev)                   | Task orchestration & caching for `build` / `lint` / `test`; `build` depends on `^build` |
-| [Rollup](https://rollupjs.org) + [SWC](https://swc.rs) | Bundles each package to CJS (`.cjs`) and ESM (`.mjs`)                    |
-| `tsc`                                  | Emits type declarations (`.d.ts`) via `tsconfig.build.json`             |
-| ESLint (`@tada5hi/eslint-config-typescript`) | Linting (`eslint --ext .ts ./packages/`)                          |
-| Jest + ts-jest                         | Tests (see [testing.md](testing.md))                                    |
+| [tsdown](https://tsdown.dev) (rolldown) | Bundles each package to ESM (`.mjs`) + type declarations (`.d.mts`)     |
+| ESLint (`@tada5hi/eslint-config`, flat config) | Linting (`eslint`)                                              |
+| [Vitest](https://vitest.dev)           | Tests (see [testing.md](testing.md))                                    |
 | commitlint (`@tada5hi/commitlint-config`) + Husky | Enforces Conventional Commits on `commit-msg`                |
 | release-please + `workspaces-publish`  | Versioning, changelogs, and publishing                                  |
 
@@ -22,10 +21,10 @@
 
 ## Code Style
 
-- **Module format**: TypeScript, ESM source compiled to dual CJS + ESM output.
+- **Module format**: TypeScript, ESM source compiled to **ESM-only** output (`.mjs` + `.d.mts`); every published package sets `"type": "module"`.
 - **Indentation**: 4 spaces (`.editorconfig`).
 - **Line endings**: LF; UTF-8; trailing whitespace trimmed; final newline inserted (except `*.md`).
-- **Linting**: extends `@tada5hi/eslint-config-typescript`, type-aware (`parserOptions.project: ./tsconfig.json`). `dist/` and `*.d.ts` are ignored. Notable disabled rules: `class-methods-use-this`, `dot-notation`, `no-use-before-define`, `no-shadow`, several `@typescript-eslint` rules.
+- **Linting**: single root flat config (`eslint.config.js`) that spreads `await config({ typescript: true, vue: false })` from `@tada5hi/eslint-config`. `dist/`, `*.d.ts`, `coverage`/`writable`, and `packages/docs` are ignored. Notable disabled rules: `class-methods-use-this`, `dot-notation`, `no-continue`, `no-use-before-define`, `no-shadow`, `no-unused-vars` (and their `@typescript-eslint` variants).
 - **Parameter defaulting**: when a function or constructor accepts an optional options/config bag, default it with a **default parameter value**, not an optional parameter reassigned in the body:
 
   ```typescript
@@ -71,16 +70,16 @@
 
 ## TypeScript
 
-- Extends `@tada5hi/tsconfig` via `tsconfig.build.json`: `target`/`module`/`lib` = ESNext (+ `DOM`), `moduleResolution: Node`.
-- Root `tsconfig.json` extends the build config with `noEmit: true` (used for the ESLint type-aware project and editor IntelliSense).
-- Declarations are emitted with `tsc -p tsconfig.build.json --emitDeclarationOnly`; JS is bundled by Rollup, not `tsc`.
+- Root `tsconfig.json` extends `@tada5hi/tsconfig`: `target: ES2022`, `module: ESNext`, `moduleResolution: bundler`, `allowImportingTsExtensions`, `noEmit` (`noUncheckedIndexedAccess` kept off to preserve the project's prior strictness).
+- Each package's `tsconfig.json` extends the root config, sets `include` (`src` + `test`), and adds `types: ["node", "vitest/globals"]`.
+- Both the JS bundle and the `.d.mts` declarations are emitted by **tsdown** — there is no separate `tsc` build step.
 - **`interface` vs `type`**: use an `interface` **only** for a shape that a class `implements`, and prefix it with `I` (e.g. `IClient`, implemented by `Client`; `ITransport`, implemented by `FetchTransport` / `MemoryTransport`). Everything else — data shapes, option bags, unions — is a `type` with no prefix (e.g. `TransportRequest`, `ClientOptions`). Some older interfaces predate this rule; apply it to new and edited code rather than rewriting the whole tree.
 
 ## Build Output
 
-- Each package builds to `dist/` containing `index.cjs`, `index.mjs`, and `index.d.ts` (plus source maps). Only `dist/` is published (`"files": ["dist/"]`).
-- Per-package `build` = `rimraf dist && npm run build:types && npm run build:js`.
-- Rollup config (`rollup.config.mjs`) treats `dependencies` + `peerDependencies` + Node builtins as external; SWC compiles TS with `target: es2020` and legacy decorators enabled.
+- Each package builds to `dist/` containing `index.mjs` and `index.d.mts` (plus source maps) — **ESM only**. Only `dist/` is published (`"files": ["dist/"]`).
+- Per-package `build` = `tsdown` (config in `tsdown.config.ts`: `entry: src/index.ts`, `format: 'esm'`, `dts: true`, `sourcemap: true`); tsdown cleans `dist/` itself.
+- tsdown treats `dependencies` + `peerDependencies` + Node builtins as external by default.
 
 ## Commit Convention
 

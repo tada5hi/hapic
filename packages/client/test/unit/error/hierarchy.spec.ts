@@ -59,17 +59,13 @@ describe('src/error/hierarchy', () => {
         expect(isHttpResponseError(httpError)).toBe(true);
         expect(isClientError(httpError)).toBe(true);
 
-        const networkError = createClientError({
-            request: { url: 'x', method: 'GET' },
-        });
+        const networkError = createClientError({ request: { url: 'x', method: 'GET' } });
         expect(isNetworkError(networkError)).toBe(true);
         expect(isClientError(networkError)).toBe(true);
     });
 
     it('should detect errors across realms via the @instanceof marker chain', () => {
-        const fake = {
-            '@instanceof': [Symbol.for('hapic/ClientError'), Symbol.for('hapic/HttpResponseError')],
-        };
+        const fake = { '@instanceof': [Symbol.for('hapic/ClientError'), Symbol.for('hapic/HttpResponseError')] };
 
         expect(isClientError(fake)).toBe(true);
         expect(isHttpResponseError(fake)).toBe(true);

@@ -22,7 +22,6 @@ import type {
 } from './type';
 
 export class ProjectAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);
     }
@@ -31,9 +30,7 @@ export class ProjectAPI extends BaseAPI {
         const response = await this.client
             .post('projects', data);
 
-        return {
-            id: extractResourceIDOfResponse(response),
-        };
+        return { id: extractResourceIDOfResponse(response) };
     }
 
     async delete(

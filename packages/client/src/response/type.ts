@@ -7,17 +7,16 @@
 
 import type { ResponseType } from '../constants';
 
-export type ResponseData<RT extends `${ResponseType}` = `${ResponseType.JSON}`, T = any> =
-    RT extends `${ResponseType.ARRAY_BUFFER}` ?
-        ArrayBuffer :
-        RT extends `${ResponseType.TEXT}` ?
-            string :
-            RT extends `${ResponseType.STREAM}` ?
-                ReadableStream :
-                RT extends `${ResponseType.BLOB}` ?
-                    Blob :
-                    T;
-export interface Response<T = any > extends globalThis.Response {
+export type ResponseData<RT extends `${ResponseType}` = `${ResponseType.JSON}`, T = any> =    RT extends `${ResponseType.ARRAY_BUFFER}` ?
+    ArrayBuffer :
+    RT extends `${ResponseType.TEXT}` ?
+        string :
+        RT extends `${ResponseType.STREAM}` ?
+            ReadableStream :
+            RT extends `${ResponseType.BLOB}` ?
+                Blob :
+                T;
+export interface Response<T = any> extends globalThis.Response {
     data?: T
 }
 

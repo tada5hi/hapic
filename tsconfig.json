@@ -1,8 +1,16 @@
 {
-    "extends": "./tsconfig.build.json",
-
+    "extends": "@tada5hi/tsconfig",
     "compilerOptions": {
-        "baseUrl": ".",
-        "noEmit": true
-    }
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+
+        "noUncheckedIndexedAccess": false
+    },
+    "exclude": [
+        "node_modules",
+        "**/dist"
+    ]
 }

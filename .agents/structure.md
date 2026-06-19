@@ -83,19 +83,18 @@ packages/<service>/src/
 
 ## Package Exports
 
-Every published package exposes a single entry point with dual CJS/ESM builds and types:
+Every published package is **ESM-only** (`"type": "module"`) and exposes a single entry point with types:
 
 ```json
 {
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
   },
   "files": ["dist/"]

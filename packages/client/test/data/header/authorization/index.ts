@@ -58,7 +58,11 @@ describe('src/http/header/authorization/authorization-header.ts', () => {
     });
 
     it('should build basic header value', () => {
-        const headerValue = stringifyAuthorizationHeader({ type: 'Basic', username: 'admin', password: 'start123' });
+        const headerValue = stringifyAuthorizationHeader({
+            type: 'Basic', 
+            username: 'admin', 
+            password: 'start123', 
+        });
         expect(headerValue).toEqual(`Basic ${Buffer.from('admin:start123').toString('base64')}`);
     });
 

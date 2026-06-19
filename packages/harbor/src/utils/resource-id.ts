@@ -16,7 +16,7 @@ export function extractResourceIDOfResponse(response: Pick<Response, 'headers'>)
     ) {
         const value = response.headers.get(HeaderName.LOCATION);
         if (value) {
-            const id = parseInt(value.substring(value.lastIndexOf('/') + 1), 10);
+            const id = Number.parseInt(value.substring(value.lastIndexOf('/') + 1), 10);
             if (!Number.isNaN(id)) {
                 return id;
             }

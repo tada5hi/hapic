@@ -13,7 +13,8 @@ import {
     isFormData,
     isSerializable,
     isStream,
-    isURLSearchParams, serialize,
+    isURLSearchParams, 
+    serialize,
 } from '../../utils';
 import type { RequestTransformer } from '../type';
 
@@ -39,7 +40,7 @@ export function createDefaultRequestTransformer() : RequestTransformer {
         }
 
         const contentType = headers.get(HeaderName.CONTENT_TYPE) || '';
-        const contentTypeIsJson = contentType.indexOf('application/json') !== -1;
+        const contentTypeIsJson = contentType.includes('application/json');
 
         if (isSerializable(data) || contentTypeIsJson) {
             data = typeof data === 'string' ?
