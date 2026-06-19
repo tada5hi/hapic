@@ -5,94 +5,18 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import {
-    hasInstanceof,
-    hasOwnProperty,
-} from 'hapic';
+import { createClientRegistry } from 'hapic';
 import type { ConfigInput } from './config';
 import { VAULT_CLIENT_INSTANCE, VaultClient } from './module';
 
-const instances: Record<string, VaultClient> = {};
-
-/**
- * Verify if a vault client singleton instance exists.
- *
- * @param key
- */
-export function hasClient(
-    key?: string,
-) : boolean {
-    return hasOwnProperty(instances, key || 'default');
-}
-
-/**
- * Set the vault client singleton instance.
- *
- * @param client
- * @param key
- */
-export function setClient(
-    client: VaultClient,
-    key?: string,
-) : VaultClient {
-    key = key || 'default';
-
-    instances[key] = client;
-
-    return client;
-}
-
-/**
- * Receive a vault singleton instance.
- *
- * @param key
- */
-export function useClient(
-    key?: string,
-) : VaultClient {
-    key = key || 'default';
-
-    if (Object.prototype.hasOwnProperty.call(instances, key)) {
-        return instances[key];
-    }
-
-    const instance = createClient();
-
-    instances[key] = instance;
-
-    return instance;
-}
-
-/**
- * Unset a vault client singleton instance.
- *
- * @param key
- */
-export function unsetClient(key?: string) {
-    key = key || 'default';
-    if (hasOwnProperty(instances, key)) {
-        delete instances[key];
-    }
-}
-
-/**
- * Create a vault client.
- *
- * @param input
- */
-export function createClient(input?: ConfigInput) {
-    return new VaultClient(input);
-}
-
-/**
- * Check if the argument is of instance Client.
- *
- * @param input
- */
-export function isClient(input: unknown): input is VaultClient {
-    if (input instanceof VaultClient) {
-        return true;
-    }
-
-    return hasInstanceof(input, VAULT_CLIENT_INSTANCE);
-}
+export const {
+    hasClient,
+    setClient,
+    useClient,
+    unsetClient,
+    createClient,
+    isClient,
+} = createClientRegistry<VaultClient, ConfigInput>({
+    create: (input) => new VaultClient(input),
+    id: VAULT_CLIENT_INSTANCE,
+});

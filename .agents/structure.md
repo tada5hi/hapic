@@ -41,7 +41,8 @@ A change to `hapic` (the base `Client`, request/response/hook types, or error he
 packages/client/src/
 ├── index.ts            # Barrel re-exports + a default `createClient()` instance (export default)
 ├── module.ts           # Client class — request(), get/post/put/patch/delete/head(), header & hook management
-├── instance.ts         # Singleton registry: create/use/set/has/unsetClient, isClient
+├── registry.ts         # createClientRegistry({ create, id }) — factory for the singleton-registry functions
+├── instance.ts         # Base Client's registry: create/use/set/has/unsetClient, isClient (built via createClientRegistry)
 ├── constants.ts        # ResponseType, MethodName enums
 ├── fetch.ts            # Cross-env fetch/Headers/Blob/FormData/AbortController + proxy (node-fetch-native)
 ├── request/            # RequestBaseOptions/RequestOptions types, defaults, payload helpers, transformers
@@ -60,7 +61,7 @@ Every service client follows the same shape:
 packages/<service>/src/
 ├── index.ts            # Barrel: re-exports module, instance, config, domains, types
 ├── module.ts           # <Service>Client extends Client (from hapic) — composes domain *API instances
-├── instance.ts         # Per-service singleton registry (create/use/set/has/unsetClient, isClient)
+├── instance.ts         # Per-service singleton registry (one createClientRegistry() call from `hapic`)
 ├── client.ts           # Re-exports selected base types/helpers from `hapic` (Response, ClientError, …)
 ├── constants.ts        # Service-specific constants (e.g. extra header names)
 ├── config/             # Config / ConfigInput types (request options + connectionString/connectionOptions)

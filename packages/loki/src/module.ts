@@ -21,10 +21,10 @@ export class LokiClient extends Client {
     // -----------------------------------------------------------------------------------
 
     constructor(input: ConfigInput = {}) {
-        input.request ||= {};
-        input.request.baseURL = input.request.baseURL || 'http://localhost:3100/';
+        const request = { ...input.request };
+        request.baseURL ||= 'http://localhost:3100/';
 
-        super(input.request);
+        super(request);
 
         markInstanceof(this, LOKI_CLIENT_INSTANCE);
 

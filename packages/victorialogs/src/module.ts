@@ -18,10 +18,10 @@ export class VictoriaLogsClient extends Client {
     // -----------------------------------------------------------------------------------
 
     constructor(input: ConfigInput = {}) {
-        input.request ||= {};
-        input.request.baseURL = input.request.baseURL || 'http://localhost:9428/';
+        const request = { ...input.request };
+        request.baseURL ||= 'http://localhost:9428/';
 
-        super(input.request);
+        super(request);
 
         markInstanceof(this, VICTORIALOGS_CLIENT_INSTANCE);
 

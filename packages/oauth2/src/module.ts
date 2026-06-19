@@ -23,9 +23,7 @@ export class OAuth2Client extends Client {
 
     // -----------------------------------------------------------------------------------
 
-    constructor(input?: ConfigInput) {
-        input = input || {};
-
+    constructor(input: ConfigInput = {}) {
         super(input.request);
 
         markInstanceof(this, OAUTH2_CLIENT_INSTANCE);

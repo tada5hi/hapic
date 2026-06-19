@@ -113,8 +113,22 @@ createClient(input?)      // construct a new client
 useClient(key?)           // get-or-create the singleton for `key`
 setClient(client, key?)   // register a client under `key`
 hasClient(key?) / unsetClient(key?)
-isClient(input)           // instanceof + cross-realm symbol check
+isClient(input)           // cross-realm marker check via hasInstanceof
 ```
+
+These six functions are **not** hand-written per package. A single factory, `createClientRegistry({ create, id })` (`packages/client/src/registry.ts`, exported from `hapic`), owns the keyed map and returns them; each package supplies only how to construct its client and the marker symbol that identifies it:
+
+```typescript
+// e.g. packages/harbor/src/instance.ts
+export const {
+    hasClient, setClient, useClient, unsetClient, createClient, isClient,
+} = createClientRegistry<HarborClient, ConfigInput>({
+    create: (input) => new HarborClient(input),
+    id: HARBOR_CLIENT_INSTANCE,
+});
+```
+
+The factory keeps `setClient`/`useClient` generic over the client type, so the base package's `setClient<T>` / `useClient<T>` behavior is unchanged. `isClient` resolves purely through `hasInstanceof(input, id)` — every client stamps that marker in its constructor (see below), so the marker check covers same- and cross-realm instances. When adding a new client package, call `createClientRegistry` rather than re-implementing the registry; a per-package test should assert `isClient(createClient())` to catch a wrong `id`.
 
 ### Cross-realm `instanceof` (`@instanceof` marker chain)
 

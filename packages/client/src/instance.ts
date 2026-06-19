@@ -6,57 +6,17 @@
  */
 
 import { CLIENT_INSTANCE, Client } from './module';
+import { createClientRegistry } from './registry';
 import type { ClientOptionsInput } from './type';
-import { hasInstanceof, hasOwnProperty } from './utils';
 
-const instanceMap: Record<string, Client> = {};
-
-export function hasClient(
-    key?: string,
-) : boolean {
-    return hasOwnProperty(instanceMap, key || 'default');
-}
-
-export function setClient<T extends Client = Client>(
-    client: T,
-    key?: string,
-) : T {
-    key = key || 'default';
-
-    instanceMap[key] = client;
-
-    return client;
-}
-
-export function useClient<T extends Client = Client>(key?: string) : T {
-    key = key || 'default';
-
-    if (Object.prototype.hasOwnProperty.call(instanceMap, key)) {
-        return instanceMap[key] as T;
-    }
-
-    const instance = createClient();
-
-    instanceMap[key] = instance;
-
-    return instance as T;
-}
-
-export function unsetClient(key?: string) {
-    key = key || 'default';
-    if (hasOwnProperty(instanceMap, key)) {
-        delete instanceMap[key];
-    }
-}
-
-export function createClient(input?: ClientOptionsInput) {
-    return new Client(input);
-}
-
-export function isClient(input: unknown): input is Client {
-    if (input instanceof Client) {
-        return true;
-    }
-
-    return hasInstanceof(input, CLIENT_INSTANCE);
-}
+export const {
+    hasClient,
+    setClient,
+    useClient,
+    unsetClient,
+    createClient,
+    isClient,
+} = createClientRegistry<Client, ClientOptionsInput>({
+    create: (input) => new Client(input),
+    id: CLIENT_INSTANCE,
+});

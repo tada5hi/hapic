@@ -2,7 +2,7 @@
 
 Most apps want **one** configured client, reused everywhere — not a fresh one per module. hapic ships a small singleton registry, keyed by name, so you can configure a client once and reach it from anywhere.
 
-The same six functions are exported by the base package **and** by every `@hapic/*` service package, with identical semantics.
+The same six functions are exported by the base package **and** by every `@hapic/*` service package, with identical semantics — they're all produced by one factory, `createClientRegistry`, so you get the same registry for [your own client](/guide/building-a-client#a-singleton-registry-for-your-client).
 
 ## The functions
 
