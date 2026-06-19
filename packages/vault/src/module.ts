@@ -22,9 +22,7 @@ export class VaultClient extends Client {
 
     // -----------------------------------------------------------------------------------
 
-    constructor(input?: ConfigInput) {
-        input = input || {};
-
+    constructor(input: ConfigInput = {}) {
         super(input.request);
 
         markInstanceof(this, VAULT_CLIENT_INSTANCE);
@@ -38,9 +36,7 @@ export class VaultClient extends Client {
 
     // -----------------------------------------------------------------------------------
 
-    applyConfig(input?: ConfigInput) {
-        input = input || {};
-
+    applyConfig(input: ConfigInput = {}) {
         this.setHeader(HeaderName.VAULT_REQUEST, 'true');
         this.setHeader(HeaderName.CONTENT_TYPE, 'application/json');
 

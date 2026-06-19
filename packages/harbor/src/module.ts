@@ -35,9 +35,7 @@ export class HarborClient extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    constructor(input?: ConfigInput) {
-        input = input || {};
-
+    constructor(input: ConfigInput = {}) {
         super(input.request);
 
         markInstanceof(this, HARBOR_CLIENT_INSTANCE);
@@ -54,9 +52,7 @@ export class HarborClient extends BaseClient {
 
     // -----------------------------------------------------------------------------------
 
-    applyConfig(input?: ConfigInput) {
-        input = input || {};
-
+    applyConfig(input: ConfigInput = {}) {
         let connectionOptions : ConnectionOptions | undefined;
 
         if (input.connectionString) {

@@ -26,6 +26,16 @@
 - **Indentation**: 4 spaces (`.editorconfig`).
 - **Line endings**: LF; UTF-8; trailing whitespace trimmed; final newline inserted (except `*.md`).
 - **Linting**: extends `@tada5hi/eslint-config-typescript`, type-aware (`parserOptions.project: ./tsconfig.json`). `dist/` and `*.d.ts` are ignored. Notable disabled rules: `class-methods-use-this`, `dot-notation`, `no-use-before-define`, `no-shadow`, several `@typescript-eslint` rules.
+- **Parameter defaulting**: when a function or constructor accepts an optional options/config bag, default it with a **default parameter value**, not an optional parameter reassigned in the body:
+
+  ```typescript
+  // preferred
+  constructor(input: ConfigInput = {}) { /* ... */ }
+
+  // avoid
+  constructor(input?: ConfigInput) { input = input || {}; /* ... */ }
+  ```
+
 - **File header**: every source file starts with the standard copyright block:
 
   ```typescript
