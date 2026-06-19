@@ -13,6 +13,7 @@ import type { Response } from '../response';
 import { HookName } from './constants';
 import type {
     HookErrorFn,
+    HookErrorRecovery,
     HookFn,
     HookReqFn,
 } from './type';
@@ -99,10 +100,21 @@ export class HookManager {
         return temp;
     }
 
+    /**
+     * Run the error hooks for a failed request and classify the outcome.
+     *
+     * Hooks run in registration order, each receiving the current error. A hook
+     * recovers by returning a {@link Response} (short-circuit) or
+     * {@link RequestOptions} (retry); the first such return wins and is returned
+     * as a {@link HookErrorRecovery}. A hook that throws replaces the error
+     * threaded into the remaining hooks. If no hook recovers, the (possibly
+     * replaced) error is thrown — owning the whole recover-or-rethrow decision
+     * here instead of splitting it across the request lifecycle.
+     */
     async triggerErrorHook(
         name: `${HookName.RESPONSE_ERROR}` | `${HookName.REQUEST_ERROR}`,
         input: ClientError,
-    ) : Promise<RequestOptions | Response> {
+    ) : Promise<HookErrorRecovery> {
         const items = (this.items[name] || []) as HookErrorFn[];
 
         let temp = input;
@@ -118,11 +130,12 @@ export class HookManager {
                     output = await output;
                 }
 
-                if (
-                    isResponse(output) ||
-                    isRequestOptions(output)
-                ) {
-                    return output;
+                if (isResponse(output)) {
+                    return { type: 'response', response: output };
+                }
+
+                if (isRequestOptions(output)) {
+                    return { type: 'retry', options: output };
                 }
             } catch (e) {
                 temp = e as ClientError;

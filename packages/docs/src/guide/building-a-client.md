@@ -110,6 +110,24 @@ export class MyClient extends Client {
 }
 ```
 
+::: tip Reuse the connection helpers
+For the common `<credentials>@<host>` shape, `hapic` exports `splitConnectionString`, which performs the `@` split and throws a `ConnectionStringParseError` on a malformed string — so you only interpret the `credentials` part. `resolveConnectionOptions` then applies the standard "parse the string, but let explicit `connectionOptions` win" precedence:
+
+```typescript
+import { resolveConnectionOptions, splitConnectionString } from 'hapic';
+
+function parseConnectionString(value: string) {
+    const { credentials, host } = splitConnectionString(value);
+    const [username, password] = credentials.split(':');
+    return { host, username, password };
+}
+
+const options = resolveConnectionOptions(input, parseConnectionString);
+```
+
+This is exactly how `@hapic/harbor` and `@hapic/vault` resolve their connection config.
+:::
+
 Now consumers get a typed surface over the same predictable transport:
 
 ```typescript

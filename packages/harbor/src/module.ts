@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client as BaseClient, markInstanceof } from 'hapic';
-import type { ConfigInput, ConnectionOptions } from './config';
+import { Client as BaseClient, markInstanceof, resolveConnectionOptions } from 'hapic';
+import type { ConfigInput } from './config';
 import {
     ProjectAPI,
     ProjectRepositoryAPI,
@@ -53,15 +53,7 @@ export class HarborClient extends BaseClient {
     // -----------------------------------------------------------------------------------
 
     applyConfig(input: ConfigInput = {}) {
-        let connectionOptions : ConnectionOptions | undefined;
-
-        if (input.connectionString) {
-            connectionOptions = parseConnectionString(input.connectionString);
-        }
-
-        if (input.connectionOptions) {
-            connectionOptions = input.connectionOptions;
-        }
+        const connectionOptions = resolveConnectionOptions(input, parseConnectionString);
 
         if (connectionOptions) {
             this.setBaseURL(connectionOptions.host);

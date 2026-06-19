@@ -5,20 +5,18 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { splitConnectionString } from 'hapic';
 import type { ConnectionOptions } from '../config';
 import { ConnectionStringParseError } from '../error';
 
+const FORMAT_HINT = 'Harbor connection string must be in the following format: user:password@host';
+
 export function parseConnectionString(connectionString: string): ConnectionOptions {
-    const parts: string[] = connectionString.split('@');
-    if (parts.length !== 2) {
-        throw new ConnectionStringParseError('Harbor connection string must be in the following format: user:password@host');
-    }
+    const { credentials, host } = splitConnectionString(connectionString, { message: FORMAT_HINT });
 
-    const host: string = parts[1];
-
-    const authParts: string[] = parts[0].split(':');
+    const authParts = credentials.split(':');
     if (authParts.length !== 2) {
-        throw new ConnectionStringParseError('Harbor connection string must be in the following format: user:password@host');
+        throw new ConnectionStringParseError(FORMAT_HINT);
     }
 
     return {

@@ -6,13 +6,21 @@
  */
 
 import {
-    createClient, 
-    isClient, 
-    unsetClient, 
+    VaultClient,
+    createClient,
+    isClient,
+    unsetClient,
     useClient,
 } from '../../src';
 
 describe('src/instance', () => {
+    it('should create client by connectionString', () => {
+        const client = new VaultClient({ connectionString: 'mytoken@https://vault.example.com/v1/' });
+
+        expect(client.getBaseURL()).toEqual('https://vault.example.com/v1/');
+        expect(client.getHeader('X-Vault-Token')).toEqual('mytoken');
+    });
+
     it('should guard its own instances', () => {
         expect(isClient(createClient())).toBeTruthy();
         expect(isClient({})).toBeFalsy();

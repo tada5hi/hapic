@@ -5,8 +5,8 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client, markInstanceof } from 'hapic';
-import type { ConfigInput, ConnectionOptions } from './config';
+import { Client, markInstanceof, resolveConnectionOptions } from 'hapic';
+import type { ConfigInput } from './config';
 import { HeaderName } from './constants';
 import { KeyValueV1API, KeyValueV2API, MountAPI } from './domains';
 import { parseConnectionString } from './utils';
@@ -40,15 +40,7 @@ export class VaultClient extends Client {
         this.setHeader(HeaderName.VAULT_REQUEST, 'true');
         this.setHeader(HeaderName.CONTENT_TYPE, 'application/json');
 
-        let connectionOptions : ConnectionOptions | undefined;
-
-        if (input.connectionString) {
-            connectionOptions = parseConnectionString(input.connectionString);
-        }
-
-        if (input.connectionOptions) {
-            connectionOptions = input.connectionOptions;
-        }
+        const connectionOptions = resolveConnectionOptions(input, parseConnectionString);
 
         if (connectionOptions) {
             this.setBaseURL(connectionOptions.host);

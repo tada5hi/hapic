@@ -33,7 +33,6 @@ import {
 } from './hook';
 import {
     detectResponseType,
-    isResponse,
 } from './response';
 import {
     extendRequestOptionsWithDefaults,
@@ -243,22 +242,18 @@ export class Client implements IClient {
                 Error.captureStackTrace(error, this.request);
             }
 
-            let output : RequestOptions | Response | undefined;
-            if (step === 'request') {
-                output = await this.hookManager.triggerErrorHook(HookName.REQUEST_ERROR, error);
-            } else {
-                output = await this.hookManager.triggerErrorHook(HookName.RESPONSE_ERROR, error);
+            // The hook manager owns the recover-or-rethrow decision: it returns
+            // a classified recovery (or throws the error when nothing recovers).
+            const recovery = await this.hookManager.triggerErrorHook(
+                step === 'request' ? HookName.REQUEST_ERROR : HookName.RESPONSE_ERROR,
+                error,
+            );
+
+            if (recovery.type === 'response') {
+                return recovery.response as R;
             }
 
-            if (output) {
-                if (isResponse(output)) {
-                    return output as R;
-                }
-
-                return this.request(output);
-            }
-
-            throw error;
+            return this.request(recovery.options);
         };
 
         let response : Response<ResponseData<RT, T>>;
