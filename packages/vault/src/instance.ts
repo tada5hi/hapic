@@ -6,11 +6,11 @@
  */
 
 import {
+    hasInstanceof,
     hasOwnProperty,
-    verifyInstanceBySymbol,
 } from 'hapic';
 import type { ConfigInput } from './config';
-import { VaultClient } from './module';
+import { VAULT_CLIENT_INSTANCE, VaultClient } from './module';
 
 const instances: Record<string, VaultClient> = {};
 
@@ -94,5 +94,5 @@ export function isClient(input: unknown): input is VaultClient {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'VaultClient');
+    return hasInstanceof(input, VAULT_CLIENT_INSTANCE);
 }

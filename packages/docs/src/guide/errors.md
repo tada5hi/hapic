@@ -2,34 +2,67 @@
 
 hapic treats unsuccessful requests as **errors**, not values. Any response with a status in **400–599**, and any network/dispatch failure, rejects with a `ClientError`. This keeps your happy path clean — destructure `data` and move on — while failures surface loudly.
 
-## The `ClientError`
+## The `ClientError` family
 
-`ClientError` is built on [`ebec`](https://www.npmjs.com/package/ebec) and carries the full context of what went wrong:
+`ClientError` is built on [`@ebec/core`](https://www.npmjs.com/package/@ebec/core) and carries the full context of what went wrong. It is the **umbrella** type; every thrown error is a `ClientError` or one of its subclasses:
 
 ```typescript
 import { ClientError } from 'hapic';
 
-class ClientError<T = any> extends Error {
+class ClientError<T = any> extends BaseError {   // BaseError comes from @ebec/core
     request: RequestOptions;      // the options that were dispatched
     response?: Response<T>;       // present for HTTP errors, absent for network errors
     status?: number;              // response.status (alias: statusCode)
     statusCode?: number;
     statusText?: string;          // response.statusText (alias: statusMessage)
     statusMessage?: string;
-    code?: ErrorCode | string;    // a machine-readable code (e.g. 'ECONNRESET')
+    code: string;                 // a machine-readable code, always set (e.g. 'ECONNRESET')
+    cause?: unknown;              // the underlying error, when one exists
 }
 ```
 
-A key distinction:
+Two subclasses narrow the failure mode:
 
-- **HTTP error** (4xx/5xx) → `response` is set, `status` reflects it.
-- **Network error** (DNS failure, connection reset, abort) → `response` is `undefined`, and `code` is set instead.
+- **`HttpResponseError`** — the server answered with a `4xx`/`5xx` status. `response` and `status` are set; `code` defaults to `'HTTP_RESPONSE_ERROR'`.
+- **`NetworkError`** — the request never produced a response (DNS failure, connection reset, abort). `response` is `undefined` and `code` carries the reason (e.g. `'ECONNRESET'`, `'ECONNABORTED'`).
+
+```
+BaseError (@ebec/core)
+ └─ HapicError                    ← any hapic error; isHapicError()
+     ├─ ClientError               ← request lifecycle; isClientError()
+     │   ├─ NetworkError          ← no response; isNetworkError()
+     │   └─ HttpResponseError     ← 4xx/5xx response; isHttpResponseError()
+     ├─ AuthorizationHeaderError
+     └─ ConnectionStringParseError   (in @hapic/harbor, @hapic/vault)
+```
+
+Every error a `@hapic/*` package throws descends from `HapicError`, so `isHapicError(e)` answers "did this come from hapic?" — even for config/auth errors that aren't request failures.
 
 ## Prefer the guards over `instanceof`
 
-If a consumer ends up with two bundled copies of hapic, a plain `error instanceof ClientError` can be `false` for an error thrown by the other copy. The exported guards use a cross-realm symbol check, so reach for them instead:
+If a consumer ends up with two bundled copies of hapic, a plain `error instanceof ClientError` can be `false` for an error thrown by the other copy. The exported guards instead consult a cross-realm **marker chain**: every error records a marker for itself *and* for each of its ancestors, so a single instance is matched by every guard in its lineage — an `HttpResponseError` answers `true` to both `isHttpResponseError` **and** `isClientError`.
+
+### `isHapicError`
+
+The broadest guard — matches *any* error thrown by *any* hapic package (request, auth, or connection), and nothing else:
+
+```typescript
+import { isHapicError } from 'hapic';
+
+try {
+    await client.get('users/1');
+} catch (error) {
+    if (isHapicError(error)) {
+        // came from hapic — safe to read error.code / error.message
+    } else {
+        throw error; // some other library's error — rethrow
+    }
+}
+```
 
 ### `isClientError`
+
+Narrower than `isHapicError` — matches errors from the HTTP **request lifecycle** (network or HTTP response), but not config/auth errors:
 
 ```typescript
 import { isClientError } from 'hapic';
@@ -42,6 +75,22 @@ try {
     } else {
         throw error; // not ours — rethrow
     }
+}
+```
+
+### `isHttpResponseError` / `isNetworkError`
+
+Branch on the failure mode directly:
+
+```typescript
+import { isHttpResponseError, isNetworkError } from 'hapic';
+
+if (isHttpResponseError(error)) {
+    console.error(`server said ${error.status}`);
+}
+
+if (isNetworkError(error)) {
+    // never reached the server — safe to retry with backoff
 }
 ```
 
@@ -60,7 +109,7 @@ It returns `false` for network errors (there's no response to inspect).
 
 ### `isClientErrorDueNetworkIssue`
 
-True when the failure never produced a response — there's a `code` but no `response`:
+True when the failure never produced a response and was not an explicit abort — there's a `code` but no `response`:
 
 ```typescript
 import { isClientErrorDueNetworkIssue } from 'hapic';
@@ -72,7 +121,7 @@ if (isClientErrorDueNetworkIssue(error)) {
 
 ## Error codes
 
-The `ErrorCode` enum names the non-HTTP failure modes:
+Every `ClientError` exposes a `code`. For HTTP errors it derives from the class name (`'HTTP_RESPONSE_ERROR'`); for the non-HTTP failure modes the `ErrorCode` enum names them:
 
 ```typescript
 import { ErrorCode } from 'hapic';

@@ -6,11 +6,11 @@
  */
 
 import {
+    hasInstanceof,
     hasOwnProperty,
-    verifyInstanceBySymbol,
 } from 'hapic';
 import type { ConfigInput } from './config';
-import { OAuth2Client } from './module';
+import { OAUTH2_CLIENT_INSTANCE, OAuth2Client } from './module';
 
 const instanceMap: Record<string, OAuth2Client> = {};
 
@@ -94,5 +94,5 @@ export function isClient(input: unknown): input is OAuth2Client {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, 'OAuth2Client');
+    return hasInstanceof(input, OAUTH2_CLIENT_INSTANCE);
 }

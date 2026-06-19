@@ -5,7 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export const CLIENT_INSTANCE_NAME = 'VictoriaLogs';
+export const CLIENT_INSTANCE_NAME = '@hapic/victorialogs/VictoriaLogsClient';
+
+export const VICTORIALOGS_CLIENT_INSTANCE = Symbol.for(CLIENT_INSTANCE_NAME);
 
 export enum HeaderName {
     ACCEPT = 'accept',

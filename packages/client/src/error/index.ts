@@ -6,6 +6,8 @@
  */
 
 export * from './constants';
+export * from './core';
+export * from './hapic-error';
 export * from './entities';
 export * from './module';
 export * from './helpers';

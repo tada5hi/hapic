@@ -5,11 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { isObject, verifyInstanceBySymbol } from '../utils';
+import { hasInstanceof, isObject } from '../utils';
 import type { ITransport } from './type';
 
+export const CLIENT_TRANSPORT_INSTANCE = Symbol.for('hapic/ClientTransport');
+
 export function isTransport(input: unknown) : input is ITransport {
-    if (verifyInstanceBySymbol(input, 'ClientTransport')) {
+    if (hasInstanceof(input, CLIENT_TRANSPORT_INSTANCE)) {
         return true;
     }
 

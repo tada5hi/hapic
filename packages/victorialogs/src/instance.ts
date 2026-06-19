@@ -6,11 +6,11 @@
  */
 
 import {
+    hasInstanceof,
     hasOwnProperty,
-    verifyInstanceBySymbol,
 } from 'hapic';
 import type { ConfigInput } from './config';
-import { CLIENT_INSTANCE_NAME } from './constants';
+import { VICTORIALOGS_CLIENT_INSTANCE } from './constants';
 import { VictoriaLogsClient } from './module';
 
 const instances: Record<string, VictoriaLogsClient> = {};
@@ -95,5 +95,5 @@ export function isClient(input: unknown): input is VictoriaLogsClient {
         return true;
     }
 
-    return verifyInstanceBySymbol(input, CLIENT_INSTANCE_NAME);
+    return hasInstanceof(input, VICTORIALOGS_CLIENT_INSTANCE);
 }

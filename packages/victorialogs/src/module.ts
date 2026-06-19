@@ -5,14 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client } from 'hapic';
+import { Client, markInstanceof } from 'hapic';
 import type { ConfigInput } from './config';
-import { CLIENT_INSTANCE_NAME } from './constants';
+import { VICTORIALOGS_CLIENT_INSTANCE } from './constants';
 import { IngestorAPI, QuerierAPI } from './domains';
 
 export class VictoriaLogsClient extends Client {
-    override readonly '@instanceof' = Symbol.for(CLIENT_INSTANCE_NAME);
-
     public readonly ingestor: IngestorAPI;
 
     public readonly querier : QuerierAPI;
@@ -24,6 +22,8 @@ export class VictoriaLogsClient extends Client {
         input.request.baseURL = input.request.baseURL || 'http://localhost:9428/';
 
         super(input.request);
+
+        markInstanceof(this, VICTORIALOGS_CLIENT_INSTANCE);
 
         this.ingestor = new IngestorAPI({ client: this, options: input.options });
         this.querier = new QuerierAPI({ client: this, options: input.options });

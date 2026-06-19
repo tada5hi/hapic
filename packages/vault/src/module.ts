@@ -5,15 +5,15 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Client } from 'hapic';
+import { Client, markInstanceof } from 'hapic';
 import type { ConfigInput, ConnectionOptions } from './config';
 import { HeaderName } from './constants';
 import { KeyValueV1API, KeyValueV2API, MountAPI } from './domains';
 import { parseConnectionString } from './utils';
 
-export class VaultClient extends Client {
-    override readonly '@instanceof' = Symbol.for('VaultClient');
+export const VAULT_CLIENT_INSTANCE = Symbol.for('@hapic/vault/VaultClient');
 
+export class VaultClient extends Client {
     public readonly mount : MountAPI;
 
     public readonly keyValueV1: KeyValueV1API;
@@ -26,6 +26,8 @@ export class VaultClient extends Client {
         input = input || {};
 
         super(input.request);
+
+        markInstanceof(this, VAULT_CLIENT_INSTANCE);
 
         this.mount = new MountAPI({ client: this });
         this.keyValueV1 = new KeyValueV1API({ client: this });

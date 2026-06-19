@@ -8,6 +8,7 @@
 import {
     Client,
     createClient, hasClient, isClient, setClient, unsetClient, useClient,
+    verifyInstanceBySymbol,
 } from '../../src';
 
 describe('src/instance', () => {
@@ -26,8 +27,10 @@ describe('src/instance', () => {
         const client = new Client();
         expect(isClient(client)).toBeTruthy();
 
+        // simulate a Client constructed by a duplicate package copy: cross-realm
+        // identity travels in the `@instanceof` marker chain (a symbol[]).
         const fakeClient = {
-            '@instanceof': Symbol.for('Client'),
+            '@instanceof': [Symbol.for('hapic/Client')],
         };
         expect(isClient(fakeClient)).toBeTruthy();
     });
@@ -35,5 +38,13 @@ describe('src/instance', () => {
     it('should not verify instance', () => {
         expect(isClient(undefined)).toBeFalsy();
         expect(isClient({})).toBeFalsy();
+    });
+
+    it('verifyInstanceBySymbol (deprecated) resolves a name to its marker', () => {
+        const obj = { '@instanceof': [Symbol.for('hapic/Client')] };
+
+        expect(verifyInstanceBySymbol(obj, 'hapic/Client')).toBe(true);
+        expect(verifyInstanceBySymbol(obj, 'hapic/Other')).toBe(false);
+        expect(verifyInstanceBySymbol({}, 'hapic/Client')).toBe(false);
     });
 });

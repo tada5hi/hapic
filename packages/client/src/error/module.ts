@@ -5,14 +5,23 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { BaseError } from 'ebec';
 import type { RequestOptions } from '../request';
 import type { Response } from '../response';
+import { markInstanceof } from '../utils';
+import { HapicError } from './hapic-error';
 import type { ClientErrorContext } from './type';
 
-export class ClientError<T = any> extends BaseError {
-    readonly '@instanceof' = Symbol.for('ClientError');
+export const CLIENT_ERROR_INSTANCE = Symbol.for('hapic/ClientError');
 
+/**
+ * Umbrella error for everything the client throws.
+ *
+ * Subclasses ({@link NetworkError}, {@link HttpResponseError}) narrow the
+ * failure mode. Each class registers its own `@instanceof` marker, so a single
+ * instance answers `true` for every ancestor guard — e.g. an `HttpResponseError`
+ * is also recognised by `isClientError`.
+ */
+export class ClientError<T = any> extends HapicError {
     readonly request: RequestOptions;
 
     readonly response?: Response<T>;
@@ -26,21 +35,20 @@ export class ClientError<T = any> extends BaseError {
     readonly statusText?: string;
 
     constructor(ctx: ClientErrorContext<T>) {
-        super({ cause: ctx.error });
+        super({
+            message: ctx.message,
+            code: ctx.code,
+            cause: ctx.error,
+        });
 
         this.request = ctx.request;
         this.response = ctx.response;
 
-        this.code = ctx.code;
         this.status = ctx.response && ctx.response.status;
         this.statusCode = ctx.response && ctx.response.status;
         this.statusMessage = ctx.response && ctx.response.statusText;
         this.statusText = ctx.response && ctx.response.statusText;
 
-        this.message = ctx.message;
-
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, ClientError);
-        }
+        markInstanceof(this, CLIENT_ERROR_INSTANCE);
     }
 }

@@ -38,13 +38,14 @@ When a request or response error occurs, the matching error hook may return eith
 
 ```typescript
 export class Client {
-    readonly '@instanceof' = Symbol.for('BaseClient');
-
     public defaults: RequestBaseOptions;
     protected headers: Headers;
     protected hookManager: HookManager;
 
-    constructor(input: RequestBaseOptions = {}) { /* extend defaults, init headers + hooks */ }
+    constructor(input: RequestBaseOptions = {}) {
+        /* extend defaults, init headers + hooks; then: */
+        markInstanceof(this, Symbol.for('hapic/Client'));   // register the cross-realm marker
+    }
 
     request<T, RT, R>(config: RequestOptions<RT>): Promise<R> { /* lifecycle above */ }
     get/post/put/patch/delete/head(...): Promise<R> { /* delegate to request */ }
@@ -77,7 +78,7 @@ export class HarborClient extends BaseClient {           // BaseClient = Client 
 }
 ```
 
-`@hapic/oauth2`'s `OAuth2Client` overrides `@instanceof` with its own symbol (`Symbol.for('OAuth2Client')`) and passes an extra `options` object into each domain API context.
+`@hapic/oauth2`'s `OAuth2Client` registers its own marker (`markInstanceof(this, Symbol.for('@hapic/oauth2/OAuth2Client'))`) in addition to the inherited `Client` marker, and passes an extra `options` object into each domain API context. Markers are namespaced (`hapic/…`, `@hapic/<pkg>/…`) to avoid cross-library `Symbol.for` collisions.
 
 ### Domain API + BaseAPI
 
@@ -115,9 +116,11 @@ hasClient(key?) / unsetClient(key?)
 isClient(input)           // instanceof + cross-realm symbol check
 ```
 
-### Cross-realm `instanceof` (`@instanceof` symbol)
+### Cross-realm `instanceof` (`@instanceof` marker chain)
 
-Because consumers may have duplicate copies of a package, `instanceof` alone is unreliable. Each class carries an `@instanceof` property set to a well-known `Symbol.for(...)`, and `isClient` / `isClientError` fall back to `verifyInstanceBySymbol(input, 'Client')` (`packages/client/src/utils/instance.ts`). When adding a new client/error class, give it an `@instanceof` symbol and a matching `is*` guard.
+Because consumers may have duplicate copies of a package, `instanceof` alone is unreliable. hapic uses [`@ebec/core`](https://www.npmjs.com/package/@ebec/core)'s marker mechanism: each class calls `markInstanceof(this, Symbol.for(...))` in its constructor, which **appends** its marker to a non-enumerable `@instanceof` `symbol[]` on the instance. Because constructors run base→derived, an instance accumulates a marker for every class in its lineage — so one instance satisfies **multiple** `instanceof` references at once (an `HttpResponseError` is matched by both `isHttpResponseError` and `isClientError`). Guards test the chain with `hasInstanceof(input, Symbol.for(name))` (re-exported from `packages/client/src/utils/instance.ts`; the legacy `verifyInstanceBySymbol(input, name)` wrapper resolves `name` to its symbol and delegates to it).
+
+When adding a new client/error class, register its marker with `markInstanceof` in the constructor and add a matching `is*` guard built on `hasInstanceof`.
 
 ## Configuration
 
@@ -135,9 +138,9 @@ type Config = {
 
 ## Error Handling
 
-- Errors are `ClientError` instances built with [`ebec`](https://www.npmjs.com/package/ebec) (`packages/client/src/error/`). They carry the originating `request`, an optional `response`, and an `ErrorCode`.
-- The base client throws a `ClientError` for any response with status `400–599`, and for network/dispatch failures (`toError(e)`), unless an error hook returns a `Response` or a retry `RequestOptions`.
-- Consumer-facing guards live in `error/helpers/check.ts`: `isClientError`, `isClientErrorWithStatusCode(error, code | code[])`, `isClientErrorDueNetworkIssue`. Prefer these over manual `instanceof`.
+- Every error a hapic package throws descends from a common `HapicError` root (itself extending [`@ebec/core`](https://www.npmjs.com/package/@ebec/core)'s `BaseError`), so `isHapicError` matches anything thrown by `hapic` or a `@hapic/*` package (incl. `AuthorizationHeaderError` and the service `ConnectionStringParseError`). Within the request lifecycle, `ClientError` is the umbrella (request, optional response, `ErrorCode`); `createClientError` instantiates one of its subclasses — `HttpResponseError` (a 4xx/5xx response is present) or `NetworkError` (no response: dispatch/abort/connection failure). `BaseError` always assigns a string `code`, derived from the class name when none is given.
+- The base client throws for any response with status `400–599` (`HttpResponseError`), and for network/dispatch failures (`NetworkError`, via `toError(e)`), unless an error hook returns a `Response` or a retry `RequestOptions`.
+- Consumer-facing guards live in `error/helpers/check.ts`: `isHapicError` (any hapic error), `isClientError`, `isNetworkError`, `isHttpResponseError`, `isClientErrorWithStatusCode(error, code | code[])`, `isClientErrorDueNetworkIssue`. They use the `@instanceof` marker chain (so an ancestor guard matches a subclass instance) — prefer them over manual `instanceof`.
 
 ## Cross-environment fetch
 

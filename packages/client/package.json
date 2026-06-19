@@ -52,7 +52,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "dependencies": {
-        "ebec": "^2.3.0",
+        "@ebec/core": "^1.1.0",
         "node-fetch-native": "^1.6.7",
         "ufo": "^1.6.3"
     },

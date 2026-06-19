@@ -5,16 +5,24 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Options } from 'ebec';
-import { BaseError } from 'ebec';
+import type { ErrorInput, ErrorOptions } from '@ebec/core';
+import { hasInstanceof, markInstanceof } from '../../utils';
 import { ErrorCode } from '../constants';
+import { HapicError } from '../hapic-error';
 
-export class AuthorizationHeaderError extends BaseError {
-    constructor(options?: Options) {
+export const AUTHORIZATION_HEADER_ERROR_INSTANCE = Symbol.for('hapic/AuthorizationHeaderError');
+
+export class AuthorizationHeaderError extends HapicError {
+    constructor(input: ErrorInput = {}) {
+        const options: ErrorOptions = typeof input === 'string' ? { message: input } : input;
+
         super({
             code: ErrorCode.AUTHORIZATION_HEADER_INVALID,
             message: 'The authorization header is not valid.',
-        }, options || {});
+            ...options,
+        });
+
+        markInstanceof(this, AUTHORIZATION_HEADER_ERROR_INSTANCE);
     }
 
     /* istanbul ignore next */
@@ -32,4 +40,10 @@ export class AuthorizationHeaderError extends BaseError {
             message: 'The authorization header value type must either be \'Bearer\' or \'Basic\'',
         });
     }
+}
+
+export function isAuthorizationHeaderError(
+    input: unknown,
+): input is AuthorizationHeaderError {
+    return hasInstanceof(input, AUTHORIZATION_HEADER_ERROR_INSTANCE);
 }

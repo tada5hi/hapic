@@ -6,3 +6,5 @@
  */
 
 export * from './authorization-header';
+export * from './http-response';
+export * from './network';
