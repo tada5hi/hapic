@@ -6,6 +6,7 @@
  */
 
 import {
+    VictoriaLogsClient,
     createClient, isClient, unsetClient, useClient,
 } from '../../src';
 
@@ -13,6 +14,15 @@ describe('src/instance', () => {
     it('should guard its own instances', () => {
         expect(isClient(createClient())).toBeTruthy();
         expect(isClient({})).toBeFalsy();
+    });
+
+    it('should default the baseURL without mutating the provided config', () => {
+        const input = {};
+        const client = new VictoriaLogsClient(input);
+
+        expect(client.getBaseURL()).toBe('http://localhost:9428/');
+        // the constructor must not write into the caller's object
+        expect(input).toEqual({});
     });
 
     it('should have client properties', () => {

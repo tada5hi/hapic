@@ -13,8 +13,8 @@ export type ConnectionOptions = {
 };
 export type Config = {
     request: ClientOptionsInput,
-    connectionString: string,
-    connectionOptions: ConnectionOptions
+    connectionString?: string,
+    connectionOptions?: ConnectionOptions
 };
 
 export type ConfigInput = Partial<Config>;

@@ -15,8 +15,8 @@ export type Options = {
 
 export type Config = {
     request: ClientOptionsInput,
-    connectionString: string,
-    options: Options
+    connectionString?: string,
+    options?: Options
 };
 
 export type ConfigInput = Partial<Config>;
