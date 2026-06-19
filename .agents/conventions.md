@@ -59,7 +59,7 @@
 | Request option types     | `RequestBaseOptions`, `RequestOptions`      | —                                                   |
 | Enums                    | `PascalCase` name, `UPPER_SNAKE` members    | `MethodName.GET`, `ResponseType.JSON`, `HookName.REQUEST` |
 | Instance guards          | `is<Thing>`                                 | `isClient`, `isClientError`, `isResponse`           |
-| Interfaces               | `I<Name>` — **only** for shapes a class implements | `ITransport` (impl. by `FetchTransport`, `MemoryTransport`) |
+| Interfaces               | `I<Name>` — **only** for shapes a class implements | `IClient` (impl. by `Client`), `ITransport` (impl. by `FetchTransport`, `MemoryTransport`) |
 
 > Type-file naming is **inconsistent** across packages: some domains use `type.ts`, others `types.ts`. Match the sibling files in the directory you are editing rather than imposing one form.
 
@@ -74,7 +74,7 @@
 - Extends `@tada5hi/tsconfig` via `tsconfig.build.json`: `target`/`module`/`lib` = ESNext (+ `DOM`), `moduleResolution: Node`.
 - Root `tsconfig.json` extends the build config with `noEmit: true` (used for the ESLint type-aware project and editor IntelliSense).
 - Declarations are emitted with `tsc -p tsconfig.build.json --emitDeclarationOnly`; JS is bundled by Rollup, not `tsc`.
-- **`interface` vs `type`**: use an `interface` **only** for a shape that a class `implements`, and prefix it with `I` (e.g. `ITransport`, implemented by `FetchTransport` / `MemoryTransport`). Everything else — data shapes, option bags, unions — is a `type` with no prefix (e.g. `TransportRequest`, `ClientOptions`). Some older interfaces predate this rule; apply it to new and edited code rather than rewriting the whole tree.
+- **`interface` vs `type`**: use an `interface` **only** for a shape that a class `implements`, and prefix it with `I` (e.g. `IClient`, implemented by `Client`; `ITransport`, implemented by `FetchTransport` / `MemoryTransport`). Everything else — data shapes, option bags, unions — is a `type` with no prefix (e.g. `TransportRequest`, `ClientOptions`). Some older interfaces predate this rule; apply it to new and edited code rather than rewriting the whole tree.
 
 ## Build Output
 

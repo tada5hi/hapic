@@ -36,8 +36,10 @@ When a request or response error occurs, the matching error hook may return eith
 
 ### Client class (base)
 
+`Client` implements `IClient` (`packages/client/src/type.ts`) — the interface that captures its full public request surface. Everywhere a client is referenced as a *type* (domain `BaseAPI`, the `createClientRegistry` generic constraint, helper signatures), code depends on `IClient` rather than the concrete class; only construction (`new Client`), `extends Client`, and the marker check work with the class itself.
+
 ```typescript
-export class Client {
+export class Client implements IClient {
     public defaults: RequestBaseOptions;
     protected headers: Headers;
     protected hookManager: HookManager;
@@ -85,9 +87,9 @@ export class HarborClient extends BaseClient {           // BaseClient = Client 
 ```typescript
 // domains/base.ts — shared base for all domain APIs
 export abstract class BaseAPI {
-    protected client!: Client;
+    protected client!: IClient;   // the client contract, not the concrete `Client` class
     protected constructor(context?: BaseAPIContext) { this.setClient(context?.client); }
-    setClient(input?: Client | RequestBaseOptions) {
+    setClient(input?: IClient | RequestBaseOptions) {
         this.client = isClient(input) ? input : createClient(input);  // accepts a client OR raw options
     }
 }
@@ -102,7 +104,7 @@ export class ProjectAPI extends BaseAPI {
 }
 ```
 
-**Conventions:** domain classes are named `<Domain>API` and live in `domains/<domain>/module.ts`. They never call `fetch` directly — always go through `this.client`. They take a `BaseAPIContext` (`{ client?: Client | RequestBaseOptions }`), so a domain API can be used standalone (it will create its own client) or share the parent client.
+**Conventions:** domain classes are named `<Domain>API` and live in `domains/<domain>/module.ts`. They never call `fetch` directly — always go through `this.client`. They take a `BaseAPIContext` (`{ client?: IClient | RequestBaseOptions }`), so a domain API can be used standalone (it will create its own client) or share the parent client.
 
 ### Singleton instance registry
 

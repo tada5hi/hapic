@@ -6,11 +6,11 @@
  */
 
 import { createClient, isClient } from 'hapic';
-import type { Client, RequestBaseOptions } from 'hapic';
+import type { IClient, RequestBaseOptions } from 'hapic';
 import type { BaseAPIContext } from './type';
 
 export abstract class BaseAPI {
-    protected client!: Client;
+    protected client!: IClient;
 
     // -----------------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ export abstract class BaseAPI {
 
     // -----------------------------------------------------------------------------------
 
-    setClient(input?: Client | RequestBaseOptions) {
+    setClient(input?: IClient | RequestBaseOptions) {
         if (isClient(input)) {
             this.client = input;
         } else {

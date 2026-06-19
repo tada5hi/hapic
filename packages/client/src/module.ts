@@ -12,7 +12,7 @@ import { Headers } from './fetch';
 import { MethodName, ResponseType } from './constants';
 import type { ITransport, TransportRequest } from './transport';
 import { FetchTransport, isTransport } from './transport';
-import type { ClientOptionsInput } from './type';
+import type { ClientOptionsInput, IClient } from './type';
 import type {
     HookErrorFn,
     HookFn,
@@ -46,7 +46,7 @@ import { markInstanceof, traverse } from './utils';
 
 export const CLIENT_INSTANCE = Symbol.for('hapic/Client');
 
-export class Client {
+export class Client implements IClient {
     public defaults : RequestBaseOptions;
 
     protected headers : Headers;

@@ -7,7 +7,7 @@
 
 import { CLIENT_INSTANCE, Client } from './module';
 import { createClientRegistry } from './registry';
-import type { ClientOptionsInput } from './type';
+import type { ClientOptionsInput, IClient } from './type';
 
 export const {
     hasClient,
@@ -16,7 +16,7 @@ export const {
     unsetClient,
     createClient,
     isClient,
-} = createClientRegistry<Client, ClientOptionsInput>({
+} = createClientRegistry<IClient, ClientOptionsInput>({
     create: (input) => new Client(input),
     id: CLIENT_INSTANCE,
 });

@@ -19,12 +19,12 @@ import {
 
 | Function | Signature | Behavior |
 |----------|-----------|----------|
-| `createClient` | `(input?: RequestBaseOptions) => Client` | Builds a new `Client`. Does **not** register it. |
-| `useClient` | `(key?: string) => Client` | Returns the client registered under `key`, creating an empty one on first use. Default key: `'default'`. |
-| `setClient` | `(client: Client, key?: string) => Client` | Registers `client` under `key` and returns it. |
+| `createClient` | `(input?: RequestBaseOptions) => IClient` | Builds a new `Client`. Does **not** register it. |
+| `useClient` | `(key?: string) => IClient` | Returns the client registered under `key`, creating an empty one on first use. Default key: `'default'`. |
+| `setClient` | `(client: IClient, key?: string) => IClient` | Registers `client` under `key` and returns it. |
 | `hasClient` | `(key?: string) => boolean` | Whether a client is registered under `key`. |
 | `unsetClient` | `(key?: string) => void` | Removes the client registered under `key`. |
-| `isClient` | `(input: unknown) => input is Client` | `true` for a `Client`, using a cross-realm symbol check. |
+| `isClient` | `(input: unknown) => input is IClient` | `true` for a `Client`, using a cross-realm symbol check. |
 
 ## Configure once, use everywhere
 
