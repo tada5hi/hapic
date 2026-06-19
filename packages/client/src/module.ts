@@ -41,7 +41,7 @@ import {
 } from './request';
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
-import { HeaderName, stringifyAuthorizationHeader } from './header';
+import { HeaderName, HeaderStore, stringifyAuthorizationHeader } from './header';
 import { markInstanceof, traverse } from './utils';
 
 export const CLIENT_INSTANCE = Symbol.for('hapic/Client');
@@ -190,11 +190,8 @@ export class Client implements IClient {
     >(config: RequestOptions<RT>): Promise<R> {
         const headers = new Headers(config.headers);
 
-        this.headers.forEach((value, key) => {
-            if (!headers.has(key)) {
-                headers.set(key, value);
-            }
-        });
+        // lay the client default headers beneath the per-request headers
+        new HeaderStore(headers).merge(this.headers, { overwrite: false });
 
         const baseURL = config.baseURL || this.defaults.baseURL;
         let options : RequestOptions<RT> = {
