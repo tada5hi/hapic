@@ -7,6 +7,7 @@
 
 import { createClient } from './instance';
 
+export * from './connection';
 export * from './hook';
 export * from './request';
 export * from './response';

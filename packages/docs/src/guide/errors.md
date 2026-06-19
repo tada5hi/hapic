@@ -33,8 +33,10 @@ BaseError (@ebec/core)
      │   ├─ NetworkError          ← no response; isNetworkError()
      │   └─ HttpResponseError     ← 4xx/5xx response; isHttpResponseError()
      ├─ AuthorizationHeaderError
-     └─ ConnectionStringParseError   (in @hapic/harbor, @hapic/vault)
+     └─ ConnectionStringParseError   ← malformed connection string; isConnectionStringParseError()
 ```
+
+`ConnectionStringParseError` lives in the base `hapic` package — thrown by its shared `splitConnectionString` helper and re-exported by the service clients (`@hapic/harbor`, `@hapic/vault`) that accept a connection string, so a single `isConnectionStringParseError` recognises it everywhere.
 
 Every error a `@hapic/*` package throws descends from `HapicError`, so `isHapicError(e)` answers "did this come from hapic?" — even for config/auth errors that aren't request failures.
 

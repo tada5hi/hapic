@@ -5,17 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { splitConnectionString } from 'hapic';
 import type { ConnectionOptions } from '../config/type';
-import { ConnectionStringParseError } from '../error';
 
 export function parseConnectionString(connectionString: string): ConnectionOptions {
-    const parts : string[] = connectionString.split('@');
-    if (parts.length !== 2) {
-        throw new ConnectionStringParseError('Vault connection string must be in the following format: token@host');
-    }
+    const { credentials, host } = splitConnectionString(connectionString, { message: 'Vault connection string must be in the following format: token@host' });
 
     return {
-        host: parts[1],
-        token: parts[0],
+        host,
+        token: credentials,
     };
 }
