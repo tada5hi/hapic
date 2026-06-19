@@ -142,6 +142,41 @@ export function isMyClient(input: unknown): input is MyClient {
 
 Register the marker with `markInstanceof` — do **not** assign an `'@instanceof'` class field. The base `Client` stores the marker chain in a non-writable property, so a field initializer of that name throws at construction. Because the chain accumulates one marker per ancestor, `MyClient` is matched by both `isMyClient` and the base `isClient`. See [Instance Registry](/guide/instance#cross-realm-isclient) for why this matters.
 
+## A singleton registry for your client
+
+Rather than re-implementing `createClient` / `useClient` / `setClient` / `hasClient` / `unsetClient` / `isClient` by hand, build them with `createClientRegistry`. You supply only how to construct your client and the marker symbol that identifies it; the factory returns the six functions, backed by a private keyed map:
+
+```typescript
+// instance.ts
+import { createClientRegistry } from 'hapic';
+import { MyClient, type ConfigInput } from './module';
+
+const MY_CLIENT_INSTANCE = Symbol.for('MyClient');
+
+export const {
+    hasClient,
+    setClient,
+    useClient,
+    unsetClient,
+    createClient,
+    isClient,
+} = createClientRegistry<MyClient, ConfigInput>({
+    create: (input) => new MyClient(input),
+    id: MY_CLIENT_INSTANCE,
+});
+```
+
+Use the **same symbol** you pass to `markInstanceof` in the constructor as the registry's `id` — `isClient` resolves entirely through `hasInstanceof(input, id)`, so a mismatched symbol silently breaks recognition. A one-line test guards against it:
+
+```typescript
+import { createClient, isClient } from './instance';
+
+expect(isClient(createClient())).toBe(true);
+expect(isClient({})).toBe(false);
+```
+
+This is exactly how every `@hapic/*` package builds its registry — see [Instance Registry](/guide/instance) for the consumer-facing behavior.
+
 ## Standalone domain APIs
 
 Because `BaseAPI` accepts either a `Client` or raw options, a domain API can also be used on its own — useful in tests or when you only need one slice of an API:

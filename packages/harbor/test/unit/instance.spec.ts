@@ -9,8 +9,7 @@ import { MemoryTransport, stringifyAuthorizationHeader } from 'hapic';
 import {
     HarborClient,
     createClient,
-    hasClient,
-    setClient,
+    isClient,
     unsetClient,
     useClient,
 } from '../../src';
@@ -28,15 +27,9 @@ describe('src/instance', () => {
             password: 'start123',
         }));
     });
-    it('should be manageable by singleton', () => {
-        expect(hasClient()).toBeFalsy();
-
-        const client = setClient(createClient());
-        expect(client).toEqual(useClient());
-
-        expect(hasClient()).toBeTruthy();
-
-        unsetClient();
+    it('should guard its own instances', () => {
+        expect(isClient(createClient())).toBeTruthy();
+        expect(isClient({})).toBeFalsy();
     });
 
     it('should dispatch through a transport injected via config', async () => {

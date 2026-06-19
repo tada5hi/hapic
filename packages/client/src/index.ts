@@ -15,6 +15,7 @@ export * from './error';
 export * from './header';
 export * from './module';
 export * from './instance';
+export * from './registry';
 export * from './transport';
 export * from './type';
 export * from './fetch';
