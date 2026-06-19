@@ -7,8 +7,7 @@
 
 import type { ResourceCollectionQuery } from '../type';
 
-export type ProjectWebhookEventType =
-    'PUSH_ARTIFACT' |
+export type ProjectWebhookEventType =    'PUSH_ARTIFACT' |
     'PULL_ARTIFACT' |
     'DELETE_ARTIFACT' |
     'DELETE_CHART' |

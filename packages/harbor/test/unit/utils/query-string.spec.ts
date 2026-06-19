@@ -21,9 +21,7 @@ describe('src/utils/query-string', () => {
         const qs = buildQueryString({
             page_size: 10,
             page: 1,
-            q: {
-                name: 'foo',
-            },
+            q: { name: 'foo' },
         });
 
         expect(qs).toEqual('?page_size=10&page=1&q=name%3Dfoo');

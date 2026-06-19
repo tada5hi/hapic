@@ -19,9 +19,7 @@ export class CompactorAPI extends BaseAPI {
     async createDeletionRequest(
         params: CompactorDeletionRequestCreate,
     ) : Promise<void> {
-        const headers : Record<string, string> = {
-            [HeaderName.CONTENT_TYPE]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.CONTENT_TYPE]: 'application/json' };
 
         await this.client.post(
             'loki/api/v1/delete',
@@ -43,9 +41,7 @@ export class CompactorAPI extends BaseAPI {
     async cancelDeletionRequest(
         params: CompactorDeletionRequestCancel,
     ) : Promise<void> {
-        const headers : Record<string, string> = {
-            [HeaderName.CONTENT_TYPE]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.CONTENT_TYPE]: 'application/json' };
 
         await this.client.delete(
             'loki/api/v1/delete',

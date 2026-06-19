@@ -10,7 +10,6 @@ import { BaseAPI } from '../base';
 import type { ResourceResponse } from '../../type';
 
 export class KeyValueV1API extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context?: BaseAPIContext) {
         super(context);
     }

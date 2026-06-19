@@ -22,11 +22,7 @@ describe('src/domains/key-value/v2', () => {
         await api.create(
             'secrets',
             'key',
-            {
-                data: {
-                    bar: 'baz',
-                },
-            },
+            { data: { bar: 'baz' } },
         );
 
         const req = transport.requests.at(-1)!;
@@ -66,11 +62,7 @@ describe('src/domains/key-value/v2', () => {
         await api.update(
             'secrets',
             'key',
-            {
-                data: {
-                    boz: 'buz',
-                },
-            },
+            { data: { boz: 'buz' } },
         );
 
         const req = transport.requests.at(-1)!;
@@ -104,11 +96,7 @@ describe('src/domains/key-value/v2', () => {
         await api.save(
             'secrets',
             'key',
-            {
-                data: {
-                    bar: 'baz',
-                },
-            },
+            { data: { bar: 'baz' } },
         );
 
         const req = transport.requests.at(-1)!;

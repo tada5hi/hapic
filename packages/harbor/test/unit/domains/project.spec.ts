@@ -89,9 +89,7 @@ describe('src/domains/project', () => {
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
-        const { data } = await api.getMany({
-            query: { page_size: 10, with_detail: true },
-        });
+        const { data } = await api.getMany({ query: { page_size: 10, with_detail: true } });
 
         expect(data).toEqual([]);
 

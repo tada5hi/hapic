@@ -16,9 +16,7 @@ import {
 
 describe('src/instance', () => {
     it('should create client by connectionString', () => {
-        const client = new HarborClient({
-            connectionString: 'admin:start123@https://example.com/api/v2.0/',
-        });
+        const client = new HarborClient({ connectionString: 'admin:start123@https://example.com/api/v2.0/' });
 
         expect(client.getBaseURL()).toEqual('https://example.com/api/v2.0/');
         expect(client.getAuthorizationHeader()).toEqual(stringifyAuthorizationHeader({

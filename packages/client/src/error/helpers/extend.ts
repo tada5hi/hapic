@@ -29,7 +29,7 @@ export function toError(input: unknown): Error | undefined {
 
 export function extendError(error: Error, data: Record<string, any>) {
     const keys = Object.getOwnPropertyNames(data);
-    for (let i = 0; i < keys.length; i++) {
-        error[keys[i] as keyof Error] = data[keys[i]];
+    for (const key of keys) {
+        error[key as keyof Error] = data[key];
     }
 }

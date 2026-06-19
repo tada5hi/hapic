@@ -13,26 +13,20 @@ describe('src/utils/resource-id', () => {
         const headers = new Headers();
         headers.set(HeaderName.LOCATION, '/api/v2.0/projects/50');
 
-        const id = extractResourceIDOfResponse({
-            headers,
-        });
+        const id = extractResourceIDOfResponse({ headers });
 
         expect(id).toEqual(50);
     });
 
     it('should no extract resource id of response', () => {
-        let id = extractResourceIDOfResponse({
-            headers: new Headers(),
-        });
+        let id = extractResourceIDOfResponse({ headers: new Headers() });
 
         expect(id).toBeUndefined();
 
         const headers = new Headers();
         headers.set(HeaderName.LOCATION, '/api/v2.0/projects/foo');
 
-        id = extractResourceIDOfResponse({
-            headers,
-        });
+        id = extractResourceIDOfResponse({ headers });
 
         expect(id).toBeUndefined();
     });

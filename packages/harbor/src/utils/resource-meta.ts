@@ -18,7 +18,7 @@ export function extractResourceMetaOfResponse(response: Response) : Meta {
         response.headers &&
         response.headers.has(HeaderName.TOTAL_COUNT)
     ) {
-        const total = parseInt(response.headers.get(HeaderName.TOTAL_COUNT) || '0', 10);
+        const total = Number.parseInt(response.headers.get(HeaderName.TOTAL_COUNT) || '0', 10);
         if (!Number.isNaN(total)) {
             meta.total = total;
         }

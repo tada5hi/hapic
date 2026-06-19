@@ -229,8 +229,7 @@ export class Client implements IClient {
                 options.transform :
                 [options.transform];
 
-            for (let i = 0; i < transformers.length; i++) {
-                const transformer = transformers[i];
+            for (const transformer of transformers) {
                 options.body = transformer(
                     options.body,
                     options.headers as Headers,
@@ -317,7 +316,7 @@ export class Client implements IClient {
                 const temp = await response.text();
                 try {
                     data = JSON.parse(temp);
-                } catch (e) {
+                } catch {
                     data = temp as ResponseData<RT, T>;
                 }
             }

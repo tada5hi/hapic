@@ -18,7 +18,6 @@ import type {
 } from './type';
 
 export class RobotAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);
     }
@@ -56,9 +55,7 @@ export class RobotAPI extends BaseAPI {
         id: string | number,
         secret?: string,
     ): Promise<RobotUpdateSecretResponse> {
-        const payload: Record<string, any> = {
-            ...(secret ? { secret } : {}),
-        };
+        const payload: Record<string, any> = { ...(secret ? { secret } : {}) };
 
         const { data }: { data: Robot } = await this.client
             .patch(`robots/${id}`, payload);

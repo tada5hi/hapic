@@ -11,7 +11,6 @@ import type { BaseAPIContext } from '../type';
 import type { MountCreatePayload, MountUpdatePayload } from './type';
 
 export class MountAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context?: BaseAPIContext) {
         super(context);
     }

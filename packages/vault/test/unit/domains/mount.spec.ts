@@ -21,9 +21,7 @@ describe('src/domains/mount', () => {
         const api = new MountAPI({ client: createClient({ transport }) });
         await api.create(
             'key',
-            {
-                type: 'kv',
-            },
+            { type: 'kv' },
         );
 
         const req = transport.requests.at(-1)!;

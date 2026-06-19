@@ -22,9 +22,7 @@ describe('src/domains/key-value/v1', () => {
         await api.create(
             'secrets',
             'key',
-            {
-                bar: 'baz',
-            },
+            { bar: 'baz' },
         );
 
         const req = transport.requests.at(-1)!;

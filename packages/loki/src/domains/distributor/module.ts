@@ -19,9 +19,7 @@ export class DistributorAPI extends BaseAPI {
     async pushMany(
         streams: DistributorPushStream[],
     ) : Promise<void> {
-        const headers : Record<string, string> = {
-            [HeaderName.CONTENT_TYPE]: 'application/json',
-        };
+        const headers : Record<string, string> = { [HeaderName.CONTENT_TYPE]: 'application/json' };
 
         await this.client.post(
             'loki/api/v1/push',

@@ -7,7 +7,10 @@
 
 import {
     VictoriaLogsClient,
-    createClient, isClient, unsetClient, useClient,
+    createClient, 
+    isClient, 
+    unsetClient, 
+    useClient,
 } from '../../src';
 
 describe('src/instance', () => {

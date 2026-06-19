@@ -57,8 +57,7 @@ export class HookManager {
         const items = (this.items[HookName.REQUEST] || []) as HookReqFn[];
 
         let temp = input;
-        for (let i = 0; i < items.length; i++) {
-            const hook = items[i];
+        for (const hook of items) {
             if (!hook) {
                 continue;
             }
@@ -82,8 +81,7 @@ export class HookManager {
         const items = (this.items[HookName.RESPONSE] || []) as HookReqFn[];
 
         let temp = input;
-        for (let i = 0; i < items.length; i++) {
-            const hook = items[i];
+        for (const hook of items) {
             if (!hook) {
                 continue;
             }
@@ -109,8 +107,7 @@ export class HookManager {
 
         let temp = input;
 
-        for (let i = 0; i < items.length; i++) {
-            const hook = items[i];
+        for (const hook of items) {
             if (!hook) {
                 continue;
             }

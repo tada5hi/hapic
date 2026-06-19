@@ -19,9 +19,7 @@ describe('src/domains/authorize', () => {
             },
         });
 
-        let url = api.buildURL({
-            redirect_uri: redirectUri,
-        });
+        let url = api.buildURL({ redirect_uri: redirectUri });
 
         expect(url).toEqual(`https://example.com/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
 
@@ -57,22 +55,14 @@ describe('src/domains/authorize', () => {
     });
 
     it('should build authorize url by base client url', () => {
-        const api = new AuthorizeAPI({
-            client: {
-                baseURL: 'http://localhost:3000',
-            },
-        });
+        const api = new AuthorizeAPI({ client: { baseURL: 'http://localhost:3000' } });
 
         const url = api.buildURL();
         expect(url).toEqual('http://localhost:3000/authorize?response_type=code');
     });
 
     it('should buil authorize url with baseURL (suffix)', () => {
-        const api = new AuthorizeAPI({
-            client: {
-                baseURL: 'http://localhost:3000/auth/',
-            },
-        });
+        const api = new AuthorizeAPI({ client: { baseURL: 'http://localhost:3000/auth/' } });
 
         const url = api.buildURL();
         expect(url).toEqual('http://localhost:3000/auth/authorize?response_type=code');
@@ -86,9 +76,7 @@ describe('src/domains/authorize', () => {
             },
         });
 
-        const url = api.buildURL({
-            redirect_uri: redirectUri,
-        });
+        const url = api.buildURL({ redirect_uri: redirectUri });
 
         expect(url).toEqual(`https://example.com/oauth2/authorize?response_type=code&client_id=client&redirect_uri=${encodeURIComponent(redirectUri)}`);
     });

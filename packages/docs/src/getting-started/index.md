@@ -4,7 +4,7 @@
 
 > Method shortcuts, a `baseURL`, request/response/error hooks, body & header transformers, authorization helpers, proxy support, and automatic error throwing on non-2xx responses.
 
-It runs unchanged in **Node.js**, the **browser**, and **worker** runtimes, and ships both ESM and CommonJS builds.
+It runs unchanged in **Node.js**, the **browser**, and **worker** runtimes, and ships as a modern **ESM-only** package.
 
 ## Two layers
 

@@ -6,7 +6,9 @@
  */
 
 import {
-    Client, HeaderName, HookName,
+    Client, 
+    HeaderName, 
+    HookName,
 } from '../../src';
 
 describe('src/module', () => {
@@ -41,9 +43,7 @@ describe('src/module', () => {
     });
 
     it('should get baseURL', () => {
-        const client = new Client({
-            baseURL: 'http://localhost:3000/',
-        });
+        const client = new Client({ baseURL: 'http://localhost:3000/' });
 
         expect(client.getBaseURL()).toEqual('http://localhost:3000/');
     });

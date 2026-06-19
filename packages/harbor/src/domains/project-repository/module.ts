@@ -19,7 +19,6 @@ import type {
 import { parseLongProjectRepositoryName } from './utils';
 
 export class ProjectRepositoryAPI extends BaseAPI {
-    // eslint-disable-next-line no-useless-constructor,@typescript-eslint/no-useless-constructor
     constructor(context: BaseAPIContext) {
         super(context);
     }
@@ -39,9 +38,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
         const { data } = await this.getMany({
             projectName: context.projectName,
             query: {
-                q: {
-                    name: `~${context.repositoryName}`,
-                },
+                q: { name: `~${context.repositoryName}` },
                 page_size: 1,
             },
         });

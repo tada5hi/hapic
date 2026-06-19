@@ -52,8 +52,8 @@ export function isClientErrorWithStatusCode(
         statusCode :
         [statusCode];
 
-    for (let i = 0; i < statusCodes.length; i++) {
-        if (statusCodes[i] === error.response.status) {
+    for (const statusCode_ of statusCodes) {
+        if (statusCode_ === error.response.status) {
             return true;
         }
     }

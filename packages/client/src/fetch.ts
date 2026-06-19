@@ -20,9 +20,8 @@ const gT = (() => {
         return globalThis;
     }
 
-    // eslint-disable-next-line no-restricted-globals
+     
     if (typeof self !== 'undefined') {
-        // eslint-disable-next-line no-restricted-globals
         return self;
     }
 

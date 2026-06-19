@@ -27,9 +27,7 @@ describe('src/transport', () => {
             });
 
             const client = new Client({ baseURL: 'https://api.test/', transport });
-            const res = await client.get('users', {
-                query: { page: 2, big: 9007199254740993n },
-            });
+            const res = await client.get('users', { query: { page: 2, big: 9007199254740993n } });
 
             expect(res.data).toEqual({ id: 1 });
             expect(transport.requests).toHaveLength(1);
@@ -48,9 +46,7 @@ describe('src/transport', () => {
                 headers: { 'x-default': 'a', 'x-both': 'default' },
             });
 
-            await client.get('thing', {
-                headers: { 'x-both': 'override', 'x-req': 'b' },
-            });
+            await client.get('thing', { headers: { 'x-both': 'override', 'x-req': 'b' } });
 
             const headers = transport.requests.at(-1)!.headers as Headers;
             expect(headers.get('x-default')).toBe('a');
@@ -62,7 +58,11 @@ describe('src/transport', () => {
             const transport = new MemoryTransport();
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
-            await client.request({ method: 'GET', url: 'thing', body: { a: 1 } } as any);
+            await client.request({
+                method: 'GET', 
+                url: 'thing', 
+                body: { a: 1 }, 
+            } as any);
 
             expect(transport.requests.at(-1)!.body).toBeUndefined();
         });
@@ -164,9 +164,7 @@ describe('src/transport', () => {
         });
 
         it('should throw a ClientError on a dispatch failure', async () => {
-            const transport = new MemoryTransport({
-                fetch: () => { throw new Error('boom'); },
-            });
+            const transport = new MemoryTransport({ fetch: () => { throw new Error('boom'); } });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             let error: any;
@@ -181,9 +179,7 @@ describe('src/transport', () => {
         });
 
         it('should let an error hook recover by returning a Response', async () => {
-            const transport = new MemoryTransport({
-                fetch: () => ({ status: 500, body: {} }),
-            });
+            const transport = new MemoryTransport({ fetch: () => ({ status: 500, body: {} }) });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             client.on(HookName.RESPONSE_ERROR, () => new Response(null, {
@@ -267,9 +263,7 @@ describe('src/transport', () => {
             const calls: { url: string, init: any }[] = [];
             const fetchImpl = async (url: string, init: any) => {
                 calls.push({ url, init });
-                return new Response('{}', {
-                    headers: { 'content-type': 'application/json' },
-                });
+                return new Response('{}', { headers: { 'content-type': 'application/json' } });
             };
 
             const client = new Client({
@@ -288,9 +282,7 @@ describe('src/transport', () => {
             const calls: { url: string, init: any }[] = [];
             const fetchImpl = async (url: string, init: any) => {
                 calls.push({ url, init });
-                return new Response('{}', {
-                    headers: { 'content-type': 'application/json' },
-                });
+                return new Response('{}', { headers: { 'content-type': 'application/json' } });
             };
 
             const client = new Client({
