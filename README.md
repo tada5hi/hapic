@@ -1,134 +1,164 @@
-# HAPIC 🌐
+<p align="center">
+  <img src="https://hapic.tada5hi.net/logo.svg" alt="hapic" width="120" />
+</p>
 
-[![main](https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg)](https://github.com/Tada5hi/hapic/actions/workflows/main.yml)
-[![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hapic/badge.svg)](https://snyk.io/test/github/Tada5hi/hapic)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+<h1 align="center">hapic</h1>
 
-## What is it?
-"**H**TTP **API** **C**lient" is a tiny & simple fetch based http client.
-It provides a convenient way to make HTTP requests.
+<p align="center">
+  <b>The tiny, fetch-based HTTP API client.</b><br>
+  Request & response hooks, transformers, authorization helpers and proxy support —<br>
+  plus a family of typed service clients built on the same core.
+</p>
 
-**Table of Contents**
+<p align="center">
+  <a href="https://github.com/Tada5hi/hapic/actions/workflows/main.yml"><img src="https://github.com/Tada5hi/hapic/actions/workflows/main.yml/badge.svg" alt="CI" /></a>
+  <a href="https://www.npmjs.com/package/hapic"><img src="https://img.shields.io/npm/v/hapic?label=hapic" alt="npm version" /></a>
+  <a href="https://snyk.io/test/github/Tada5hi/hapic"><img src="https://snyk.io/test/github/Tada5hi/hapic/badge.svg" alt="Known Vulnerabilities" /></a>
+  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white" alt="Conventional Commits" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" /></a>
+</p>
 
-- [Features](#features)
-- [Documentation](#documentation)
-- [Packages](#packages)
-    - [Base](#base-)
-    - [Harbor](#harbor-)
-    - [Loki](#loki-)
-    - [OAuth2](#oauth2-)
-    - [Vault](#vault-)
-    - [VictoriaLogs](#victorialogs-)
-- [License](#license)
+<p align="center">
+  <a href="https://hapic.tada5hi.net"><b>Documentation</b></a>
+  ·
+  <a href="https://hapic.tada5hi.net/getting-started/">Getting Started</a>
+  ·
+  <a href="https://hapic.tada5hi.net/guide/">Guide</a>
+  ·
+  <a href="https://hapic.tada5hi.net/packages/">Packages</a>
+</p>
 
-## Features
+---
 
-- ✨ Simple API
-- 🔄 Transform request payload & headers
-- 🛑 Hooks to intercept request and response 
-- 🌐 Works in Node.Js, browser & workers environment
-- ❌ Throws an error on responses with a non 2xx status code
-- 🚀 Method shortcuts for GET, POST, PUT, ...
-- ⚙️ Extended options (e.g. baseURL)
-- 🎭 Proxy support
+## Why hapic?
 
-## Documentation
+Most HTTP libraries sit at one of two extremes: a bare `fetch` wrapper where you re-solve auth, JSON handling and error throwing on every project — or a heavyweight SDK locked to a single backend. hapic splits the difference. A tiny base `Client` owns the **transport** — and typed service clients extend it for specific **backends**.
 
-To read the docs, visit [https://hapic.tada5hi.net](https://hapic.tada5hi.net)
-
-## Usage
-
-The following code snippet should serve as a simple example and first impression.
-
-```typescript
+```ts
+// the base client — fetch with batteries
 import hapic from 'hapic';
 
-const response = await hapic.post('https://example.com/users', {
+const { data } = await hapic.post('https://api.example.com/users', { name: 'Max' });
+
+// a typed service client built on that same core
+import { HarborClient } from '@hapic/harbor';
+
+const harbor = new HarborClient({ connectionString: 'admin:pw@https://registry.example.com/api/v2.0/' });
+const project = await harbor.project.getOne(1);   // typed call → no URL building, no manual decoding
+```
+
+That split serves two audiences:
+
+- **App developers** get `fetch` with batteries included — `baseURL`, authorization headers, JSON in/out, errors that throw on non-2xx, proxy support, and hooks for retry/refresh-token flows — in a package small enough to drop into the browser, Node.js or a worker.
+- **Service-client authors** get a transport contract: extend `Client`, declare a few domain `*API` classes, and inherit the entire request lifecycle — hooks, transformers, error handling and cross-environment `fetch` — instead of re-implementing it per backend. The `@hapic/*` clients in this repo are exactly that pattern, shipped.
+
+### Features
+
+- ✨ **Simple API** — `get` / `post` / `put` / `patch` / `delete` / `head` shortcuts over a single `request()`.
+- 🛑 **Hooks** to intercept and mutate requests, responses and errors — error hooks can even recover a failed request (retry / refresh token).
+- 🔄 **Transformers** for request payloads & headers.
+- 🔐 **Authorization helpers** — `Basic`, `Bearer` and `api-key` headers from a typed config.
+- ❌ **Throws on non-2xx** — every `400–599` response becomes a typed `HttpResponseError`; network failures become a `NetworkError`.
+- 🎭 **Proxy support** out of the box.
+- 🌐 **Runs everywhere** — Node.js, the browser and worker environments, through one cross-env `fetch` layer.
+- 🧩 **Typed service clients** for Harbor, Loki, OAuth2, Vault and VictoriaLogs — all on the same core.
+
+## Getting Started
+
+```bash
+npm install hapic
+```
+
+```ts
+import hapic, { createClient } from 'hapic';
+
+// use the default singleton instance...
+const response = await hapic.post('https://api.example.com/users', {
     firstName: 'Max',
-    lastName: 'Mustermann'
+    lastName: 'Mustermann',
 });
 
 console.log(response);
-// { data: xxx, headers: xxx, status: xxx, statusText: xxx }
+// { data: …, headers: …, status: …, statusText: … }
+
+// ...or create a configured client
+const client = createClient({
+    baseURL: 'https://api.example.com/',
+});
+
+const { data } = await client.get('users/1');
 ```
 
+Follow the full walkthrough at **[hapic.tada5hi.net/getting-started](https://hapic.tada5hi.net/getting-started/)**.
+
+## The request lifecycle
+
+Every `request(config)` runs through the same pipeline. Hooks and transformers slot into it, so cross-cutting concerns live in one place instead of at every call site:
+
+```text
+request(config)
+  1. merge headers over the client defaults
+  2. resolve URL          baseURL + params/query
+  3. request hooks    ←   intercept / mutate the outgoing request
+  4. transformers     ←   reshape the body
+  5. dispatch             fetch(url, init)  (with optional proxy)
+  6. decode               by responseType, or detected from Content-Type
+  7. throw on 4xx–5xx ←   error hooks may recover: return a Response, or retry
+  8. response hooks   ←   inspect / transform the result
+```
+
+```ts
+import { createClient, HookName } from 'hapic';
+
+const client = createClient({ baseURL: 'https://api.example.com/' });
+
+// attach a bearer token on every request
+client.on(HookName.REQUEST, (request) => ({
+    ...request,
+    headers: { ...request.headers, authorization: `Bearer ${token}` },
+}));
+
+// recover from a 401 by refreshing the token and retrying
+client.on(HookName.REQUEST_ERROR, async (error) => {
+    if (error.response?.status === 401) {
+        token = await refreshToken();
+        return error.request;   // returning RequestOptions retries the request
+    }
+});
+```
+
+→ Deep dive: [The Client](https://hapic.tada5hi.net/guide/client) · [Hooks](https://hapic.tada5hi.net/guide/hooks) · [Transformers](https://hapic.tada5hi.net/guide/transformers) · [Error Handling](https://hapic.tada5hi.net/guide/errors) · [Building a Service Client](https://hapic.tada5hi.net/guide/building-a-client)
 
 ## Packages
-The repository contains the following packages:
 
-### Base 🚀
+### Base
 
-**`hapic`**
+| Package | Version | Description |
+|---|---|---|
+| [`hapic`](./packages/client) | [![npm](https://img.shields.io/npm/v/hapic?label=)](https://www.npmjs.com/package/hapic) | Base fetch-based HTTP client — request methods, hooks, transformers, headers, authorization, proxy and auto-throwing errors. The foundation every other package builds on. |
 
-This package contains a HTTP-Client based on fetch.
-IT provides a convenient way to make HTTP requests.
+### Service Clients
 
-The client is extended by the [Harbor](#harbor-), [Vault](#vault-), and [OAuth2](#oauth2-) clients, 
-which provide additional functionality specific to those services.
+| Package | Version | Description |
+|---|---|---|
+| [`@hapic/harbor`](./packages/harbor) | [![npm](https://img.shields.io/npm/v/@hapic/harbor?label=)](https://www.npmjs.com/package/@hapic/harbor) | Typed client for the [Harbor](https://goharbor.io/) container registry — projects, repositories, artifacts, robots, webhooks and more. |
+| [`@hapic/loki`](./packages/loki) | [![npm](https://img.shields.io/npm/v/@hapic/loki?label=)](https://www.npmjs.com/package/@hapic/loki) | Client for [Grafana Loki](https://grafana.com/oss/loki/) — push, query and analyze logs through the querier, distributor and compactor endpoints. |
+| [`@hapic/oauth2`](./packages/oauth2) | [![npm](https://img.shields.io/npm/v/@hapic/oauth2?label=)](https://www.npmjs.com/package/@hapic/oauth2) | OAuth2 / OpenID Connect client — authorization flows, token issuance, userinfo and provider metadata. |
+| [`@hapic/vault`](./packages/vault) | [![npm](https://img.shields.io/npm/v/@hapic/vault?label=)](https://www.npmjs.com/package/@hapic/vault) | Client for [HashiCorp Vault](https://www.vaultproject.io/) — key-value engines (v1/v2), mounts and secrets management. |
+| [`@hapic/victorialogs`](./packages/victorialogs) | [![npm](https://img.shields.io/npm/v/@hapic/victorialogs?label=)](https://www.npmjs.com/package/@hapic/victorialogs) | Client for [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) — ingest and query logs via its HTTP API. |
 
-[Documentation](./packages/client)
+Every service client follows the same shape — a `<Service>Client extends Client` composing domain `*API` classes — so once you know one, you know them all. See [Building a Service Client](https://hapic.tada5hi.net/guide/building-a-client) to publish your own.
 
-### Harbor 🚢
+## Contributing
 
-**`@hapic/harbor`**
+```bash
+npm ci             # install
+npm run build      # build all packages (Nx, cached)
+npm run test       # run tests
+npm run lint       # ESLint — must pass with zero errors
+```
 
-This client provides an easy way to interact with various domain endpoints such as repositories, projects, and more.
-The Harbor Image Registry is an open-source platform that enables users to store, manage, and distribute container images. 
-The client offers a variety of abstractions to simplify interaction with the platform and speed up the development process.
-Whether you are an experienced developer or new to the world of container images,
-this API client is a powerful tool to get the most out of the platform.
-
-[Documentation](./packages/harbor)
-
-### Loki 📊
-
-This client provides an easy way to interact with Grafana Loki,
-a log aggregation system designed for efficient, scalable, and cost-effective log management.
-With this API client, developers can easily send, query, and analyze logs using Loki’s HTTP endpoints.
-It offers a range of abstractions to simplify integration with Loki’s API,
-whether you’re pushing structured logs or building dashboards and alerting rules.
-Whether you're just starting with observability or already operating complex monitoring stacks,
-this client helps you get the most out of your logging infrastructure.
-
-### OAuth2 🛡️
-
-**`@hapic/oauth2`**
-
-This client provides an easy way to authenticate and authorize **users**, **clients**, **robots**, ...
-using OAuth2 and OpenID Connect standards.
-With this API client, developers can easily interact with the server's endpoints, 
-such as authentication flows, token issuance, and user management. 
-The client offers a range of abstractions to simplify interactions with the server 
-and speed up the development process. 
-Whether you are an experienced developer or new to OAuth2/OpenID,
-this API client is a powerful tool to help you implement secure **users**, **clients** & **robots** authentication 
-and authorization in your applications.
-
-[Documentation](./packages/oauth2)
-
-### Vault 🔒
-
-**`@hapic/vault`**
-
-This client provides a convenient way to interact with various endpoints in Vault, 
-such as secrets, engines, and more. 
-Vault is a popular open-source tool used for securely storing and accessing sensitive data, 
-such as passwords, API keys, and certificates. 
-The client offers a range of abstractions to simplify interactions with Vault and
-streamline the development process. 
-Whether you are a seasoned developer or new to the world of secrets management, 
-this API client is a powerful tool to help you get the most out of Vault.
-
-[Documentation](./packages/vault)
-
-### VictoriaLogs 🔒
-
-**`@hapic/vault`**
-
-...
-
-
-[Documentation](./packages/victorialogs)
+Commits follow [Conventional Commits](https://conventionalcommits.org); releases and changelogs are automated via release-please.
 
 ## License
 
