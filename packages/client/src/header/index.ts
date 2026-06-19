@@ -7,4 +7,6 @@
 
 export * from './authorization';
 export * from './constants';
+export * from './store';
+export * from './type';
 export * from './utils';

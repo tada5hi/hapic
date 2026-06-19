@@ -5,101 +5,27 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Headers } from '../fetch';
+import { HeaderStore } from './store';
+import type { HeaderContainer } from './type';
 
 export function setHeader(
-    headers: globalThis.HeadersInit | Headers,
+    headers: HeaderContainer,
     key: string,
     value: any,
 ) {
-    key = key.toLowerCase();
-
-    if (
-        typeof Headers !== 'undefined' &&
-        headers instanceof Headers
-    ) {
-        headers.set(key, value);
-
-        return;
-    }
-
-    if (Array.isArray(headers)) {
-        const index = headers.findIndex((el) => el.length === 2 && el[0].toLowerCase() === key);
-        if (index !== -1) {
-            headers[index] = [key, value];
-        } else {
-            headers.push([key, value]);
-        }
-        return;
-    }
-
-    const keys = Object.keys(headers);
-    const index = keys.findIndex((el) => el.toLowerCase() === key);
-    if (index !== -1) {
-        (headers as Record<string, any>)[keys[index]] = value;
-    } else {
-        (headers as Record<string, any>)[key] = value;
-    }
+    new HeaderStore(headers).set(key, value);
 }
 
 export function getHeader(
-    headers: globalThis.HeadersInit | Headers,
+    headers: HeaderContainer,
     key: string,
-) : undefined | any {
-    key = key.toLowerCase();
-
-    if (
-        typeof Headers !== 'undefined' &&
-        headers instanceof Headers
-    ) {
-        const value = headers.get(key);
-        return value === null ? undefined : value;
-    }
-
-    if (Array.isArray(headers)) {
-        const index = headers.findIndex((el) => el.length === 2 && el[0].toLowerCase() === key);
-        if (index !== -1) {
-            return headers[index][1];
-        }
-
-        return undefined;
-    }
-
-    const keys = Object.keys(headers);
-    const index = keys.findIndex((el) => el.toLowerCase() === key);
-    if (index !== -1) {
-        return (headers as Record<string, any>)[keys[index]];
-    }
-
-    return undefined;
+) : string | undefined {
+    return new HeaderStore(headers).get(key);
 }
 
 export function unsetHeader(
-    headers: globalThis.HeadersInit | Headers,
+    headers: HeaderContainer,
     key: string,
 ) {
-    key = key.toLowerCase();
-
-    if (
-        typeof Headers !== 'undefined' &&
-        headers instanceof Headers
-    ) {
-        headers.delete(key);
-        return;
-    }
-
-    if (Array.isArray(headers)) {
-        const index = headers.findIndex((el) => el.length === 2 && el[0].toLowerCase() === key.toLowerCase());
-        if (index !== -1) {
-            headers.splice(index, 1);
-        }
-
-        return;
-    }
-
-    const keys = Object.keys(headers);
-    const index = keys.findIndex((el) => el.toLowerCase() === key);
-    if (index !== -1) {
-        delete (headers as Record<string, any>)[keys[index]];
-    }
+    new HeaderStore(headers).unset(key);
 }
