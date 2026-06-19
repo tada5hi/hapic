@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client as BaseClient, RequestBaseOptions } from 'hapic';
+import type { IClient, RequestBaseOptions } from 'hapic';
 import { createClient, isClient } from 'hapic';
 import { OAuth2Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
@@ -20,9 +20,9 @@ import type { OpenIDProviderMetadata } from './type';
  */
 export async function createClientWithOpenIDDiscoveryURL(
     url: string,
-    options?: BaseClient | RequestBaseOptions,
+    options?: IClient | RequestBaseOptions,
 ) : Promise<OAuth2Client> {
-    let client: BaseClient;
+    let client: IClient;
 
     if (isClient(options)) {
         client = options;

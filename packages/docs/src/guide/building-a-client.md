@@ -22,20 +22,20 @@ Group endpoints into a class that holds a `client` and calls through it. Mirrori
 
 ```typescript
 // base.ts
-import { type Client, type RequestBaseOptions, createClient, isClient } from 'hapic';
+import { type IClient, type RequestBaseOptions, createClient, isClient } from 'hapic';
 
 export interface BaseAPIContext {
-    client?: Client | RequestBaseOptions;
+    client?: IClient | RequestBaseOptions;
 }
 
 export abstract class BaseAPI {
-    protected client!: Client;
+    protected client!: IClient;
 
     protected constructor(context: BaseAPIContext = {}) {
         this.setClient(context.client);
     }
 
-    setClient(input?: Client | RequestBaseOptions) {
+    setClient(input?: IClient | RequestBaseOptions) {
         // accept a ready client, or raw options to build one
         this.client = isClient(input) ? input : createClient(input);
     }

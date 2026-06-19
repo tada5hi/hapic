@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Client } from './module';
+import type { IClient } from './type';
 import { hasInstanceof, hasOwnProperty } from './utils';
 
 /**
@@ -13,7 +13,7 @@ import { hasInstanceof, hasOwnProperty } from './utils';
  * `@hapic/*` service package: a keyed map of client instances plus a
  * cross-realm `isClient` guard.
  */
-export type ClientRegistry<T extends Client, I> = {
+export type ClientRegistry<T extends IClient, I> = {
     /**
      * Verify if a client singleton instance exists for `key` (default `'default'`).
      */
@@ -42,7 +42,7 @@ export type ClientRegistry<T extends Client, I> = {
     isClient(input: unknown): input is T;
 };
 
-export type ClientRegistryOptions<T extends Client, I> = {
+export type ClientRegistryOptions<T extends IClient, I> = {
     /**
      * Construct a new client from the given input.
      */
@@ -65,7 +65,7 @@ export type ClientRegistryOptions<T extends Client, I> = {
  *
  * @param options
  */
-export function createClientRegistry<T extends Client, I>(
+export function createClientRegistry<T extends IClient, I>(
     options: ClientRegistryOptions<T, I>,
 ) : ClientRegistry<T, I> {
     // null-prototype storage: registry keys are arbitrary strings, so a key
