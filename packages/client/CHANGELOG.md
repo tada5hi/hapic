@@ -247,6 +247,30 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.0.0](https://github.com/tada5hi/hapic/compare/client-v2.8.2...client-v3.0.0) (2026-06-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* packages are ESM-only (no CommonJS build); require() is no longer supported and the minimum supported Node.js version is 22.
+* **client:** cross-realm identity moved from a single `@instanceof` symbol to a non-writable `symbol[]` marker chain.
+    - Subclasses must register identity with `markInstanceof(this, Symbol.for(...))`
+      in the constructor; a `readonly '@instanceof' = Symbol.for(...)` class field now
+      throws `TypeError: Cannot redefine property: @instanceof`.
+    - `error.code` is always a string (`'HTTP_RESPONSE_ERROR'` for HTTP errors,
+      previously `undefined`); `error.name` is the subclass name.
+    - Marker `Symbol.for(...)` keys are now namespaced.
+
+### Features
+
+* **client:** consolidate header container dispatch into HeaderStore ([#1043](https://github.com/tada5hi/hapic/issues/1043)) ([0f72985](https://github.com/tada5hi/hapic/commit/0f72985dbd346a33be6ab3a76f58671a1ed304ce))
+* **client:** consolidate singleton instance registry into createClientRegistry factory ([#1039](https://github.com/tada5hi/hapic/issues/1039)) ([b7b094f](https://github.com/tada5hi/hapic/commit/b7b094f0413c04ceccc73c5b575fe605a1d118f4))
+* **client:** injectable transport seam + MemoryTransport test double ([#1028](https://github.com/tada5hi/hapic/issues/1028)) ([7c2b466](https://github.com/tada5hi/hapic/commit/7c2b466998f8a122426c767e97e052c14dbe911a))
+* **client:** introduce IClient interface as the client type reference ([#1040](https://github.com/tada5hi/hapic/issues/1040)) ([2363c13](https://github.com/tada5hi/hapic/commit/2363c139f647d97227f73a19a1844922a8aacbef))
+* **client:** rebuild error handling on @ebec/core with marker-chain instanceof ([#1029](https://github.com/tada5hi/hapic/issues/1029)) ([9fb3099](https://github.com/tada5hi/hapic/commit/9fb3099fc5478b751032d468072e46dc9d37d929))
+* **client:** share connection-string parsing and own hook recovery ([#1044](https://github.com/tada5hi/hapic/issues/1044)) ([ad132c8](https://github.com/tada5hi/hapic/commit/ad132c86cc13a429ae8995944970e323e0dfda50))
+* modernize toolchain to eslint v10, tsdown & vitest ([#1041](https://github.com/tada5hi/hapic/issues/1041)) ([eddcfb6](https://github.com/tada5hi/hapic/commit/eddcfb66aeece17f1dcd76212d7a9fe7553b1ebe))
+
 ## [2.8.2](https://github.com/tada5hi/hapic/compare/client-v2.8.1...client-v2.8.2) (2026-02-25)
 
 
