@@ -1,8 +1,8 @@
 {
-    "packages/client": "3.0.0",
-    "packages/harbor": "3.0.0",
-    "packages/loki": "2.0.0",
-    "packages/oauth2": "4.0.0",
-    "packages/vault": "3.0.0",
-    "packages/victorialogs": "2.0.0"
+    "packages/client": "3.0.1",
+    "packages/harbor": "3.0.1",
+    "packages/loki": "2.0.1",
+    "packages/oauth2": "4.0.1",
+    "packages/vault": "3.0.1",
+    "packages/victorialogs": "2.0.1"
 }
