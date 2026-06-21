@@ -8,6 +8,7 @@
 import {
     Client,
     FetchTransport,
+    type FetchTransportFn,
     HeaderName,
     HookName,
     MemoryTransport,
@@ -59,9 +60,9 @@ describe('src/transport', () => {
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             await client.request({
-                method: 'GET', 
-                url: 'thing', 
-                body: { a: 1 }, 
+                method: 'GET',
+                url: 'thing',
+                body: { a: 1 },
             } as any);
 
             expect(transport.requests.at(-1)!.body).toBeUndefined();
@@ -261,14 +262,15 @@ describe('src/transport', () => {
 
         it('should invoke fetch with the global receiver, not the transport instance', async () => {
             let calledWithGlobalReceiver = false;
-            const fetchImpl = function (this: unknown, _url: string, _init: any) {
+
+            const fetchImpl : FetchTransportFn = function (this: unknown, _url: string, _init: any) {
                 calledWithGlobalReceiver = this === globalThis;
                 return Promise.resolve(new Response('{}', { headers: { 'content-type': 'application/json' } }));
             };
 
             const client = new Client({
                 baseURL: 'https://api.test/',
-                transport: new FetchTransport({ fetch: fetchImpl as any }),
+                transport: new FetchTransport({ fetch: fetchImpl }),
             });
 
             await client.get('x');
@@ -278,7 +280,7 @@ describe('src/transport', () => {
 
         it('should dispatch through a custom fetch with proxy disabled', async () => {
             const calls: { url: string, init: any }[] = [];
-            const fetchImpl = async (url: string, init: any) => {
+            const fetchImpl : FetchTransportFn = async (url: string, init: any) => {
                 calls.push({ url, init });
                 return new Response('{}', { headers: { 'content-type': 'application/json' } });
             };
@@ -286,7 +288,7 @@ describe('src/transport', () => {
             const client = new Client({
                 baseURL: 'https://api.test/',
                 proxy: false,
-                transport: new FetchTransport({ fetch: fetchImpl as any }),
+                transport: new FetchTransport({ fetch: fetchImpl }),
             });
 
             await client.get('x');
@@ -297,14 +299,14 @@ describe('src/transport', () => {
 
         it('should dispatch through a custom fetch with the default proxy', async () => {
             const calls: { url: string, init: any }[] = [];
-            const fetchImpl = async (url: string, init: any) => {
+            const fetchImpl : FetchTransportFn = async (url: string, init: any) => {
                 calls.push({ url, init });
                 return new Response('{}', { headers: { 'content-type': 'application/json' } });
             };
 
             const client = new Client({
                 baseURL: 'https://api.test/',
-                transport: new FetchTransport({ fetch: fetchImpl as any }),
+                transport: new FetchTransport({ fetch: fetchImpl }),
             });
 
             await client.get('x');

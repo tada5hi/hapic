@@ -5,12 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from '../fetch';
-import { createProxy, fetch } from '../fetch';
-import { markInstanceof } from '../utils';
-import type { FetchTransportOptions, ITransport, TransportRequest } from './type';
-import { CLIENT_TRANSPORT_INSTANCE } from './utils';
-import { globalContext } from '../utils/global-this.ts';
+import type { ProxyOptions } from '../../fetch';
+import { createProxy, fetch } from '../../fetch';
+import { markInstanceof } from '../../utils';
+import { globalContext } from '../../utils/global-this.ts';
+import type { ITransport, TransportRequest } from '../type';
+import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
+import type { FetchTransportFn, FetchTransportOptions } from './type';
 
 /**
  * Production transport: dispatches via `fetch` and owns proxy resolution.
@@ -18,7 +19,7 @@ import { globalContext } from '../utils/global-this.ts';
  * This is the only module besides `fetch.ts` that touches `fetch`/`createProxy`.
  */
 export class FetchTransport implements ITransport {
-    protected fetch : typeof fetch;
+    protected fetch : FetchTransportFn;
 
     constructor(options: FetchTransportOptions = {}) {
         // Bind the receiver to the global object. The WHATWG `fetch` is a branded

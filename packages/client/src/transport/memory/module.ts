@@ -7,7 +7,8 @@
 
 // node-fetch-native is used as a fallback when no global Response is available.
 import { Response as NodeResponse } from 'node-fetch-native';
-import { Headers } from '../fetch';
+import { Headers } from '../../fetch';
+import { isResponse } from '../../response';
 import {
     isArrayBuffer,
     isBlob,
@@ -17,16 +18,14 @@ import {
     isStream,
     isURLSearchParams,
     markInstanceof,
-} from '../utils';
-import { isResponse } from '../response';
+} from '../../utils';
+import type { ITransport, TransportRequest } from '../type';
+import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type {
-    ITransport,
     MemoryResponseInit,
     MemoryTransportFetch,
     MemoryTransportOptions,
-    TransportRequest,
 } from './type';
-import { CLIENT_TRANSPORT_INSTANCE } from './utils';
 
 const ResponseCtor : typeof NodeResponse = (
     typeof globalThis !== 'undefined' &&
