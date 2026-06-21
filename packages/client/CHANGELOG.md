@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.0.1](https://github.com/tada5hi/hapic/compare/client-v3.0.0...client-v3.0.1) (2026-06-21)
+
+
+### Bug Fixes
+
+* **client:** bind fetch to the global object to avoid 'Illegal invocation' in browsers ([#1046](https://github.com/tada5hi/hapic/issues/1046)) ([289cb4d](https://github.com/tada5hi/hapic/commit/289cb4decfa8727255fbcb2531f37aaf7aa3749a)), closes [#1045](https://github.com/tada5hi/hapic/issues/1045)
+
 ## [3.0.0](https://github.com/tada5hi/hapic/compare/client-v2.8.2...client-v3.0.0) (2026-06-20)
 
 
