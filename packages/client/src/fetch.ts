@@ -14,40 +14,20 @@ import nodeFetch, {
 } from 'node-fetch-native';
 import type { ProxyOptions as ProxyOptionsBase } from 'node-fetch-native/proxy';
 import { createProxy as createProxyBase } from 'node-fetch-native/proxy';
+import { globalContext } from './utils/global-this.ts';
 
-const gT = (() => {
-    if (typeof globalThis !== 'undefined') {
-        return globalThis;
-    }
-
-     
-    if (typeof self !== 'undefined') {
-        return self;
-    }
-
-    if (typeof window !== 'undefined') {
-        return window;
-    }
-
-    if (typeof global !== 'undefined') {
-        return global;
-    }
-
-    throw new Error('unable to locate global object');
-})();
-
-export const File = gT.File ||
+export const File = globalContext.File ||
     _File;
 
-export const FormData = gT.FormData ||
+export const FormData = globalContext.FormData ||
     _FormData;
 
-export const AbortController = gT.AbortController ||
+export const AbortController = globalContext.AbortController ||
     _AbortController;
 
-export const fetch = gT.fetch || nodeFetch;
-export const Headers = gT.Headers || _Headers;
-export const Blob = gT.Blob || _Blob;
+export const fetch = globalContext.fetch || nodeFetch;
+export const Headers = globalContext.Headers || _Headers;
+export const Blob = globalContext.Blob || _Blob;
 
 export type ProxyOptions = ProxyOptionsBase;
 

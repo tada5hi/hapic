@@ -259,6 +259,23 @@ describe('src/transport', () => {
             expect(isTransport({})).toBe(false);
         });
 
+        it('should invoke fetch with the global receiver, not the transport instance', async () => {
+            let calledWithGlobalReceiver = false;
+            const fetchImpl = function (this: unknown, _url: string, _init: any) {
+                calledWithGlobalReceiver = this === globalThis;
+                return Promise.resolve(new Response('{}', { headers: { 'content-type': 'application/json' } }));
+            };
+
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport: new FetchTransport({ fetch: fetchImpl as any }),
+            });
+
+            await client.get('x');
+
+            expect(calledWithGlobalReceiver).toBe(true);
+        });
+
         it('should dispatch through a custom fetch with proxy disabled', async () => {
             const calls: { url: string, init: any }[] = [];
             const fetchImpl = async (url: string, init: any) => {

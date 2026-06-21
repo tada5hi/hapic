@@ -10,6 +10,7 @@ import { createProxy, fetch } from '../fetch';
 import { markInstanceof } from '../utils';
 import type { FetchTransportOptions, ITransport, TransportRequest } from './type';
 import { CLIENT_TRANSPORT_INSTANCE } from './utils';
+import { globalContext } from '../utils/global-this.ts';
 
 /**
  * Production transport: dispatches via `fetch` and owns proxy resolution.
@@ -20,16 +21,25 @@ export class FetchTransport implements ITransport {
     protected fetch : typeof fetch;
 
     constructor(options: FetchTransportOptions = {}) {
-        this.fetch = options.fetch || fetch;
+        // Bind the receiver to the global object. The WHATWG `fetch` is a branded
+        // method of `Window`/`WorkerGlobalScope` and throws `Illegal invocation`
+        // unless its receiver is the global object - calling it as `this.fetch(...)`
+        // (receiver = the transport instance) breaks in browsers. Binding here also
+        // makes a user-supplied `options.fetch` receiver-safe.
+        if (options.fetch) {
+            this.fetch = options.fetch.bind(globalContext);
+        } else {
+            this.fetch = fetch.bind(globalContext);
+        }
 
         markInstanceof(this, CLIENT_TRANSPORT_INSTANCE);
     }
 
     async dispatch(request: TransportRequest) : Promise<Response> {
         const {
-            url, 
-            proxy, 
-            ...init 
+            url,
+            proxy,
+            ...init
         } = request;
 
         if (proxy === false) {
