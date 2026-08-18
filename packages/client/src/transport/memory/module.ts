@@ -19,6 +19,7 @@ import {
     isURLSearchParams,
     markInstanceof,
 } from '../../utils';
+import { globalContext } from '../../utils/global-this.ts';
 import type { ITransport, TransportRequest } from '../type';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type {
@@ -27,11 +28,7 @@ import type {
     MemoryTransportOptions,
 } from './type';
 
-const ResponseCtor : typeof NodeResponse = (
-    typeof globalThis !== 'undefined' &&
-    typeof (globalThis as { Response?: unknown }).Response !== 'undefined'
-) ?
-    (globalThis as unknown as { Response: typeof NodeResponse }).Response :
+const ResponseCtor : typeof NodeResponse = (globalContext.Response as typeof NodeResponse | undefined) ||
     NodeResponse;
 
 function shouldSerializeBody(body: unknown) : boolean {

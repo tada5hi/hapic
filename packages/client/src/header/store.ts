@@ -134,8 +134,8 @@ export class HeaderStore {
         }
 
         const record = container as Record<string, any>;
-        for (const key of Object.keys(record)) {
-            fn(record[key], key);
+        for (const [key, value] of Object.entries(record)) {
+            fn(value, key);
         }
     }
 
