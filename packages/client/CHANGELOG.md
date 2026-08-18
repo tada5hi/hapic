@@ -247,6 +247,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.0.2](https://github.com/tada5hi/hapic/compare/client-v3.0.1...client-v3.0.2) (2026-08-18)
+
+
+### Bug Fixes
+
+* **deps:** bump dependencies to latest versions ([#1069](https://github.com/tada5hi/hapic/issues/1069)) ([46ddefa](https://github.com/tada5hi/hapic/commit/46ddefa4981283f2d6cfa3f389e000c032f7e544))
+* **deps:** bump the minorandpatch group across 1 directory with 9 updates ([#1061](https://github.com/tada5hi/hapic/issues/1061)) ([3f436db](https://github.com/tada5hi/hapic/commit/3f436db119cc0effdf4b8bf78d07bfcb14d22a8e))
+
 ## [3.0.1](https://github.com/tada5hi/hapic/compare/client-v3.0.0...client-v3.0.1) (2026-06-21)
 
 

@@ -1,6 +1,6 @@
 {
     "name": "@hapic/harbor",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "A harbor http api client.",
     "type": "module",
     "main": "dist/index.mjs",
@@ -48,10 +48,10 @@
         "smob": "^1.6.2"
     },
     "devDependencies": {
-        "hapic": "^3.0.1"
+        "hapic": "^3.0.2"
     },
     "peerDependencies": {
-        "hapic": "^3.0.1"
+        "hapic": "^3.0.2"
     },
     "publishConfig": {
         "access": "public"

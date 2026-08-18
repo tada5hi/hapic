@@ -1,6 +1,6 @@
 {
     "name": "hapic",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "A http api client based on axios.",
     "type": "module",
     "main": "dist/index.mjs",
