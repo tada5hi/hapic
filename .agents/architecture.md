@@ -115,7 +115,7 @@ createClient(input?)      // construct a new client
 useClient(key?)           // get-or-create the singleton for `key`
 setClient(client, key?)   // register a client under `key`
 hasClient(key?) / unsetClient(key?)
-isClient(input)           // cross-realm marker check via hasInstanceof
+isClient(input)           // cross-realm marker check via matchesInstanceof
 ```
 
 These six functions are **not** hand-written per package. A single factory, `createClientRegistry({ create, id })` (`packages/client/src/registry.ts`, exported from `hapic`), owns the keyed map and returns them; each package supplies only how to construct its client and the marker symbol that identifies it:
