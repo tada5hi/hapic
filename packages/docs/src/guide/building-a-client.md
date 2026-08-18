@@ -144,7 +144,7 @@ const created = await client.order.create({ userId: users[0].id });
 If you publish your client, register its own cross-realm marker in the constructor and ship a matching `isClient` guard so duplicate bundled copies still recognize each other:
 
 ```typescript
-import { Client, hasInstanceof, markInstanceof } from 'hapic';
+import { Client, markInstanceof, matchesInstanceof } from 'hapic';
 
 export class MyClient extends Client {
     constructor(/* … */) {
@@ -154,7 +154,7 @@ export class MyClient extends Client {
 }
 
 export function isMyClient(input: unknown): input is MyClient {
-    return hasInstanceof(input, Symbol.for('MyClient'));
+    return matchesInstanceof(input, Symbol.for('MyClient'));
 }
 ```
 
@@ -184,7 +184,7 @@ export const {
 });
 ```
 
-Use the **same symbol** you pass to `markInstanceof` in the constructor as the registry's `id` — `isClient` resolves entirely through `hasInstanceof(input, id)`, so a mismatched symbol silently breaks recognition. A one-line test guards against it:
+Use the **same symbol** you pass to `markInstanceof` in the constructor as the registry's `id` — `isClient` resolves entirely through `matchesInstanceof(input, id)`, so a mismatched symbol silently breaks recognition. A one-line test guards against it:
 
 ```typescript
 import { createClient, isClient } from './instance';

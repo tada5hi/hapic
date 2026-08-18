@@ -119,6 +119,16 @@ describe('src/registry', () => {
         expect(registry.isClient(fakeClient)).toBeTruthy();
     });
 
+    it('should recognise a client whose marker chain survived a JSON round-trip', () => {
+        const registry = buildRegistry();
+
+        // JSON.stringify drops symbols - the chain arrives as marker descriptions
+        const serialized = { '@instanceof': [TEST_INSTANCE.description] };
+        expect(registry.isClient(serialized)).toBeTruthy();
+
+        expect(registry.isClient({ '@instanceof': ['hapic-test/OtherClient'] })).toBeFalsy();
+    });
+
     it('should reject non-clients and clients of other registries', () => {
         const registry = buildRegistry();
 

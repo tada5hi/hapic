@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { hasInstanceof, isObject } from '../../utils';
+import { isObject, matchesInstanceof } from '../../utils';
 import { ErrorCode } from '../constants';
 import {
     HTTP_RESPONSE_ERROR_INSTANCE,
@@ -19,25 +19,25 @@ import { CLIENT_ERROR_INSTANCE, type ClientError } from '../module';
 export function isHapicError(
     error?: unknown,
 ): error is HapicError {
-    return hasInstanceof(error, HAPIC_ERROR_INSTANCE);
+    return matchesInstanceof(error, HAPIC_ERROR_INSTANCE);
 }
 
 export function isClientError(
     error?: unknown,
 ): error is ClientError {
-    return hasInstanceof(error, CLIENT_ERROR_INSTANCE);
+    return matchesInstanceof(error, CLIENT_ERROR_INSTANCE);
 }
 
 export function isNetworkError(
     error?: unknown,
 ): error is NetworkError {
-    return hasInstanceof(error, NETWORK_ERROR_INSTANCE);
+    return matchesInstanceof(error, NETWORK_ERROR_INSTANCE);
 }
 
 export function isHttpResponseError(
     error?: unknown,
 ): error is HttpResponseError {
-    return hasInstanceof(error, HTTP_RESPONSE_ERROR_INSTANCE);
+    return matchesInstanceof(error, HTTP_RESPONSE_ERROR_INSTANCE);
 }
 
 export function isClientErrorWithStatusCode(

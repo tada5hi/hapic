@@ -6,7 +6,7 @@
  */
 
 import type { ErrorInput, ErrorOptions } from '@ebec/core';
-import { hasInstanceof, markInstanceof } from '../../utils';
+import { markInstanceof, matchesInstanceof } from '../../utils';
 import { ErrorCode } from '../constants';
 import { HapicError } from '../hapic-error';
 
@@ -37,5 +37,5 @@ export class ConnectionStringParseError extends HapicError {
 export function isConnectionStringParseError(
     input: unknown,
 ): input is ConnectionStringParseError {
-    return hasInstanceof(input, CONNECTION_STRING_PARSE_ERROR_INSTANCE);
+    return matchesInstanceof(input, CONNECTION_STRING_PARSE_ERROR_INSTANCE);
 }
