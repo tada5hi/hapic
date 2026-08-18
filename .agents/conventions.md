@@ -10,7 +10,7 @@
 | ESLint (`@tada5hi/eslint-config`, flat config) | Linting (`eslint`)                                              |
 | [Vitest](https://vitest.dev)           | Tests (see [testing.md](testing.md))                                    |
 | commitlint (`@tada5hi/commitlint-config`) + Husky | Enforces Conventional Commits on `commit-msg`                |
-| release-please + `workspaces-publish`  | Versioning, changelogs, and publishing                                  |
+| release-please + `monoship`            | Versioning, changelogs, and publishing                                  |
 
 ## Workflow
 
@@ -101,7 +101,7 @@ Releases are automated by [release-please](https://github.com/googleapis/release
 - `release-type: node`, `include-component-in-tag: true` — each package is released independently with a component-tagged release (e.g. `client-vX`, `harbor-vX`).
 - The `node-workspace` plugin keeps cross-package `peerDependencies` ranges in sync.
 - `bump-minor-pre-major` / `bump-patch-for-minor-pre-major` govern pre-1.0 bumps.
-- On a release commit to `master`, CI builds and publishes via `npx workspaces-publish`.
+- On a release commit to `master`, CI builds and publishes via `npx monoship`.
 
 ## CI/CD
 
