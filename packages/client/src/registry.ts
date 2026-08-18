@@ -6,7 +6,7 @@
  */
 
 import type { IClient } from './type';
-import { hasInstanceof, hasOwnProperty } from './utils';
+import { hasOwnProperty, matchesInstanceof } from './utils';
 
 /**
  * The singleton-registry surface shared by the base package and every
@@ -103,7 +103,7 @@ export function createClientRegistry<T extends IClient, I>(
         }
     };
 
-    const isClient = (input: unknown) : input is T => hasInstanceof(input, options.id);
+    const isClient = (input: unknown) : input is T => matchesInstanceof(input, options.id);
 
     return {
         hasClient,

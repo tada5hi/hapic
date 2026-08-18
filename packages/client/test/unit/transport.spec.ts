@@ -258,6 +258,10 @@ describe('src/transport', () => {
             expect(isTransport(new FetchTransport())).toBe(true);
             expect(isTransport(new MemoryTransport())).toBe(true);
             expect(isTransport({})).toBe(false);
+
+            // the marker chain matches in both its symbol and its string form
+            expect(isTransport({ '@instanceof': [Symbol.for('hapic/ClientTransport')] })).toBe(true);
+            expect(isTransport({ '@instanceof': ['hapic/ClientTransport'] })).toBe(true);
         });
 
         it('should invoke fetch with the global receiver, not the transport instance', async () => {

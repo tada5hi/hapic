@@ -72,6 +72,32 @@ describe('src/error/hierarchy', () => {
         expect(isNetworkError(fake)).toBe(false);
     });
 
+    it('should detect an error rehydrated from JSON, whose marker chain holds strings', () => {
+        const error = new HttpResponseError({
+            request: { url: 'http://localhost/' },
+            message: 'not found',
+            response: { status: 404, statusText: 'Not Found' } as any,
+        });
+
+        // JSON.stringify drops symbols - toJSON() emits the chain as marker descriptions
+        const rehydrated = JSON.parse(JSON.stringify(error));
+        expect(rehydrated['@instanceof']).toEqual([
+            '@ebec/core/BaseError',
+            'hapic/HapicError',
+            'hapic/ClientError',
+            'hapic/HttpResponseError',
+        ]);
+
+        expect(isHapicError(rehydrated)).toBe(true);
+        expect(isClientError(rehydrated)).toBe(true);
+        expect(isHttpResponseError(rehydrated)).toBe(true);
+        expect(isNetworkError(rehydrated)).toBe(false);
+
+        const authError = JSON.parse(JSON.stringify(new AuthorizationHeaderError()));
+        expect(isAuthorizationHeaderError(authError)).toBe(true);
+        expect(isClientError(authError)).toBe(false);
+    });
+
     it('should recognise an AuthorizationHeaderError but not confuse it with a ClientError', () => {
         const error = new AuthorizationHeaderError();
 

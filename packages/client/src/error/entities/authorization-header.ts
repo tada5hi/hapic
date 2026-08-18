@@ -6,7 +6,7 @@
  */
 
 import type { ErrorInput, ErrorOptions } from '@ebec/core';
-import { hasInstanceof, markInstanceof } from '../../utils';
+import { markInstanceof, matchesInstanceof } from '../../utils';
 import { ErrorCode } from '../constants';
 import { HapicError } from '../hapic-error';
 
@@ -45,5 +45,5 @@ export class AuthorizationHeaderError extends HapicError {
 export function isAuthorizationHeaderError(
     input: unknown,
 ): input is AuthorizationHeaderError {
-    return hasInstanceof(input, AUTHORIZATION_HEADER_ERROR_INSTANCE);
+    return matchesInstanceof(input, AUTHORIZATION_HEADER_ERROR_INSTANCE);
 }

@@ -44,6 +44,15 @@ Every error a `@hapic/*` package throws descends from `HapicError`, so `isHapicE
 
 If a consumer ends up with two bundled copies of hapic, a plain `error instanceof ClientError` can be `false` for an error thrown by the other copy. The exported guards instead consult a cross-realm **marker chain**: every error records a marker for itself *and* for each of its ancestors, so a single instance is matched by every guard in its lineage — an `HttpResponseError` answers `true` to both `isHttpResponseError` **and** `isClientError`.
 
+The guards match the chain **loosely**: `JSON.stringify` drops symbols, so `error.toJSON()` emits the marker chain as plain strings. An error serialised on a server and parsed back on the client is therefore still recognised by every guard in its lineage:
+
+```typescript
+const payload = JSON.parse(await response.text()); // an error emitted by toJSON()
+
+isHapicError(payload);        // true
+isHttpResponseError(payload); // true
+```
+
 ### `isHapicError`
 
 The broadest guard — matches *any* error thrown by *any* hapic package (request, auth, or connection), and nothing else:
