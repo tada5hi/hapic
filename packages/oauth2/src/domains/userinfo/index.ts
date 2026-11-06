@@ -8,7 +8,7 @@
 import type { AuthorizationHeader } from 'hapic';
 import { HeaderName, stringifyAuthorizationHeader } from 'hapic';
 import { BaseAPI } from '../base';
-import type { BaseAPIContext } from '../type';
+import type { BaseAPIContext } from '../types';
 
 export class UserInfoAPI extends BaseAPI {
     constructor(context?: BaseAPIContext) {

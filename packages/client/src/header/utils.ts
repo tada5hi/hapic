@@ -6,7 +6,7 @@
  */
 
 import { HeaderStore } from './store';
-import type { HeaderContainer } from './type';
+import type { HeaderContainer } from './types';
 
 export function setHeader(
     headers: HeaderContainer,

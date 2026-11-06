@@ -44,11 +44,13 @@ describe('src/domains/querier', () => {
         expect(result).toEqual(body);
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('GET');
         expect(req.url).toBe('loki/api/v1/query?query=%7Bapp=%22foo%22%7D&limit=10&direction=backward&time=1000');
         expect(req.body).toBeUndefined();
 
         const headers = req.headers as Headers;
+
         expect(headers.get(HeaderName.ACCEPT)).toBe('application/json');
     });
 
@@ -83,11 +85,13 @@ describe('src/domains/querier', () => {
         expect(result).toEqual(body);
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('GET');
         expect(req.url).toBe('loki/api/v1/query_range?query=%7Bapp=%22foo%22%7D&limit=10&direction=backward&start=1000&end=10001');
         expect(req.body).toBeUndefined();
 
         const headers = req.headers as Headers;
+
         expect(headers.get(HeaderName.ACCEPT)).toBe('application/json');
     });
 });

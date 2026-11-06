@@ -7,5 +7,5 @@
 
 export * from './fetch';
 export * from './memory';
-export * from './type';
+export * from './types';
 export * from './utils';

@@ -1,5 +1,3 @@
-<!-- NOTE: Keep this file and all corresponding files in the .agents directory updated as the project evolves. When making architectural changes, adding new patterns, or discovering important conventions, update the relevant sections. -->
-
 # hapic — Agent Guide
 
 **hapic** ("**H**TTP **API** **C**lient") is a tiny, fetch-based HTTP client library and a family of service-specific clients built on top of it. The base `hapic` package provides a thin wrapper around `fetch` with request/response hooks, transformers, authorization helpers, proxy support, and automatic error throwing on non-2xx responses. Sibling packages (`@hapic/harbor`, `@hapic/loki`, `@hapic/oauth2`, `@hapic/vault`, `@hapic/victorialogs`) extend the base client with typed, domain-oriented APIs for specific backends. Everything runs in Node.js, the browser, and worker environments.
@@ -17,7 +15,7 @@ npm run lint           # eslint (flat config)
 npm run lint:fix       # eslint --fix
 ```
 
-- **Node.js**: `>=22.0.0` (CI builds/tests on Node 22)
+- **Development Node.js**: 24.15+ on the 24.x line, or 26+ (CI runs on 24). Published runtime requirements are declared in each package manifest.
 - **Package manager**: npm (workspaces — `packages/*`)
 - **Build orchestration**: [Nx](https://nx.dev) (`build`, `lint`, `test` are cached; `build` depends on `^build`)
 
@@ -34,10 +32,20 @@ npm run build --workspace=packages/docs   # build the docs site for production
 
 ## Detailed Guides
 
+
 - **[Project Structure](.agents/structure.md)** — Workspace layout, package inventory, dependency layers, and per-package directory conventions
 - **[Architecture](.agents/architecture.md)** — Base `Client`, hook pipeline, domain `*API` / `BaseAPI` pattern, singleton instance management, and cross-realm `@instanceof` checks
 - **[Testing](.agents/testing.md)** — Vitest setup, per-package config, coverage thresholds, and the CI test matrix
 - **[Conventions](.agents/conventions.md)** — Code style, naming, tooling (ESLint/TS/tsdown/Nx), Conventional Commits, and the release-please flow
+
+### Writing agent docs
+
+Keep the guides factual and focused on contracts a future change could silently break.
+
+- Keep existing commands, paths and factual descriptions current. Add guide content only for an invariant or cross-cutting rule. Put defect stories and verification details in the PR, and user-facing changes in the documentation site or release notes.
+- Keep subsystem detail in `.agents/topics/` and link it from the relevant guide.
+- Describe current behavior and cite issues or PRs, rather than local plan files or a running history of completed work.
+- `npm run lint` enforces the shared config's agent-doc size, import-budget and history checks. Preserve the critical contracts when splitting a guide.
 
 ## Commits, Issues & Pull Requests
 

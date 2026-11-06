@@ -8,13 +8,13 @@
 import { buildQueryString } from '../../utils';
 import { BaseAPI } from '../base';
 import { buildProjectRepositoryLongName } from '../project-repository';
-import type { BaseAPIContext } from '../type';
+import type { BaseAPIContext } from '../types';
 import type {
     ProjectArtifact,
     ProjectArtifactCopyElement,
     ProjectArtifactDeleteContext,
     ProjectArtifactGetManyContext,
-} from './type';
+} from './types';
 
 export class ProjectRepositoryArtifactAPI extends BaseAPI {
     constructor(context: BaseAPIContext) {
@@ -30,6 +30,7 @@ export class ProjectRepositoryArtifactAPI extends BaseAPI {
 
     async copy(destination: ProjectArtifactCopyElement, source: string | ProjectArtifactCopyElement) : Promise<void> {
         let from : string;
+
         if (typeof source === 'string') {
             from = source;
         } else {

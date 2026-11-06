@@ -7,7 +7,7 @@
 
 import type { RequestTransformer } from 'hapic';
 import { HeaderName } from 'hapic';
-import type { JwtPayload } from '../../type';
+import type { JwtPayload } from '../../types';
 
 import { BaseAPI } from '../base';
 import type {
@@ -22,7 +22,7 @@ import type {
     TokenRefreshTokenGrantParameters,
     TokenRevokeParameters,
     TokenRobotCredentialsGrantParameters,
-} from './type';
+} from './types';
 import { createRequestTransformerForTokenAPIRequest } from './utils';
 
 export class TokenAPI extends BaseAPI {
@@ -242,6 +242,7 @@ export class TokenAPI extends BaseAPI {
     ) : URLSearchParams {
         const urlSearchParams = new URLSearchParams();
         const keys = Object.keys(input);
+
         for (const key of keys) {
             const value = input[key];
 
@@ -249,6 +250,7 @@ export class TokenAPI extends BaseAPI {
                 urlSearchParams.append(key, value);
             } else if (Array.isArray(value)) {
                 const str = value.filter((el) => el).join(' ');
+
                 if (str) {
                     urlSearchParams.append(key, str);
                 }

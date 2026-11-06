@@ -32,6 +32,7 @@ const metadata : OpenIDProviderMetadata = {
 describe('src/open-id', () => {
     it('should build open id discovery url', () => {
         let url = buildOpenIDDiscoveryURL('http://localhost:3002');
+
         expect(url).toEqual('http://localhost:3002/.well-known/openid-configuration');
 
         url = buildOpenIDDiscoveryURL('https://example.com/api/');

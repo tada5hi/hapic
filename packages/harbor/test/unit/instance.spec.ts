@@ -40,6 +40,7 @@ describe('src/instance', () => {
         });
 
         const client = new HarborClient({ request: { transport } });
+
         await client.project.getMany({ query: { page_size: 10 } });
 
         expect(transport.requests.at(-1)?.method).toBe('GET');

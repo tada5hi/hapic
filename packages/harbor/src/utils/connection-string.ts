@@ -15,6 +15,7 @@ export function parseConnectionString(connectionString: string): ConnectionOptio
     const { credentials, host } = splitConnectionString(connectionString, { message: FORMAT_HINT });
 
     const authParts = credentials.split(':');
+
     if (authParts.length !== 2) {
         throw new ConnectionStringParseError(FORMAT_HINT);
     }

@@ -11,6 +11,7 @@ import { transformHeadersForTokenAPIRequest } from '../../../../src/domains/toke
 describe('src/domains/token', () => {
     it('should hold inherited header', () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'Bearer foo');
 
         transformHeadersForTokenAPIRequest(headers, {
@@ -31,6 +32,7 @@ describe('src/domains/token', () => {
 
     it('should use inherited header over header by option', () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'Bearer foo');
 
         transformHeadersForTokenAPIRequest(headers, {
@@ -50,6 +52,7 @@ describe('src/domains/token', () => {
 
     it('should use header by option over inherited', () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'Bearer foo');
 
         transformHeadersForTokenAPIRequest(headers, {
@@ -86,6 +89,7 @@ describe('src/domains/token', () => {
 
     it('should not use client-credentials for header', () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'Bearer foo');
 
         transformHeadersForTokenAPIRequest(headers, {
@@ -100,6 +104,7 @@ describe('src/domains/token', () => {
 
     it('should not use options authorization header', () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'Bearer foo');
 
         transformHeadersForTokenAPIRequest(headers, {
@@ -116,6 +121,7 @@ describe('src/domains/token', () => {
 
     it('should not set header', () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'Bearer foo');
 
         transformHeadersForTokenAPIRequest(headers, {

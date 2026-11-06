@@ -20,6 +20,7 @@ describe('src/domains/project-artifact-label', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/foo/repositories/bar/artifacts/latest/labels/1');
     });
@@ -35,6 +36,7 @@ describe('src/domains/project-artifact-label', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('POST');
         expect(request.url).toBe('projects/foo/repositories/bar/artifacts/latest/labels');
         expect(JSON.parse(request.body as string)).toEqual({ id: 1 });

@@ -1,3 +1,4 @@
+/* eslint-disable @tada5hi/no-reexport-shims -- Preserve this existing public forwarding module. */
 /*
  * Copyright (c) 2023.
  * Author Peter Placzek (tada5hi)

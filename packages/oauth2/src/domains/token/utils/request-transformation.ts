@@ -7,7 +7,7 @@
 
 import { isObject } from 'hapic';
 import type { RequestTransformer } from 'hapic';
-import type { ClientAuthenticationParameters, TokenBaseOptions } from '../type';
+import type { ClientAuthenticationParameters, TokenBaseOptions } from '../types';
 import { transformHeadersForTokenAPIRequest } from './header-transformation';
 
 export function createRequestTransformerForTokenAPIRequest(

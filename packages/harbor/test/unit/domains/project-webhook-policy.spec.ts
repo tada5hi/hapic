@@ -23,6 +23,7 @@ describe('src/domains/project-webhook-policy', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('POST');
         expect(request.url).toBe('projects/1/webhook/policies');
         expect(JSON.parse(request.body as string)).toEqual({
@@ -53,6 +54,7 @@ describe('src/domains/project-webhook-policy', () => {
         expect(data).toEqual([]);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/foo/webhook/policies?page_size=10');
     });
@@ -72,6 +74,7 @@ describe('src/domains/project-webhook-policy', () => {
         expect(result.name).toBe('foo/bar');
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/1/webhook/policies/1');
     });
@@ -86,9 +89,11 @@ describe('src/domains/project-webhook-policy', () => {
         });
 
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
         await api.findOne({ projectIdOrName: 1, name: 'bar' });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/1/webhook/policies?q=name%3Dbar&page_size=1');
     });
@@ -104,6 +109,7 @@ describe('src/domains/project-webhook-policy', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/1/webhook/policies/1');
         expect(JSON.parse(request.body as string)).toEqual({
@@ -122,6 +128,7 @@ describe('src/domains/project-webhook-policy', () => {
         await api.delete({ projectIdOrName: 1, id: 1 });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/1/webhook/policies/1');
     });

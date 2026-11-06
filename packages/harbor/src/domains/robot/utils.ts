@@ -6,7 +6,7 @@
  */
 
 import { RobotPermissionAction, RobotPermissionResource } from './constants';
-import type { RobotPermission } from './type';
+import type { RobotPermission } from './types';
 
 /**
  * Create robot permission to access all resources.

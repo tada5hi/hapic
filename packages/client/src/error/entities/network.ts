@@ -7,7 +7,7 @@
 
 import { markInstanceof } from '../../utils';
 import { ClientError } from '../module';
-import type { ClientErrorContext } from '../type';
+import type { ClientErrorContext } from '../types';
 
 export const NETWORK_ERROR_INSTANCE = Symbol.for('hapic/NetworkError');
 

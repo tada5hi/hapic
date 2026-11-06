@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 import type { ResponseType } from '../constants';
-import type { ResponseTypeCombinations } from '../type';
+import type { ResponseTypeCombinations } from '../types';
 
 export type OpenIDProviderMetadata = {
     /**

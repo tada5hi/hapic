@@ -23,6 +23,7 @@ describe('src/utils/connection-string', () => {
 
     it('should throw when the host separator is missing', () => {
         let error: unknown;
+
         try {
             parseConnectionString('admin:start123');
         } catch (e) {

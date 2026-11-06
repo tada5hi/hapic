@@ -6,7 +6,7 @@
  */
 
 import type { ProjectArtifactLabel } from '../project-repository-artifact-label';
-import type { ResourceCollectionQuery } from '../type';
+import type { ResourceCollectionQuery } from '../types';
 
 export type ProjectArtifactTag = {
     artifact_id: number,

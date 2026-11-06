@@ -8,7 +8,7 @@
 import { createClient, isClient } from 'hapic';
 import type { IClient, RequestBaseOptions } from 'hapic';
 import type { Options } from '../config';
-import type { BaseAPIContext } from './type';
+import type { BaseAPIContext } from './types';
 
 export abstract class BaseAPI {
     protected client! : IClient;

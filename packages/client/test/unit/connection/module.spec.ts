@@ -49,6 +49,7 @@ describe('src/connection', () => {
 
         it('should surface a custom error message', () => {
             let error: unknown;
+
             try {
                 splitConnectionString('broken', { message: 'custom hint' });
             } catch (e) {
@@ -76,7 +77,9 @@ describe('src/connection', () => {
         });
 
         it('should not parse the connection string when explicit options are present', () => {
-            const failing = () => { throw new ConnectionStringParseError('should not run'); };
+            const failing = () => {
+                throw new ConnectionStringParseError('should not run');
+            };
 
             expect(resolveConnectionOptions(
                 { connectionString: 'malformed', connectionOptions: { value: 'explicit' } },
@@ -94,7 +97,10 @@ describe('src/connection', () => {
         });
 
         it('should propagate a parse error', () => {
-            const failing = () => { throw new ConnectionStringParseError('bad'); };
+            const failing = () => {
+                throw new ConnectionStringParseError('bad');
+            };
+
             expect(() => resolveConnectionOptions({ connectionString: 'abc' }, failing))
                 .toThrow(ConnectionStringParseError);
         });

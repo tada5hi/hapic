@@ -14,6 +14,7 @@ import {
 describe('src/domains/project-repository', () => {
     it('should parse project repository name', () => {
         const parsed = parseLongProjectRepositoryName('project_name/repository_prefix/repository');
+
         expect(parsed).toBeDefined();
         expect(parsed.repositoryName).toEqual('repository_prefix/repository');
         expect(parsed.projectName).toEqual('project_name');
@@ -29,12 +30,14 @@ describe('src/domains/project-repository', () => {
         });
 
         const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
         await api.getMany({
             projectName: 'proj',
             query: { page_size: 10 },
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/proj/repositories?page_size=10');
     });
@@ -49,9 +52,11 @@ describe('src/domains/project-repository', () => {
         });
 
         const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
         await api.getAll({ projectName: 'proj' });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/proj/repositories?page_size=50&page=1');
     });
@@ -71,6 +76,7 @@ describe('src/domains/project-repository', () => {
         expect(result.name).toBe('foo/bar');
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/foo/repositories/bar');
     });
@@ -85,9 +91,11 @@ describe('src/domains/project-repository', () => {
         });
 
         const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
         await api.findOne({ projectName: 'foo', repositoryName: 'bar' });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/foo/repositories?q=name%3D%257Ebar&page_size=1');
     });
@@ -95,6 +103,7 @@ describe('src/domains/project-repository', () => {
     it('should update resource', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
         await api.update({
             projectName: 'foo',
             repositoryName: 'bar',
@@ -102,6 +111,7 @@ describe('src/domains/project-repository', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/foo/repositories/bar');
         expect(JSON.parse(request.body as string)).toEqual({ name: 'baz' });
@@ -110,9 +120,11 @@ describe('src/domains/project-repository', () => {
     it('should delete resource', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
         await api.delete({ projectName: 'foo', repositoryName: 'bar' });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/foo/repositories/bar');
     });

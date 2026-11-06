@@ -19,6 +19,7 @@ describe('src/domains/key-value/v1', () => {
         });
 
         const api = new KeyValueV1API({ client: createClient({ transport }) });
+
         await api.create(
             'secrets',
             'key',
@@ -26,6 +27,7 @@ describe('src/domains/key-value/v1', () => {
         );
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('POST');
         expect(req.url).toBe('secrets/key');
         expect(JSON.parse(req.body as string)).toEqual({ bar: 'baz' });
@@ -41,9 +43,11 @@ describe('src/domains/key-value/v1', () => {
         });
 
         const api = new KeyValueV1API({ client: createClient({ transport }) });
+
         await api.getOne('foo', 'bar');
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('GET');
         expect(req.url).toBe('foo/bar');
         expect(req.body).toBeUndefined();
@@ -53,9 +57,11 @@ describe('src/domains/key-value/v1', () => {
         const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
 
         const api = new KeyValueV1API({ client: createClient({ transport }) });
+
         await api.delete('foo', 'bar');
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('DELETE');
         expect(req.url).toBe('foo/bar');
         expect(req.body).toBeUndefined();

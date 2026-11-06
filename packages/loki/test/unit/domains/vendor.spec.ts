@@ -27,9 +27,11 @@ describe('src/domains/distributor', () => {
         };
 
         const api = new DistributorAPI({ client: createClient({ transport }) });
+
         await api.push(payload);
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('POST');
         expect(req.url).toBe('loki/api/v1/push');
         expect(JSON.parse(req.body as string)).toEqual({
@@ -44,6 +46,7 @@ describe('src/domains/distributor', () => {
         });
 
         const headers = req.headers as Headers;
+
         expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 });

@@ -23,6 +23,7 @@ describe('src/domains/project', () => {
         const result = await api.create(payload);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('POST');
         expect(request.url).toBe('projects');
         expect(JSON.parse(request.body as string)).toEqual(payload);
@@ -34,9 +35,11 @@ describe('src/domains/project', () => {
     it('should delete resource', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectAPI({ client: createClient({ transport }) });
+
         await api.delete(1);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/1');
         expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
@@ -45,9 +48,11 @@ describe('src/domains/project', () => {
     it('should delete resource by name', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectAPI({ client: createClient({ transport }) });
+
         await api.delete('name', true);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/name');
         expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
@@ -57,9 +62,11 @@ describe('src/domains/project', () => {
         const transport = new MemoryTransport();
         const api = new ProjectAPI({ client: createClient({ transport }) });
         const payload : ProjectCreatePayload = { project_name: 'name' };
+
         await api.update(1, payload);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/1');
         expect(JSON.parse(request.body as string)).toEqual(payload);
@@ -70,9 +77,11 @@ describe('src/domains/project', () => {
         const transport = new MemoryTransport();
         const api = new ProjectAPI({ client: createClient({ transport }) });
         const payload : ProjectCreatePayload = { project_name: 'name' };
+
         await api.update('name', payload, true);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('PUT');
         expect(request.url).toBe('projects/name');
         expect(JSON.parse(request.body as string)).toEqual(payload);
@@ -94,6 +103,7 @@ describe('src/domains/project', () => {
         expect(data).toEqual([]);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects?page_size=10&with_detail=true');
     });
@@ -108,9 +118,11 @@ describe('src/domains/project', () => {
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
+
         await api.getAll({ query: { with_detail: true } });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects?with_detail=true&page_size=50&page=1');
     });
@@ -125,9 +137,11 @@ describe('src/domains/project', () => {
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
+
         await api.getOne(1);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/1');
         expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBeNull();
@@ -143,9 +157,11 @@ describe('src/domains/project', () => {
         });
 
         const api = new ProjectAPI({ client: createClient({ transport }) });
+
         await api.getOne('name', true);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/name');
         expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');

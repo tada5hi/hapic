@@ -6,9 +6,9 @@
  */
 
 import {
-    Headers, 
-    getHeader, 
-    setHeader, 
+    Headers,
+    getHeader,
+    setHeader,
     unsetHeader,
 } from '../../../src';
 
@@ -25,6 +25,7 @@ const checkSetUnset = (a : HeadersInit) => {
 describe('src/module/header', () => {
     it('should set/unset headers for plain object', () => {
         const a : Record<string, any> = {};
+
         a.Authorization = 'foo';
 
         setHeader(a, 'authorization', 'bar');
@@ -34,6 +35,7 @@ describe('src/module/header', () => {
 
     it('should set/unset header for HeadersInit object', () => {
         const a = new Headers();
+
         a.set('Authorization', 'foo');
 
         setHeader(a, 'authorization', 'bar');
@@ -43,6 +45,7 @@ describe('src/module/header', () => {
 
     it('should set/unset header for array', () => {
         const a: [string, string][] = [];
+
         a.push(['Authorization', 'foo']);
 
         setHeader(a, 'authorization', 'bar');

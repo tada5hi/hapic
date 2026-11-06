@@ -16,6 +16,7 @@ export type ResponseData<RT extends `${ResponseType}` = `${ResponseType.JSON}`, 
             RT extends `${ResponseType.BLOB}` ?
                 Blob :
                 T;
+// eslint-disable-next-line @typescript-eslint/naming-convention -- Preserve the public name and declaration merging.
 export interface Response<T = any> extends globalThis.Response {
     data?: T
 }

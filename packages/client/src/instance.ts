@@ -7,7 +7,7 @@
 
 import { CLIENT_INSTANCE, Client } from './module';
 import { createClientRegistry } from './registry';
-import type { ClientOptionsInput, IClient } from './type';
+import type { ClientOptionsInput, IClient } from './types';
 
 export const {
     hasClient,

@@ -8,5 +8,5 @@
 export * from './authorization';
 export * from './constants';
 export * from './store';
-export * from './type';
+export * from './types';
 export * from './utils';

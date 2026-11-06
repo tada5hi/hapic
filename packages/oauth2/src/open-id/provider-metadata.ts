@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 import type { Options } from '../config';
-import type { OpenIDProviderMetadata } from './type';
+import type { OpenIDProviderMetadata } from './types';
 
 export function parseOpenIDProviderMetadata(
     data: OpenIDProviderMetadata,

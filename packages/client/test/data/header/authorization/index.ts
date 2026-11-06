@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-uint8array-base64 -- Keep compatibility with the published Node.js runtime requirement. */
 /*
  * Copyright (c) 2021.
  * Author Peter Placzek (tada5hi)
@@ -23,10 +24,12 @@ describe('src/http/header/authorization/authorization-header.ts', () => {
 
         expect(value.type).toEqual('Basic');
 
-        if (value.type === 'Basic') {
-            expect(value.username).toEqual('admin');
-            expect(value.password).toEqual('start123');
+        if (!(value.type === 'Basic')) {
+            return;
         }
+
+        expect(value.username).toEqual('admin');
+        expect(value.password).toEqual('start123');
     });
 
     it('should not parse basic', () => {
@@ -47,6 +50,7 @@ describe('src/http/header/authorization/authorization-header.ts', () => {
 
     it('should parse api header', () => {
         let value = parseAuthorizationHeader('API-Key start123');
+
         expect(value.type).toEqual('API-Key');
 
         value = parseAuthorizationHeader('X-API-Key start123');
@@ -59,20 +63,23 @@ describe('src/http/header/authorization/authorization-header.ts', () => {
 
     it('should build basic header value', () => {
         const headerValue = stringifyAuthorizationHeader({
-            type: 'Basic', 
-            username: 'admin', 
-            password: 'start123', 
+            type: 'Basic',
+            username: 'admin',
+            password: 'start123',
         });
+
         expect(headerValue).toEqual(`Basic ${Buffer.from('admin:start123').toString('base64')}`);
     });
 
     it('should build bearer header value', () => {
         const headerValue = stringifyAuthorizationHeader({ type: 'Bearer', token: 'start123' });
+
         expect(headerValue).toEqual('Bearer start123');
     });
 
     it('should build api header value', () => {
         let headerValue = stringifyAuthorizationHeader({ type: 'API-Key', key: 'start123' });
+
         expect(headerValue).toEqual('API-Key start123');
 
         headerValue = stringifyAuthorizationHeader({ type: 'X-API-Key', key: 'start123' });

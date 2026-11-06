@@ -1,3 +1,4 @@
+import type { ProxyOptions } from './types';
 /*
  * Copyright (c) 2023.
  * Author Peter Placzek (tada5hi)
@@ -12,7 +13,7 @@ import nodeFetch, {
     FormData as _FormData,
     Headers as _Headers,
 } from 'node-fetch-native';
-import type { ProxyOptions as ProxyOptionsBase } from 'node-fetch-native/proxy';
+
 import { createProxy as createProxyBase } from 'node-fetch-native/proxy';
 import { globalContext } from './utils/global-this.ts';
 
@@ -28,8 +29,6 @@ export const AbortController = globalContext.AbortController ||
 export const fetch = globalContext.fetch || nodeFetch;
 export const Headers = globalContext.Headers || _Headers;
 export const Blob = globalContext.Blob || _Blob;
-
-export type ProxyOptions = ProxyOptionsBase;
 
 export function createProxy(options?: ProxyOptions) {
     return createProxyBase(options);

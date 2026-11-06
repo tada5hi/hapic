@@ -6,7 +6,7 @@
  */
 
 import { isObject, matchesInstanceof } from '../utils';
-import type { ITransport } from './type';
+import type { ITransport } from './types';
 
 export const CLIENT_TRANSPORT_INSTANCE = Symbol.for('hapic/ClientTransport');
 

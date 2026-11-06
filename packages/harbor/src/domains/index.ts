@@ -11,4 +11,4 @@ export * from './project-repository-artifact-label';
 export * from './project-repository';
 export * from './project-webhook-policy';
 export * from './robot';
-export * from './type';
+export * from './types';

@@ -39,6 +39,7 @@ export function isFormData(input: unknown) : input is FormData {
     }
 
     const pattern = '[object FormData]';
+
     if (Object.prototype.toString.call(input) === pattern) {
         return true;
     }

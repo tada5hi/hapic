@@ -6,13 +6,13 @@
  */
 
 import { withBase, withQuery } from 'ufo';
-import type { ClientErrorCreateContext } from './error/type';
+import type { ClientErrorCreateContext } from './error/types';
 import { Headers } from './fetch';
 
 import { MethodName, ResponseType } from './constants';
 import type { ITransport, TransportRequest } from './transport';
 import { FetchTransport, isTransport } from './transport';
-import type { ClientOptionsInput, IClient } from './type';
+import type { ClientOptionsInput, IClient } from './types';
 import type {
     HookErrorFn,
     HookFn,
@@ -159,6 +159,7 @@ export class Client implements IClient {
      */
     public getAuthorizationHeader() {
         const header = this.getHeader(HeaderName.AUTHORIZATION);
+
         if (header !== null) {
             return header;
         }
@@ -238,6 +239,7 @@ export class Client implements IClient {
             ctx: ClientErrorCreateContext,
         ) : Promise<R> => {
             const error = createClientError(ctx);
+
             if (Error.captureStackTrace) {
                 Error.captureStackTrace(error, this.request);
             }
@@ -274,6 +276,7 @@ export class Client implements IClient {
                 transform,
                 ...transportRequest
             } = options;
+
             response = await this.transport.dispatch(transportRequest as TransportRequest);
         } catch (e: any) {
             return handleError('request', {
@@ -290,22 +293,27 @@ export class Client implements IClient {
         switch (responseType) {
             case ResponseType.STREAM: {
                 data = response.body as ResponseData<RT, T>;
+
                 break;
             }
             case ResponseType.BLOB: {
                 data = await response.blob() as ResponseData<RT, T>;
+
                 break;
             }
             case ResponseType.ARRAY_BUFFER: {
                 data = await response.arrayBuffer() as ResponseData<RT, T>;
+
                 break;
             }
             case ResponseType.TEXT: {
                 data = await response.text() as ResponseData<RT, T>;
+
                 break;
             }
             default: {
                 const temp = await response.text();
+
                 try {
                     data = JSON.parse(temp);
                 } catch {
@@ -504,6 +512,7 @@ export class Client implements IClient {
         }
 
         this.hookManager.removeListener(name, fn);
+
         return this;
     }
 }

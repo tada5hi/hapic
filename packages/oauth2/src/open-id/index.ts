@@ -8,4 +8,4 @@
 export * from './client';
 export * from './url';
 export * from './provider-metadata';
-export * from './type';
+export * from './types';

@@ -10,7 +10,7 @@ on:
         branches: [ master ]
 
 env:
-    PRIMARY_NODE_VERSION: 22
+    PRIMARY_NODE_VERSION: 24
 
 defaults:
     run:
@@ -100,7 +100,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: [build, tests]
         steps:
-            -   uses: google-github-actions/release-please-action@v4
+            -   uses: googleapis/release-please-action@v5
                 id: release
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}

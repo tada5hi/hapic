@@ -11,6 +11,7 @@ import { RobotAPI, buildRobotPermissionForAllResources } from '../../../src';
 describe('src/domains/robot', () => {
     it('should build robot permission object for global access', () => {
         const robotPermission = buildRobotPermissionForAllResources('*');
+
         expect(robotPermission.namespace).toEqual('*');
         expect(robotPermission.kind).toEqual('project');
         expect(robotPermission.access.length).toBeGreaterThan(0);
@@ -26,9 +27,11 @@ describe('src/domains/robot', () => {
         });
 
         const api = new RobotAPI({ client: createClient({ transport }) });
+
         await api.create({ name: 'robi' });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('POST');
         expect(request.url).toBe('robots');
         expect(JSON.parse(request.body as string))
@@ -39,9 +42,11 @@ describe('src/domains/robot', () => {
         const transport = new MemoryTransport();
 
         const api = new RobotAPI({ client: createClient({ transport }) });
+
         await api.delete(1);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('robots/1');
         expect(request.body).toBeUndefined();
@@ -51,9 +56,11 @@ describe('src/domains/robot', () => {
         const transport = new MemoryTransport();
 
         const api = new RobotAPI({ client: createClient({ transport }) });
+
         await api.update(1, { name: 'robus' });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('PUT');
         expect(request.url).toBe('robots/1');
         expect(JSON.parse(request.body as string))
@@ -75,6 +82,7 @@ describe('src/domains/robot', () => {
         expect(data).toEqual([]);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('robots?page_size=10');
     });
@@ -89,9 +97,11 @@ describe('src/domains/robot', () => {
         });
 
         const api = new RobotAPI({ client: createClient({ transport }) });
+
         await api.getOne(1);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('robots/1');
     });

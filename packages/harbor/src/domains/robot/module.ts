@@ -8,14 +8,14 @@
 import { merge } from 'smob';
 import { buildQueryString, extractResourceMetaOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
-import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
+import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     Robot,
     RobotCreatePayload,
     RobotGetManyContext,
     RobotUpdatePayload,
     RobotUpdateSecretResponse,
-} from './type';
+} from './types';
 
 export class RobotAPI extends BaseAPI {
     constructor(context: BaseAPIContext) {

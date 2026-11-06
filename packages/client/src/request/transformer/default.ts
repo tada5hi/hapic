@@ -13,10 +13,10 @@ import {
     isFormData,
     isSerializable,
     isStream,
-    isURLSearchParams, 
+    isURLSearchParams,
     serialize,
 } from '../../utils';
-import type { RequestTransformer } from '../type';
+import type { RequestTransformer } from '../types';
 
 export function createDefaultRequestTransformer() : RequestTransformer {
     return (data, headers) => {
@@ -36,6 +36,7 @@ export function createDefaultRequestTransformer() : RequestTransformer {
 
         if (isURLSearchParams(data)) {
             headers.set(HeaderName.CONTENT_TYPE, 'application/x-www-form-urlencoded;charset=utf-8');
+
             return data;
         }
 

@@ -10,7 +10,7 @@ import type {
     ConnectionConfigInput,
     ConnectionStringParts,
     ConnectionStringSplitOptions,
-} from './type';
+} from './types';
 
 /**
  * Split a `<credentials>@<host>` connection string into its two structural
@@ -30,6 +30,7 @@ export function splitConnectionString(
     options: ConnectionStringSplitOptions = {},
 ): ConnectionStringParts {
     const parts = input.split('@');
+
     if (parts.length !== 2) {
         throw new ConnectionStringParseError(
             options.message ?? 'The connection string must be in the following format: credentials@host',

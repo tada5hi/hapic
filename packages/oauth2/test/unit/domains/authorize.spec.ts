@@ -58,6 +58,7 @@ describe('src/domains/authorize', () => {
         const api = new AuthorizeAPI({ client: { baseURL: 'http://localhost:3000' } });
 
         const url = api.buildURL();
+
         expect(url).toEqual('http://localhost:3000/authorize?response_type=code');
     });
 
@@ -65,6 +66,7 @@ describe('src/domains/authorize', () => {
         const api = new AuthorizeAPI({ client: { baseURL: 'http://localhost:3000/auth/' } });
 
         const url = api.buildURL();
+
         expect(url).toEqual('http://localhost:3000/auth/authorize?response_type=code');
     });
 

@@ -6,7 +6,7 @@
  */
 
 import { Headers } from '../fetch';
-import type { HeaderContainer, HeaderMergeOptions } from './type';
+import type { HeaderContainer, HeaderMergeOptions } from './types';
 
 function isHeadersInstance(input: unknown) : input is Headers {
     return typeof Headers !== 'undefined' &&
@@ -44,17 +44,21 @@ export class HeaderStore {
         key = key.toLowerCase();
 
         const { container } = this;
+
         if (isHeadersInstance(container)) {
             const value = container.get(key);
+
             return value === null ? undefined : value;
         }
 
         if (Array.isArray(container)) {
             const tuple = container.find((el) => el.length === 2 && el[0].toLowerCase() === key);
+
             return tuple ? tuple[1] : undefined;
         }
 
         const objectKey = Object.keys(container).find((el) => el.toLowerCase() === key);
+
         return typeof objectKey === 'undefined' ?
             undefined :
             (container as Record<string, any>)[objectKey];
@@ -67,23 +71,29 @@ export class HeaderStore {
         key = key.toLowerCase();
 
         const { container } = this;
+
         if (isHeadersInstance(container)) {
             container.set(key, value);
+
             return this;
         }
 
         if (Array.isArray(container)) {
             const index = container.findIndex((el) => el.length === 2 && el[0].toLowerCase() === key);
+
             if (index === -1) {
                 container.push([key, value]);
             } else {
                 container[index] = [key, value];
             }
+
             return this;
         }
 
         const objectKey = Object.keys(container).find((el) => el.toLowerCase() === key);
+
         (container as Record<string, any>)[objectKey ?? key] = value;
+
         return this;
     }
 
@@ -94,23 +104,29 @@ export class HeaderStore {
         key = key.toLowerCase();
 
         const { container } = this;
+
         if (isHeadersInstance(container)) {
             container.delete(key);
+
             return this;
         }
 
         if (Array.isArray(container)) {
             const index = container.findIndex((el) => el.length === 2 && el[0].toLowerCase() === key);
+
             if (index !== -1) {
                 container.splice(index, 1);
             }
+
             return this;
         }
 
         const objectKey = Object.keys(container).find((el) => el.toLowerCase() === key);
+
         if (typeof objectKey !== 'undefined') {
             delete (container as Record<string, any>)[objectKey];
         }
+
         return this;
     }
 
@@ -119,8 +135,10 @@ export class HeaderStore {
      */
     forEach(fn: (value: any, key: string) => void) : void {
         const { container } = this;
+
         if (isHeadersInstance(container)) {
             container.forEach(fn);
+
             return;
         }
 
@@ -130,10 +148,12 @@ export class HeaderStore {
                     fn(el[1], el[0]);
                 }
             }
+
             return;
         }
 
         const record = container as Record<string, any>;
+
         for (const [key, value] of Object.entries(record)) {
             fn(value, key);
         }

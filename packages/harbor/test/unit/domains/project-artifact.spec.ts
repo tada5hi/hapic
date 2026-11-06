@@ -19,9 +19,9 @@ describe('src/domains/project-artifact', () => {
         expect(transport.requests[0].url).toBe('projects/foo/repositories/bar/artifacts/latest');
 
         await api.delete({
-            projectName: 'foo', 
-            repositoryName: 'bar', 
-            tagOrDigest: 'base', 
+            projectName: 'foo',
+            repositoryName: 'bar',
+            tagOrDigest: 'base',
         });
 
         expect(transport.requests[1].method).toBe('DELETE');
@@ -41,6 +41,7 @@ describe('src/domains/project-artifact', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('POST');
         expect(request.url).toBe('projects/foo/repositories/bar/artifacts?from=baz/biz:latest');
     });
@@ -55,6 +56,7 @@ describe('src/domains/project-artifact', () => {
         });
 
         const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
+
         await api.getMany({
             repositoryName: 'repo',
             projectName: 'proj',
@@ -66,6 +68,7 @@ describe('src/domains/project-artifact', () => {
         });
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/proj/repositories/repo/artifacts?page_size=10&with_label=true&with_tag=true');
     });

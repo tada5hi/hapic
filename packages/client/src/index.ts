@@ -17,9 +17,11 @@ export * from './header';
 export * from './module';
 export * from './instance';
 export * from './registry';
+export type { ClientRegistry, ClientRegistryOptions } from './types';
 export * from './transport';
-export * from './type';
+export * from './types';
 export * from './fetch';
+export type { ProxyOptions } from './types';
 export * from './utils';
 
 const client = createClient();

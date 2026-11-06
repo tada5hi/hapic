@@ -21,6 +21,7 @@ export function traverse<T extends Record<string, any> | unknown[]>(
         for (let i = 0; i < input.length; i++) {
             if (isObject(input[i]) || Array.isArray(input[i])) {
                 input[i] = fn(traverse(input[i], fn), `${i}`);
+
                 continue;
             }
 
@@ -31,11 +32,13 @@ export function traverse<T extends Record<string, any> | unknown[]>(
     }
 
     const keys = Object.keys(input);
+
     for (const key of keys) {
         const value = input[key];
 
         if (isObject(value) || Array.isArray(value)) {
             input[key] = fn(traverse(value, fn), key);
+
             continue;
         }
 
