@@ -35,7 +35,7 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "engines": {
-        "node": "^24.11.0 || >=26.0.0"
+        "node": "^24.15.0 || >=26.0.0"
     },
     "scripts": {
         "commit": "npx git-cz",
