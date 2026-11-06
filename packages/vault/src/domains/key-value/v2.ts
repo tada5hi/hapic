@@ -6,12 +6,12 @@
  */
 
 import { BaseAPI } from '../base';
-import type { BaseAPIContext } from '../type';
+import type { BaseAPIContext } from '../types';
 import type {
     KeyValueV2CreateResponse,
     KeyValueV2GetOneResponse,
     KeyValueV2Payload,
-} from './type';
+} from './types';
 
 export class KeyValueV2API extends BaseAPI {
     constructor(context?: BaseAPIContext) {
@@ -30,6 +30,7 @@ export class KeyValueV2API extends BaseAPI {
             `${mount}/data/${path}`,
             data,
         );
+
         return response.data;
     }
 
@@ -62,6 +63,7 @@ export class KeyValueV2API extends BaseAPI {
             `${mount}/data/${path}`,
             data,
         );
+
         return response.data;
     }
 

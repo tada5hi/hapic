@@ -5,13 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from '../../fetch';
+import type { ProxyOptions } from '../../types';
 import { createProxy, fetch } from '../../fetch';
 import { markInstanceof } from '../../utils';
 import { globalContext } from '../../utils/global-this.ts';
-import type { ITransport, TransportRequest } from '../type';
+import type { ITransport, TransportRequest } from '../types';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
-import type { FetchTransportFn, FetchTransportOptions } from './type';
+import type { FetchTransportFn, FetchTransportOptions } from './types';
 
 /**
  * Production transport: dispatches via `fetch` and owns proxy resolution.
@@ -48,6 +48,7 @@ export class FetchTransport implements ITransport {
         }
 
         let proxyOptions : ProxyOptions | undefined;
+
         if (
             typeof proxy !== 'boolean' &&
             typeof proxy !== 'undefined'

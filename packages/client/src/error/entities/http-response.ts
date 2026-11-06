@@ -7,7 +7,7 @@
 
 import { markInstanceof } from '../../utils';
 import { ClientError } from '../module';
-import type { ClientErrorContext } from '../type';
+import type { ClientErrorContext } from '../types';
 
 export const HTTP_RESPONSE_ERROR_INSTANCE = Symbol.for('hapic/HttpResponseError');
 

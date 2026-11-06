@@ -5,10 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProjectRepositoryLongNameRepresentation } from './type';
+import type { ProjectRepositoryLongNameRepresentation } from './types';
 
 export function parseLongProjectRepositoryName(name: string) : ProjectRepositoryLongNameRepresentation {
     const index = name.indexOf('/');
+
     if (index === -1) {
         throw new Error('The project repository name could not parsed.');
     }
@@ -17,15 +18,19 @@ export function parseLongProjectRepositoryName(name: string) : ProjectRepository
     let repositoryName = name.substring(projectName.length + 1);
 
     let artifactDigest : string | undefined;
+
     if (repositoryName.includes('@')) {
         const index = repositoryName.indexOf('@');
+
         artifactDigest = repositoryName.substring(index + 1);
         repositoryName = repositoryName.substring(0, index);
     }
 
     let artifactTag : string | undefined;
+
     if (repositoryName.includes(':')) {
         const index = repositoryName.indexOf(':');
+
         artifactTag = repositoryName.substring(index + 1);
         repositoryName = repositoryName.substring(0, index);
     }
@@ -46,6 +51,7 @@ export function buildProjectRepositoryLongName(
     if (representation.artifactTag) {
         return `${str}:${representation.artifactTag}`;
     }
+
     if (representation.artifactDigest) {
         return `${str}@${representation.artifactDigest}`;
     }

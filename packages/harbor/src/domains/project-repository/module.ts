@@ -7,7 +7,7 @@
 
 import { buildQueryString, extractResourceMetaOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
-import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
+import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     ProjectRepository,
     ProjectRepositoryDeleteContext,
@@ -15,7 +15,7 @@ import type {
     ProjectRepositoryGetManyContext,
     ProjectRepositoryGetOneContext,
     ProjectRepositoryUpdateContext,
-} from './type';
+} from './types';
 import { parseLongProjectRepositoryName } from './utils';
 
 export class ProjectRepositoryAPI extends BaseAPI {
@@ -29,6 +29,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
 
     async findOne(input: string | ProjectRepositoryFindOneContext): Promise<ProjectRepository | undefined> {
         let context : ProjectRepositoryDeleteContext;
+
         if (typeof input === 'string') {
             context = parseLongProjectRepositoryName(input);
         } else {
@@ -52,6 +53,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
 
     async getOne(input: string | ProjectRepositoryGetOneContext) : Promise<ProjectRepository> {
         let context : ProjectRepositoryGetOneContext;
+
         if (typeof input === 'string') {
             context = parseLongProjectRepositoryName(input);
         } else {
@@ -102,6 +104,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
         }
 
         const response = await this.getMany(context);
+
         if (response.data.length === context.query.page_size) {
             context.query.page++;
 
@@ -124,6 +127,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
 
     async delete(input: string | ProjectRepositoryDeleteContext) : Promise<void> {
         let context : ProjectRepositoryDeleteContext;
+
         if (typeof input === 'string') {
             context = parseLongProjectRepositoryName(input);
         } else {

@@ -8,5 +8,5 @@
 export * from './defaults';
 export * from './payload';
 export * from './transformer';
-export * from './type';
+export * from './types';
 export * from './utils';

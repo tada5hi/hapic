@@ -6,11 +6,11 @@
  */
 
 import { BaseAPI } from '../base';
-import type { BaseAPIContext } from '../type';
+import type { BaseAPIContext } from '../types';
 import type {
     ProjectArtifactLabelCreateContext,
     ProjectArtifactLabelDeleteContext,
-} from './type';
+} from './types';
 
 export class ProjectRepositoryArtifactLabelAPI extends BaseAPI {
     constructor(context: BaseAPIContext) {

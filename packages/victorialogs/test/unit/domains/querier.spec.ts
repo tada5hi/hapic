@@ -32,11 +32,13 @@ describe('src/domains/distributor', () => {
         expect(response.length).toEqual(2);
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('GET');
         expect(req.url).toBe('select/logsql/query?query=log.level:*&limit=10');
         expect(req.body).toBeUndefined();
 
         const headers = new Headers(req.headers);
+
         expect(headers.get(HeaderName.ACCEPT)).toBe('application/json');
     });
 });

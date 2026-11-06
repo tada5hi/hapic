@@ -9,7 +9,7 @@ import type { RequestOptions } from '../request';
 import type { Response } from '../response';
 import { markInstanceof } from '../utils';
 import { HapicError } from './hapic-error';
-import type { ClientErrorContext } from './type';
+import type { ClientErrorContext } from './types';
 
 export const CLIENT_ERROR_INSTANCE = Symbol.for('hapic/ClientError');
 

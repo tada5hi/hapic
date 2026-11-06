@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-uint8array-base64 -- Keep compatibility with the published Node.js runtime requirement. */
 /*
  * Copyright (c) 2021.
  * Author Peter Placzek (tada5hi)
@@ -5,7 +6,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { AuthorizationHeader } from './type';
+import type { AuthorizationHeader } from './types';
 import { AuthorizationHeaderType } from './constants';
 import { AuthorizationHeaderError } from '../../error';
 

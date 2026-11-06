@@ -29,6 +29,7 @@ describe('src/registry', () => {
         const registry = buildRegistry();
 
         const client = registry.createClient();
+
         expect(client).toBeInstanceOf(RegistryClient);
         expect(registry.hasClient()).toBeFalsy();
     });
@@ -39,6 +40,7 @@ describe('src/registry', () => {
         expect(registry.hasClient()).toBeFalsy();
 
         const client = registry.setClient(registry.createClient());
+
         expect(registry.hasClient()).toBeTruthy();
         expect(registry.useClient()).toBe(client);
     });
@@ -49,6 +51,7 @@ describe('src/registry', () => {
         expect(registry.hasClient()).toBeFalsy();
 
         const client = registry.useClient();
+
         expect(client).toBeInstanceOf(RegistryClient);
         expect(registry.hasClient()).toBeTruthy();
         // a second call returns the same lazily-created instance
@@ -116,6 +119,7 @@ describe('src/registry', () => {
         // simulate a client constructed by a duplicate package copy:
         // identity travels in the `@instanceof` marker chain (a symbol[]).
         const fakeClient = { '@instanceof': [TEST_INSTANCE] };
+
         expect(registry.isClient(fakeClient)).toBeTruthy();
     });
 
@@ -124,6 +128,7 @@ describe('src/registry', () => {
 
         // JSON.stringify drops symbols - the chain arrives as marker descriptions
         const serialized = { '@instanceof': [TEST_INSTANCE.description] };
+
         expect(registry.isClient(serialized)).toBeTruthy();
 
         expect(registry.isClient({ '@instanceof': ['hapic-test/OtherClient'] })).toBeFalsy();

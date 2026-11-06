@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { BaseAPIContext } from '../type';
+import type { BaseAPIContext } from '../types';
 import { BaseAPI } from '../base';
-import type { ResourceResponse } from '../../type';
+import type { ResourceResponse } from '../../types';
 
 export class KeyValueV1API extends BaseAPI {
     constructor(context?: BaseAPIContext) {
@@ -26,6 +26,7 @@ export class KeyValueV1API extends BaseAPI {
             `${mount}/${path}`,
             data,
         );
+
         return response.data;
     }
 

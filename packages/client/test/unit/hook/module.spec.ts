@@ -13,14 +13,14 @@ import {
 
 const makeError = () => createClientError({ request: { url: '/x', method: 'GET' } as any });
 const makeResponse = (extra: Record<string, any> = {}) => ({
-    headers: {}, 
-    ok: true, 
-    ...extra, 
+    headers: {},
+    ok: true,
+    ...extra,
 }) as any;
 const makeOptions = (extra: Record<string, any> = {}) => ({
-    url: '/retry', 
-    method: 'GET', 
-    ...extra, 
+    url: '/retry',
+    method: 'GET',
+    ...extra,
 }) as any;
 
 describe('src/hook', () => {
@@ -39,8 +39,10 @@ describe('src/hook', () => {
 
             const id = manager.addListener(HookName.REQUEST, (o) => {
                 called = true;
+
                 return o;
             });
+
             manager.removeListener(HookName.REQUEST, id);
 
             await manager.triggerReqHook(makeOptions());
@@ -52,6 +54,7 @@ describe('src/hook', () => {
             let called = false;
             const fn = (o: any) => {
                 called = true;
+
                 return o;
             };
 
@@ -65,8 +68,17 @@ describe('src/hook', () => {
         it('should remove all listeners for a name', async () => {
             const manager = new HookManager();
             let count = 0;
-            manager.addListener(HookName.REQUEST, (o) => { count++; return o; });
-            manager.addListener(HookName.REQUEST, (o) => { count++; return o; });
+
+            manager.addListener(HookName.REQUEST, (o) => {
+                count++;
+
+                return o;
+            });
+            manager.addListener(HookName.REQUEST, (o) => {
+                count++;
+
+                return o;
+            });
 
             manager.removeListeners(HookName.REQUEST);
 
@@ -76,6 +88,7 @@ describe('src/hook', () => {
 
         it('should be a no-op when removing from an unknown name', () => {
             const manager = new HookManager();
+
             expect(() => manager.removeListener(HookName.REQUEST, 0)).not.toThrow();
         });
     });
@@ -87,10 +100,12 @@ describe('src/hook', () => {
 
             manager.addListener(HookName.REQUEST, (o) => {
                 order.push('a');
+
                 return makeOptions({ url: o.url, step: 'a' });
             });
             manager.addListener(HookName.REQUEST, async (o) => {
                 order.push('b');
+
                 return makeOptions({ url: o.url, step: `${o.step}b` });
             });
 
@@ -107,6 +122,7 @@ describe('src/hook', () => {
             manager.addListener(HookName.REQUEST, () => undefined as any);
 
             const result = await manager.triggerReqHook(initial);
+
             expect(result).toBe(initial);
         });
 
@@ -114,8 +130,17 @@ describe('src/hook', () => {
             const manager = new HookManager();
             const order: string[] = [];
 
-            const id = manager.addListener(HookName.REQUEST, (o) => { order.push('a'); return o; });
-            manager.addListener(HookName.REQUEST, (o) => { order.push('b'); return o; });
+            const id = manager.addListener(HookName.REQUEST, (o) => {
+                order.push('a');
+
+                return o;
+            });
+
+            manager.addListener(HookName.REQUEST, (o) => {
+                order.push('b');
+
+                return o;
+            });
             manager.removeListener(HookName.REQUEST, id);
 
             await manager.triggerReqHook(makeOptions());
@@ -131,6 +156,7 @@ describe('src/hook', () => {
             manager.addListener(HookName.RESPONSE, async (r: any) => makeResponse({ stage: `${r.stage}b` }));
 
             const result = await manager.triggerResHook(makeResponse());
+
             expect((result as any).stage).toBe('ab');
         });
 
@@ -141,6 +167,7 @@ describe('src/hook', () => {
             manager.addListener(HookName.RESPONSE, () => undefined as any);
 
             const result = await manager.triggerResHook(initial);
+
             expect(result).toBe(initial);
         });
     });
@@ -149,6 +176,7 @@ describe('src/hook', () => {
         it('should classify a returned response as a short-circuit recovery', async () => {
             const manager = new HookManager();
             const response = makeResponse({ recovered: true });
+
             manager.addListener(HookName.RESPONSE_ERROR, () => response);
 
             const recovery = await manager.triggerErrorHook(HookName.RESPONSE_ERROR, makeError());
@@ -159,6 +187,7 @@ describe('src/hook', () => {
         it('should classify returned request options as a retry recovery', async () => {
             const manager = new HookManager();
             const options = makeOptions({ url: '/again' });
+
             manager.addListener(HookName.RESPONSE_ERROR, () => options);
 
             const recovery = await manager.triggerErrorHook(HookName.RESPONSE_ERROR, makeError());
@@ -174,6 +203,7 @@ describe('src/hook', () => {
             manager.addListener(HookName.RESPONSE_ERROR, () => response);
             manager.addListener(HookName.RESPONSE_ERROR, () => {
                 secondCalled = true;
+
                 return makeResponse({ second: true });
             });
 
@@ -196,9 +226,12 @@ describe('src/hook', () => {
             const replacement = new Error('replaced');
             let seen: unknown;
 
-            manager.addListener(HookName.RESPONSE_ERROR, () => { throw replacement; });
+            manager.addListener(HookName.RESPONSE_ERROR, () => {
+                throw replacement;
+            });
             manager.addListener(HookName.RESPONSE_ERROR, (e) => {
                 seen = e;
+
                 throw e;
             });
 
@@ -211,10 +244,13 @@ describe('src/hook', () => {
             const manager = new HookManager();
             const options = makeOptions({ url: '/after-throw' });
 
-            manager.addListener(HookName.RESPONSE_ERROR, () => { throw new Error('boom'); });
+            manager.addListener(HookName.RESPONSE_ERROR, () => {
+                throw new Error('boom');
+            });
             manager.addListener(HookName.RESPONSE_ERROR, () => options);
 
             const recovery = await manager.triggerErrorHook(HookName.RESPONSE_ERROR, makeError());
+
             expect(recovery).toEqual({ type: 'retry', options });
         });
     });

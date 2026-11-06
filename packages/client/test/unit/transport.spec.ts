@@ -34,6 +34,7 @@ describe('src/transport', () => {
             expect(transport.requests).toHaveLength(1);
 
             const url = new URL(transport.requests.at(-1)!.url);
+
             expect(url.origin + url.pathname).toBe('https://api.test/users');
             expect(url.searchParams.get('page')).toBe('2');
             expect(url.searchParams.get('big')).toBe('9007199254740993');
@@ -50,6 +51,7 @@ describe('src/transport', () => {
             await client.get('thing', { headers: { 'x-both': 'override', 'x-req': 'b' } });
 
             const headers = transport.requests.at(-1)!.headers as Headers;
+
             expect(headers.get('x-default')).toBe('a');
             expect(headers.get('x-both')).toBe('override');
             expect(headers.get('x-req')).toBe('b');
@@ -75,6 +77,7 @@ describe('src/transport', () => {
             await client.post('thing', { a: 1 });
 
             const init = transport.requests.at(-1)!;
+
             expect(init.body).toBe('{"a":1}');
             expect((init.headers as Headers).get(HeaderName.CONTENT_TYPE))
                 .toBe('application/json');
@@ -93,6 +96,7 @@ describe('src/transport', () => {
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x');
+
             expect(res.data).toEqual({ hello: 'world' });
         });
 
@@ -107,6 +111,7 @@ describe('src/transport', () => {
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x');
+
             expect(res.data).toBe('plain');
         });
 
@@ -121,6 +126,7 @@ describe('src/transport', () => {
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x', { responseType: 'text' });
+
             expect(res.data).toBe('{"a":1}');
         });
 
@@ -135,6 +141,7 @@ describe('src/transport', () => {
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             const res = await client.get('x');
+
             expect(res.data).toEqual({ a: 1 });
 
             res.data = { a: 2 };
@@ -154,6 +161,7 @@ describe('src/transport', () => {
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             let error: any;
+
             try {
                 await client.get('missing');
             } catch (e) {
@@ -165,10 +173,15 @@ describe('src/transport', () => {
         });
 
         it('should throw a ClientError on a dispatch failure', async () => {
-            const transport = new MemoryTransport({ fetch: () => { throw new Error('boom'); } });
+            const transport = new MemoryTransport({
+                fetch: () => {
+                    throw new Error('boom');
+                },
+            });
             const client = new Client({ baseURL: 'https://api.test/', transport });
 
             let error: any;
+
             try {
                 await client.get('x');
             } catch (e) {
@@ -189,6 +202,7 @@ describe('src/transport', () => {
             }) as any);
 
             const res = await client.get('x');
+
             expect(res.status).toBe(200);
             expect(res.headers.get('x-recovered')).toBe('yes');
         });
@@ -222,6 +236,7 @@ describe('src/transport', () => {
             expect(transport.requests).toHaveLength(2);
 
             const retryHeaders = transport.requests[1].headers as Headers;
+
             expect(retryHeaders.get('authorization')).toBe('Bearer refreshed');
         });
     });
@@ -239,10 +254,12 @@ describe('src/transport', () => {
 
             client.on(HookName.REQUEST, (options) => {
                 (options.headers as Headers).set('x-hooked', '1');
+
                 return options;
             });
             client.on(HookName.RESPONSE, (res) => {
                 res.data = { mutated: true };
+
                 return res;
             });
 
@@ -269,6 +286,7 @@ describe('src/transport', () => {
 
             const fetchImpl : FetchTransportFn = function (this: unknown, _url: string, _init: any) {
                 calledWithGlobalReceiver = this === globalThis;
+
                 return Promise.resolve(new Response('{}', { headers: { 'content-type': 'application/json' } }));
             };
 
@@ -286,6 +304,7 @@ describe('src/transport', () => {
             const calls: { url: string, init: any }[] = [];
             const fetchImpl : FetchTransportFn = async (url: string, init: any) => {
                 calls.push({ url, init });
+
                 return new Response('{}', { headers: { 'content-type': 'application/json' } });
             };
 
@@ -305,6 +324,7 @@ describe('src/transport', () => {
             const calls: { url: string, init: any }[] = [];
             const fetchImpl : FetchTransportFn = async (url: string, init: any) => {
                 calls.push({ url, init });
+
                 return new Response('{}', { headers: { 'content-type': 'application/json' } });
             };
 
@@ -334,6 +354,7 @@ describe('src/transport', () => {
             await client.post('x', { a: 1 }, { responseType: 'json', query: { p: 1 } });
 
             const init = transport.requests.at(-1)! as unknown as Record<string, unknown>;
+
             // real fetch fields survive
             expect(init.method).toBe('POST');
             expect(init.body).toBe('{"a":1}');

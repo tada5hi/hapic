@@ -9,7 +9,7 @@ import { merge } from 'smob';
 import { HeaderName } from '../../constants';
 import { buildQueryString, extractResourceIDOfResponse, extractResourceMetaOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
-import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
+import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     ProjectWebhookEventType,
     ProjectWebhookPolicy,
@@ -21,7 +21,7 @@ import type {
     ProjectWebhookPolicyGetManyContext,
     ProjectWebhookPolicyGetOneContext,
     ProjectWebhookPolicyUpdateContext,
-} from './type';
+} from './types';
 
 export class ProjectWebhookPolicyAPI extends BaseAPI {
     constructor(context: BaseAPIContext) {
@@ -114,6 +114,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
 
     async deleteByName(context: ProjectWebhookPolicyDeleteByNameContext) {
         const webhook = await this.findOne(context);
+
         if (webhook) {
             await this.delete({
                 isProjectName: false,

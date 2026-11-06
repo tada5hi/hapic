@@ -15,8 +15,10 @@ export function extractResourceIDOfResponse(response: Pick<Response, 'headers'>)
         response.headers.has(HeaderName.LOCATION)
     ) {
         const value = response.headers.get(HeaderName.LOCATION);
+
         if (value) {
             const id = Number.parseInt(value.substring(value.lastIndexOf('/') + 1), 10);
+
             if (!Number.isNaN(id)) {
                 return id;
             }

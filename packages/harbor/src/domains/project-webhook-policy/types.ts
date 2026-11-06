@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ResourceCollectionQuery } from '../type';
+import type { ResourceCollectionQuery } from '../types';
 
 export type ProjectWebhookEventType =    'PUSH_ARTIFACT' |
     'PULL_ARTIFACT' |

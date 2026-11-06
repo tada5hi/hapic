@@ -5,10 +5,10 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ResourceResponse } from '../../type';
+import type { ResourceResponse } from '../../types';
 import { BaseAPI } from '../base';
-import type { BaseAPIContext } from '../type';
-import type { MountCreatePayload, MountUpdatePayload } from './type';
+import type { BaseAPIContext } from '../types';
+import type { MountCreatePayload, MountUpdatePayload } from './types';
 
 export class MountAPI extends BaseAPI {
     constructor(context?: BaseAPIContext) {
@@ -18,6 +18,7 @@ export class MountAPI extends BaseAPI {
     async create(path: string, data: MountCreatePayload) {
         data.options = data.options || {};
         data.config = data.config || {};
+
         const response = await this.client.post(`sys/mounts/${path}`, data);
 
         return response.data;
@@ -25,6 +26,7 @@ export class MountAPI extends BaseAPI {
 
     async update(path: string, payload: MountUpdatePayload) {
         const response = await this.client.post(`sys/mounts/${path}`, payload);
+
         return response.data;
     }
 

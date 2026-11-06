@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-error-is-error -- Keep compatibility with the published Node.js runtime requirement. */
 /*
  * Copyright (c) 2025.
  * Author Peter Placzek (tada5hi)
@@ -8,17 +9,19 @@
 import { isObject } from '../../utils';
 
 export function toError(input: unknown): Error | undefined {
-    if (input instanceof Error) {
+    if ((input instanceof Error)) {
         return input;
     }
 
     if (isObject(input)) {
         if (input.constructor.name === 'TypeError') {
             Object.setPrototypeOf(input, TypeError.prototype);
+
             return input as TypeError;
         }
 
         const error = new Error(input.message);
+
         extendError(error, input);
 
         return input as Error;
@@ -29,6 +32,7 @@ export function toError(input: unknown): Error | undefined {
 
 export function extendError(error: Error, data: Record<string, any>) {
     const keys = Object.getOwnPropertyNames(data);
+
     for (const key of keys) {
         error[key as keyof Error] = data[key];
     }

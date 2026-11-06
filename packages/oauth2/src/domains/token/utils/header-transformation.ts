@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 import { stringifyAuthorizationHeader } from 'hapic';
-import type { TokenBaseOptions } from '../type';
+import type { TokenBaseOptions } from '../types';
 
 /**
  * Set Content-Type and Authorization Header for request.

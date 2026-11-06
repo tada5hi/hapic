@@ -6,7 +6,7 @@
  */
 
 import { isObject } from '../../utils';
-import type { Response } from '../type';
+import type { Response } from '../types';
 
 export function isResponse(input: unknown) : input is Response {
     if (!isObject(input)) {

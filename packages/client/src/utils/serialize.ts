@@ -13,6 +13,7 @@ export function isSerializable(input: unknown) {
     }
 
     const t = typeof input;
+
     if (t === 'string' || t === 'number' || t === 'boolean' || t === null || t === 'bigint') {
         return true;
     }

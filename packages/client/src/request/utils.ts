@@ -6,7 +6,7 @@
  */
 
 import { isObject } from '../utils';
-import type { RequestOptions } from './type';
+import type { RequestOptions } from './types';
 
 export function isRequestOptions(input: unknown) : input is RequestOptions {
     if (!isObject(input)) {

@@ -19,12 +19,14 @@ describe('src/domains/mount', () => {
         });
 
         const api = new MountAPI({ client: createClient({ transport }) });
+
         await api.create(
             'key',
             { type: 'kv' },
         );
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('POST');
         expect(req.url).toBe('sys/mounts/key');
         expect(JSON.parse(req.body as string)).toEqual({
@@ -44,9 +46,11 @@ describe('src/domains/mount', () => {
         });
 
         const api = new MountAPI({ client: createClient({ transport }) });
+
         await api.getMany();
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('GET');
         expect(req.url).toBe('sys/mounts');
         expect(req.body).toBeUndefined();
@@ -62,9 +66,11 @@ describe('src/domains/mount', () => {
         });
 
         const api = new MountAPI({ client: createClient({ transport }) });
+
         await api.getOne('foo');
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('GET');
         expect(req.url).toBe('sys/mounts/foo');
         expect(req.body).toBeUndefined();
@@ -74,9 +80,11 @@ describe('src/domains/mount', () => {
         const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
 
         const api = new MountAPI({ client: createClient({ transport }) });
+
         await api.delete('foo');
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('DELETE');
         expect(req.url).toBe('sys/mounts/foo');
         expect(req.body).toBeUndefined();

@@ -56,10 +56,12 @@ describe('src/error/hierarchy', () => {
             request: { url: 'x', method: 'GET' },
             response: { status: 500, statusText: 'Internal Server Error' } as any,
         });
+
         expect(isHttpResponseError(httpError)).toBe(true);
         expect(isClientError(httpError)).toBe(true);
 
         const networkError = createClientError({ request: { url: 'x', method: 'GET' } });
+
         expect(isNetworkError(networkError)).toBe(true);
         expect(isClientError(networkError)).toBe(true);
     });
@@ -81,6 +83,7 @@ describe('src/error/hierarchy', () => {
 
         // JSON.stringify drops symbols - toJSON() emits the chain as marker descriptions
         const rehydrated = JSON.parse(JSON.stringify(error));
+
         expect(rehydrated['@instanceof']).toEqual([
             '@ebec/core/BaseError',
             'hapic/HapicError',
@@ -94,6 +97,7 @@ describe('src/error/hierarchy', () => {
         expect(isNetworkError(rehydrated)).toBe(false);
 
         const authError = JSON.parse(JSON.stringify(new AuthorizationHeaderError()));
+
         expect(isAuthorizationHeaderError(authError)).toBe(true);
         expect(isClientError(authError)).toBe(false);
     });

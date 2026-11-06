@@ -10,7 +10,10 @@ import { AuthorizationHeaderError, ErrorCode } from '../../../src';
 describe('src/http/error/authorization-header.ts', () => {
     it('should throw error', () => {
         let simpleError = new AuthorizationHeaderError({});
-        expect(() => { throw simpleError; }).toThrow();
+
+        expect(() => {
+            throw simpleError;
+        }).toThrow();
 
         simpleError = new AuthorizationHeaderError({ message: 'foo' });
 

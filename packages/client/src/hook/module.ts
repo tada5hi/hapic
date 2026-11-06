@@ -16,7 +16,7 @@ import type {
     HookErrorRecovery,
     HookFn,
     HookReqFn,
-} from './type';
+} from './types';
 
 export class HookManager {
     protected items : Record<string, (undefined | HookFn)[]>;
@@ -39,10 +39,12 @@ export class HookManager {
 
         if (typeof fn === 'number') {
             this.items[name][fn] = undefined;
+
             return;
         }
 
         const index = this.items[name].indexOf(fn);
+
         if (index !== -1) {
             this.items[name][index] = undefined;
         }
@@ -58,12 +60,14 @@ export class HookManager {
         const items = (this.items[HookName.REQUEST] || []) as HookReqFn[];
 
         let temp = input;
+
         for (const hook of items) {
             if (!hook) {
                 continue;
             }
 
             let output = hook(temp as any);
+
             if (isPromise(output)) {
                 output = await output;
             }
@@ -82,12 +86,14 @@ export class HookManager {
         const items = (this.items[HookName.RESPONSE] || []) as HookReqFn[];
 
         let temp = input;
+
         for (const hook of items) {
             if (!hook) {
                 continue;
             }
 
             let output = hook(temp as any);
+
             if (isPromise(output)) {
                 output = await output;
             }
@@ -126,6 +132,7 @@ export class HookManager {
 
             try {
                 let output = hook(temp);
+
                 if (isPromise(output)) {
                     output = await output;
                 }

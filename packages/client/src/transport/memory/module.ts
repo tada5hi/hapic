@@ -20,13 +20,13 @@ import {
     markInstanceof,
 } from '../../utils';
 import { globalContext } from '../../utils/global-this.ts';
-import type { ITransport, TransportRequest } from '../type';
+import type { ITransport, TransportRequest } from '../types';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type {
     MemoryResponseInit,
     MemoryTransportFetch,
     MemoryTransportOptions,
-} from './type';
+} from './types';
 
 const ResponseCtor : typeof NodeResponse = (globalContext.Response as typeof NodeResponse | undefined) ||
     NodeResponse;

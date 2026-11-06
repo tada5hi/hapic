@@ -14,7 +14,7 @@ export * from './domains';
 export * from './instance';
 export * from './error';
 export * from './module';
-export * from './type';
+export * from './types';
 export * from './utils';
 
 const client = createClient();

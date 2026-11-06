@@ -15,7 +15,7 @@ import {
     ProjectWebhookPolicyAPI,
     RobotAPI,
 } from './domains';
-import type { SearchResult } from './type';
+import type { SearchResult } from './types';
 import { parseConnectionString } from './utils';
 
 export const HARBOR_CLIENT_INSTANCE = Symbol.for('@hapic/harbor/HarborClient');
@@ -55,15 +55,17 @@ export class HarborClient extends BaseClient {
     applyConfig(input: ConfigInput = {}) {
         const connectionOptions = resolveConnectionOptions(input, parseConnectionString);
 
-        if (connectionOptions) {
-            this.setBaseURL(connectionOptions.host);
-
-            this.setAuthorizationHeader({
-                type: 'Basic',
-                username: connectionOptions.user,
-                password: connectionOptions.password,
-            });
+        if (!connectionOptions) {
+            return;
         }
+
+        this.setBaseURL(connectionOptions.host);
+
+        this.setAuthorizationHeader({
+            type: 'Basic',
+            username: connectionOptions.user,
+            password: connectionOptions.password,
+        });
     }
 
     // -----------------------------------------------------------------------------------

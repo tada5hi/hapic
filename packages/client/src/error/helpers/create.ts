@@ -8,11 +8,12 @@
 import type { RequestOptions } from '../../request';
 import { ErrorCode } from '../constants';
 import { HttpResponseError, NetworkError } from '../entities';
-import type { ClientErrorCreateContext } from '../type';
+import type { ClientErrorCreateContext } from '../types';
 
 function formatRequestOptions(input: RequestOptions): string {
     if (input.url) {
         const parts: string[] = [];
+
         if (input.method) {
             parts.push(input.method);
         }
@@ -51,6 +52,7 @@ export function createClientError<T = any>(
     const isAbort = (!!context.error && context.error.name === 'AbortError');
 
     let code: ErrorCode | undefined;
+
     if (!context.response) {
         if (isAbort) {
             code = ErrorCode.CONNECTION_ABORTED;

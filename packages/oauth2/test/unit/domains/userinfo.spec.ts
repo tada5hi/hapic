@@ -34,9 +34,11 @@ describe('src/domains/userinfo', () => {
         api.setClient(createClient({ transport }));
 
         const userInfo = await api.get('token');
+
         expect(userInfo).toEqual(userInfoResponse);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('GET');
         expect(request.url).toBe('https://example.com/userinfo');
         expect((request.headers as Headers).get('authorization')).toBe('Bearer token');
@@ -62,6 +64,7 @@ describe('src/domains/userinfo', () => {
         api.setClient(createClient({ transport }));
 
         const userInfo = await api.get('token');
+
         expect(userInfo).toEqual(userInfoResponse);
         expect(transport.requests.at(-1)!.url).toBe('https://example.com/users/@me');
     });

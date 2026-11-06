@@ -18,12 +18,16 @@ export function buildQueryString(
     const searchParams = new URLSearchParams();
 
     const keys = Object.keys(input);
+
     for (const key of keys) {
         const value = input[key];
+
         if (isObject(value)) {
             const childKeys = Object.keys(value);
+
             if (childKeys.length > 0) {
                 const childSearchParams = new URLSearchParams();
+
                 for (const childKey of childKeys) {
                     childSearchParams.append(
                         childKey,
@@ -41,6 +45,7 @@ export function buildQueryString(
     }
 
     const queryString = searchParams.toString();
+
     if (queryString.length > 0 && withQuestionMark) {
         return `?${queryString}`;
     }

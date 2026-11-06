@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { TransportRequest } from '../type';
+import type { TransportRequest } from '../types';
 
 export type MemoryResponseInit = {
     status?: number,

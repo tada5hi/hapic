@@ -85,6 +85,7 @@ describe('src/domains/token', () => {
         api.setClient(createClient({ transport }));
 
         let token = await api.createWithRefreshToken({ refresh_token: 'refresh_token' });
+
         expect(token).toEqual({ ...tokenGrantResponse });
 
         token = await api.createWithClientCredentials();
@@ -115,6 +116,7 @@ describe('src/domains/token', () => {
         const grantTypes = transport.requests.map(
             (request) => new URLSearchParams(request.body as any).get('grant_type'),
         );
+
         expect(grantTypes).toEqual([
             'refresh_token',
             'client_credentials',
@@ -146,6 +148,7 @@ describe('src/domains/token', () => {
         api.setClient(createClient({ transport }));
 
         const token = await api.createWithPassword({ username: 'admin', password: 'start123' });
+
         expect(token).toEqual({ ...tokenGrantResponse });
         expect(transport.requests.at(-1)!.url).toBe('https://example.com/oauth/token');
     });

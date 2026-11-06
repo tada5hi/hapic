@@ -12,14 +12,14 @@ import {
     extractResourceMetaOfResponse,
 } from '../../utils';
 import { BaseAPI } from '../base';
-import type { BaseAPIContext, ResourceCollectionResponse } from '../type';
+import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     Project,
     ProjectCreatePayload,
     ProjectCreateResponse,
     ProjectGetManyOptions,
     ProjectUpdatePayload,
-} from './type';
+} from './types';
 
 export class ProjectAPI extends BaseAPI {
     constructor(context: BaseAPIContext) {
@@ -64,6 +64,7 @@ export class ProjectAPI extends BaseAPI {
 
     async getMany(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
         options = options || {};
+
         const response = await this.client
             .get(`projects${buildQueryString(options.query)}`);
 
@@ -86,6 +87,7 @@ export class ProjectAPI extends BaseAPI {
         }
 
         const response = await this.getMany(options);
+
         if (response.data.length === options.query.page_size) {
             options.query.page++;
 

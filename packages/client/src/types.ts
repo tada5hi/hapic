@@ -24,6 +24,8 @@ import type {
 } from './response';
 import type { ITransport } from './transport';
 
+import type { ProxyOptions as ProxyOptionsBase } from 'node-fetch-native/proxy';
+
 /**
  * Fully-resolved options for a {@link Client}.
  */
@@ -187,3 +189,52 @@ export interface IClient {
      */
     off(name: `${HookName}`, fn?: HookFn | number): this;
 }
+
+export type ProxyOptions = ProxyOptionsBase;
+
+/**
+ * The singleton-registry surface shared by the base package and every
+ * `@hapic/*` service package: a keyed map of client instances plus a
+ * cross-realm `isClient` guard.
+ */
+export type ClientRegistry<T extends IClient, I> = {
+    /**
+     * Verify if a client singleton instance exists for `key` (default `'default'`).
+     */
+    hasClient(key?: string): boolean;
+    /**
+     * Register `client` under `key` (default `'default'`) and return it.
+     */
+    setClient<C extends T = T>(client: C, key?: string): C;
+    /**
+     * Receive the singleton instance for `key` (default `'default'`),
+     * lazily creating an empty one on first use.
+     */
+    useClient<C extends T = T>(key?: string): C;
+    /**
+     * Unset the client singleton instance registered under `key` (default `'default'`).
+     */
+    unsetClient(key?: string): void;
+    /**
+     * Construct a new client. Does **not** register it.
+     */
+    createClient(input?: I): T;
+    /**
+     * Check if the argument is an instance of the registry's client,
+     * using a cross-realm `@instanceof` marker check.
+     */
+    isClient(input: unknown): input is T;
+};
+
+export type ClientRegistryOptions<T extends IClient, I> = {
+    /**
+     * Construct a new client from the given input.
+     */
+    create: (input?: I) => T;
+    /**
+     * The cross-realm `@instanceof` marker the client registers in its
+     * constructor (e.g. `Symbol.for('@hapic/harbor/HarborClient')`).
+     * Used by `isClient`.
+     */
+    id: symbol;
+};

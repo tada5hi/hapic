@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ProxyOptions } from '../fetch';
+import type { ProxyOptions } from '../types';
 
 /**
  * A fully-resolved, ready-to-dispatch request handed to the transport.

@@ -30,14 +30,17 @@ describe('src/domains/compactor', () => {
         };
 
         const api = new CompactorAPI({ client: createClient({ transport }) });
+
         await api.createDeletionRequest(payload);
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('POST');
         expect(req.url).toBe('loki/api/v1/delete?query=%7Bapp=%22foo%22%7D&start=1000');
         expect(JSON.parse(req.body as string)).toEqual({});
 
         const headers = req.headers as Headers;
+
         expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 
@@ -56,14 +59,17 @@ describe('src/domains/compactor', () => {
         };
 
         const api = new CompactorAPI({ client: createClient({ transport }) });
+
         await api.cancelDeletionRequest(payload);
 
         const req = transport.requests.at(-1)!;
+
         expect(req.method).toBe('DELETE');
         expect(req.url).toBe('loki/api/v1/delete?request_id=1000&force=true');
         expect(req.body).toBeUndefined();
 
         const headers = req.headers as Headers;
+
         expect(headers.get(HeaderName.CONTENT_TYPE)).toBe('application/json');
     });
 });

@@ -42,9 +42,11 @@ describe('src/domains/token', () => {
         const tokenAPI = new TokenAPI({ client: createClient({ transport }) });
 
         const response = await tokenAPI.introspect({ token: 'foo' });
+
         expect(response).toEqual(payload);
 
         const request = transport.requests.at(-1)!;
+
         expect(request.method).toBe('POST');
         expect(request.url).toBe('/token/introspect');
     });

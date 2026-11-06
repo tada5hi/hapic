@@ -14,7 +14,9 @@ import type { HeaderContainer } from '../../../src';
 const containers: Record<string, () => HeaderContainer> = {
     Headers: () => {
         const headers = new Headers();
+
         headers.set('Authorization', 'foo');
+
         return headers;
     },
     tuples: () => [['Authorization', 'foo']],
@@ -67,9 +69,11 @@ describe('src/header/store', () => {
 
             it('should iterate every entry', () => {
                 const store = new HeaderStore(build());
+
                 store.set('x-tenant', 'acme');
 
                 const seen: Record<string, any> = {};
+
                 store.forEach((value, key) => {
                     seen[key.toLowerCase()] = value;
                 });
@@ -79,6 +83,7 @@ describe('src/header/store', () => {
 
             it('should mutate the wrapped container in place', () => {
                 const container = build();
+
                 new HeaderStore(container).set('x-req', 'b');
 
                 // a fresh view over the same reference observes the mutation

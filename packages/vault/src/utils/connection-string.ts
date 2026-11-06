@@ -6,7 +6,7 @@
  */
 
 import { splitConnectionString } from 'hapic';
-import type { ConnectionOptions } from '../config/type';
+import type { ConnectionOptions } from '../config/types';
 
 export function parseConnectionString(connectionString: string): ConnectionOptions {
     const { credentials, host } = splitConnectionString(connectionString, { message: 'Vault connection string must be in the following format: token@host' });

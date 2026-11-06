@@ -9,7 +9,7 @@ import type { IClient, RequestBaseOptions } from 'hapic';
 import { createClient, isClient } from 'hapic';
 import { OAuth2Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
-import type { OpenIDProviderMetadata } from './type';
+import type { OpenIDProviderMetadata } from './types';
 
 /**
  * Create a client instance by requesting details of
