@@ -17,7 +17,7 @@ npm run lint           # eslint (flat config)
 npm run lint:fix       # eslint --fix
 ```
 
-- **Node.js**: `>=22.0.0` (CI builds/tests on Node 22)
+- **Development Node.js**: 24.11+ on the 24.x line, or 26+ (CI runs on 24). Published runtime requirements are declared in each package manifest.
 - **Package manager**: npm (workspaces — `packages/*`)
 - **Build orchestration**: [Nx](https://nx.dev) (`build`, `lint`, `test` are cached; `build` depends on `^build`)
 
