@@ -33,7 +33,7 @@ npm run build --workspace=packages/docs   # build the docs site for production
 ## Detailed Guides
 
 
-AGENTS.md is the loaded entry point and the guide index. Read the linked guides when working on their topics.
+CLAUDE.md imports AGENTS.md and its explicitly listed core guides. Focused topic files are linked for on-demand reading.
 - **[Project Structure](.agents/structure.md)** — Workspace layout, package inventory, dependency layers, and per-package directory conventions
 - **[Architecture](.agents/architecture.md)** — Base `Client`, hook pipeline, domain `*API` / `BaseAPI` pattern, singleton instance management, and cross-realm `@instanceof` checks
 - **[Testing](.agents/testing.md)** — Vitest setup, per-package config, coverage thresholds, and the CI test matrix
