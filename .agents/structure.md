@@ -65,14 +65,14 @@ packages/<service>/src/
 ├── client.ts           # Re-exports selected base types/helpers from `hapic` (Response, ClientError, …)
 ├── constants.ts        # Service-specific constants (e.g. extra header names)
 ├── config/             # Config / ConfigInput types (request options + connectionString/connectionOptions)
-├── type.ts             # Top-level shared types for the package
+├── types.ts             # Top-level shared types for the package
 ├── domains/            # One subdirectory per API domain
 │   ├── base.ts         #   abstract BaseAPI — holds the `client` reference
 │   ├── index.ts        #   barrel of all domain APIs
-│   ├── type.ts         #   BaseAPIContext, shared collection/query/response types
+│   ├── types.ts         #   BaseAPIContext, shared collection/query/response types
 │   └── <domain>/
 │       ├── module.ts   #     <Domain>API extends BaseAPI — the endpoint methods
-│       ├── type.ts     #     request/response payload types for the domain
+│       ├── types.ts     #     request/response payload types for the domain
 │       ├── index.ts    #     barrel
 │       └── (constants.ts | utils.ts | helper.ts as needed)
 ├── error/              # Service-specific errors (e.g. connection-string parse errors) — harbor/vault

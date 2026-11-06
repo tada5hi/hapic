@@ -60,12 +60,12 @@
 | Instance guards          | `is<Thing>`                                 | `isClient`, `isClientError`, `isResponse`           |
 | Interfaces               | `I<Name>` — **only** for shapes a class implements | `IClient` (impl. by `Client`), `ITransport` (impl. by `FetchTransport`, `MemoryTransport`) |
 
-> Type-file naming is **inconsistent** across packages: some domains use `type.ts`, others `types.ts`. Match the sibling files in the directory you are editing rather than imposing one form.
+> Exported types use `types.ts` across packages.
 
 ## File Organization
 
-- Exported **types** live in a `type.ts` (or `types.ts`) file in the same directory as the implementation.
-- Barrel `index.ts` files re-export from `type.ts` and the implementation modules; the package root `src/index.ts` is the public API surface.
+- Exported **types** live in a `types.ts` file in the same directory as the implementation.
+- Barrel `index.ts` files re-export from `types.ts` and the implementation modules; the package root `src/index.ts` is the public API surface.
 - Each service client mirrors the base layout: `module.ts` (client class), `instance.ts` (singleton registry), `config/`, `domains/`, `utils/`.
 
 ## TypeScript

@@ -36,7 +36,7 @@ When a request or response error occurs, the matching error hook may return eith
 
 ### Client class (base)
 
-`Client` implements `IClient` (`packages/client/src/type.ts`) — the interface that captures its full public request surface. Everywhere a client is referenced as a *type* (domain `BaseAPI`, the `createClientRegistry` generic constraint, helper signatures), code depends on `IClient` rather than the concrete class; only construction (`new Client`), `extends Client`, and the marker check work with the class itself.
+`Client` implements `IClient` (`packages/client/src/types.ts`) — the interface that captures its full public request surface. Everywhere a client is referenced as a *type* (domain `BaseAPI`, the `createClientRegistry` generic constraint, helper signatures), code depends on `IClient` rather than the concrete class; only construction (`new Client`), `extends Client`, and the marker check work with the class itself.
 
 ```typescript
 export class Client implements IClient {
