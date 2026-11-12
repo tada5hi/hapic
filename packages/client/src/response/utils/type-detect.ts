@@ -16,6 +16,11 @@ export function detectResponseType(input?: string | null) : ResponseType {
 
     const contentType = input.split(';').shift() || '';
 
+    // An event stream stays open, so buffering it as text would never resolve.
+    if (contentType.trim().toLowerCase() === 'text/event-stream') {
+        return ResponseType.STREAM;
+    }
+
     if (JSON_REGEX.test(contentType)) {
         return ResponseType.JSON;
     }

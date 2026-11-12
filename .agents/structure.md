@@ -46,7 +46,7 @@ packages/client/src/
 ├── constants.ts        # ResponseType, MethodName enums
 ├── fetch.ts            # Cross-env fetch/Headers/Blob/FormData/AbortController + proxy (node-fetch-native)
 ├── request/            # RequestBaseOptions/RequestOptions types, defaults, payload helpers, transformers
-├── response/           # Response type, response-type detection, status/type checks
+├── response/           # Response type, response-type detection, status/type checks, event stream (SSE) parser
 ├── hook/               # HookManager, HookName enum, request/response/error hook fn types
 ├── header/             # Header name constants + authorization header (Basic / Bearer / api-key)
 ├── error/              # ClientError + NetworkError/HttpResponseError (@ebec/core BaseError), ErrorCode, isClientError* helpers
