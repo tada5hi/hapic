@@ -24,8 +24,14 @@ export class MountAPI extends BaseAPI {
         return response.data;
     }
 
+    /**
+     * Tune the configuration of an existing mount.
+     *
+     * @param path The mount path.
+     * @param payload
+     */
     async update(path: string, payload: MountUpdatePayload) {
-        const response = await this.client.post(`sys/mounts/${path}`, payload);
+        const response = await this.client.post(`sys/mounts/${path}/tune`, payload);
 
         return response.data;
     }

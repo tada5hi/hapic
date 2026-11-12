@@ -36,6 +36,26 @@ describe('src/domains/mount', () => {
         });
     });
 
+    it('should tune resource', async () => {
+        const transport = new MemoryTransport({ fetch: () => ({ status: 204 }) });
+
+        const api = new MountAPI({ client: createClient({ transport }) });
+
+        await api.update(
+            'key',
+            { description: 'foo', max_lease_ttl: '1h' },
+        );
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('POST');
+        expect(req.url).toBe('sys/mounts/key/tune');
+        expect(JSON.parse(req.body as string)).toEqual({
+            description: 'foo',
+            max_lease_ttl: '1h',
+        });
+    });
+
     it('should get resources', async () => {
         const transport = new MemoryTransport({
             fetch: () => ({
