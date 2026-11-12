@@ -62,7 +62,7 @@ await client.keyValueV2.update('secret', 'db-credentials', {
     data: { password: 'rotated' },
 });
 
-// delete (latest metadata)
+// delete the secret permanently (metadata and all versions)
 await client.keyValueV2.delete('secret', 'db-credentials');
 ```
 

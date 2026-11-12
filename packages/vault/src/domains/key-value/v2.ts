@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { HeaderName } from '../../constants';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../types';
 import type {
@@ -54,6 +55,9 @@ export class KeyValueV2API extends BaseAPI {
     /**
      * Update a secret.
      *
+     * Vault only accepts a JSON merge patch for this endpoint,
+     * so the request is sent with the content type application/merge-patch+json.
+     *
      * @param mount The mount point on which the secret engine is mounted.
      * @param path The secret path relative to the secret engine mount.
      * @param data
@@ -62,6 +66,7 @@ export class KeyValueV2API extends BaseAPI {
         const response = await this.client.patch(
             `${mount}/data/${path}`,
             data,
+            { headers: { [HeaderName.CONTENT_TYPE]: 'application/merge-patch+json' } },
         );
 
         return response.data;

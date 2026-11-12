@@ -6,7 +6,7 @@
  */
 
 import { MemoryTransport, createClient } from 'hapic';
-import { KeyValueV2API } from '../../../src';
+import { KeyValueV2API, VaultClient } from '../../../src';
 
 describe('src/domains/key-value/v2', () => {
     it('should create resource', async () => {
@@ -74,7 +74,43 @@ describe('src/domains/key-value/v2', () => {
 
         expect(req.method).toBe('PATCH');
         expect(req.url).toBe('secrets/data/key');
+        expect(typeof req.body).toBe('string');
         expect(JSON.parse(req.body as string)).toEqual({ data: { boz: 'buz' } });
+        expect(new Headers(req.headers).get('content-type')).toBe('application/merge-patch+json');
+    });
+
+    it('should update resource with merge-patch content type through vault client', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
+
+        const client = new VaultClient({ request: { transport } });
+
+        await client.keyValueV2.update(
+            'secrets',
+            'key',
+            { data: { boz: 'buz' } },
+        );
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('PATCH');
+        expect(req.url).toBe('secrets/data/key');
+        expect(typeof req.body).toBe('string');
+        expect(JSON.parse(req.body as string)).toEqual({ data: { boz: 'buz' } });
+        expect(new Headers(req.headers).get('content-type')).toBe('application/merge-patch+json');
+
+        await client.keyValueV2.create(
+            'secrets',
+            'key',
+            { data: { bar: 'baz' } },
+        );
+
+        expect(new Headers(transport.requests.at(-1)!.headers).get('content-type')).toBe('application/json');
     });
 
     it('should delete resource', async () => {

@@ -154,7 +154,7 @@ const client = new VaultClient({
     // ...
 });
 
-await client.keyValueV2.create(
+await client.keyValueV2.update(
     'engine',
     'path',
     {
