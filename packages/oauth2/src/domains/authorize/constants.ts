@@ -23,3 +23,17 @@ export enum AuthorizeResponseType {
     TOKEN = 'token',
     ID_TOKEN = 'id_token',
 }
+
+export enum AuthorizeDisplay {
+    PAGE = 'page',
+    POPUP = 'popup',
+    TOUCH = 'touch',
+    WAP = 'wap',
+}
+
+export enum AuthorizePrompt {
+    NONE = 'none',
+    LOGIN = 'login',
+    CONSENT = 'consent',
+    SELECT_ACCOUNT = 'select_account',
+}
