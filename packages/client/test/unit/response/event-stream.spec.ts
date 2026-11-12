@@ -139,6 +139,36 @@ describe('src/response/event-stream', () => {
         expect(messages.map((m) => m.data)).toEqual(['a']);
     });
 
+    it('should dispatch a CR terminated event while the stream stays open', async () => {
+        let controller! : ReadableStreamDefaultController<string>;
+
+        const source = new ReadableStream<string>({
+            start(ctrl) {
+                controller = ctrl;
+            },
+        });
+
+        const reader = source.pipeThrough(new EventStreamParserStream()).getReader();
+
+        controller.enqueue('data: a\r\r');
+
+        const first = await reader.read();
+
+        expect(first.value?.data).toEqual('a');
+
+        // A LF opening the next chunk completes the CRLF and is no blank line.
+        controller.enqueue('\ndata: b\r');
+        controller.enqueue('\n\r');
+
+        const second = await reader.read();
+
+        expect(second.value?.data).toEqual('b');
+
+        controller.close();
+
+        expect((await reader.read()).done).toBe(true);
+    });
+
     it('should decode multi-byte characters split across chunks', async () => {
         const bytes = new TextEncoder().encode('data: €\n\n');
         const stream = new ReadableStream<Uint8Array>({

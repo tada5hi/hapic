@@ -32,13 +32,6 @@ export class EventStreamParserStream extends TransformStream<string, EventStream
                     controller.enqueue(message);
                 }
             },
-            flush(controller) {
-                const messages = parser.end();
-
-                for (const message of messages) {
-                    controller.enqueue(message);
-                }
-            },
         });
     }
 }

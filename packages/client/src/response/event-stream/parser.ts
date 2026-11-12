@@ -21,6 +21,8 @@ export class EventStreamParser {
 
     protected started = false;
 
+    protected skipLF = false;
+
     protected type = '';
 
     protected data = '';
@@ -34,22 +36,34 @@ export class EventStreamParser {
     feed(chunk: string) : EventStreamMessage[] {
         const output : EventStreamMessage[] = [];
 
-        // The pending rest holds no line break, except a trailing CR.
-        let index = this.rest.endsWith('\r') ?
-            this.rest.length - 1 :
-            this.rest.length;
+        if (chunk.length === 0) {
+            return output;
+        }
 
-        let text = this.rest + chunk;
+        let offset = 0;
 
-        if (!this.started && text.length > 0) {
+        if (!this.started) {
             this.started = true;
 
-            if (text.charCodeAt(0) === BOM) {
-                text = text.slice(1);
+            if (chunk.charCodeAt(0) === BOM) {
+                offset = 1;
             }
         }
 
+        if (this.skipLF) {
+            this.skipLF = false;
+
+            // Second half of a CRLF which was split across two chunks.
+            if (chunk.charCodeAt(offset) === LF) {
+                offset++;
+            }
+        }
+
+        // The pending rest holds no line break.
+        let index = this.rest.length;
         let start = 0;
+
+        const text = this.rest + (offset > 0 ? chunk.slice(offset) : chunk);
 
         while (index < text.length) {
             const code = text.charCodeAt(index);
@@ -60,34 +74,24 @@ export class EventStreamParser {
                 continue;
             }
 
-            if (code === CR && index + 1 === text.length) {
-                // Might be the first half of a CRLF split across two chunks.
-                break;
-            }
-
             this.processLine(text.slice(start, index), output);
 
-            index += code === CR && text.charCodeAt(index + 1) === LF ? 2 : 1;
+            index++;
+
+            if (code === CR) {
+                if (index === text.length) {
+                    // A CR ends the line right away, so a complete event is not held back
+                    // on an open stream. A LF opening the next chunk belongs to it.
+                    this.skipLF = true;
+                } else if (text.charCodeAt(index) === LF) {
+                    index++;
+                }
+            }
+
             start = index;
         }
 
         this.rest = text.slice(start);
-
-        return output;
-    }
-
-    /**
-     * Signal the end of the stream. An event which is not terminated
-     * by a blank line is discarded, as the specification requires.
-     */
-    end() : EventStreamMessage[] {
-        const output : EventStreamMessage[] = [];
-
-        if (this.rest.endsWith('\r')) {
-            this.processLine(this.rest.slice(0, -1), output);
-        }
-
-        this.rest = '';
 
         return output;
     }
