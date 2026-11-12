@@ -6,7 +6,7 @@
  */
 
 import { EventStreamParser } from './parser';
-import type { EventStreamMessage } from './type';
+import type { EventStreamMessage } from './types';
 
 /**
  * A `TransformStream` turning decoded `text/event-stream` chunks into events.

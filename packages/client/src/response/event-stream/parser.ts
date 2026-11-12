@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { EventStreamMessage } from './type';
+import type { EventStreamMessage } from './types';
 
 const LF = 0x0A;
 const CR = 0x0D;
