@@ -14,6 +14,18 @@
 | [packages/victorialogs](../packages/victorialogs)    | `@hapic/victorialogs` | Client for [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) (ingestor, querier). |
 | [packages/docs](../packages/docs)                    | `@hapic/docs`         | VitePress documentation site (private, not published).                      |
 
+## Upstream API References
+
+Each service client mirrors an upstream HTTP API. Check endpoint paths, parameters, headers and payload types against these sources when adding or changing a domain method.
+
+| Package               | Source of truth                                                                                           |
+|-----------------------|-----------------------------------------------------------------------------------------------------------|
+| `@hapic/harbor`       | [Harbor REST API swagger](https://github.com/goharbor/harbor/blob/main/api/v2.0/swagger.yaml) (`/api/v2.0` is the API path of every Harbor 2.x release)              |
+| `@hapic/loki`         | [Loki HTTP API](https://grafana.com/docs/loki/latest/reference/loki-http-api/)                            |
+| `@hapic/oauth2`       | [RFC 6749](https://datatracker.ietf.org/doc/html/rfc6749) (OAuth 2.0), [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636) (PKCE), [RFC 7662](https://datatracker.ietf.org/doc/html/rfc7662) (introspection), [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html), [OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html) |
+| `@hapic/vault`        | [Vault HTTP API](https://developer.hashicorp.com/vault/api-docs): [KV v1](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v1), [KV v2](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2), [`/sys/mounts`](https://developer.hashicorp.com/vault/api-docs/system/mounts) |
+| `@hapic/victorialogs` | [Querying HTTP API](https://docs.victoriametrics.com/victorialogs/querying/), [data ingestion](https://docs.victoriametrics.com/victorialogs/data-ingestion/) |
+
 ## Package Dependency Layers
 
 Internal dependencies are declared as `peerDependencies` (with `hapic` also listed under `devDependencies` for local builds/tests). Always consult each package's `package.json` for the authoritative graph.
