@@ -29,6 +29,25 @@ const metadata : OpenIDProviderMetadata = {
     userinfo_endpoint: 'http://localhost:3000/userinfo',
 };
 
+function createMetadataTransport() {
+    return new MemoryTransport({
+        fetch: (request) => {
+            if (request.url.endsWith('/.well-known/openid-configuration')) {
+                return {
+                    status: 200,
+                    headers: { 'content-type': 'application/json' },
+                    body: metadata,
+                };
+            }
+
+            return {
+                status: 200,
+                body: { access_token: 'token', token_type: 'Bearer' },
+            };
+        },
+    });
+}
+
 describe('src/open-id', () => {
     it('should build open id discovery url', () => {
         let url = buildOpenIDDiscoveryURL('http://localhost:3002');
@@ -61,5 +80,48 @@ describe('src/open-id', () => {
         expect(client.options.userinfoEndpoint).toEqual('http://localhost:3000/userinfo');
 
         expect(transport.requests.at(-1)!.url).toBe('/.well-known/openid-configuration');
+    });
+
+    it('should keep the authorization header set on the passed client after construction', async () => {
+        const transport = createMetadataTransport();
+
+        const driver = createClient({ transport });
+
+        driver.setAuthorizationHeader({ type: 'Bearer', token: 'secret' });
+
+        const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), driver);
+
+        expect(client.getAuthorizationHeader()).toBe('Bearer secret');
+    });
+
+    it('should keep an authorization header set via setHeader on the passed client', async () => {
+        const driver = createClient({ transport: createMetadataTransport() });
+
+        driver.setHeader('Authorization', 'Basic Zm9vOmJhcg==');
+
+        const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), driver);
+
+        expect(client.getAuthorizationHeader()).toBe('Basic Zm9vOmJhcg==');
+    });
+
+    it('should keep the transport passed with plain options', async () => {
+        const transport = createMetadataTransport();
+
+        const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), {
+            transport,
+            headers: { 'x-tenant': 'acme' },
+        });
+
+        expect(client.options.tokenEndpoint).toEqual('http://localhost:3000/token');
+
+        await client.token.createWithClientCredentials({
+            client_id: 'client',
+            client_secret: 'secret',
+        });
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.url).toBe('http://localhost:3000/token');
+        expect(new Headers(req.headers).get('x-tenant')).toBe('acme');
     });
 });
