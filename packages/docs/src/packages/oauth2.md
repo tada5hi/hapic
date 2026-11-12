@@ -79,6 +79,21 @@ const token = await client.token.createWithAuthorizationCode({
 });
 ```
 
+`buildURL` fills `client_id`, `redirect_uri` and `scope` from the client options when omitted and defaults `response_type` to `code`. Besides the OAuth2 parameters (`response_mode`, `state`, `code_challenge`, `code_challenge_method`), it accepts the typed OpenID Connect authentication request parameters `nonce`, `display`, `prompt`, `max_age`, `ui_locales`, `id_token_hint`, `login_hint` and `acr_values`. Any other key (e.g. `audience`, `resource`) is passed through to the URL as well:
+
+```typescript
+const url = client.authorize.buildURL({
+    scope: ['openid', 'profile'],
+    nonce: 'n-0S6_WzA2Mj',
+    prompt: ['login', 'consent'], // → prompt=login+consent
+    max_age: 0,
+    acr_values: 'urn:mace:incommon:iap:silver',
+    audience: 'https://api.example.com', // custom parameter
+});
+```
+
+Array values are space-joined, numbers are stringified, and empty (`''`, `null`, `undefined`) values are skipped. Values of other types are ignored. The same logic is available standalone as `buildAuthorizeURL(endpoint, parameters)`.
+
 ### Refresh
 
 ```typescript
