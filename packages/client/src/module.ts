@@ -5,11 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/types';
 import { Headers } from './fetch';
 
-import { MethodName, ResponseType } from './constants';
+import type { ResponseType } from './constants';
+import { MethodName } from './constants';
 import type { ITransport, TransportRequest } from './transport';
 import { FetchTransport, isTransport } from './transport';
 import type { ClientOptionsInput, IClient } from './types';
@@ -31,17 +31,16 @@ import {
     HookManager,
     HookName,
 } from './hook';
-import {
-    detectResponseType,
-} from './response';
+import { decodeResponse } from './response/decode';
 import {
     extendRequestOptionsWithDefaults,
     isRequestPayloadSupported,
 } from './request';
+import { resolveRequestOptions } from './request/resolve';
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
-import { HeaderName, HeaderStore, stringifyAuthorizationHeader } from './header';
-import { markInstanceof, traverse } from './utils';
+import { HeaderName, stringifyAuthorizationHeader } from './header';
+import { markInstanceof } from './utils';
 
 export const CLIENT_INSTANCE = Symbol.for('hapic/Client');
 
@@ -188,34 +187,11 @@ export class Client implements IClient {
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
     >(config: RequestOptions<RT>): Promise<R> {
-        const headers = new Headers(config.headers);
-
-        // lay the client default headers beneath the per-request headers
-        new HeaderStore(headers).merge(this.headers, { overwrite: false });
-
-        const baseURL = config.baseURL || this.defaults.baseURL;
-        let options : RequestOptions<RT> = {
-            ...this.defaults as RequestBaseOptions<RT>,
-            ...config,
-            headers,
-            url: baseURL ? withBase(config.url, baseURL) : config.url,
-        };
-
-        if (options.query || options.params) {
-            options.url = withQuery(
-                options.url,
-                traverse({
-                    ...options.params,
-                    ...options.query,
-                }, (value) => {
-                    if (typeof value === 'bigint') {
-                        return value.toString();
-                    }
-
-                    return value;
-                }),
-            );
-        }
+        let options = resolveRequestOptions<RT>({
+            defaults: this.defaults as RequestBaseOptions<RT>,
+            headers: this.headers,
+            config,
+        });
 
         options = await this.hookManager.triggerReqHook(
             options,
@@ -285,51 +261,7 @@ export class Client implements IClient {
             });
         }
 
-        const responseType = options.responseType ||
-            detectResponseType(response.headers.get(HeaderName.CONTENT_TYPE));
-
-        let data : ResponseData<RT, T>;
-
-        switch (responseType) {
-            case ResponseType.STREAM: {
-                data = response.body as ResponseData<RT, T>;
-
-                break;
-            }
-            case ResponseType.BLOB: {
-                data = await response.blob() as ResponseData<RT, T>;
-
-                break;
-            }
-            case ResponseType.ARRAY_BUFFER: {
-                data = await response.arrayBuffer() as ResponseData<RT, T>;
-
-                break;
-            }
-            case ResponseType.TEXT: {
-                data = await response.text() as ResponseData<RT, T>;
-
-                break;
-            }
-            default: {
-                const temp = await response.text();
-
-                try {
-                    data = JSON.parse(temp);
-                } catch {
-                    data = temp as ResponseData<RT, T>;
-                }
-            }
-        }
-
-        Object.defineProperty(response, 'data', {
-            get() {
-                return data;
-            },
-            set(value: ResponseData<RT, T>) {
-                data = value;
-            },
-        });
+        response = await decodeResponse<T, RT>(response, options);
 
         if (
             response.status >= 400 &&
