@@ -51,7 +51,7 @@ const client = createClient({
 | `params` | `Record<string, any>` | Query-string parameters appended to the URL. |
 | `query` | `Record<string, any>` | Alias for `params`; both are merged. |
 | `transform` | `RequestTransformer \| RequestTransformer[]` | Function(s) that reshape the outgoing body and headers. See [Transformers](/guide/transformers). |
-| `responseTransform` | `ResponseTransformer \| ResponseTransformer[]` | Function(s) that reshape the decoded response data. |
+| `responseTransform` | `ResponseTransformer \| ResponseTransformer[]` | Function(s) that reshape the decoded response data (also for 4xx/5xx bodies; skipped for streams). |
 | `proxy` | `ProxyOptions \| boolean` | Proxy configuration. `true` (default) honours `HTTP(S)_PROXY` env vars; `false` disables. See [Proxy & Environments](/guide/proxy). |
 
 ::: tip RequestInit lives here too

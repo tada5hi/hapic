@@ -6,11 +6,17 @@
  */
 
 import type { ResponseType } from '../../constants';
+import type { ResponseTransformer } from '../types';
 
 export type ResponseDecodeOptions<RT extends `${ResponseType}` = `${ResponseType}`> = {
     /**
      * The desired response type; detected from the
      * Content-Type header when not set.
      */
-    responseType?: RT
+    responseType?: RT,
+    /**
+     * Function(s) applied in order to the decoded body
+     * (skipped for a stream).
+     */
+    responseTransform?: ResponseTransformer | ResponseTransformer[]
 };

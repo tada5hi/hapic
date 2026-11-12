@@ -68,7 +68,7 @@ const client = createClient({
 });
 ```
 
-See [Transformers](/guide/transformers) for chaining and per-request transforms.
+It also applies to error responses (`error.response.data`), but not to `responseType: 'stream'`. See [Transformers](/guide/transformers) for chaining and per-request transforms.
 
 ## Streaming responses
 

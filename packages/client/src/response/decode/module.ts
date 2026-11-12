@@ -7,7 +7,7 @@
 
 import { ResponseType } from '../../constants';
 import { HeaderName } from '../../header/constants';
-import type { Response, ResponseData } from '../types';
+import type { Response, ResponseData, ResponseTransformer } from '../types';
 import { detectResponseType } from '../utils';
 import type { ResponseDecodeOptions } from './types';
 
@@ -40,11 +40,33 @@ async function readResponseBody(
     }
 }
 
+function applyResponseTransform(
+    data: unknown,
+    transform?: ResponseTransformer | ResponseTransformer[],
+) : unknown {
+    if (!transform) {
+        return data;
+    }
+
+    const transformers = Array.isArray(transform) ?
+        transform :
+        [transform];
+
+    let output = data;
+
+    for (const transformer of transformers) {
+        output = transformer(output);
+    }
+
+    return output;
+}
+
 /**
  * Decode a raw (unread) transport response: pick the response type
  * (options.responseType or Content-Type detection), read the body
- * accordingly and expose it through a lazy `data` accessor
- * (a later assignment to `response.data` replaces the decoded value).
+ * accordingly, run it once through options.responseTransform (not for a
+ * stream, nothing is decoded) and expose the result through a lazy `data`
+ * accessor (a later assignment to `response.data` replaces it).
  *
  * The response is decorated in place and returned.
  */
@@ -58,11 +80,15 @@ export async function decodeResponse<
     const responseType = options.responseType ||
         detectResponseType(response.headers.get(HeaderName.CONTENT_TYPE));
 
-    let data = await readResponseBody(response, responseType) as ResponseData<RT, T>;
+    let data = await readResponseBody(response, responseType);
+
+    if (responseType !== ResponseType.STREAM) {
+        data = applyResponseTransform(data, options.responseTransform);
+    }
 
     Object.defineProperty(response, 'data', {
         get() {
-            return data;
+            return data as ResponseData<RT, T>;
         },
         set(value: ResponseData<RT, T>) {
             data = value;
