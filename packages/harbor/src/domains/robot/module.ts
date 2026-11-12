@@ -6,8 +6,8 @@
  */
 
 import { merge } from 'smob';
-import { buildQueryString, extractResourceMetaOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
+import { buildRequestPath, getCollection } from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     Robot,
@@ -30,16 +30,11 @@ export class RobotAPI extends BaseAPI {
     }
 
     async getMany(context: RobotGetManyContext) : Promise<ResourceCollectionResponse<Robot>> {
-        const response = await this.client.get(`robots${buildQueryString(context.query)}`);
-
-        return {
-            data: response.data,
-            meta: extractResourceMetaOfResponse(response),
-        };
+        return getCollection(this.client, buildRequestPath(['robots'], context.query));
     }
 
     async getOne(id: number) : Promise<Robot> {
-        const response = await this.client.get(`robots/${id}`);
+        const response = await this.client.get(buildRequestPath(['robots', id]));
 
         return response.data;
     }
@@ -58,7 +53,7 @@ export class RobotAPI extends BaseAPI {
         const payload: Record<string, any> = { ...(secret ? { secret } : {}) };
 
         const { data }: { data: Robot } = await this.client
-            .patch(`robots/${id}`, payload);
+            .patch(buildRequestPath(['robots', id]), payload);
 
         if (typeof payload.secret !== 'undefined') {
             data.secret = payload.secret;
@@ -72,12 +67,12 @@ export class RobotAPI extends BaseAPI {
         data: RobotUpdatePayload,
     ): Promise<void> {
         await this.client
-            .put(`robots/${id}`, this.extendPayload({ ...data, id }));
+            .put(buildRequestPath(['robots', id]), this.extendPayload({ ...data, id }));
     }
 
     async delete(id: Robot['id']): Promise<void> {
         await this.client
-            .delete(`robots/${id}`);
+            .delete(buildRequestPath(['robots', id]));
     }
 
     extendPayload<T extends Record<string, any>>(data: T) : T {

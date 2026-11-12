@@ -6,9 +6,9 @@
  */
 
 import { merge } from 'smob';
-import { HeaderName } from '../../constants';
-import { buildQueryString, extractResourceIDOfResponse, extractResourceMetaOfResponse } from '../../utils';
+import { extractResourceIDOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
+import { buildRequestPath, getCollection, withResourceName } from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     ProjectWebhookEventType,
@@ -29,54 +29,31 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
     }
 
     async create(context: ProjectWebhookPolicyCreateContext) : Promise<ProjectWebhookPolicyCreateResponse> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         const response = await this.client
             .post(
-                `projects/${context.projectIdOrName}/webhook/policies`,
+                buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies']),
                 this.extendPayload(context.data),
-                { headers },
+                withResourceName(context.isProjectName),
             );
 
         return { id: extractResourceIDOfResponse(response) };
     }
 
     async getMany(context: ProjectWebhookPolicyGetManyContext) : Promise<ResourceCollectionResponse<ProjectWebhookPolicy>> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
-        const response = await this.client
-            .get(
-                `projects/${context.projectIdOrName}/webhook/policies${buildQueryString(context.query)}`,
-                { headers },
-            );
-
-        return {
-            data: response.data,
-            meta: extractResourceMetaOfResponse(response),
-        };
+        return getCollection(
+            this.client,
+            buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies'], context.query),
+            withResourceName(context.isProjectName),
+        );
     }
 
     async getOne(
         context: ProjectWebhookPolicyGetOneContext,
     ) : Promise<ProjectWebhookPolicy> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         const response = await this.client
             .get(
-                `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
-                { headers },
+                buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies', context.id]),
+                withResourceName(context.isProjectName),
             );
 
         return response.data;
@@ -96,19 +73,13 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
     }
 
     async update(context: ProjectWebhookPolicyUpdateContext): Promise<void> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         await this.client.put(
-            `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
+            buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies', context.id]),
             this.extendPayload({
                 ...context.data,
                 id: context.id,
             }),
-            { headers },
+            withResourceName(context.isProjectName),
         );
     }
 
@@ -125,14 +96,11 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
     }
 
     async delete(context: ProjectWebhookPolicyDeleteContext) : Promise<any> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         await this.client
-            .delete(`projects/${context.projectIdOrName}/webhook/policies/${context.id}`, { headers });
+            .delete(
+                buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies', context.id]),
+                withResourceName(context.isProjectName),
+            );
     }
 
     protected extendPayload(data: Partial<ProjectWebhookPolicy>) : Partial<ProjectWebhookPolicy> {

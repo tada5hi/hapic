@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { buildQueryString } from '../../utils';
 import { BaseAPI } from '../base';
 import { buildProjectRepositoryLongName } from '../project-repository';
+import { buildRepositoryPath } from '../request';
 import type { BaseAPIContext } from '../types';
 import type {
     ProjectArtifact,
@@ -23,7 +23,7 @@ export class ProjectRepositoryArtifactAPI extends BaseAPI {
 
     async getMany(context: ProjectArtifactGetManyContext) : Promise<ProjectArtifact[]> {
         const { data } = await this.client
-            .get(`projects/${context.projectName}/repositories/${context.repositoryName}/artifacts${buildQueryString(context.query)}`);
+            .get(buildRepositoryPath(context.projectName, context.repositoryName, ['artifacts'], context.query));
 
         return data;
     }
@@ -42,14 +42,14 @@ export class ProjectRepositoryArtifactAPI extends BaseAPI {
         }
 
         await this.client
-            .post(
-                `projects/${destination.projectName}/repositories/${destination.repositoryName}/artifacts?` +
-                `from=${from}`,
-            );
+            .post(`${buildRepositoryPath(destination.projectName, destination.repositoryName, ['artifacts'])}?from=${from}`);
     }
 
     async delete(context: ProjectArtifactDeleteContext) {
         await this.client
-            .delete(`projects/${context.projectName}/repositories/${context.repositoryName}/artifacts/${context.tagOrDigest || 'latest'}`);
+            .delete(buildRepositoryPath(context.projectName, context.repositoryName, [
+                'artifacts',
+                context.tagOrDigest || 'latest',
+            ]));
     }
 }

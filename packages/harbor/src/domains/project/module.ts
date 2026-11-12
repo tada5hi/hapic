@@ -5,13 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HeaderName } from '../../constants';
-import {
-    buildQueryString,
-    extractResourceIDOfResponse,
-    extractResourceMetaOfResponse,
-} from '../../utils';
+import { extractResourceIDOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
+import {
+    buildRequestPath,
+    getAllPages,
+    getCollection,
+    withResourceName,
+} from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     Project,
@@ -37,14 +38,8 @@ export class ProjectAPI extends BaseAPI {
         id: string | number,
         isProjectName = false,
     ) : Promise<void> {
-        const headers: Record<string, any> = {};
-
-        if (isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         await this.client
-            .delete(`projects/${id}`, { headers });
+            .delete(buildRequestPath(['projects', id]), withResourceName(isProjectName));
     }
 
     async update(
@@ -52,65 +47,26 @@ export class ProjectAPI extends BaseAPI {
         data: ProjectUpdatePayload,
         isProjectName = false,
     ) : Promise<void> {
-        const headers: Record<string, any> = {};
-
-        if (isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         await this.client
-            .put(`projects/${id}`, data, { headers });
+            .put(buildRequestPath(['projects', id]), data, withResourceName(isProjectName));
     }
 
-    async getMany(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
-        options = options || {};
-
-        const response = await this.client
-            .get(`projects${buildQueryString(options.query)}`);
-
-        return {
-            data: response.data,
-            meta: extractResourceMetaOfResponse(response),
-        };
+    async getMany(options: ProjectGetManyOptions = {}) : Promise<ResourceCollectionResponse<Project>> {
+        return getCollection(this.client, buildRequestPath(['projects'], options.query));
     }
 
-    async getAll(options?: ProjectGetManyOptions) : Promise<ResourceCollectionResponse<Project>> {
-        options = options || {};
+    async getAll(options: ProjectGetManyOptions = {}) : Promise<ResourceCollectionResponse<Project>> {
         options.query = options.query || {};
 
-        if (!options.query.page_size) {
-            options.query.page_size = 50;
-        }
-
-        if (!options.query.page) {
-            options.query.page = 1;
-        }
-
-        const response = await this.getMany(options);
-
-        if (response.data.length === options.query.page_size) {
-            options.query.page++;
-
-            const next = await this.getAll(options);
-
-            response.data.push(...next.data);
-        }
-
-        return response;
+        return getAllPages(options.query, (query) => this.getMany({ ...options, query }));
     }
 
     async getOne(
         id: string | number,
         isProjectName = false,
     ): Promise<Project> {
-        const headers: Record<string, any> = {};
-
-        if (isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         const { data } = await this.client
-            .get(`projects/${id}`, { headers });
+            .get(buildRequestPath(['projects', id]), withResourceName(isProjectName));
 
         return data;
     }
