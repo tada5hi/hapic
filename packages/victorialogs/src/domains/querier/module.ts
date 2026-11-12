@@ -25,13 +25,12 @@ export class QuerierAPI extends BaseAPI {
                 ...(this.options.querierURL ? { baseURL: this.options.querierURL } : {}),
                 headers,
                 params: options,
-                responseType: 'stream',
+                responseType: 'text',
             },
         );
 
-        const raw = await new Response(data).text();
-
-        const lines = raw
+        // the response is NDJSON: one JSON object per line
+        const lines = (data || '')
             .split(/\r?\n/)
             .filter((l) => l.trim().length > 0);
 
