@@ -18,17 +18,25 @@ import type { ResourceCollectionQuery, ResourceCollectionResponse } from './type
 type PathSegment = string | number;
 
 /**
- * Build a request path from its segments, followed by the serialized query.
+ * Build a request path from its segments, each URL-encoded once,
+ * followed by the serialized query.
  */
 export function buildRequestPath(
     segments: PathSegment[],
     query?: Record<string, any>,
 ) : string {
-    return `${segments.join('/')}${buildQueryString(query)}`;
+    const path = segments
+        .map((segment) => encodeURIComponent(segment))
+        .join('/');
+
+    return `${path}${buildQueryString(query)}`;
 }
 
 /**
  * Build a path below `projects/{project_name}/repositories/{repository_name}`.
+ *
+ * The repository name is URL-encoded twice (`a/b` -> `a%252Fb`):
+ * Harbor unescapes it once more after routing (`unescapePathParams`).
  */
 export function buildRepositoryPath(
     projectName: string,
@@ -37,7 +45,7 @@ export function buildRepositoryPath(
     query?: Record<string, any>,
 ) : string {
     return buildRequestPath(
-        ['projects', projectName, 'repositories', repositoryName, ...segments],
+        ['projects', projectName, 'repositories', encodeURIComponent(repositoryName), ...segments],
         query,
     );
 }
@@ -75,27 +83,31 @@ export async function getCollection<T>(
 /**
  * Fetch every page of a collection, page by page,
  * until a page returns fewer items than requested.
+ * The input query is not modified.
  */
 export async function getAllPages<T, Q extends ResourceCollectionQuery>(
-    query: Q,
+    input: Q | undefined,
     getPage: (query: Q) => Promise<ResourceCollectionResponse<T>>,
 ) : Promise<ResourceCollectionResponse<T>> {
-    if (!query.page_size) {
-        query.page_size = 50;
-    }
+    const pageSize = input?.page_size || 50;
+    let page = input?.page || 1;
 
-    if (!query.page) {
-        query.page = 1;
-    }
-
-    const output = await getPage(query);
+    const output = await getPage({
+        ...input,
+        page_size: pageSize,
+        page,
+    } as Q);
 
     let { length } = output.data;
 
-    while (length === query.page_size) {
-        query.page++;
+    while (length === pageSize) {
+        page++;
 
-        const next = await getPage(query);
+        const next = await getPage({
+            ...input,
+            page_size: pageSize,
+            page,
+        } as Q);
 
         output.data.push(...next.data);
         length = next.data.length;

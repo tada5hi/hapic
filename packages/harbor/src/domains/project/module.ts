@@ -56,8 +56,6 @@ export class ProjectAPI extends BaseAPI {
     }
 
     async getAll(options: ProjectGetManyOptions = {}) : Promise<ResourceCollectionResponse<Project>> {
-        options.query = options.query || {};
-
         return getAllPages(options.query, (query) => this.getMany({ ...options, query }));
     }
 

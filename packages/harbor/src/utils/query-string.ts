@@ -23,19 +23,16 @@ export function buildQueryString(
         const value = input[key];
 
         if (isObject(value)) {
-            const childKeys = Object.keys(value);
+            // Harbor URL-decodes the `q` parameter once more after the
+            // regular query decoding and only then splits it on `,` into
+            // `key=value` pairs (lib/q/builder.go). So each pair is
+            // form-encoded here and the joined string is form-encoded again
+            // below. A `,` inside a value cannot be expressed.
+            const pairs = Object.entries(value)
+                .map(([childKey, childValue]) => new URLSearchParams([[childKey, `${childValue}`]]).toString());
 
-            if (childKeys.length > 0) {
-                const childSearchParams = new URLSearchParams();
-
-                for (const childKey of childKeys) {
-                    childSearchParams.append(
-                        childKey,
-                        `${encodeURIComponent(value[childKey])}`,
-                    );
-                }
-
-                searchParams.append(key, childSearchParams.toString());
+            if (pairs.length > 0) {
+                searchParams.append(key, pairs.join(','));
             }
         } else if (Array.isArray(value)) {
             searchParams.append(key, `${value.join(',')}`);

@@ -6,7 +6,7 @@ Source of truth: [Harbor REST API swagger](https://github.com/goharbor/harbor/bl
 
 ## Conventions
 
-- `q` filters results: `key=value` (exact), `key=~value` (substring), several keys joined with `,` (not `&`). Harbor URL-decodes the value a second time (`lib/q/builder.go`), so encode it once beyond the normal query encoding at most.
+- `q` filters results: `key=value` (exact), `key=~value` (substring), several keys joined with `,` (not `&`). Harbor `QueryUnescape`s the whole `q` once more after the normal query decoding and only then splits it on `,` and the first `=` (`lib/q/builder.go`), so each `key=value` pair is form-encoded once before the normal query encoding (`buildQueryString` does this), and a value cannot contain `,`.
 - `sort` is a comma-separated field list (`-field` descending); `page` and `page_size` (maximum 100) page the result; the total is in the `X-Total-Count` response header.
 - `X-Is-Resource-Name: true` makes Harbor read a `{project_name_or_id}` path parameter as a name. Only the project and webhook policy routes declare it.
 - A repository name containing `/` must be URL-encoded twice in the path (`a/b` becomes `a%252Fb`); the handlers unescape it once more.

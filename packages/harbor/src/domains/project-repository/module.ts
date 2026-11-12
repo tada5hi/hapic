@@ -41,10 +41,12 @@ export class ProjectRepositoryAPI extends BaseAPI {
             context = input;
         }
 
+        // `name=<value>` is an exact match on the full repository name,
+        // `name=~<value>` would be a substring match.
         const { data } = await this.getMany({
             projectName: context.projectName,
             query: {
-                q: { name: `~${context.repositoryName}` },
+                q: { name: `${context.projectName}/${context.repositoryName}` },
                 page_size: 1,
             },
         });
@@ -99,8 +101,6 @@ export class ProjectRepositoryAPI extends BaseAPI {
     }
 
     async getAll(context: ProjectRepositoryGetManyContext) : Promise<ResourceCollectionResponse<ProjectRepository>> {
-        context.query = context.query || {};
-
         return getAllPages(context.query, (query) => this.getMany({ ...context, query }));
     }
 
