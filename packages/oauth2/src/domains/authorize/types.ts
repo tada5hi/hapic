@@ -15,8 +15,8 @@ import type {
 
 /**
  * Value of an additional (non-typed) authorize parameter.
- * Arrays are joined with a space, numbers are stringified,
- * empty values are skipped.
+ * Numbers are stringified, empty values are skipped and
+ * an array repeats the parameter once per item.
  */
 export type AuthorizeParameterValue = string | string[] | number | null | undefined;
 

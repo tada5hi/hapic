@@ -57,18 +57,30 @@ export function buildAuthorizeURL(
 ) : string {
     const output = new URL(url);
 
-    const keys = [
-        ...PARAMETER_KEYS,
-        ...Object.keys(parameters).filter((key) => !PARAMETER_KEYS.includes(key)),
-    ];
-
-    for (const key of keys) {
+    for (const key of PARAMETER_KEYS) {
         const value = serializeParameterValue(parameters[key]);
 
         if (typeof value !== 'undefined') {
             output.searchParams.set(key, value);
         } else if (key === 'response_type') {
             output.searchParams.set(key, 'code');
+        }
+    }
+
+    const keys = Object.keys(parameters).filter((key) => !PARAMETER_KEYS.includes(key));
+
+    for (const key of keys) {
+        // the space-delimited list is a convention of the typed parameters,
+        // any other multi-valued parameter (e.g. resource, RFC 8707) is repeated.
+        const input = parameters[key];
+        const values = Array.isArray(input) ? input : [input];
+
+        for (const item of values) {
+            const value = serializeParameterValue(item);
+
+            if (typeof value !== 'undefined') {
+                output.searchParams.append(key, value);
+            }
         }
     }
 

@@ -92,7 +92,7 @@ const url = client.authorize.buildURL({
 });
 ```
 
-Array values are space-joined, numbers are stringified, and empty (`''`, `null`, `undefined`) values are skipped. Values of other types are ignored. The same logic is available standalone as `buildAuthorizeURL(endpoint, parameters)`.
+Array values of the typed parameters are space-joined, an array of any other parameter repeats it once per item (e.g. `resource`, RFC 8707), numbers are stringified, and empty (`''`, `null`, `undefined`) values are skipped. Values of other types are ignored. The same logic is available standalone as `buildAuthorizeURL(endpoint, parameters)`.
 
 ### Refresh
 

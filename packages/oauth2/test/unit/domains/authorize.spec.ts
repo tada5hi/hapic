@@ -157,7 +157,8 @@ describe('src/domains/authorize', () => {
         expected.searchParams.set('nonce', 'abc');
         expected.searchParams.set('foo', 'bar');
         expected.searchParams.set('audience', 'https://api.example.com');
-        expected.searchParams.set('resource', 'a b');
+        expected.searchParams.append('resource', 'a');
+        expected.searchParams.append('resource', 'b');
         expected.searchParams.set('count', '5');
 
         expect(url).toEqual(expected.href);

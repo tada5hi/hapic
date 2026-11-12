@@ -73,7 +73,9 @@ Besides the OAuth2 parameters, `buildURL` accepts the OpenID Connect
 authentication request parameters (`nonce`, `display`, `prompt`, `max_age`,
 `ui_locales`, `id_token_hint`, `login_hint`, `acr_values`) and passes any
 additional parameter (e.g. `audience`) through to the URL.
-Arrays are space-joined, numbers stringified and empty values skipped.
+Arrays of the typed parameters are space-joined, numbers stringified and
+empty values skipped. An array of an additional parameter repeats it once
+per item (e.g. `resource`, RFC 8707).
 
 ```typescript
 const authorizeUrl = client.authorize.buildURL({
