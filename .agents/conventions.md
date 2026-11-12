@@ -107,6 +107,16 @@ Releases are automated by [release-please](https://github.com/googleapis/release
 
 GitHub Actions (`.github/workflows/main.yml`) on push/PR to `master`: **install → build → (lint ‖ test matrix) → release + docs deploy**. The test matrix covers `client`, `harbor`, `oauth2` only. Docs deploy publishes the VitePress site to GitHub Pages (`hapic.tada5hi.net`) on `master`. See [testing.md](testing.md#ci-pipeline). Reusable composite actions live in `.github/actions/{install,build}`.
 
+## References
+
+Each service client mirrors an upstream HTTP API. Its reference file in [`.agents/references/`](references/) names the upstream source of truth and maps upstream endpoints to this project's domain methods: [harbor](references/harbor.md), [loki](references/loki.md), [oauth2](references/oauth2.md), [vault](references/vault.md), [victorialogs](references/victorialogs.md). Reference files are read on demand and are not imported by `CLAUDE.md`.
+
+When looking something up in an upstream API or its source, update the matching reference file with:
+
+- the upstream endpoint, spec section or source file
+- the corresponding file and method in this project
+- any behavioral difference between the two
+
 ## Best Practices
 
 - Use **ESM** and modern TypeScript; keep code cross-environment safe (Node, browser, workers) — go through `fetch.ts` rather than referencing `node:`/global APIs directly.
