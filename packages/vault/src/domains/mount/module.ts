@@ -16,10 +16,11 @@ export class MountAPI extends BaseAPI {
     }
 
     async create(path: string, data: MountCreatePayload) {
-        data.options = data.options || {};
-        data.config = data.config || {};
-
-        const response = await this.client.post(`sys/mounts/${path}`, data);
+        const response = await this.client.post(`sys/mounts/${path}`, {
+            ...data,
+            options: data.options || {},
+            config: data.config || {},
+        });
 
         return response.data;
     }
