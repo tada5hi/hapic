@@ -40,6 +40,7 @@ export class EventStreamParser {
             this.rest.length;
 
         let text = this.rest + chunk;
+
         if (!this.started && text.length > 0) {
             this.started = true;
 
@@ -52,8 +53,10 @@ export class EventStreamParser {
 
         while (index < text.length) {
             const code = text.charCodeAt(index);
+
             if (code !== LF && code !== CR) {
                 index++;
+
                 continue;
             }
 
@@ -92,10 +95,12 @@ export class EventStreamParser {
     protected processLine(line: string, output: EventStreamMessage[]) {
         if (line.length === 0) {
             this.dispatch(output);
+
             return;
         }
 
         const colon = line.indexOf(':');
+
         if (colon === 0) {
             // comment
             return;
@@ -112,23 +117,27 @@ export class EventStreamParser {
         switch (field) {
             case 'event': {
                 this.type = value;
+
                 break;
             }
             case 'data': {
                 this.data = this.hasData ? `${this.data}\n${value}` : value;
                 this.hasData = true;
+
                 break;
             }
             case 'id': {
                 if (!value.includes('\0')) {
                     this.lastEventId = value;
                 }
+
                 break;
             }
             case 'retry': {
                 if (/^[0-9]+$/.test(value)) {
                     this.retry = Number.parseInt(value, 10);
                 }
+
                 break;
             }
             default:

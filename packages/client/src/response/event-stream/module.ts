@@ -27,12 +27,14 @@ export class EventStreamParserStream extends TransformStream<string, EventStream
                 }
 
                 const messages = parser.feed(chunk);
+
                 for (const message of messages) {
                     controller.enqueue(message);
                 }
             },
             flush(controller) {
                 const messages = parser.end();
+
                 for (const message of messages) {
                     controller.enqueue(message);
                 }
@@ -61,6 +63,7 @@ export function parseEventStream(
     input: Response | ReadableStream<Uint8Array>,
 ) : ReadableStream<EventStreamMessage> {
     const body = isReadableStream(input) ? input : input.body;
+
     if (!body) {
         throw new TypeError('The response has no body to parse.');
     }

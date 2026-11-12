@@ -28,6 +28,7 @@ async function collect(stream: ReadableStream<EventStreamMessage>) : Promise<Eve
 
     while (true) {
         const { done, value } = await reader.read();
+
         if (done) {
             break;
         }
@@ -190,7 +191,7 @@ describe('src/response/event-stream', () => {
     it('should strip a leading byte order mark', async () => {
         const stream = new ReadableStream<string>({
             start(controller) {
-                controller.enqueue('﻿data: a\n\n');
+                controller.enqueue('\u{FEFF}data: a\n\n');
                 controller.close();
             },
         }).pipeThrough(new EventStreamParserStream());
