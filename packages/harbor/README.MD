@@ -281,7 +281,7 @@ const harbor = new HarborClient({
     // ...
 });
 
-const data = await harbor.projectRepositoryArtifact.getMany({
+const response = await harbor.projectRepositoryArtifact.getMany({
     projectName: 'project-z',
     repositoryName: 'repository-x',
     query: {
@@ -289,8 +289,8 @@ const data = await harbor.projectRepositoryArtifact.getMany({
         // with_label: true
     }
 });
-console.log(data);
-// [ {...}, ... ]
+console.log(response);
+// { data: [{...}, ...], meta: { total: 1 } }
 ```
 
 **`Delete`**

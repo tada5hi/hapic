@@ -6,7 +6,7 @@
  */
 
 import { MemoryTransport, createClient } from 'hapic';
-import { ProjectWebhookPolicyAPI } from '../../../src';
+import { HeaderName, ProjectWebhookPolicyAPI } from '../../../src';
 import type { ProjectWebhookEventType } from '../../../src';
 
 describe('src/domains/project-webhook-policy', () => {
@@ -197,5 +197,111 @@ describe('src/domains/project-webhook-policy', () => {
 
         expect(supported).toHaveLength(10);
         expect([quota, chart]).toHaveLength(2);
+    });
+
+    function jsonTransport(body: unknown, headers: Record<string, string> = {}) {
+        return new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json', ...headers },
+                body,
+            }),
+        });
+    }
+
+    function describeRequest(transport: MemoryTransport) {
+        const request = transport.requests.at(-1)!;
+
+        return [
+            request.method,
+            request.url,
+            (request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME),
+        ];
+    }
+
+    it('should get the supported event types', async () => {
+        const body = {
+            event_type: ['PUSH_ARTIFACT'],
+            notify_type: ['http', 'slack'],
+            payload_formats: [{ notify_type: 'http', formats: ['Default', 'CloudEvents'] }],
+        };
+        const transport = jsonTransport(body);
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        await expect(api.getSupportedEvents({ projectIdOrName: 'p', isProjectName: true })).resolves.toEqual(body);
+        expect(describeRequest(transport)).toEqual(['GET', 'projects/p/webhook/events', 'true']);
+    });
+
+    it('should get the last triggers', async () => {
+        const body = [{
+            policy_name: 'foo', 
+            event_type: 'PUSH_ARTIFACT', 
+            enabled: true, 
+        }];
+        const transport = jsonTransport(body);
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        await expect(api.getLastTriggers({ projectIdOrName: 1 })).resolves.toEqual(body);
+        expect(describeRequest(transport)).toEqual(['GET', 'projects/1/webhook/lasttrigger', null]);
+    });
+
+    it('should get the executions of a policy', async () => {
+        const transport = jsonTransport([{ id: 7, status: 'Success' }], { 'x-total-count': '9' });
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        const response = await api.getExecutions({
+            projectIdOrName: 'p',
+            isProjectName: true,
+            id: 3,
+            query: { page_size: 1, sort: ['-id'] },
+        });
+
+        expect(response).toEqual({ data: [{ id: 7, status: 'Success' }], meta: { total: 9 } });
+        expect(describeRequest(transport)).toEqual([
+            'GET',
+            'projects/p/webhook/policies/3/executions?page_size=1&sort=-id',
+            'true',
+        ]);
+    });
+
+    it('should get the tasks of an execution', async () => {
+        const transport = jsonTransport([{ id: 11, execution_id: 7 }], { 'x-total-count': '1' });
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        const response = await api.getExecutionTasks({
+            projectIdOrName: 1,
+            id: 3,
+            executionId: 7,
+        });
+
+        expect(response).toEqual({ data: [{ id: 11, execution_id: 7 }], meta: { total: 1 } });
+        expect(describeRequest(transport)).toEqual(['GET', 'projects/1/webhook/policies/3/executions/7/tasks', null]);
+    });
+
+    it('should get the log of a task as text', async () => {
+        const log = '{"status": "ok"}\nline 2\n';
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'text/plain' },
+                body: log,
+            }),
+        });
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        const output = await api.getExecutionTaskLog({
+            projectIdOrName: 'p',
+            isProjectName: true,
+            id: 3,
+            executionId: 7,
+            taskId: 11,
+        });
+
+        expect(output).toBe(log);
+        expect(describeRequest(transport)).toEqual([
+            'GET',
+            'projects/p/webhook/policies/3/executions/7/tasks/11/log',
+            'true',
+        ]);
     });
 });
