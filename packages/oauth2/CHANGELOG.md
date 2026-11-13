@@ -183,6 +183,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.2.0](https://github.com/tada5hi/hapic/compare/oauth2-v4.1.0...oauth2-v4.2.0) (2026-11-13)
+
+
+### Features
+
+* **oauth2:** userinfo request options and device authorization ([#1127](https://github.com/tada5hi/hapic/issues/1127)) ([8e624d6](https://github.com/tada5hi/hapic/commit/8e624d64d51064a476da8edf099b73cb0656afb6))
+
 ## [4.1.0](https://github.com/tada5hi/hapic/compare/oauth2-v4.0.2...oauth2-v4.1.0) (2026-11-13)
 
 
