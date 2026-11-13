@@ -14,6 +14,8 @@ import type {
     ProjectCreatePayload,
     ProjectMetadata,
     ProjectWebhookPolicy,
+    ProjectWebhookPolicyCreatePayload,
+    ProjectWebhookPolicyUpdatePayload,
     ProjectWebhookTarget,
     Robot,
     RobotPermissionAccess,
@@ -61,6 +63,25 @@ describe('types (harbor v2.16.0)', () => {
         expectTypeOf<ProjectWebhookTarget['type']>().toEqualTypeOf<'http' | 'slack'>();
         expectTypeOf<ProjectWebhookTarget['payload_format']>()
             .toEqualTypeOf<'Default' | 'CloudEvents' | undefined>();
+        expectTypeOf<ProjectWebhookTarget['skip_cert_verify']>().toEqualTypeOf<boolean | undefined>();
+    });
+
+    it('should require event types and targets in webhook policy payloads', () => {
+        const target: ProjectWebhookTarget = { type: 'http', address: 'https://example.com' };
+
+        expectTypeOf<ProjectWebhookPolicyCreatePayload['event_types']>().toEqualTypeOf<ProjectWebhookPolicy['event_types']>();
+        expectTypeOf<ProjectWebhookPolicyCreatePayload['targets']>().toEqualTypeOf<ProjectWebhookPolicy['targets']>();
+        expectTypeOf<ProjectWebhookPolicyUpdatePayload['event_types']>().toEqualTypeOf<ProjectWebhookPolicy['event_types']>();
+        expectTypeOf<ProjectWebhookPolicyUpdatePayload['targets']>().toEqualTypeOf<ProjectWebhookPolicy['targets']>();
+
+        expectTypeOf({ event_types: ['PUSH_ARTIFACT' as const], targets: [target] })
+            .toExtend<ProjectWebhookPolicyCreatePayload>();
+        expectTypeOf({ name: 'foo', enabled: false })
+            .not.toExtend<ProjectWebhookPolicyCreatePayload>();
+        expectTypeOf({ targets: [target] })
+            .not.toExtend<ProjectWebhookPolicyUpdatePayload>();
+        expectTypeOf({ event_types: ['PUSH_ARTIFACT' as const] })
+            .not.toExtend<ProjectWebhookPolicyUpdatePayload>();
     });
 
     it('should type all project fields', () => {

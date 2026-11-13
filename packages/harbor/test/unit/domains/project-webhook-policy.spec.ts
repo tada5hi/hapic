@@ -47,29 +47,36 @@ describe('src/domains/project-webhook-policy', () => {
         });
     });
 
-    it('should not force event types or targets on create', async () => {
+    it('should send event types and targets as given on create', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
 
         await api.create({
             projectIdOrName: 1,
-            data: { name: 'foo', enabled: false },
+            data: {
+                name: 'foo',
+                enabled: false,
+                event_types: ['PULL_ARTIFACT'],
+                targets: [{ type: 'slack', address: 'https://example.com' }],
+            },
         });
 
         expect(JSON.parse(transport.requests.at(-1)!.body as string)).toEqual({
             name: 'foo',
             enabled: false,
+            event_types: ['PULL_ARTIFACT'],
+            targets: [{ type: 'slack', address: 'https://example.com' }],
         });
     });
 
     it('should not mutate the input on create', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
-        const data = { event_types: ['PULL_ARTIFACT' as const] };
+        const data = { event_types: ['PULL_ARTIFACT' as const], targets: [] };
 
         await api.create({ projectIdOrName: 1, data });
 
-        expect(data).toEqual({ event_types: ['PULL_ARTIFACT'] });
+        expect(data).toEqual({ event_types: ['PULL_ARTIFACT'], targets: [] });
 
         const body = JSON.parse(transport.requests.at(-1)!.body as string);
 
@@ -137,13 +144,41 @@ describe('src/domains/project-webhook-policy', () => {
         const request = transport.requests.at(-1)!;
 
         expect(request.method).toBe('GET');
-        expect(request.url).toBe('projects/1/webhook/policies?q=name%3Dbar&page_size=1');
+        // `\` before the value forces an exact match (lib/q/builder.go `escapeValue`)
+        expect(request.url).toBe('projects/1/webhook/policies?q=name%3D%255Cbar&page_size=1');
+        expect(harborQueryKeywords(request.url)).toEqual({ name: '\\bar' });
+    });
+
+    it('should find resource by a name that looks like a fuzzy match', async () => {
+        const transport = jsonTransport([]);
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        await api.findOne({ projectIdOrName: 1, name: '~ci' });
+
+        const { url } = transport.requests.at(-1)!;
+
+        expect(url).toBe('projects/1/webhook/policies?q=name%3D%255C%257Eci&page_size=1');
+        expect(harborQueryKeywords(url)).toEqual({ name: '\\~ci' });
+    });
+
+    it('should delete by a name that looks like a fuzzy match only on an exact match', async () => {
+        const transport = jsonTransport([]);
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        await api.deleteByName({ projectIdOrName: 1, name: '~ci' });
+
+        expect(transport.requests).toHaveLength(1);
+        expect(transport.requests[0].url).toBe('projects/1/webhook/policies?q=name%3D%255C%257Eci&page_size=1');
     });
 
     it('should update resource', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
-        const data = { name: 'baz', event_types: ['TAG_RETENTION' as const] };
+        const data = {
+            name: 'baz', 
+            event_types: ['TAG_RETENTION' as const], 
+            targets: [], 
+        };
 
         await api.update({
             projectIdOrName: 1,
@@ -160,8 +195,13 @@ describe('src/domains/project-webhook-policy', () => {
             event_types: ['TAG_RETENTION'],
             id: 1,
             name: 'baz',
+            targets: [],
         });
-        expect(data).toEqual({ name: 'baz', event_types: ['TAG_RETENTION'] });
+        expect(data).toEqual({
+            name: 'baz', 
+            event_types: ['TAG_RETENTION'], 
+            targets: [], 
+        });
     });
 
     it('should delete resource', async () => {
@@ -198,6 +238,22 @@ describe('src/domains/project-webhook-policy', () => {
         expect(supported).toHaveLength(10);
         expect([quota, chart]).toHaveLength(2);
     });
+
+    /**
+     * Decode `q` the way Harbor does: regular query decoding, then
+     * `url.QueryUnescape`, then split on `,` and the first `=`
+     * (lib/q/builder.go `parseKeywords`).
+     */
+    function harborQueryKeywords(url: string) {
+        const q = new URLSearchParams(url.split('?')[1]).get('q') || '';
+        const unescaped = decodeURIComponent(q.replace(/\+/g, ' '));
+
+        return Object.fromEntries(unescaped.split(',').map((pair) => {
+            const index = pair.indexOf('=');
+
+            return [pair.substring(0, index), pair.substring(index + 1)];
+        }));
+    }
 
     function jsonTransport(body: unknown, headers: Record<string, string> = {}) {
         return new MemoryTransport({

@@ -81,8 +81,11 @@ type RobotPayloadRequired = {
 export type RobotCreatePayload = Omit<Robot, 'id' | 'creator_type' | 'creator_ref' | keyof RobotPayloadRequired> & RobotPayloadRequired;
 
 /**
- * Harbor requires the unchanged name and level
- * and at least one permission.
+ * Harbor requires the current `name` and `level` and at least one
+ * permission. `name` is the name exactly as returned by `getOne` /
+ * `getMany`, including its prefix (`robot$<name>` for a system robot,
+ * `robot$<project>+<name>` for a project robot), not the name used
+ * at create (server/v2.0/handler/robot.go `updateV2Robot`).
  */
 export type RobotUpdatePayload = RobotCreatePayload;
 

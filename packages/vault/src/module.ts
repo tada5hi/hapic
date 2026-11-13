@@ -46,8 +46,12 @@ export class VaultClient extends Client {
             this.setBaseURL(connectionOptions.host);
             this.setHeader('X-Vault-Token', connectionOptions.token);
 
+            // the namespace belongs to the connection: one of a previous
+            // connection must not be sent to the new host
             if (connectionOptions.namespace) {
                 this.setNamespace(connectionOptions.namespace);
+            } else {
+                this.unsetNamespace();
             }
         }
 

@@ -30,7 +30,7 @@ const client = new VaultClient({
 });
 ```
 
-A namespace can also be passed as `namespace` query parameter of the host in the connection string. It is removed from the base URL and sent as the `X-Vault-Namespace` header; other query parameters stay on the host. Encode a nested namespace or pass it as is:
+A namespace can also be passed as `namespace` query parameter of the host in the connection string. It is removed from the base URL and sent as the `X-Vault-Namespace` header. `namespace` is the only query parameter the host may carry: request paths are appended to the host, so any other query parameter would end up in the middle of the URL. Encode a nested namespace or pass it as is:
 
 ```typescript
 const client = new VaultClient({
@@ -196,3 +196,5 @@ An invalid `connectionString` throws a `ConnectionStringParseError` from the pac
 - `MountCreatePayload` no longer has `generate_signing_key`, which is not a `/sys/mounts` parameter.
 - `MountUpdatePayload` (tune) no longer has `force_no_cache`, which is not a tune parameter.
 - `mount.getMany` and `mount.getOne` return `Mount` entries (with `accessor`, `uuid`, numeric TTLs, …) instead of `MountCreatePayload`.
+- `custom_metadata` in the key-value v2 responses is `Record<string, string> | null` instead of the fixed `{ owner, mission_critical }` shape. Vault returns `null` when no custom metadata is set, so check for it before reading a key.
+- Applying a connection (`applyConfig`, or the constructor) without a namespace removes an `X-Vault-Namespace` header set by an earlier connection.

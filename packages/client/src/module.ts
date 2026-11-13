@@ -79,12 +79,23 @@ export class Client implements IClient {
      * the current headers and the transport. Passing the result to a client
      * constructor creates a client that is configured the same way.
      *
-     * The options and headers are copies; the transport is the same instance.
+     * The options and headers are copies: arrays and plain objects among the
+     * defaults (e.g. transform, responseTransform, params, query, a proxy
+     * options object) are copied one level deep, so changing them on either
+     * client does not affect the other. Functions, signals, the transport
+     * and other class instances are the same instances.
      * Hooks are not part of it.
      */
     public toOptions(): ClientOptions {
+        const output : Record<string, any> = {};
+        const keys = Object.keys(this.defaults) as (keyof RequestBaseOptions)[];
+
+        for (const key of keys) {
+            output[key] = copyShallow(this.defaults[key]);
+        }
+
         return {
-            ...this.defaults,
+            ...output,
             headers: new Headers(this.headers),
             transport: this.transport,
         };
@@ -507,4 +518,24 @@ export class Client implements IClient {
 
         return this;
     }
+}
+
+/**
+ * Copy an array or a plain object one level deep; leave any other value
+ * (primitives, functions, class instances) as it is.
+ */
+function copyShallow<T>(input: T) : T {
+    if (Array.isArray(input)) {
+        return [...input] as T;
+    }
+
+    if (typeof input === 'object' && input !== null) {
+        const prototype = Object.getPrototypeOf(input);
+
+        if (prototype === Object.prototype || prototype === null) {
+            return { ...input };
+        }
+    }
+
+    return input;
 }

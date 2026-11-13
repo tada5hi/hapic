@@ -9,6 +9,7 @@ import { BaseAPI } from '../base';
 import {
     buildRepositoryPath,
     buildRequestPath,
+    exactMatch,
     getAllPages,
     getCollection,
 } from '../request';
@@ -41,12 +42,12 @@ export class ProjectRepositoryAPI extends BaseAPI {
             context = input;
         }
 
-        // `name=<value>` is an exact match on the full repository name,
-        // `name=~<value>` would be a substring match.
+        // An exact match on the full repository name, also for a name
+        // Harbor would otherwise read as a substring or range match.
         const { data } = await this.getMany({
             projectName: context.projectName,
             query: {
-                q: { name: `${context.projectName}/${context.repositoryName}` },
+                q: { name: exactMatch(`${context.projectName}/${context.repositoryName}`) },
                 page_size: 1,
             },
         });

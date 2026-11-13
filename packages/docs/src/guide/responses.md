@@ -104,7 +104,7 @@ Each message has the shape of a browser `MessageEvent`:
 | `type` | the `event` field, `message` if absent |
 | `data` | the `data` fields, joined with a line feed |
 | `lastEventId` | the last `id` seen on the stream, `''` if none |
-| `retry` | the `retry` field in milliseconds, if the event carried one |
+| `retry` | the stream's current reconnection time in milliseconds: the last valid `retry` field seen on the stream, also when it was sent in a block without `data`; absent until one is received |
 
 Comments (`: ping`) are skipped, and an event which is not terminated by a blank line when the stream ends is discarded. For a stream that is already decoded to text, pipe it through `EventStreamParserStream` instead:
 

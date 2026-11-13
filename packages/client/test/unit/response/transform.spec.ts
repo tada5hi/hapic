@@ -35,6 +35,67 @@ const jsonEnvelope : MemoryResponseInit = {
 const unwrap : ResponseTransformer = (data) => data?.result ?? data;
 
 describe('src/response/transform', () => {
+    it('should pass the response headers and status to the transformer', async () => {
+        const transform = vi.fn((data: any) => data);
+        const client = createClient(jsonEnvelope, transform);
+
+        await client.get('users/1');
+
+        expect(transform).toHaveBeenCalledTimes(1);
+
+        const [data, headers, status] = transform.mock.calls[0] as unknown as [any, Headers, number];
+
+        expect(data).toEqual({ result: { id: 1 } });
+        expect(headers.get('content-type')).toBe('application/json');
+        expect(status).toBe(200);
+    });
+
+    it('should let a transformer tell an error body apart by its status', async () => {
+        const transform : ResponseTransformer = (data, _headers, status) => (
+            status >= 400 ? data.error : data.result
+        );
+        const client = createClient({
+            status: 404,
+            headers: { 'content-type': 'application/json' },
+            body: { error: { code: 'NOT_FOUND' } },
+        }, transform);
+
+        const error = await client.get('users/999').catch((e) => e);
+
+        expect(isHttpResponseError(error)).toBe(true);
+        expect(error.response.data).toEqual({ code: 'NOT_FOUND' });
+    });
+
+    it('should keep the http error when a transformer throws on an error body', async () => {
+        const hook = vi.fn((error: any) => {
+            throw error;
+        });
+        const client = createClient({
+            status: 401,
+            headers: { 'content-type': 'application/json' },
+            body: { error: 'expired' },
+        }, [(data) => data, (data) => data.items.map((item: any) => item.id)]);
+
+        client.on(HookName.RESPONSE_ERROR, hook);
+
+        const error = await client.get('things').catch((e) => e);
+
+        expect(isHttpResponseError(error)).toBe(true);
+        expect(error.response.status).toBe(401);
+        // the body is left untransformed
+        expect(error.response.data).toEqual({ error: 'expired' });
+        expect(hook).toHaveBeenCalledTimes(1);
+    });
+
+    it('should still throw when a transformer throws on a successful response', async () => {
+        const client = createClient(jsonEnvelope, (data) => data.items.map((item: any) => item.id));
+
+        const error = await client.get('things').catch((e) => e);
+
+        expect(error).toBeInstanceOf(TypeError);
+        expect(isHttpResponseError(error)).toBe(false);
+    });
+
     it('should apply a client-level response transformer', async () => {
         const client = createClient(jsonEnvelope, unwrap);
 

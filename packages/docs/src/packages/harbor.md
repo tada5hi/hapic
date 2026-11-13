@@ -48,7 +48,7 @@ The package also exports the standard registry — `createClient`, `useClient`, 
 | `client.projectWebhookPolicy` | `ProjectWebhookPolicyAPI` | `create` · `getMany` · `getOne` · `findOne` · `update` · `delete` · `deleteByName` · `getSupportedEvents` · `getExecutions` · `getExecutionTasks` · `getExecutionTaskLog` · `getLastTriggers` |
 | `client.robot` | `RobotAPI` | `create` · `getMany` · `getOne` · `update` · `updateSecret` · `delete` |
 
-Collection methods (`getMany`, `getAll`, `getExecutions`, …) return a `{ data, meta }` shape, where `meta.total` is Harbor's `X-Total-Count`; `getAll` fetches page after page until a page comes back short. `getOne` returns the entity; mutations return the created entity or `void`.
+Collection methods (`getMany`, `getAll`, `getExecutions`, …) return a `{ data, meta }` shape, where `meta.total` is Harbor's `X-Total-Count`; `getAll` fetches page after page until a page comes back short. `getOne` returns the entity. `project.create` and `projectWebhookPolicy.create` return `{ id }` (`project.create` with `resourceNameInLocation`: `{ name }`), `robot.create` returns the created robot including its `secret`, and the other mutations return `void`.
 
 The types follow the Harbor **v2.16** API.
 
@@ -163,6 +163,16 @@ const { data: robots } = await client.robot.getMany({
     query: { q: { Level: 'project', ProjectID: 1 } },
 });
 
+// update: `name` is the name exactly as returned by getOne / getMany
+// (`robot$team-a+ci`), not the one used at create; `level` must not change
+const current = await client.robot.getOne(robot.id);
+await client.robot.update(robot.id, {
+    name: current.name,
+    level: 'project',
+    permissions: [permission],
+    description: 'CI/CD automation (read-only)',
+});
+
 // rotate the secret
 const { secret } = await client.robot.updateSecret(robot.id);
 
@@ -183,7 +193,7 @@ await client.projectWebhookPolicy.create({
 });
 ```
 
-Harbor requires at least one event type and one target; both are sent as given. `enabled` defaults to `true`. An update replaces the whole policy, so pass every field you want to keep. A target is of type `http` or `slack`; an `http` target takes a `payload_format` of `Default` (Harbor's default) or `CloudEvents`.
+Harbor requires at least one event type and one target, so `event_types` and `targets` are required in `ProjectWebhookPolicyCreatePayload` / `ProjectWebhookPolicyUpdatePayload`; both are sent as given. `enabled` defaults to `true`. `findOne` and `deleteByName` match the policy name exactly, even one starting with `~`, `[`, `{` or `(`. An update replaces the whole policy, so pass every field you want to keep. A target is of type `http` or `slack`; an `http` target takes a `payload_format` of `Default` (Harbor's default) or `CloudEvents`.
 
 ```typescript
 const events = await client.projectWebhookPolicy.getSupportedEvents({ projectIdOrName: 1 });
@@ -234,6 +244,18 @@ client.on('request', (options) => {
 - `ProjectArtifactTag.signed` and the `with_signature` query parameter are removed (Harbor dropped Notary).
 - `ProjectCreatePayload.registry_id` is a number (or `null`); a string is no longer accepted.
 - `buildRobotPermissionForAllResources` grants every project-scope robot policy of Harbor v2.16 (it now includes `accessory`, `artifact-addition`, `quota`, `sbom`, `scanner` and `tag-retention`).
+- Upgrade `hapic` together with `@hapic/harbor`: v4 uses `BaseAPI` from the `hapic` release published alongside it.
+- `projectWebhookPolicy.create` / `update` no longer fill in `event_types` (it used to default to `['PUSH_ARTIFACT']` and always add `PUSH_ARTIFACT` to a given list) or `targets` (used to default to `[]`). Pass at least one of each, including `PUSH_ARTIFACT` if you relied on it; Harbor answers 400 otherwise. Both are now required by the new `ProjectWebhookPolicyCreatePayload` / `ProjectWebhookPolicyUpdatePayload` types (previously `Partial<ProjectWebhookPolicy>`).
+- `projectWebhookPolicy.update` no longer generates a random `name` when none is given. An update replaces the whole policy, so pass its current `name`.
+- `robot.create` / `update` no longer default `level: 'system'`, `description: ''`, `disable: false`, `editable: true` or `permissions: []`. `level` and `permissions` are required in `RobotCreatePayload` / `RobotUpdatePayload` (Harbor answers 400 without a level). `duration: -1` is filled in on create only: an update without `duration` now keeps the current expiry instead of resetting it to never expire.
+- `robot.update` needs the robot `name` exactly as returned by `getOne` / `getMany` (`robot$<name>` or `robot$<project>+<name>`), not the name used at create; Harbor rejects a changed name or level.
+- Path segments and query values are URL-encoded by the client, repository names twice as Harbor requires. Pass raw values (`a/b`, `sha256:…`) and stop pre-encoding them: repository names, tag and digest references, the `copy` source, `search` terms and `q` values. Several `q` keys are now joined with `,` as Harbor expects (they used to be joined with `&`).
+- `ProjectMetadata.public` (like every metadata flag) is `'true' | 'false'` instead of a boolean.
+- `ProjectUpdatePayload` only has `metadata` and `cve_allowlist`; `project_name`, `public`, `registry_id` and `storage_limit` are gone (Harbor ignored them on update). Set the publicity with `metadata: { public: 'true' }`.
+- `ProjectWebhookEventType` dropped `DELETE_CHART`, `DOWNLOAD_CHART` and `UPLOAD_CHART`, and `QUOTA_EXCEEDED` is now `QUOTA_EXCEED`, as Harbor names it.
+- `RobotQuery.q` uses `Level` / `ProjectID` instead of `level` (Harbor ignored the lowercase key and listed system robots only).
+- `ProjectWebhookTarget.skip_cert_verify` is optional: Harbor leaves it out of a response when it is `false`.
+- `projectRepository.findOne` matches the full repository name exactly instead of by substring, so `findOne('team-a/app')` no longer returns `team-a/app-backend`.
 
 ## Error handling
 

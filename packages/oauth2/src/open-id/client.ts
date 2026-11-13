@@ -6,7 +6,7 @@
  */
 
 import type { ClientOptionsInput, IClient } from 'hapic';
-import { createClient, isClient } from 'hapic';
+import { HeaderName, createClient, isClient } from 'hapic';
 import { OAuth2Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
 import type { OpenIDProviderMetadata } from './types';
@@ -23,6 +23,9 @@ import type { OpenIDProviderMetadata } from './types';
  * defaults, headers and transport (the same instance). Its hooks are **not**
  * carried over (hooks are bound to a client instance); register them on the
  * returned client.
+ *
+ * A client of an older `hapic` copy without `toOptions()` falls back to its
+ * `defaults` plus its current authorization header.
  *
  * @param url (.e.g. .well-known/openid-configuration)
  * @param options
@@ -41,6 +44,22 @@ export async function createClientWithOpenIDDiscoveryURL(
     }
 
     const { data }: { data: OpenIDProviderMetadata } = await options.get(url);
+
+    // a client of another hapic copy (< 3.1) matches the guard but has no toOptions()
+    if (typeof options.toOptions !== 'function') {
+        const client = new OAuth2Client({
+            request: options.defaults,
+            options: parseOpenIDProviderMetadata(data),
+        });
+
+        const authorization = options.getAuthorizationHeader();
+
+        if (authorization) {
+            client.setHeader(HeaderName.AUTHORIZATION, authorization);
+        }
+
+        return client;
+    }
 
     return new OAuth2Client({
         request: options.toOptions(),

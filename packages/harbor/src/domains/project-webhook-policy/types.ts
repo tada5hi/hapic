@@ -35,7 +35,10 @@ export type ProjectWebhookPayloadFormat = 'Default' | 'CloudEvents';
 export type ProjectWebhookTarget = {
     address: string;
     auth_header?: string;
-    skip_cert_verify: boolean;
+    /**
+     * Omitted by Harbor when `false`.
+     */
+    skip_cert_verify?: boolean;
     type: ProjectWebhookNotifyType;
     payload_format?: ProjectWebhookPayloadFormat;
 };
@@ -53,8 +56,27 @@ export type ProjectWebhookPolicy = {
     update_time?: string;
 };
 
+type ProjectWebhookPolicyPayloadRequired = {
+    event_types: ProjectWebhookEventType[],
+    targets: ProjectWebhookTarget[]
+};
+
+/**
+ * Harbor requires at least one event type and one target
+ * (server/v2.0/handler/webhook.go). A missing `name` is generated
+ * and a missing `enabled` is sent as `true`.
+ */
+export type ProjectWebhookPolicyCreatePayload = Partial<Omit<ProjectWebhookPolicy, keyof ProjectWebhookPolicyPayloadRequired>> &
+    ProjectWebhookPolicyPayloadRequired;
+
+/**
+ * Harbor replaces the whole policy on update and requires
+ * at least one event type and one target.
+ */
+export type ProjectWebhookPolicyUpdatePayload = ProjectWebhookPolicyCreatePayload;
+
 export type ProjectWebhookPolicyCreateContext = {
-    data: Partial<ProjectWebhookPolicy>,
+    data: ProjectWebhookPolicyCreatePayload,
     projectIdOrName: number | string,
     isProjectName?: boolean,
 };
@@ -97,7 +119,7 @@ export type ProjectWebhookPolicyUpdateContext = {
     projectIdOrName: number | string,
     isProjectName?: boolean,
     id : ProjectWebhookPolicy['id'],
-    data: Partial<ProjectWebhookPolicy>
+    data: ProjectWebhookPolicyUpdatePayload
 };
 
 type ProjectWebhookProjectContext = {

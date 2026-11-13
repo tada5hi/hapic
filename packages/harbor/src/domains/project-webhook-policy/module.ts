@@ -8,7 +8,12 @@
 import { ResponseType } from 'hapic';
 import { extractResourceIDOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
-import { buildRequestPath, getCollection, withResourceName } from '../request';
+import {
+    buildRequestPath,
+    exactMatch,
+    getCollection,
+    withResourceName,
+} from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     ProjectWebhookExecution,
@@ -20,6 +25,7 @@ import type {
     ProjectWebhookLastTriggersContext,
     ProjectWebhookPolicy,
     ProjectWebhookPolicyCreateContext,
+    ProjectWebhookPolicyCreatePayload,
     ProjectWebhookPolicyCreateResponse,
     ProjectWebhookPolicyDeleteByNameContext,
     ProjectWebhookPolicyDeleteContext,
@@ -72,7 +78,8 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             projectIdOrName: context.projectIdOrName,
             isProjectName: context.isProjectName,
             query: {
-                q: { name: context.name },
+                // exact match, also for a name starting with `~`, `[`, `{` or `(`
+                q: { name: exactMatch(context.name) },
                 page_size: 1,
             },
         });
@@ -194,10 +201,10 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
      * `event_types` and `targets`, so those are sent as given.
      * The input is not modified.
      */
-    protected extendPayload(
-        data: Partial<ProjectWebhookPolicy>,
+    protected extendPayload<T extends ProjectWebhookPolicyCreatePayload>(
+        data: T,
         withName = false,
-    ) : Partial<ProjectWebhookPolicy> {
+    ) : T {
         const output = { ...data };
 
         if (withName && !output.name) {

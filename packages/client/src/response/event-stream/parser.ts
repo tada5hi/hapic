@@ -29,6 +29,10 @@ export class EventStreamParser {
 
     protected hasData = false;
 
+    /**
+     * The stream's reconnection time; like the last event id it is stream
+     * state and outlives the dispatch of a message.
+     */
     protected retry : number | undefined;
 
     protected lastEventId = '';
@@ -166,6 +170,5 @@ export class EventStreamParser {
         this.type = '';
         this.data = '';
         this.hasData = false;
-        this.retry = undefined;
     }
 }

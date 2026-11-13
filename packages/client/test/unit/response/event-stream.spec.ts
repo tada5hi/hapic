@@ -208,13 +208,60 @@ describe('src/response/event-stream', () => {
         expect(messages[0]).not.toHaveProperty('retry');
     });
 
-    it('should reset type and retry after dispatching', async () => {
+    it('should reset the type but keep the retry after dispatching', async () => {
         const messages = await parse('event: update\nretry: 5\ndata: a\n\ndata: b\n\n');
 
         expect(messages[1]).toEqual({
             type: 'message',
             data: 'b',
             lastEventId: '',
+            retry: 5,
+        });
+    });
+
+    describe('reconnection time', () => {
+        it('should keep a retry sent in a block without data for later messages', async () => {
+            const messages = await parse('retry: 3000\n\n', 'data: hi\n\n', 'data: there\n\n');
+
+            expect(messages).toEqual([
+                {
+                    type: 'message', 
+                    data: 'hi', 
+                    lastEventId: '', 
+                    retry: 3000, 
+                },
+                {
+                    type: 'message', 
+                    data: 'there', 
+                    lastEventId: '', 
+                    retry: 3000, 
+                },
+            ]);
+        });
+
+        it('should carry a retry sent with data in the same block', async () => {
+            const messages = await parse('retry: 1000\ndata: a\n\ndata: b\n\n');
+
+            expect(messages.map((m) => m.retry)).toEqual([1000, 1000]);
+        });
+
+        it('should let a later retry replace an earlier one', async () => {
+            const messages = await parse('retry: 1000\ndata: a\n\nretry: 2000\n\ndata: b\n\nretry: 3000\ndata: c\n\n');
+
+            expect(messages.map((m) => m.retry)).toEqual([1000, 2000, 3000]);
+        });
+
+        it('should ignore an invalid retry and keep the previous value', async () => {
+            const messages = await parse('retry: 1000\ndata: a\n\nretry: 2s\ndata: b\n\nretry: -5\n\ndata: c\n\n');
+
+            expect(messages.map((m) => m.retry)).toEqual([1000, 1000, 1000]);
+        });
+
+        it('should not set retry before any valid retry field', async () => {
+            const messages = await parse('data: a\n\nretry:\ndata: b\n\n');
+
+            expect(messages[0]).not.toHaveProperty('retry');
+            expect(messages[1]).not.toHaveProperty('retry');
         });
     });
 

@@ -532,9 +532,13 @@ const harbor = new HarborClient({
     // ...
 });
 
-// name and level must match the existing robot
+// name and level must match the existing robot: pass the name exactly
+// as returned by getOne / getMany (with its `robot$` prefix),
+// not the name used at create
+const robot = await harbor.robot.getOne(1);
+
 await harbor.robot.update(1, {
-    name: 'system',
+    name: robot.name, // e.g. 'robot$system'
     level: 'system',
     permissions: [/* ... */],
     description: 'foo',

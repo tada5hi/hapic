@@ -51,6 +51,19 @@ export function buildRepositoryPath(
 }
 
 /**
+ * Make a `q` value match exactly.
+ *
+ * Harbor reads a value starting with `~` as a substring match and one
+ * starting with `[`, `{` or `(` as a range or list; a leading `\` is
+ * stripped and the rest is matched exactly (lib/q/builder.go
+ * `parsePattern`, `escapeValue`). So every value gets a leading `\`,
+ * which also keeps a value that itself starts with `\` intact.
+ */
+export function exactMatch(value: string) : string {
+    return `\\${value}`;
+}
+
+/**
  * Request options telling Harbor to read a `{project_name_or_id}`
  * path parameter as a name (`X-Is-Resource-Name`).
  */

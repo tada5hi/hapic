@@ -30,6 +30,9 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
     responseType?: R,
     /**
      * A function or array of functions to transform the response data.
+     * Each receives the decoded data, the response headers and the status;
+     * it also runs on 4xx/5xx bodies, where a throwing function leaves
+     * the body untransformed.
      */
     responseTransform?: ResponseTransformer | ResponseTransformer[],
     /**
@@ -54,10 +57,13 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
     /**
      * Abort the request after this many milliseconds.
      * Only a finite number above 0 arms it; anything else means no timeout.
+     * A fraction is rounded up and a value above 2147483647 (the timer
+     * limit, about 24.8 days) is capped to it.
      * It covers reading the response body, so for a stream response it keeps
      * running while the stream is consumed.
-     * A timed-out request rejects with the error code ETIMEDOUT; an abort
-     * through the caller signal keeps ECONNABORTED, whatever its reason.
+     * A timed-out request rejects with the error code ETIMEDOUT, as does a
+     * caller signal aborted with a TimeoutError (e.g. AbortSignal.timeout());
+     * any other abort through the caller signal keeps ECONNABORTED.
      * A per-request value of undefined keeps the client default.
      *
      * default: undefined (no timeout)
