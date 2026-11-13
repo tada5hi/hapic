@@ -8,7 +8,7 @@
 import type { ResourceResponse } from '../../types';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../types';
-import type { MountCreatePayload, MountUpdatePayload } from './types';
+import type { Mount, MountCreatePayload, MountUpdatePayload } from './types';
 
 export class MountAPI extends BaseAPI {
     constructor(context?: BaseAPIContext) {
@@ -37,13 +37,13 @@ export class MountAPI extends BaseAPI {
         return response.data;
     }
 
-    async getMany() : Promise<ResourceResponse<Record<string, MountCreatePayload>>> {
+    async getMany() : Promise<ResourceResponse<Record<string, Mount>>> {
         const response = await this.client.get('sys/mounts');
 
         return response.data;
     }
 
-    async getOne(path: string) : Promise<ResourceResponse<MountCreatePayload>> {
+    async getOne(path: string) : Promise<ResourceResponse<Mount>> {
         const response = await this.client.get(`sys/mounts/${path}`);
 
         return response.data;

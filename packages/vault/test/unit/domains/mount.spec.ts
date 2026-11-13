@@ -6,7 +6,7 @@
  */
 
 import { MemoryTransport, createClient } from 'hapic';
-import { MountAPI } from '../../../src';
+import { KeyValueVersion, MountAPI } from '../../../src';
 
 describe('src/domains/mount', () => {
     it('should create resource', async () => {
@@ -66,7 +66,7 @@ describe('src/domains/mount', () => {
 
         await api.create('key', {
             type: 'kv',
-            options: { version: 2 },
+            options: { version: KeyValueVersion.TWO },
             config: { max_lease_ttl: '1h' },
         });
 
@@ -74,9 +74,14 @@ describe('src/domains/mount', () => {
 
         expect(JSON.parse(req.body as string)).toEqual({
             type: 'kv',
-            options: { version: 2 },
+            options: { version: '2' },
             config: { max_lease_ttl: '1h' },
         });
+    });
+
+    it('should use the string kv versions vault returns', () => {
+        expect(KeyValueVersion.ONE).toBe('1');
+        expect(KeyValueVersion.TWO).toBe('2');
     });
 
     it('should tune resource', async () => {

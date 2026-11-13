@@ -62,7 +62,7 @@ export class KeyValueV2API extends BaseAPI {
      * @param path The secret path relative to the secret engine mount.
      * @param data
      */
-    async update(mount: string, path: string, data: KeyValueV2Payload) : Promise<any> {
+    async update(mount: string, path: string, data: KeyValueV2Payload) : Promise<KeyValueV2CreateResponse> {
         const response = await this.client.patch(
             `${mount}/data/${path}`,
             data,

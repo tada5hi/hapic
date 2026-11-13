@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -25,13 +25,25 @@ export type KeyValueV2Payload = {
     data: Record<string, any>
 };
 
+/**
+ * Metadata of a single secret version.
+ */
+export type KeyValueV2VersionMetadata = {
+    created_time: string,
+    /**
+     * Key metadata shared by all versions.
+     */
+    custom_metadata: Record<string, string> | null,
+    /**
+     * Empty string when no deletion is scheduled.
+     */
+    deletion_time: string,
+    destroyed: boolean,
+    version: number
+};
+
 export type KeyValueV2CreateResponse = {
-    data: {
-        created_time: string,
-        deletion_time: string,
-        destroyed: boolean,
-        version: number,
-    }
+    data: KeyValueV2VersionMetadata
 };
 
 export type KeyValueV2GetOneResponse<
@@ -39,15 +51,6 @@ export type KeyValueV2GetOneResponse<
 > = {
     data: {
         data: T,
-        metadata: {
-            created_time: string,
-            custom_metadata: {
-                owner: string,
-                mission_critical: string
-            },
-            deletion_time: string,
-            destroyed: boolean,
-            version: number
-        }
+        metadata: KeyValueV2VersionMetadata
     }
 };
