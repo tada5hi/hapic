@@ -1,3 +1,11 @@
+---
+package:
+  name: "@hapic/vault"
+  summary: "HashiCorp Vault client: key value v1 and v2 secret engines plus mount management."
+  accent: "#a855f7"
+  order: 3
+---
+
 # @hapic/vault
 
 A client for [HashiCorp Vault](https://www.vaultproject.io/) — read and write secrets through the key-value v1 and v2 engines, and manage mounts. It extends the base [`Client`](/guide/client).

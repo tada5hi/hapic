@@ -15,19 +15,28 @@ const { frontmatter } = useData();
 const codeTabs = computed(() => (frontmatter.value as HomeFrontmatter).codeTabs);
 
 const active = ref(0);
-const tabRefs = ref<HTMLButtonElement[]>([]);
+// Indexed by tab position through a function ref; a v-for ref array does not guarantee source order.
+const tabRefs: (HTMLButtonElement | null)[] = [];
 
-const { copied, copy } = useCopy();
+const setTabRef = (index: number, el: unknown) => {
+    tabRefs[index] = el instanceof HTMLButtonElement ? el : null;
+};
+
+const { copied, copy, reset } = useCopy();
 
 const tabId = (index: number) => `hc-codetabs-tab-${index}`;
 const panelId = 'hc-codetabs-panel';
 
 const activate = async (index: number, focus = false) => {
+    if (index !== active.value) {
+        reset();
+    }
+
     active.value = index;
 
     if (focus) {
         await nextTick();
-        tabRefs.value[index]?.focus();
+        tabRefs[index]?.focus();
     }
 };
 
@@ -85,7 +94,7 @@ const onKeydown = (event: KeyboardEvent) => {
                         v-for="(tab, index) in codeTabs.tabs"
                         :id="tabId(index)"
                         :key="tab.label"
-                        ref="tabRefs"
+                        :ref="(el) => setTabRef(index, el)"
                         type="button"
                         role="tab"
                         class="hc-codetabs-tab"

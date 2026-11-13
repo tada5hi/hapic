@@ -1,3 +1,11 @@
+---
+package:
+  name: "@hapic/oauth2"
+  summary: "OAuth2 and OpenID Connect client: authorization URLs, every token grant, introspection and userinfo."
+  accent: "#818cf8"
+  order: 2
+---
+
 # @hapic/oauth2
 
 An OAuth2 / OpenID Connect client — build authorization URLs, exchange every grant type for tokens, introspect and revoke them, and fetch userinfo. It extends the base [`Client`](/guide/client) and registers its own cross-realm marker, `Symbol.for('@hapic/oauth2/OAuth2Client')`, alongside the inherited `Client` marker.
