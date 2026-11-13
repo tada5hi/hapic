@@ -108,15 +108,31 @@ const toggle = () => {
     schedule();
 };
 
+let motionQuery: MediaQueryList | null = null;
+
+// Reduced motion can be switched on while the page is open: stop advancing
+// then as well, since the pause control is hidden in that mode.
+const onMotionChange = (event: MediaQueryListEvent) => {
+    if (event.matches) {
+        autoAdvance.value = false;
+        stop();
+    }
+};
+
 onMounted(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (motionQuery.matches) {
         autoAdvance.value = false;
     }
+    motionQuery.addEventListener('change', onMotionChange);
 
     schedule();
 });
 
-onBeforeUnmount(stop);
+onBeforeUnmount(() => {
+    stop();
+    motionQuery?.removeEventListener('change', onMotionChange);
+});
 </script>
 
 <template>
