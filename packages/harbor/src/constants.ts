@@ -9,4 +9,5 @@ export enum HeaderName {
     LOCATION = 'location',
     IS_RESOURCE_NAME = 'X-Is-Resource-Name',
     TOTAL_COUNT = 'X-Total-Count',
+    ACCEPT_VULNERABILITIES = 'X-Accept-Vulnerabilities',
 }

@@ -155,7 +155,10 @@ export type ProjectArtifact = {
     inherited_accessories?: ProjectArtifactAccessory[]
 };
 
-export type ProjectArtifactGetManyQuery = ResourceCollectionQuery<ProjectArtifact> & {
+/**
+ * What to include in a returned artifact.
+ */
+export type ProjectArtifactGetOneQuery = {
     with_tag?: boolean,
     with_label?: boolean,
     with_scan_overview?: boolean,
@@ -165,10 +168,45 @@ export type ProjectArtifactGetManyQuery = ResourceCollectionQuery<ProjectArtifac
     with_inherited_accessory?: boolean
 };
 
+export type ProjectArtifactGetManyQuery = ResourceCollectionQuery<ProjectArtifact> & ProjectArtifactGetOneQuery;
+
 export type ProjectArtifactGetManyContext = {
     projectName: string,
     repositoryName: string,
-    query?: ProjectArtifactGetManyQuery
+    query?: ProjectArtifactGetManyQuery,
+    /**
+     * Comma-separated MIME types of the scan report, the first one found
+     * is used (`X-Accept-Vulnerabilities`).
+     */
+    acceptVulnerabilities?: string
+};
+
+export type ProjectArtifactGetOneContext = {
+    projectName: string,
+    repositoryName: string,
+    /**
+     * Tag or digest, `latest` when absent.
+     */
+    tagOrDigest?: string,
+    query?: ProjectArtifactGetOneQuery,
+    /**
+     * Comma-separated MIME types of the scan report, the first one found
+     * is used (`X-Accept-Vulnerabilities`).
+     */
+    acceptVulnerabilities?: string
+};
+
+export type ProjectArtifactTagContext = {
+    projectName: string,
+    repositoryName: string,
+    /**
+     * The artifact, by tag or digest, `latest` when absent.
+     */
+    tagOrDigest?: string,
+    /**
+     * The name of the tag to create or delete.
+     */
+    name: string
 };
 
 export type ProjectArtifactDeleteContext = {
