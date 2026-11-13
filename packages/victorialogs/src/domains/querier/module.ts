@@ -22,7 +22,7 @@ export class QuerierAPI extends BaseAPI {
         const { data } = await this.client.get(
             'select/logsql/query',
             {
-                ...(this.options.querierURL ? { baseURL: this.options.querierURL } : {}),
+                ...this.withBaseURL(this.options.querierURL),
                 headers,
                 params: options,
                 responseType: 'text',

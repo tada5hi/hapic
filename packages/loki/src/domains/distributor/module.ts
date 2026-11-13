@@ -25,7 +25,7 @@ export class DistributorAPI extends BaseAPI {
             'loki/api/v1/push',
             { streams },
             {
-                ...(this.options.distributorURL ? { baseURL: this.options.distributorURL } : {}),
+                ...this.withBaseURL(this.options.distributorURL),
                 headers,
             },
         );

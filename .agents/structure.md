@@ -43,6 +43,7 @@ packages/client/src/
 ├── module.ts           # Client class — request(), get/post/put/patch/delete/head(), header & hook management
 ├── registry.ts         # createClientRegistry({ create, id }) — factory for the singleton-registry functions
 ├── instance.ts         # Base Client's registry: create/use/set/has/unsetClient, isClient (built via createClientRegistry)
+├── domain/             # Shared abstract BaseAPI<OPTIONS> + BaseAPIContext for service-client domain objects
 ├── constants.ts        # ResponseType, MethodName enums
 ├── fetch.ts            # Cross-env fetch/Headers/Blob/FormData/AbortController + proxy (node-fetch-native)
 ├── request/            # RequestBaseOptions/RequestOptions types, defaults, payload helpers, transformers
@@ -67,9 +68,9 @@ packages/<service>/src/
 ├── config/             # Config / ConfigInput types (request options + connectionString/connectionOptions)
 ├── types.ts             # Top-level shared types for the package
 ├── domains/            # One subdirectory per API domain
-│   ├── base.ts         #   abstract BaseAPI — holds the `client` reference
+│   ├── base.ts         #   abstract BaseAPI — thin subclass of `hapic`'s BaseAPI (binds the package's Options)
 │   ├── index.ts        #   barrel of all domain APIs
-│   ├── types.ts         #   BaseAPIContext, shared collection/query/response types
+│   ├── types.ts         #   BaseAPIContext (alias of `hapic`'s), shared collection/query/response types
 │   └── <domain>/
 │       ├── module.ts   #     <Domain>API extends BaseAPI — the endpoint methods
 │       ├── types.ts     #     request/response payload types for the domain

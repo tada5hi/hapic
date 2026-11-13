@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2023.
+ * Copyright (c) 2023-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { IClient, RequestBaseOptions } from 'hapic';
+import type { BaseAPIContext as SharedBaseAPIContext } from 'hapic';
 import type { Options } from '../config';
 
-export type BaseAPIContext = {
-    client?: IClient | RequestBaseOptions,
-    options?: Options
-};
+export type BaseAPIContext = SharedBaseAPIContext<Options>;
