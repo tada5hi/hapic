@@ -52,6 +52,18 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     transform?: RequestTransformer | RequestTransformer[],
     /**
+     * Abort the request after this many milliseconds.
+     * Only a finite number above 0 arms it; anything else means no timeout.
+     * It covers reading the response body, so for a stream response it keeps
+     * running while the stream is consumed.
+     * A timed-out request rejects with the error code ETIMEDOUT; an abort
+     * through the caller signal keeps ECONNABORTED, whatever its reason.
+     * A per-request value of undefined keeps the client default.
+     *
+     * default: undefined (no timeout)
+     */
+    timeout?: number,
+    /**
      * Proxy agent configuration (Node.js only).
      */
     agent?: ((url: URL) => any) | any

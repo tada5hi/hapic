@@ -49,12 +49,14 @@ export function createClientError<T = any>(
         message = 'An unknown error occurred.';
     }
 
-    const isAbort = (!!context.error && context.error.name === 'AbortError');
+    const errorName = context.error ? context.error.name : undefined;
 
-    let code: ErrorCode | undefined;
+    let { code } = context;
 
-    if (!context.response) {
-        if (isAbort) {
+    if (!context.response && !code) {
+        if (errorName === 'TimeoutError') {
+            code = ErrorCode.CONNECTION_TIMEOUT;
+        } else if (errorName === 'AbortError') {
             code = ErrorCode.CONNECTION_ABORTED;
         } else {
             code = ErrorCode.CONNECTION_CLOSED;

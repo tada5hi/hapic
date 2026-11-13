@@ -6,6 +6,7 @@
  */
 
 import type { ResponseType } from '../../constants';
+import type { ErrorCode } from '../../error/constants';
 import type { RequestBaseOptions, RequestOptions } from '../types';
 
 export type RequestResolveContext<RT extends `${ResponseType}` = `${ResponseType}`> = {
@@ -21,4 +22,24 @@ export type RequestResolveContext<RT extends `${ResponseType}` = `${ResponseType
      * The per-request options.
      */
     config: RequestOptions<RT>
+};
+
+export type RequestSignals = {
+    /**
+     * The signal handed to the transport.
+     */
+    signal?: AbortSignal,
+    /**
+     * The caller signal (request or client option).
+     */
+    caller?: AbortSignal,
+    /**
+     * The timeout signal armed for this dispatch.
+     */
+    timeout?: AbortSignal
+};
+
+export type RequestAbort = {
+    code: ErrorCode,
+    error: Error
 };

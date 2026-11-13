@@ -36,7 +36,8 @@ import {
     extendRequestOptionsWithDefaults,
     isRequestPayloadSupported,
 } from './request';
-import { resolveRequestOptions } from './request/resolve';
+import type { RequestSignals } from './request/resolve';
+import { resolveRequestAbort, resolveRequestOptions, resolveRequestSignals } from './request/resolve';
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
@@ -235,6 +236,7 @@ export class Client implements IClient {
         };
 
         let response : Response<ResponseData<RT, T>>;
+        let signals : RequestSignals = {};
 
         try {
             if (!isRequestPayloadSupported(options.method)) {
@@ -250,18 +252,58 @@ export class Client implements IClient {
                 params,
                 query,
                 transform,
+                timeout,
+                signal,
                 ...transportRequest
             } = options;
 
-            response = await this.transport.dispatch(transportRequest as TransportRequest);
+            signals = resolveRequestSignals({ signal, timeout });
+
+            if (signals.signal) {
+                signals.signal.throwIfAborted();
+            }
+
+            response = await this.transport.dispatch({
+                ...transportRequest,
+                ...(signals.signal ? { signal: signals.signal } : {}),
+            } as TransportRequest);
         } catch (e: any) {
+            const abort = resolveRequestAbort(e, signals);
+
             return handleError('request', {
                 request: options,
-                error: toError(e),
+                error: abort ? abort.error : toError(e),
+                code: abort ? abort.code : undefined,
             });
         }
 
-        response = await decodeResponse<T, RT>(response, options);
+        try {
+            response = await decodeResponse<T, RT>(response, options);
+        } catch (e: any) {
+            const abort = resolveRequestAbort(e, signals);
+
+            if (abort) {
+                return handleError('request', {
+                    request: options,
+                    error: abort.error,
+                    code: abort.code,
+                });
+            }
+
+            const error = toError(e);
+
+            if (
+                !error ||
+                (error.name !== 'AbortError' && error.name !== 'TimeoutError')
+            ) {
+                throw e;
+            }
+
+            return handleError('request', {
+                request: options,
+                error,
+            });
+        }
 
         if (
             response.status >= 400 &&

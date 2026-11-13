@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestTransformer } from 'hapic';
+import type { RequestBaseOptions, RequestTransformer } from 'hapic';
 import { HeaderName } from 'hapic';
 import type { JwtPayload } from '../../types';
 
@@ -94,10 +94,7 @@ export class TokenAPI extends BaseAPI {
         const { data } = await this.client.post(
             (this.options.tokenEndpoint || '/token'),
             urlSearchParams,
-            {
-                transform: this.buildRequestTransformers(parameters, options),
-                headers: { [HeaderName.ACCEPT]: 'application/json' },
-            },
+            this.buildRequestOptions(parameters, options),
         );
 
         const tokenResponse: TokenGrantResponse = {
@@ -138,10 +135,7 @@ export class TokenAPI extends BaseAPI {
         return this.client.post(
             (this.options.revocationEndpoint || '/token/revoke'),
             urlSearchParams,
-            {
-                transform: this.buildRequestTransformers(parameters, options),
-                headers: { [HeaderName.ACCEPT]: 'application/json' },
-            },
+            this.buildRequestOptions(parameters, options),
         );
     }
 
@@ -154,13 +148,30 @@ export class TokenAPI extends BaseAPI {
         const { data } = await this.client.post(
             this.options.introspectionEndpoint || '/token/introspect',
             urlSearchParams,
-            {
-                transform: this.buildRequestTransformers(parameters, options),
-                headers: { [HeaderName.ACCEPT]: 'application/json' },
-            },
+            this.buildRequestOptions(parameters, options),
         );
 
         return data;
+    }
+
+    protected buildRequestOptions(
+        parameters: ClientAuthenticationParameters,
+        options: TokenBaseOptions = {},
+    ) : RequestBaseOptions {
+        const requestOptions : RequestBaseOptions = {
+            transform: this.buildRequestTransformers(parameters, options),
+            headers: { [HeaderName.ACCEPT]: 'application/json' },
+        };
+
+        if (options.signal) {
+            requestOptions.signal = options.signal;
+        }
+
+        if (typeof options.timeout !== 'undefined') {
+            requestOptions.timeout = options.timeout;
+        }
+
+        return requestOptions;
     }
 
     protected buildRequestTransformers(

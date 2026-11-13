@@ -24,7 +24,7 @@ class ClientError<T = any> extends BaseError {   // BaseError comes from @ebec/c
 Two subclasses narrow the failure mode:
 
 - **`HttpResponseError`** — the server answered with a `4xx`/`5xx` status. `response` and `status` are set; `code` defaults to `'HTTP_RESPONSE_ERROR'`.
-- **`NetworkError`** — the request never produced a response (DNS failure, connection reset, abort). `response` is `undefined` and `code` carries the reason (e.g. `'ECONNRESET'`, `'ECONNABORTED'`).
+- **`NetworkError`** — the request never produced a response (DNS failure, connection reset, abort). `response` is `undefined` and `code` carries the reason (e.g. `'ECONNRESET'`, `'ECONNABORTED'`, `'ETIMEDOUT'`).
 
 ```
 BaseError (@ebec/core)
@@ -126,9 +126,38 @@ True when the failure never produced a response and was not an explicit abort �
 import { isClientErrorDueNetworkIssue } from 'hapic';
 
 if (isClientErrorDueNetworkIssue(error)) {
-    // connection reset, DNS failure, … — safe to retry with backoff
+    // connection reset, DNS failure, timeout, … — safe to retry with backoff
 }
 ```
+
+### `isClientErrorDueTimeout`
+
+True when the request was aborted by its [`timeout`](/guide/client#configuration-options). An abort through the caller's own `signal` keeps the code `'ECONNABORTED'` and answers `false`:
+
+```typescript
+import { isClientErrorDueTimeout } from 'hapic';
+
+try {
+    await client.get('slow', { timeout: 5_000 });
+} catch (error) {
+    if (isClientErrorDueTimeout(error)) {
+        // no response within 5 seconds
+    }
+}
+```
+
+## Timeouts
+
+A `timeout` (milliseconds, on the client or per request) arms a fresh timer for every dispatch, a request retried by an error hook included. It is combined with a caller `signal`, so whichever fires first aborts the request. A `signal` that is already aborted rejects before anything is dispatched. A per-request `timeout` or `signal` of `undefined` keeps the client default.
+
+The timeout bounds the whole exchange, reading the response body included. For `responseType: 'stream'` the body is not read by hapic, so the timer keeps running while you consume the stream: a stream read past the timeout fails.
+
+The code is decided by **which signal** fired, not by the shape of the abort reason. The timeout hapic armed answers `'ETIMEDOUT'`; the caller's signal always answers `'ECONNABORTED'`, whatever its reason is: a string (wrapped into an `AbortError` whose `cause` is the string), an `Error` of any name (kept as `cause`), or the `TimeoutError` of the caller's own `AbortSignal.timeout(...)`. This relies on the transport rejecting with the signal's reason, as `fetch` does; a custom transport that rejects with an error of its own is classified by that error's name (`TimeoutError` → `'ETIMEDOUT'`, `AbortError` → `'ECONNABORTED'`).
+
+| Cause | `code` | `isClientErrorDueTimeout` | `isClientErrorDueNetworkIssue` |
+|-------|--------|---------------------------|--------------------------------|
+| `timeout` elapsed | `'ETIMEDOUT'` | `true` | `true` |
+| caller `signal` aborted (any reason) | `'ECONNABORTED'` | `false` | `false` |
 
 ## Error codes
 
@@ -139,6 +168,7 @@ import { ErrorCode } from 'hapic';
 
 ErrorCode.CONNECTION_ABORTED;            // 'ECONNABORTED'
 ErrorCode.CONNECTION_CLOSED;             // 'ECONNRESET'
+ErrorCode.CONNECTION_TIMEOUT;            // 'ETIMEDOUT'
 ErrorCode.AUTHORIZATION_HEADER_INVALID;  // 'auth_header_invalid'
 ErrorCode.AUTHORIZATION_HEADER_PARSE;    // 'auth_header_parse'
 ErrorCode.AUTHORIZATION_HEADER_TYPE_PARSE; // 'auth_header_type_parse'
