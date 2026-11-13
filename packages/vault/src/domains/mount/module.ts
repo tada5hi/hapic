@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -8,7 +8,12 @@
 import type { ResourceResponse } from '../../types';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../types';
-import type { MountCreatePayload, MountUpdatePayload } from './types';
+import type {
+    Mount,
+    MountCreatePayload,
+    MountTune,
+    MountUpdatePayload,
+} from './types';
 
 export class MountAPI extends BaseAPI {
     constructor(context?: BaseAPIContext) {
@@ -37,13 +42,24 @@ export class MountAPI extends BaseAPI {
         return response.data;
     }
 
-    async getMany() : Promise<ResourceResponse<Record<string, MountCreatePayload>>> {
+    /**
+     * Read the effective configuration of an existing mount.
+     *
+     * @param path The mount path.
+     */
+    async getTune(path: string) : Promise<ResourceResponse<MountTune>> {
+        const response = await this.client.get(`sys/mounts/${path}/tune`);
+
+        return response.data;
+    }
+
+    async getMany() : Promise<ResourceResponse<Record<string, Mount>>> {
         const response = await this.client.get('sys/mounts');
 
         return response.data;
     }
 
-    async getOne(path: string) : Promise<ResourceResponse<MountCreatePayload>> {
+    async getOne(path: string) : Promise<ResourceResponse<Mount>> {
         const response = await this.client.get(`sys/mounts/${path}`);
 
         return response.data;

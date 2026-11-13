@@ -6,7 +6,7 @@
  */
 
 import { MemoryTransport, createClient } from 'hapic';
-import { MountAPI } from '../../../src';
+import { KeyValueVersion, MountAPI } from '../../../src';
 
 describe('src/domains/mount', () => {
     it('should create resource', async () => {
@@ -66,7 +66,7 @@ describe('src/domains/mount', () => {
 
         await api.create('key', {
             type: 'kv',
-            options: { version: 2 },
+            options: { version: KeyValueVersion.TWO },
             config: { max_lease_ttl: '1h' },
         });
 
@@ -74,9 +74,14 @@ describe('src/domains/mount', () => {
 
         expect(JSON.parse(req.body as string)).toEqual({
             type: 'kv',
-            options: { version: 2 },
+            options: { version: '2' },
             config: { max_lease_ttl: '1h' },
         });
+    });
+
+    it('should use the string kv versions vault returns', () => {
+        expect(KeyValueVersion.ONE).toBe('1');
+        expect(KeyValueVersion.TWO).toBe('2');
     });
 
     it('should tune resource', async () => {
@@ -97,6 +102,33 @@ describe('src/domains/mount', () => {
             description: 'foo',
             max_lease_ttl: '1h',
         });
+    });
+
+    it('should read the tune configuration', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {
+                    data: {
+                        default_lease_ttl: 3600, 
+                        max_lease_ttl: 7200, 
+                        force_no_cache: false, 
+                    }, 
+                },
+            }),
+        });
+
+        const api = new MountAPI({ client: createClient({ transport }) });
+
+        const response = await api.getTune('my-mount');
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('sys/mounts/my-mount/tune');
+        expect(req.body).toBeUndefined();
+        expect(response.data.default_lease_ttl).toBe(3600);
     });
 
     it('should get resources', async () => {
