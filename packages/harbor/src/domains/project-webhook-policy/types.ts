@@ -21,15 +21,28 @@ export type ProjectWebhookEventType = 'PUSH_ARTIFACT' |
     'REPLICATION' |
     'TAG_RETENTION';
 
+/**
+ * Notify types accepted by Harbor (pkg/notification/notification.go).
+ */
+export type ProjectWebhookNotifyType = 'http' | 'slack';
+
+/**
+ * Payload formats of an `http` target; a `slack` target takes none
+ * (pkg/notifier/formats). Harbor fills in `Default` for an `http` target.
+ */
+export type ProjectWebhookPayloadFormat = 'Default' | 'CloudEvents';
+
 export type ProjectWebhookTarget = {
     address: string;
     auth_header?: string;
     skip_cert_verify: boolean;
-    type: 'http';
+    type: ProjectWebhookNotifyType;
+    payload_format?: ProjectWebhookPayloadFormat;
 };
 
 export type ProjectWebhookPolicy = {
     creation_time?: string;
+    creator?: string;
     description?: string;
     enabled: boolean;
     event_types: ProjectWebhookEventType[];

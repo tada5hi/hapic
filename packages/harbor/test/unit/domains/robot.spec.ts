@@ -6,7 +6,11 @@
  */
 
 import { MemoryTransport, createClient } from 'hapic';
-import { RobotAPI, buildRobotPermissionForAllResources } from '../../../src';
+import {
+    RobotAPI,
+    buildRobotPermissionForAllResources,
+    buildRobotPermissionForAllSystemResources,
+} from '../../../src';
 import type {
     Robot,
     RobotCreatePayload,
@@ -27,6 +31,144 @@ describe('src/domains/robot', () => {
         expect(robotPermission.namespace).toEqual('*');
         expect(robotPermission.kind).toEqual('project');
         expect(robotPermission.access.length).toBeGreaterThan(0);
+    });
+
+    it('should grant every project-scope robot policy of harbor v2.16.0', () => {
+        // PoliciesMap[ScopeProject] in src/common/rbac/const.go at v2.16.0
+        const expected = [
+            'log:list',
+            'project:read', 
+            'project:delete', 
+            'project:update',
+            'metadata:read', 
+            'metadata:create', 
+            'metadata:delete', 
+            'metadata:list', 
+            'metadata:update',
+            'repository:read', 
+            'repository:update', 
+            'repository:delete', 
+            'repository:list', 
+            'repository:pull', 
+            'repository:push',
+            'artifact:read', 
+            'artifact:create', 
+            'artifact:list', 
+            'artifact:delete',
+            'scan:create', 
+            'scan:read', 
+            'scan:stop',
+            'sbom:create', 
+            'sbom:stop', 
+            'sbom:read',
+            'tag:create', 
+            'tag:list', 
+            'tag:delete',
+            'accessory:list',
+            'artifact-addition:read',
+            'artifact-label:create', 
+            'artifact-label:delete',
+            'scanner:create', 
+            'scanner:read',
+            'preheat-policy:read', 
+            'preheat-policy:create', 
+            'preheat-policy:delete', 
+            'preheat-policy:list', 
+            'preheat-policy:update',
+            'immutable-tag:create', 
+            'immutable-tag:delete', 
+            'immutable-tag:list', 
+            'immutable-tag:update',
+            'notification-policy:read', 
+            'notification-policy:create', 
+            'notification-policy:delete',
+            'notification-policy:list', 
+            'notification-policy:update',
+            'tag-retention:read', 
+            'tag-retention:create', 
+            'tag-retention:delete', 
+            'tag-retention:list', 
+            'tag-retention:update',
+            'label:read', 
+            'label:create', 
+            'label:delete', 
+            'label:list', 
+            'label:update',
+            'quota:read',
+        ];
+
+        const permission = buildRobotPermissionForAllResources('p');
+
+        expect(permission.kind).toBe('project');
+        expect(permission.namespace).toBe('p');
+        expect(permission.access.map((item) => `${item.resource}:${item.action}`).sort())
+            .toEqual([...expected].sort());
+    });
+
+    it('should grant every system-scope robot policy of harbor v2.16.0', () => {
+        // PoliciesMap[ScopeSystem] in src/common/rbac/const.go at v2.16.0
+        const expected = [
+            'audit-log:list',
+            'preheat-instance:read', 
+            'preheat-instance:create', 
+            'preheat-instance:delete',
+            'preheat-instance:list', 
+            'preheat-instance:update',
+            'project:list', 
+            'project:create',
+            'replication-policy:read', 
+            'replication-policy:create', 
+            'replication-policy:delete',
+            'replication-policy:list', 
+            'replication-policy:update',
+            'replication:read', 
+            'replication:create', 
+            'replication:list',
+            'replication-adapter:list',
+            'registry:read', 
+            'registry:create', 
+            'registry:delete', 
+            'registry:list', 
+            'registry:update',
+            'scan-all:read', 
+            'scan-all:update', 
+            'scan-all:stop', 
+            'scan-all:create',
+            'system-volumes:read',
+            'garbage-collection:read', 
+            'garbage-collection:create', 
+            'garbage-collection:list',
+            'garbage-collection:update', 
+            'garbage-collection:stop',
+            'purge-audit:read', 
+            'purge-audit:create', 
+            'purge-audit:list', 
+            'purge-audit:update', 
+            'purge-audit:stop',
+            'jobservice-monitor:list', 
+            'jobservice-monitor:stop',
+            'scanner:read', 
+            'scanner:create', 
+            'scanner:delete', 
+            'scanner:list', 
+            'scanner:update',
+            'label:read', 
+            'label:create', 
+            'label:delete', 
+            'label:update',
+            'security-hub:read', 
+            'security-hub:list',
+            'catalog:read',
+            'quota:read', 
+            'quota:list',
+        ];
+
+        const permission = buildRobotPermissionForAllSystemResources();
+
+        expect(permission.kind).toBe('system');
+        expect(permission.namespace).toBe('/');
+        expect(permission.access.map((item) => `${item.resource}:${item.action}`).sort())
+            .toEqual([...expected].sort());
     });
 
     it('should create resource', async () => {

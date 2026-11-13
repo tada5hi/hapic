@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -8,9 +8,16 @@
 import type { ResourceCollectionQuery } from '../types';
 import type { RobotPermissionAction, RobotPermissionResource } from './constants';
 
+/**
+ * Harbor reads an absent effect as `allow`
+ * (src/pkg/permission/types/types.go).
+ */
+export type RobotPermissionEffect = 'allow' | 'deny';
+
 export type RobotPermissionAccess = {
     resource: `${RobotPermissionResource}`,
-    action: `${RobotPermissionAction}`
+    action: `${RobotPermissionAction}`,
+    effect?: RobotPermissionEffect
 };
 
 export type RobotLevel = 'system' | 'project';
@@ -33,7 +40,15 @@ export type Robot = {
     level?: RobotLevel,
     disable?: boolean,
     editable?: boolean,
-    permissions?: RobotPermission[]
+    permissions?: RobotPermission[],
+    /**
+     * Who created the robot, e.g. `local` (a Harbor user) or `robot`.
+     */
+    creator_type?: string,
+    /**
+     * The id of the creator, e.g. the Harbor user id.
+     */
+    creator_ref?: number
 };
 
 type RobotCollectionQuery = ResourceCollectionQuery<Robot>;
@@ -63,7 +78,7 @@ type RobotPayloadRequired = {
 /**
  * Harbor requires a level and at least one permission.
  */
-export type RobotCreatePayload = Omit<Robot, 'id' | keyof RobotPayloadRequired> & RobotPayloadRequired;
+export type RobotCreatePayload = Omit<Robot, 'id' | 'creator_type' | 'creator_ref' | keyof RobotPayloadRequired> & RobotPayloadRequired;
 
 /**
  * Harbor requires the unchanged name and level

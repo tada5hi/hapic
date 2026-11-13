@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -16,7 +16,20 @@ export type Project = {
     repo_count: number,
     update_time: string,
     creation_time: string,
-    metadata: ProjectMetadata
+    /**
+     * The deletion mark of the project.
+     */
+    deleted?: boolean,
+    /**
+     * Whether the publicity of the project can be changed (for the UI).
+     */
+    togglable?: boolean,
+    /**
+     * The role ids of the requesting user in this project (for the UI).
+     */
+    current_user_role_ids?: number[],
+    metadata: ProjectMetadata,
+    cve_allowlist?: ProjectCVEAllowlist
 };
 
 /**
@@ -40,7 +53,22 @@ export type ProjectMetadata = {
     retention_id?: string,
     proxy_speed_kb?: string,
     max_upstream_conn?: string,
-    proxy_cache_local_on_not_found?: ProjectMetadataFlag
+    proxy_cache_local_on_not_found?: ProjectMetadataFlag,
+    /**
+     * Proxy OCI 1.1 referrer API requests to the upstream registry
+     * (proxy cache projects).
+     */
+    proxy_referrer_api?: ProjectMetadataFlag,
+    /**
+     * Only repositories matching the pattern are proxied; empty allows all
+     * (proxy cache projects).
+     */
+    proxy_cache_filter_pattern?: string,
+    /**
+     * How `proxy_cache_filter_pattern` is matched; empty means `doublestar`
+     * (proxy cache projects, src/lib/pattern).
+     */
+    proxy_cache_filter_kind?: 'doublestar' | 'regex' | ''
 };
 
 export type ProjectCVEAllowlistItem = {
@@ -59,11 +87,28 @@ export type ProjectCVEAllowlist = {
     update_time?: string
 };
 
+/**
+ * swagger `ProjectReq`
+ */
 export type ProjectCreatePayload = {
     project_name: string,
-    public?: boolean,
-    registry_id?: string | number | null,
-    storage_limit?: number
+    /**
+     * Copied into `metadata.public` by Harbor.
+     */
+    public?: boolean | null,
+    metadata?: Partial<ProjectMetadata>,
+    cve_allowlist?: ProjectCVEAllowlist,
+    storage_limit?: number | null,
+    /**
+     * The upstream registry of a proxy cache project.
+     */
+    registry_id?: number | null,
+    /**
+     * Days since the last pull before a proxy cache artifact is removed
+     * (`0` to `18250`); absent or `null` means seven days.
+     * Only accepted for proxy cache projects.
+     */
+    retention_days?: number | null
 };
 
 /**
