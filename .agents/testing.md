@@ -9,7 +9,7 @@
 
 The `include` glob matches `*.spec.ts` / `*.test.ts` under each package's `test/unit/` directory.
 
-Type-level tests (`expectTypeOf`) live in `test/unit/**/*.spec-d.ts` and only run where the package's Vitest config enables `typecheck` (`harbor`, `vault`); in a plain `*.spec.ts` they assert nothing.
+Type-level tests (`expectTypeOf`) live in `test/unit/**/*.spec-d.ts` and only run where the package's Vitest config enables `typecheck`; in a plain `*.spec.ts` they assert nothing.
 
 ## Running Tests
 
