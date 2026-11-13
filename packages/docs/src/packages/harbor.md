@@ -1,3 +1,11 @@
+---
+package:
+  name: "@hapic/harbor"
+  summary: "Typed client for the Harbor container registry: projects, repositories, artifacts, robots and webhooks."
+  accent: "#22d3ee"
+  order: 1
+---
+
 # @hapic/harbor
 
 A typed client for the [Harbor](https://goharbor.io/) container registry API — projects, repositories, artifacts, robot accounts, and webhook policies. It extends the base [`Client`](/guide/client), so everything in the guide (hooks, transformers, errors, instance registry) applies.

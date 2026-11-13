@@ -1,3 +1,11 @@
+---
+package:
+  name: "@hapic/victorialogs"
+  summary: "VictoriaLogs client: ingest logs as JSON lines and query them with LogsQL."
+  accent: "#10b981"
+  order: 5
+---
+
 # @hapic/victorialogs
 
 A client for [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) — ingest JSON-line logs and query them with LogsQL. It extends the base [`Client`](/guide/client).
