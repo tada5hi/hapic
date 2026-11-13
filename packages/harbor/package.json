@@ -39,13 +39,13 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/hapic.git",
+        "url": "git+https://github.com/tada5hi/hapic.git",
         "directory": "packages/harbor"
     },
     "bugs": {
-        "url": "https://github.com/Tada5hi/hapi/issues"
+        "url": "https://github.com/tada5hi/hapic/issues"
     },
-    "homepage": "https://github.com/Tada5hi/hapi#readme",
+    "homepage": "https://github.com/tada5hi/hapic#readme",
     "dependencies": {
         "smob": "^1.6.2"
     },

@@ -28,12 +28,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/hapic.git"
+        "url": "git+https://github.com/tada5hi/hapic.git"
     },
     "bugs": {
-        "url": "https://github.com/Tada5hi/hapic/issues"
+        "url": "https://github.com/tada5hi/hapic/issues"
     },
-    "homepage": "https://github.com/Tada5hi/hapic#readme",
+    "homepage": "https://github.com/tada5hi/hapic#readme",
     "engines": {
         "node": "^24.15.0 || >=26.0.0"
     },
