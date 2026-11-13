@@ -71,6 +71,14 @@ export type ProjectMetadata = {
     proxy_cache_filter_kind?: 'doublestar' | 'regex' | ''
 };
 
+export type ProjectMetadataName = keyof ProjectMetadata;
+
+/**
+ * Metadata keys Harbor accepts on the metadata add and update endpoints
+ * (`retention_id` is rejected there; server/v2.0/handler/project_metadata.go).
+ */
+export type ProjectMetadataWritableName = Exclude<ProjectMetadataName, 'retention_id'>;
+
 export type ProjectCVEAllowlistItem = {
     cve_id: string
 };
@@ -120,8 +128,61 @@ export type ProjectUpdatePayload = {
     cve_allowlist?: ProjectCVEAllowlist
 };
 
+export type ProjectCreateOptions = {
+    /**
+     * Send `X-Resource-Name-In-Location: true`, so the response
+     * carries the project name instead of the id.
+     */
+    resourceNameInLocation?: boolean
+};
+
 export type ProjectCreateResponse = {
-    id?: number
+    id?: number,
+    name?: string
+};
+
+/**
+ * Hard limits and usage of a project quota, e.g. `{ storage: 1024 }`
+ * (swagger `ResourceList`).
+ */
+export type ProjectResourceList = Record<string, number>;
+
+/**
+ * The upstream registry of a proxy cache project (swagger `Registry`).
+ */
+export type ProjectSummaryRegistry = {
+    id: number,
+    url?: string,
+    name?: string,
+    credential?: {
+        type?: string,
+        access_key?: string,
+        access_secret?: string
+    },
+    type?: string,
+    insecure?: boolean,
+    ca_certificate?: string | null,
+    description?: string,
+    status?: string,
+    creation_time?: string,
+    update_time?: string
+};
+
+/**
+ * swagger `ProjectSummary`
+ */
+export type ProjectSummary = {
+    repo_count: number,
+    project_admin_count?: number,
+    maintainer_count?: number,
+    developer_count?: number,
+    guest_count?: number,
+    limited_guest_count?: number,
+    quota?: {
+        hard?: ProjectResourceList,
+        used?: ProjectResourceList
+    },
+    registry?: ProjectSummaryRegistry
 };
 
 export type ProjectQuery = ResourceCollectionQuery<Project> & {

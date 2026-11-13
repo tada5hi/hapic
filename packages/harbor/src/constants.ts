@@ -10,4 +10,5 @@ export enum HeaderName {
     IS_RESOURCE_NAME = 'X-Is-Resource-Name',
     TOTAL_COUNT = 'X-Total-Count',
     ACCEPT_VULNERABILITIES = 'X-Accept-Vulnerabilities',
+    RESOURCE_NAME_IN_LOCATION = 'X-Resource-Name-In-Location',
 }
