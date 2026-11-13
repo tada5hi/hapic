@@ -1,6 +1,6 @@
 {
     "name": "@hapic/victorialogs",
-    "version": "2.0.2",
+    "version": "2.1.0",
     "description": "Typed HTTP client for VictoriaLogs: ingest JSON log entries and run LogsQL queries.",
     "type": "module",
     "main": "dist/index.mjs",
@@ -46,10 +46,10 @@
     },
     "homepage": "https://github.com/Tada5hi/hapic#readme",
     "devDependencies": {
-        "hapic": "^3.0.2"
+        "hapic": "^3.1.0"
     },
     "peerDependencies": {
-        "hapic": "^3.0.2"
+        "hapic": "^3.1.0"
     },
     "publishConfig": {
         "access": "public"

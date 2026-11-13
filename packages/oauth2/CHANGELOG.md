@@ -183,6 +183,31 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.1.0](https://github.com/tada5hi/hapic/compare/oauth2-v4.0.2...oauth2-v4.1.0) (2026-11-13)
+
+
+### Features
+
+* **client:** add a request timeout and a timeout error code ([#1121](https://github.com/tada5hi/hapic/issues/1121)) ([87e437c](https://github.com/tada5hi/hapic/commit/87e437c174191e9ce880d2566495a3cfeddd06aa))
+* **oauth2:** support OIDC and custom parameters in buildAuthorizeURL ([#1107](https://github.com/tada5hi/hapic/issues/1107)) ([ee8bf0e](https://github.com/tada5hi/hapic/commit/ee8bf0ea2b6c1d988ba66e7e7a561993501d334c))
+* share one domain api base across service clients ([#1115](https://github.com/tada5hi/hapic/issues/1115)) ([90b8221](https://github.com/tada5hi/hapic/commit/90b82219c49c5451df9cd9f76e84ce47b8df4e9d))
+
+
+### Bug Fixes
+
+* **oauth2:** keep transport and authorization header for discovery clients ([#1118](https://github.com/tada5hi/hapic/issues/1118)) ([f9d681e](https://github.com/tada5hi/hapic/commit/f9d681ee49aca3b40725a1621e92cfaedc1b148e))
+* **oauth2:** keep transport and headers of a client passed to the discovery helper ([cb04a2e](https://github.com/tada5hi/hapic/commit/cb04a2e2826167b3b6ff88ee29aa0395cdeba9d1)), closes [#1117](https://github.com/tada5hi/hapic/issues/1117)
+* resolve pre-release audit findings in client, harbor, vault and oauth2 ([#1122](https://github.com/tada5hi/hapic/issues/1122)) ([cea84c2](https://github.com/tada5hi/hapic/commit/cea84c2cc49cc9a9a3a7865c9b83eb8f686b78cb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+  * peerDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+
 ## [4.0.2](https://github.com/tada5hi/hapic/compare/oauth2-v4.0.1...oauth2-v4.0.2) (2026-08-18)
 
 
