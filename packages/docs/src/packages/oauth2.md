@@ -137,3 +137,8 @@ const client = await createClientWithOpenIDDiscoveryURL(discoveryUrl);
 
 const token = await client.token.createWithClientCredentials();
 ```
+
+The second argument is either client options or an existing client used for the discovery request:
+
+- **Client options** (`baseURL`, `headers`, `transport`, …) configure both the discovery request and the returned client.
+- **A client**: the returned client is built from its `defaults` plus its current authorization header. Its transport, any other header set or unset after construction, and its hooks are **not** carried over (hooks are bound to a client instance), so configure those on the returned client.
