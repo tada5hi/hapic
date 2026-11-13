@@ -151,6 +151,38 @@ describe('src/request/timeout', () => {
         expect(transport.requests.at(-1)!.signal).toBeUndefined();
     });
 
+    it('should round a fractional timeout up instead of throwing', async () => {
+        const client = new Client({
+            baseURL: 'https://api.test/',
+            transport: createDelayedTransport(5),
+            timeout: 1500.5,
+        });
+
+        const response = await client.get('fast');
+
+        expect(response.data).toEqual({ ok: true });
+    });
+
+    it('should still time out with a fractional timeout', async () => {
+        const client = new Client({ baseURL: 'https://api.test/', transport: createHangingTransport() });
+
+        const error = await catchError(client.get('slow', { timeout: 10.2 }));
+
+        expect(isClientErrorDueTimeout(error)).toBe(true);
+    });
+
+    it.each([2 ** 31, 5e9])('should cap a timeout of %s instead of aborting at once', async (timeout) => {
+        const client = new Client({
+            baseURL: 'https://api.test/',
+            transport: createDelayedTransport(20),
+            timeout,
+        });
+
+        const response = await client.get('slow');
+
+        expect(response.data).toEqual({ ok: true });
+    });
+
     it('should never hand the timeout to the transport', async () => {
         const transport = new MemoryTransport();
         const client = new Client({
@@ -308,7 +340,7 @@ describe('src/request/timeout', () => {
             expect(isClientError(error) && error.cause).toBe(reason);
         });
 
-        it('should report the caller\'s own timeout signal as a caller abort', async () => {
+        it('should report the caller\'s own timeout signal as a timeout (network issue)', async () => {
             const client = new Client({
                 baseURL: 'https://api.test/',
                 transport: createHangingTransport(),
@@ -318,9 +350,35 @@ describe('src/request/timeout', () => {
 
             const error = await catchError(client.get('slow', { signal }));
 
-            expectCallerAbort(error);
+            expect(isNetworkError(error)).toBe(true);
+            expect(isClientError(error) && error.code).toBe(ErrorCode.CONNECTION_TIMEOUT);
+            expect(isClientErrorDueTimeout(error)).toBe(true);
+            expect(isClientErrorDueNetworkIssue(error)).toBe(true);
             expect(isClientError(error) && error.cause).toBe(signal.reason);
             expect((signal.reason as Error).name).toBe('TimeoutError');
+        });
+
+        it('should report the caller\'s own timeout signal as a timeout without a client timeout', async () => {
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport: createHangingTransport(),
+            });
+
+            const error = await catchError(client.get('slow', { signal: AbortSignal.timeout(10) }));
+
+            expect(isClientError(error) && error.code).toBe(ErrorCode.CONNECTION_TIMEOUT);
+            expect(isClientErrorDueNetworkIssue(error)).toBe(true);
+        });
+
+        it('should report a TimeoutError reason of an already aborted caller signal as a timeout', async () => {
+            const error = await abortBeforeWith(new DOMException('late', 'TimeoutError'));
+
+            expect(isClientError(error) && error.code).toBe(ErrorCode.CONNECTION_TIMEOUT);
+            expect(isClientErrorDueNetworkIssue(error)).toBe(true);
+        });
+
+        it('should keep a plain controller abort as a caller abort', async () => {
+            expectCallerAbort(await abortWith(undefined));
         });
 
         it('should report a caller abort while the body is read', async () => {

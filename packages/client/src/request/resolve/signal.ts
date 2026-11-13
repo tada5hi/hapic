@@ -6,13 +6,28 @@
  */
 
 import { ErrorCode } from '../../error/constants';
+import { isObject } from '../../utils';
 import type { RequestBaseOptions } from '../types';
 import type { RequestAbort, RequestSignals } from './types';
+
+/**
+ * The largest delay a timer accepts without overflowing (2^31 - 1 ms,
+ * about 24.8 days); Node clamps larger values to 1 ms.
+ */
+const REQUEST_TIMEOUT_MAX = 2_147_483_647;
 
 export function isRequestTimeoutArmed(timeout: unknown) : timeout is number {
     return typeof timeout === 'number' &&
         Number.isFinite(timeout) &&
         timeout > 0;
+}
+
+/**
+ * Turn an armed timeout into a delay AbortSignal.timeout() accepts:
+ * a fraction is rounded up, a value above the timer limit is capped.
+ */
+function normalizeRequestTimeout(timeout: number) : number {
+    return Math.min(Math.ceil(timeout), REQUEST_TIMEOUT_MAX);
 }
 
 /**
@@ -30,7 +45,7 @@ export function resolveRequestSignals(
     }
 
     if (isRequestTimeoutArmed(options.timeout)) {
-        output.timeout = AbortSignal.timeout(options.timeout);
+        output.timeout = AbortSignal.timeout(normalizeRequestTimeout(options.timeout));
     }
 
     if (output.caller && output.timeout) {
@@ -44,9 +59,10 @@ export function resolveRequestSignals(
 
 /**
  * Classify a thrown value by the signal it is the reason of. The timeout
- * signal answers ETIMEDOUT, the caller signal ECONNABORTED whatever its
- * reason looks like; a non-Error reason is wrapped into an AbortError
- * carrying the reason as cause. A value that is no signal's reason is
+ * signal answers ETIMEDOUT; the caller signal answers ETIMEDOUT when its
+ * reason is named TimeoutError (e.g. AbortSignal.timeout()) and
+ * ECONNABORTED for any other reason. A non-Error reason is wrapped into an
+ * AbortError carrying the reason as cause. A value that is no signal's reason is
  * left to the name-based classification.
  */
 export function resolveRequestAbort(
@@ -66,10 +82,23 @@ export function resolveRequestAbort(
         signals.caller.aborted &&
         signals.caller.reason === input
     ) {
-        return { code: ErrorCode.CONNECTION_ABORTED, error: toAbortError(input) };
+        return {
+            code: isTimeoutReason(input) ?
+                ErrorCode.CONNECTION_TIMEOUT :
+                ErrorCode.CONNECTION_ABORTED,
+            error: toAbortError(input),
+        };
     }
 
     return undefined;
+}
+
+/**
+ * A caller signal aborted with a TimeoutError (e.g. AbortSignal.timeout())
+ * is a timeout, not a cancellation.
+ */
+function isTimeoutReason(input: unknown) : boolean {
+    return isObject(input) && input.name === 'TimeoutError';
 }
 
 function toAbortError(input: unknown) : Error {

@@ -40,8 +40,16 @@ async function readResponseBody(
     }
 }
 
+/**
+ * Run the decoded body through the transformer(s), each receiving the
+ * response headers and status.
+ *
+ * On an error response (status 400-599) a throwing transformer must not
+ * replace the http error: the body is then left untransformed.
+ */
 function applyResponseTransform(
     data: unknown,
+    response: Response,
     transform?: ResponseTransformer | ResponseTransformer[],
 ) : unknown {
     if (!transform) {
@@ -52,10 +60,20 @@ function applyResponseTransform(
         transform :
         [transform];
 
+    const isError = response.status >= 400 && response.status < 600;
+
     let output = data;
 
-    for (const transformer of transformers) {
-        output = transformer(output);
+    try {
+        for (const transformer of transformers) {
+            output = transformer(output, response.headers, response.status);
+        }
+    } catch (e) {
+        if (isError) {
+            return data;
+        }
+
+        throw e;
     }
 
     return output;
@@ -65,7 +83,8 @@ function applyResponseTransform(
  * Decode a raw (unread) transport response: pick the response type
  * (options.responseType or Content-Type detection), read the body
  * accordingly, run it once through options.responseTransform (not for a
- * stream, nothing is decoded) and expose the result through a lazy `data`
+ * stream, nothing is decoded; a transformer throwing on a 4xx/5xx body
+ * leaves it untransformed) and expose the result through a lazy `data`
  * accessor (a later assignment to `response.data` replaces it).
  *
  * The response is decorated in place and returned.
@@ -83,7 +102,7 @@ export async function decodeResponse<
     let data = await readResponseBody(response, responseType);
 
     if (responseType !== ResponseType.STREAM) {
-        data = applyResponseTransform(data, options.responseTransform);
+        data = applyResponseTransform(data, response, options.responseTransform);
     }
 
     Object.defineProperty(response, 'data', {

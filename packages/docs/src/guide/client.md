@@ -52,9 +52,9 @@ const client = createClient({
 | `params` | `Record<string, any>` | Query-string parameters appended to the URL. |
 | `query` | `Record<string, any>` | Alias for `params`; both are merged. |
 | `transform` | `RequestTransformer \| RequestTransformer[]` | Function(s) that reshape the outgoing body and headers. See [Transformers](/guide/transformers). |
-| `responseTransform` | `ResponseTransformer \| ResponseTransformer[]` | Function(s) that reshape the decoded response data (also for 4xx/5xx bodies; skipped for streams). |
+| `responseTransform` | `ResponseTransformer \| ResponseTransformer[]` | Function(s) `(data, headers, status)` that reshape the decoded response data (also for 4xx/5xx bodies; skipped for streams). |
 | `proxy` | `ProxyOptions \| boolean` | Proxy configuration. `true` (default) honours `HTTP(S)_PROXY` env vars; `false` disables. See [Proxy & Environments](/guide/proxy). |
-| `timeout` | `number` | Abort the request after this many milliseconds. Only a finite number above `0` arms it; absent, `0`, a negative number or `NaN` mean no timeout. Covers reading the body too (a stream keeps the timer running while consumed). A timed-out request rejects with code `'ETIMEDOUT'`; an abort through the caller's `signal` stays `'ECONNABORTED'` (see [Timeouts](/guide/errors#timeouts)). A per-request `undefined` keeps the client default. Never passed to fetch. |
+| `timeout` | `number` | Abort the request after this many milliseconds. Only a finite number above `0` arms it; absent, `0`, a negative number or `NaN` mean no timeout. A fraction is rounded up and a value above `2147483647` (about 24.8 days) is capped to it. Covers reading the body too (a stream keeps the timer running while consumed). A timed-out request rejects with code `'ETIMEDOUT'`, as does a caller `signal` aborted with a `TimeoutError`; any other abort through the caller's `signal` stays `'ECONNABORTED'` (see [Timeouts](/guide/errors#timeouts)). A per-request `undefined` keeps the client default. Never passed to fetch. |
 
 ::: tip RequestInit lives here too
 Because the options object **is** a `RequestInit`, anything fetch accepts works: `method`, `credentials`, `mode`, `cache`, `redirect`, `signal` (for `AbortController`), and so on.
@@ -111,7 +111,7 @@ For authorization specifically, prefer the dedicated helpers covered in [Headers
 const copy = new Client(client.toOptions());
 ```
 
-The options and headers are copies, so changing one client does not affect the other. The transport is the same instance. Hooks are not included; register them on the new client.
+The options and headers are copies, so changing one client does not affect the other: arrays and plain objects among the options (`transform`, `responseTransform`, `params`, `query`, a `proxy` options object) are copied one level deep. Functions, a `signal` and other class instances are passed on as they are, and the transport is the same instance. Hooks are not included; register them on the new client.
 
 ## What's next
 

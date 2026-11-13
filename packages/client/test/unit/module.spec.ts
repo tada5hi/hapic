@@ -58,6 +58,74 @@ describe('src/module', () => {
         expect(new Headers(options.headers).get('x-tenant')).toBe('acme');
     });
 
+    describe('toOptions nested values', () => {
+        function createSource() {
+            const transform = (data: any) => data;
+            const responseTransform = (data: any) => data;
+
+            return new Client({
+                baseURL: 'https://example.com/',
+                transform: [transform],
+                responseTransform: [responseTransform],
+                params: { a: 1 },
+                query: { q: 'x' },
+                proxy: { url: 'http://proxy.test:8080' } as any,
+            });
+        }
+
+        it('should not share nested values from the source with the copy', () => {
+            const source = createSource();
+            const copy = new Client(source.toOptions());
+
+            (copy.defaults.transform as any[]).push((data: any) => data);
+            (copy.defaults.responseTransform as any[]).push((data: any) => data);
+            copy.defaults.params!.b = 2;
+            copy.defaults.query!.r = 'y';
+            (copy.defaults.proxy as any).url = 'http://other.test';
+
+            expect(source.defaults.transform).toHaveLength(1);
+            expect(source.defaults.responseTransform).toHaveLength(1);
+            expect(source.defaults.params).toEqual({ a: 1 });
+            expect(source.defaults.query).toEqual({ q: 'x' });
+            expect((source.defaults.proxy as any).url).toBe('http://proxy.test:8080');
+        });
+
+        it('should not share nested values from the copy with the source', () => {
+            const source = createSource();
+            const copy = new Client(source.toOptions());
+
+            (source.defaults.transform as any[]).push((data: any) => data);
+            (source.defaults.responseTransform as any[]).push((data: any) => data);
+            source.defaults.params!.b = 2;
+            source.defaults.query!.r = 'y';
+            (source.defaults.proxy as any).url = 'http://other.test';
+
+            expect(copy.defaults.transform).toHaveLength(1);
+            expect(copy.defaults.responseTransform).toHaveLength(1);
+            expect(copy.defaults.params).toEqual({ a: 1 });
+            expect(copy.defaults.query).toEqual({ q: 'x' });
+            expect((copy.defaults.proxy as any).url).toBe('http://proxy.test:8080');
+        });
+
+        it('should keep functions, signals and the transport as they are', () => {
+            const transport = new MemoryTransport();
+            const controller = new AbortController();
+            const transform = (data: any) => data;
+            const source = new Client({
+                transport,
+                transform,
+                signal: controller.signal,
+            });
+
+            const options = source.toOptions();
+
+            expect(options.transform).toBe(transform);
+            expect(options.signal).toBe(controller.signal);
+            expect(options.transport).toBe(transport);
+            expect((source.defaults.transform)).toBe(transform);
+        });
+    });
+
     it('should set/unset header', () => {
         const client = new Client();
 

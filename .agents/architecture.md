@@ -22,7 +22,8 @@ This keeps transport concerns in one place and lets each service package focus p
                      → `timeout` is pipeline-only: a fresh AbortSignal.timeout per dispatch, combined with the caller signal (AbortSignal.any); never in the transport's init
 6. Decode          → pick by responseType OR detectResponseType(Content-Type):
                        stream | blob | arrayBuffer | text | json (JSON.parse, falling back to text)
-                     → responseTransform fn(s) (not for streams; 4xx/5xx bodies too) → lazy response.data getter/setter
+                     → responseTransform fn(data, headers, status) (not for streams; 4xx/5xx bodies too, where a
+                       throwing fn leaves the body untransformed) → lazy response.data getter/setter
 7. Error check     → status 400–599 → createClientError(...) → error hooks (REQUEST_ERROR / RESPONSE_ERROR)
 8. Response hooks  → hookManager.triggerResHook(response)           (HookName.RESPONSE)
 ```

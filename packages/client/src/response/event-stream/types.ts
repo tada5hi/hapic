@@ -23,7 +23,10 @@ export type EventStreamMessage = {
      */
     lastEventId: string,
     /**
-     * The reconnection time in milliseconds, if the event carried a `retry` field.
+     * The stream's current reconnection time in milliseconds: the value of
+     * the last valid `retry` field received so far, whether it was sent with
+     * this message or in an earlier block (with or without data). Absent
+     * until the stream sends a valid `retry` field.
      */
     retry?: number,
 };

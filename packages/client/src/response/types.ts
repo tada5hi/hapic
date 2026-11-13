@@ -21,4 +21,4 @@ export interface Response<T = any> extends globalThis.Response {
     data?: T
 }
 
-export type ResponseTransformer = (data: any) => any;
+export type ResponseTransformer = (data: any, headers: Headers, status: number) => any;
