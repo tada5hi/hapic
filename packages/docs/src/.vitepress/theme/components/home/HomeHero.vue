@@ -38,7 +38,7 @@ const { copied, copy } = useCopy();
                 <button
                     type="button"
                     class="hc-btn hc-btn-ghost hc-hero-install"
-                    aria-label="Copy install command"
+                    :aria-label="`Copy ${hero.install}`"
                     @click="copy(hero.install)"
                 >
                     {{ copied ? 'Copied' : hero.install }}
