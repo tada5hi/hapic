@@ -164,6 +164,43 @@ describe('src/domains/authorize', () => {
         expect(url).toEqual(expected.href);
     });
 
+    it('should never emit credentials of the token request', () => {
+        const parameters = {
+            client_id: 'client',
+            client_secret: 'secret',
+            code_verifier: 'verifier',
+            password: 'password',
+            refresh_token: 'refresh',
+            client_assertion: 'assertion',
+            audience: 'https://api.example.com',
+        };
+
+        const url = new URL(buildAuthorizeURL('https://example.com/authorize', parameters));
+
+        expect(Array.from(url.searchParams.keys()).sort()).toEqual(['audience', 'client_id', 'response_type']);
+    });
+
+    it('should replace a custom parameter already present on the endpoint', () => {
+        const url = new URL(buildAuthorizeURL('https://example.com/authorize?audience=old&p=b2c', {
+            client_id: 'client',
+            audience: 'new',
+            resource: ['a', 'b'],
+        }));
+
+        expect(url.searchParams.getAll('audience')).toEqual(['new']);
+        expect(url.searchParams.getAll('resource')).toEqual(['a', 'b']);
+        expect(url.searchParams.get('p')).toBe('b2c');
+    });
+
+    it('should keep an endpoint parameter when the custom value is empty', () => {
+        const url = new URL(buildAuthorizeURL('https://example.com/authorize?audience=old', {
+            client_id: 'client',
+            audience: '',
+        }));
+
+        expect(url.searchParams.getAll('audience')).toEqual(['old']);
+    });
+
     it('should skip empty and ignore unsupported parameter values', () => {
         const parameters = {
             nonce: '',

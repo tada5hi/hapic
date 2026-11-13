@@ -31,6 +31,19 @@ const PARAMETER_KEYS = [
     'acr_values',
 ];
 
+/**
+ * Credentials of the token request. The authorize URL is opened in the
+ * browser (address bar, history, referrer, provider logs), so they are
+ * never written to it, whatever the parameters object carries.
+ */
+const FORBIDDEN_PARAMETER_KEYS = [
+    'client_secret',
+    'client_assertion',
+    'code_verifier',
+    'password',
+    'refresh_token',
+];
+
 function serializeParameterValue(value: unknown) : string | undefined {
     if (typeof value === 'number') {
         return String(value);
@@ -67,20 +80,35 @@ export function buildAuthorizeURL(
         }
     }
 
-    const keys = Object.keys(parameters).filter((key) => !PARAMETER_KEYS.includes(key));
+    const keys = Object.keys(parameters).filter((key) => !PARAMETER_KEYS.includes(key) &&
+        !FORBIDDEN_PARAMETER_KEYS.includes(key));
 
     for (const key of keys) {
         // the space-delimited list is a convention of the typed parameters,
         // any other multi-valued parameter (e.g. resource, RFC 8707) is repeated.
         const input = parameters[key];
-        const values = Array.isArray(input) ? input : [input];
+        const items = Array.isArray(input) ? input : [input];
 
-        for (const item of values) {
+        const values : string[] = [];
+
+        for (const item of items) {
             const value = serializeParameterValue(item);
 
             if (typeof value !== 'undefined') {
-                output.searchParams.append(key, value);
+                values.push(value);
             }
+        }
+
+        if (values.length === 0) {
+            continue;
+        }
+
+        // a parameter must not occur more than once (RFC 6749 - 3.1):
+        // the given value replaces one the endpoint already carries.
+        output.searchParams.delete(key);
+
+        for (const value of values) {
+            output.searchParams.append(key, value);
         }
     }
 

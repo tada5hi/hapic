@@ -125,6 +125,24 @@ describe('src/open-id', () => {
         expect(new Headers(req.headers).get('x-removed')).toBeNull();
     });
 
+    it('should fall back to the defaults of a client without toOptions', async () => {
+        // a client of an older hapic copy carries the marker but has no toOptions()
+        const driver = createClient({
+            transport: createMetadataTransport(),
+            baseURL: 'http://localhost:3000/',
+        });
+
+        driver.setAuthorizationHeader({ type: 'Bearer', token: 'secret' });
+
+        Object.defineProperty(driver, 'toOptions', { value: undefined });
+
+        const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), driver);
+
+        expect(client.options.tokenEndpoint).toEqual('http://localhost:3000/token');
+        expect(client.getBaseURL()).toBe('http://localhost:3000/');
+        expect(client.getAuthorizationHeader()).toBe('Bearer secret');
+    });
+
     it('should not carry over the hooks of the passed client', async () => {
         const transport = createMetadataTransport();
         const driver = createClient({ transport });

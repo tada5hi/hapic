@@ -94,6 +94,12 @@ const url = client.authorize.buildURL({
 
 Array values of the typed parameters are space-joined, an array of any other parameter repeats it once per item (e.g. `resource`, RFC 8707), numbers are stringified, and empty (`''`, `null`, `undefined`) values are skipped. Values of other types are ignored. The same logic is available standalone as `buildAuthorizeURL(endpoint, parameters)`.
 
+Any other key of the parameters object is written to the URL as a custom parameter and replaces a parameter of the same name the endpoint already carries. The credentials of the token request (`client_secret`, `client_assertion`, `code_verifier`, `password`, `refresh_token`) are the exception: the authorize URL is opened in the browser, so they are never written to it. Keep them out of the object anyway, and pass a dedicated parameters object, not one shared with the token request.
+
+::: warning Type change
+`AuthorizeParameters` has an index signature for custom parameters. An object typed as an `interface`, or one with a non-string extra property, is no longer assignable; use a `type` alias or build the object inline.
+:::
+
 ### Refresh
 
 ```typescript
