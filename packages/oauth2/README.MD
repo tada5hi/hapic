@@ -474,6 +474,8 @@ try {
 | `parseOpenIDProviderMetadata` | function | Provider metadata to `Options` |
 | `createClient`, `useClient`, `setClient`, `hasClient`, `unsetClient`, `isClient` | functions | [Instances](#instances) |
 | `isHapicError`, `isClientError`, `isHttpResponseError`, `isNetworkError`, `isClientErrorWithStatusCode`, `isClientErrorDueNetworkIssue` | functions | [Errors](#errors), re-exported from `hapic` |
+| `transformHeadersForTokenAPIRequest(headers, options?)` | function | Apply the token request header rules to a `Headers` object: set `Content-Type: application/x-www-form-urlencoded`, drop the client's `Authorization` header unless `authorizationHeaderInherit`, then set `authorizationHeader`, or the client credentials as Basic with `clientCredentialsAsHeader` (see [Client authentication](#client-authentication)) |
+| `createRequestTransformerForTokenAPIRequest(parameters, options?)` | function | A `hapic` request transformer that applies the same header rules and, with `clientCredentialsAsHeader`, removes `client_id` and `client_secret` from the body. Use it for a custom request to an endpoint of the authorization server |
 | `scopeToArray`, `scopeToString` | functions | Convert a scope between `'a b'` and `['a', 'b']` (`scopeToString` removes duplicates) |
 | `AuthorizeResponseType`, `AuthorizeResponseMode`, `AuthorizeCodeChallengeMethod`, `AuthorizeDisplay`, `AuthorizePrompt`, `ResponseType` | enums | Parameter values |
 | `Options`, `Config`, `ConfigInput` | types | Client configuration |
