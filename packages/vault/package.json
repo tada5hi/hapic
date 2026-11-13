@@ -1,6 +1,6 @@
 {
     "name": "@hapic/vault",
-    "version": "3.0.2",
+    "version": "4.0.0",
     "description": "A HashiCorp Vault client for key-value v1 and v2 secrets and secrets engine mounts.",
     "type": "module",
     "main": "dist/index.mjs",
@@ -49,10 +49,10 @@
         "smob": "^1.6.2"
     },
     "devDependencies": {
-        "hapic": "^3.0.2"
+        "hapic": "^3.1.0"
     },
     "peerDependencies": {
-        "hapic": "^3.0.2"
+        "hapic": "^3.1.0"
     },
     "publishConfig": {
         "access": "public"
