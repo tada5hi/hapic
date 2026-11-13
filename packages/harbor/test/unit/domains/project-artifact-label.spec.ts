@@ -41,4 +41,27 @@ describe('src/domains/project-artifact-label', () => {
         expect(request.url).toBe('projects/foo/repositories/bar/artifacts/latest/labels');
         expect(JSON.parse(request.body as string)).toEqual({ id: 1 });
     });
+
+    it('should encode path segments', async () => {
+        const transport = new MemoryTransport();
+        const api = new ProjectRepositoryArtifactLabelAPI({ client: createClient({ transport }) });
+
+        await api.create({
+            labelId: 1,
+            projectName: 'foo',
+            repositoryName: 'a/b',
+            tagOrDigest: 'sha256:abc',
+        });
+        await api.delete({
+            labelId: 1,
+            projectName: 'foo',
+            repositoryName: 'a/b',
+            tagOrDigest: 'sha256:abc',
+        });
+
+        expect(transport.requests.map((r) => `${r.method} ${r.url}`)).toEqual([
+            'POST projects/foo/repositories/a%252Fb/artifacts/sha256%3Aabc/labels',
+            'DELETE projects/foo/repositories/a%252Fb/artifacts/sha256%3Aabc/labels/1',
+        ]);
+    });
 });

@@ -72,4 +72,33 @@ describe('src/domains/project-artifact', () => {
         expect(request.method).toBe('GET');
         expect(request.url).toBe('projects/proj/repositories/repo/artifacts?page_size=10&with_label=true&with_tag=true');
     });
+
+    it('should encode repository name twice and reference once', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
+        });
+        const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
+
+        await api.getMany({
+            projectName: 'foo',
+            repositoryName: 'a/b',
+            query: { q: { tags: 'v1' } },
+        });
+        await api.copy({ projectName: 'foo', repositoryName: 'a/b' }, 'baz/biz:latest');
+        await api.delete({
+            projectName: 'foo',
+            repositoryName: 'a/b',
+            tagOrDigest: 'sha256:abc',
+        });
+
+        expect(transport.requests.map((r) => `${r.method} ${r.url}`)).toEqual([
+            'GET projects/foo/repositories/a%252Fb/artifacts?q=tags%3Dv1',
+            'POST projects/foo/repositories/a%252Fb/artifacts?from=baz/biz:latest',
+            'DELETE projects/foo/repositories/a%252Fb/artifacts/sha256%3Aabc',
+        ]);
+    });
 });

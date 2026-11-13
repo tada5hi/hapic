@@ -5,8 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { buildQueryString, extractResourceMetaOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
+import {
+    buildRepositoryPath,
+    buildRequestPath,
+    getAllPages,
+    getCollection,
+} from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
     ProjectRepository,
@@ -36,10 +41,12 @@ export class ProjectRepositoryAPI extends BaseAPI {
             context = input;
         }
 
+        // `name=<value>` is an exact match on the full repository name,
+        // `name=~<value>` would be a substring match.
         const { data } = await this.getMany({
             projectName: context.projectName,
             query: {
-                q: { name: `~${context.repositoryName}` },
+                q: { name: `${context.projectName}/${context.repositoryName}` },
                 page_size: 1,
             },
         });
@@ -61,7 +68,7 @@ export class ProjectRepositoryAPI extends BaseAPI {
         }
 
         const { data } : { data: ProjectRepository } = await this.client.get(
-            `projects/${context.projectName}/repositories/${context.repositoryName}`,
+            buildRepositoryPath(context.projectName, context.repositoryName),
         );
 
         const parsed = parseLongProjectRepositoryName(data.name);
@@ -74,51 +81,32 @@ export class ProjectRepositoryAPI extends BaseAPI {
     }
 
     async getMany(context: ProjectRepositoryGetManyContext): Promise<ResourceCollectionResponse<ProjectRepository>> {
-        const result = await this.client
-            .get(`projects/${context.projectName}/repositories${buildQueryString(context.query)}`);
+        const response = await getCollection<ProjectRepository>(
+            this.client,
+            buildRequestPath(['projects', context.projectName, 'repositories'], context.query),
+        );
 
         return {
-            data: result.data
-                .map((item: ProjectRepository) => {
-                    const parsed = parseLongProjectRepositoryName(item.name);
+            ...response,
+            data: response.data.map((item) => {
+                const parsed = parseLongProjectRepositoryName(item.name);
 
-                    return {
-                        ...item,
-                        name_short: parsed.repositoryName,
-                        project_name: parsed.projectName,
-                    };
-                }),
-            meta: extractResourceMetaOfResponse(result),
+                return {
+                    ...item,
+                    name_short: parsed.repositoryName,
+                    project_name: parsed.projectName,
+                };
+            }),
         };
     }
 
     async getAll(context: ProjectRepositoryGetManyContext) : Promise<ResourceCollectionResponse<ProjectRepository>> {
-        context.query = context.query || {};
-
-        if (!context.query.page_size) {
-            context.query.page_size = 50;
-        }
-
-        if (!context.query.page) {
-            context.query.page = 1;
-        }
-
-        const response = await this.getMany(context);
-
-        if (response.data.length === context.query.page_size) {
-            context.query.page++;
-
-            const next = await this.getAll(context);
-
-            response.data.push(...next.data);
-        }
-
-        return response;
+        return getAllPages(context.query, (query) => this.getMany({ ...context, query }));
     }
 
     async update(context: ProjectRepositoryUpdateContext) : Promise<void> {
         await this.client
-            .put(`projects/${context.projectName}/repositories/${context.repositoryName}`, context.data);
+            .put(buildRepositoryPath(context.projectName, context.repositoryName), context.data);
     }
 
     async delete(projectRepositoryName: string) : Promise<void>;
@@ -135,6 +123,6 @@ export class ProjectRepositoryAPI extends BaseAPI {
         }
 
         await this.client
-            .delete(`projects/${context.projectName}/repositories/${context.repositoryName}`);
+            .delete(buildRepositoryPath(context.projectName, context.repositoryName));
     }
 }

@@ -166,4 +166,57 @@ describe('src/domains/project', () => {
         expect(request.url).toBe('projects/name');
         expect((request.headers as Headers).get(HeaderName.IS_RESOURCE_NAME)).toBe('true');
     });
+
+    it('should encode the project name once', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
+        const api = new ProjectAPI({ client: createClient({ transport }) });
+
+        await api.getOne('a b/c', true);
+
+        expect(transport.requests.at(-1)!.url).toBe('projects/a%20b%2Fc');
+    });
+
+    it('should get all pages without mutating the options', async () => {
+        const transport = new MemoryTransport({
+            fetch: (request) => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: request.url.endsWith('page=2') ? [{ name: 'c' }] : [{ name: 'a' }, { name: 'b' }],
+            }),
+        });
+        const api = new ProjectAPI({ client: createClient({ transport }) });
+        const options = { query: { with_detail: true, page_size: 2 } };
+
+        const { data } = await api.getAll(options);
+
+        expect(data.map((item) => item.name)).toEqual(['a', 'b', 'c']);
+        expect(options).toEqual({ query: { with_detail: true, page_size: 2 } });
+        expect(transport.requests.map((r) => r.url)).toEqual([
+            'projects?with_detail=true&page_size=2&page=1',
+            'projects?with_detail=true&page_size=2&page=2',
+        ]);
+    });
+
+    it('should not mutate options without query', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
+        });
+        const api = new ProjectAPI({ client: createClient({ transport }) });
+        const options = {};
+
+        await api.getAll(options);
+
+        expect(options).toEqual({});
+        expect(transport.requests.at(-1)!.url).toBe('projects?page_size=50&page=1');
+    });
 });

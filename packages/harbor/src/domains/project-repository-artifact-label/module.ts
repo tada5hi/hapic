@@ -6,6 +6,7 @@
  */
 
 import { BaseAPI } from '../base';
+import { buildRepositoryPath } from '../request';
 import type { BaseAPIContext } from '../types';
 import type {
     ProjectArtifactLabelCreateContext,
@@ -20,15 +21,22 @@ export class ProjectRepositoryArtifactLabelAPI extends BaseAPI {
     async create(options: ProjectArtifactLabelCreateContext) : Promise<void> {
         await this.client
             .post(
-                `projects/${options.projectName}/repositories/${options.repositoryName}` +
-                `/artifacts/${options.tagOrDigest || 'latest'}/labels`,
+                buildRepositoryPath(options.projectName, options.repositoryName, [
+                    'artifacts',
+                    options.tagOrDigest || 'latest',
+                    'labels',
+                ]),
                 { id: options.labelId },
             );
     }
 
     async delete(options: ProjectArtifactLabelDeleteContext) {
         await this.client
-            .delete(`projects/${options.projectName}/repositories/${options.repositoryName}` +
-                `/artifacts/${options.tagOrDigest || 'latest'}/labels/${options.labelId}`);
+            .delete(buildRepositoryPath(options.projectName, options.repositoryName, [
+                'artifacts',
+                options.tagOrDigest || 'latest',
+                'labels',
+                options.labelId,
+            ]));
     }
 }

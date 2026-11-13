@@ -105,4 +105,19 @@ describe('src/domains/robot', () => {
         expect(request.method).toBe('GET');
         expect(request.url).toBe('robots/1');
     });
+
+    it('should join multiple q keys with a comma', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
+        });
+        const api = new RobotAPI({ client: createClient({ transport }) });
+
+        await api.getMany({ query: { q: { level: 'project', name: 'robot$foo' } } });
+
+        expect(transport.requests.at(-1)!.url).toBe('robots?q=level%3Dproject%2Cname%3Drobot%2524foo');
+    });
 });

@@ -97,7 +97,7 @@ describe('src/domains/project-repository', () => {
         const request = transport.requests.at(-1)!;
 
         expect(request.method).toBe('GET');
-        expect(request.url).toBe('projects/foo/repositories?q=name%3D%257Ebar&page_size=1');
+        expect(request.url).toBe('projects/foo/repositories?q=name%3Dfoo%252Fbar&page_size=1');
     });
 
     it('should update resource', async () => {
@@ -127,5 +127,77 @@ describe('src/domains/project-repository', () => {
 
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/foo/repositories/bar');
+    });
+
+    it('should encode the repository name twice in the path', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: { name: 'foo/a/b' },
+            }),
+        });
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
+        const result = await api.getOne('foo/a/b');
+
+        expect(result.name_short).toBe('a/b');
+
+        await api.update({
+            projectName: 'foo',
+            repositoryName: 'a/b',
+            data: { description: 'x' },
+        });
+        await api.delete('foo/a/b');
+
+        expect(transport.requests.map((r) => `${r.method} ${r.url}`)).toEqual([
+            'GET projects/foo/repositories/a%252Fb',
+            'PUT projects/foo/repositories/a%252Fb',
+            'DELETE projects/foo/repositories/a%252Fb',
+        ]);
+    });
+
+    it('should find resource by exact name', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [{ name: 'foo/a/b' }],
+            }),
+        });
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
+        const result = await api.findOne('foo/a/b');
+
+        expect(result?.name).toBe('foo/a/b');
+        // q decodes (twice) to `name=foo/a/b`: exact match, not `~` substring
+        expect(transport.requests.at(-1)!.url).toBe('projects/foo/repositories?q=name%3Dfoo%252Fa%252Fb&page_size=1');
+    });
+
+    it('should get all pages without mutating the query', async () => {
+        const transport = new MemoryTransport({
+            fetch: (request) => ({
+                status: 200,
+                headers: { 'content-type': 'application/json', 'x-total-count': '3' },
+                body: request.url.endsWith('page=3') ?
+                    [{ name: 'proj/c' }] :
+                    [{ name: 'proj/a' }, { name: 'proj/b' }],
+            }),
+        });
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+        const query = { page_size: 2 };
+        const context = { projectName: 'proj', query };
+
+        const result = await api.getAll(context);
+
+        expect(result.data.map((item) => item.name_short)).toEqual(['a', 'b', 'a', 'b', 'c']);
+        expect(result.meta.total).toBe(3);
+        expect(query).toEqual({ page_size: 2 });
+        expect(context.query).toBe(query);
+        expect(transport.requests.map((r) => r.url)).toEqual([
+            'projects/proj/repositories?page_size=2&page=1',
+            'projects/proj/repositories?page_size=2&page=2',
+            'projects/proj/repositories?page_size=2&page=3',
+        ]);
     });
 });
