@@ -104,6 +104,33 @@ describe('src/domains/mount', () => {
         });
     });
 
+    it('should read the tune configuration', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {
+                    data: {
+                        default_lease_ttl: 3600, 
+                        max_lease_ttl: 7200, 
+                        force_no_cache: false, 
+                    }, 
+                },
+            }),
+        });
+
+        const api = new MountAPI({ client: createClient({ transport }) });
+
+        const response = await api.getTune('my-mount');
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('sys/mounts/my-mount/tune');
+        expect(req.body).toBeUndefined();
+        expect(response.data.default_lease_ttl).toBe(3600);
+    });
+
     it('should get resources', async () => {
         const transport = new MemoryTransport({
             fetch: () => ({

@@ -127,3 +127,25 @@ export type Mount = {
      */
     deprecation_status?: string
 };
+
+/**
+ * Effective configuration of a mount, as returned by GET /sys/mounts/:path/tune.
+ * TTLs are in seconds and already resolved to the system default where unset.
+ */
+export type MountTune = {
+    description: string,
+    default_lease_ttl: number,
+    max_lease_ttl: number,
+    force_no_cache: boolean,
+    external_entropy_access?: boolean,
+    audit_non_hmac_request_keys?: string[],
+    audit_non_hmac_response_keys?: string[],
+    listing_visibility?: string,
+    passthrough_request_headers?: string[],
+    allowed_response_headers?: string[],
+    allowed_managed_keys?: string[],
+    identity_token_key?: string,
+    trim_request_trailing_slashes?: boolean,
+    options?: MountOptions,
+    plugin_version?: string
+};
