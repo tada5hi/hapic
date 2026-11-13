@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { isClientErrorWithStatusCode } from 'hapic';
 import { HeaderName } from '../../constants';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../types';
@@ -58,6 +59,54 @@ export class KeyValueV2API extends BaseAPI {
         const { data } = await this.client.get(`${mount}/data/${path}?version=${version || 0}`);
 
         return data;
+    }
+
+    /**
+     * Get a secret (version), or undefined if it does not exist.
+     *
+     * Vault answers 404 for a missing path, a path the token may not read,
+     * and a deleted or destroyed version.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param version
+     */
+    async findOne<T extends Record<string, any> = Record<string, any>>(
+        mount: string,
+        path: string,
+        version?: number,
+    ) : Promise<KeyValueV2GetOneResponse<T> | undefined> {
+        try {
+            return await this.getOne<T>(mount, path, version);
+        } catch (e) {
+            if (isClientErrorWithStatusCode(e, 404)) {
+                return undefined;
+            }
+
+            throw e;
+        }
+    }
+
+    /**
+     * List the keys at a path. Folders end with "/".
+     *
+     * An empty or missing folder returns an empty list.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The folder path relative to the secret engine mount; the mount root when empty.
+     */
+    async getKeys(mount: string, path = '') : Promise<string[]> {
+        try {
+            const { data } = await this.client.get(`${mount}/metadata/${path}`, { query: { list: true } });
+
+            return data.data.keys;
+        } catch (e) {
+            if (isClientErrorWithStatusCode(e, 404)) {
+                return [];
+            }
+
+            throw e;
+        }
     }
 
     /**
