@@ -1,14 +1,14 @@
 ---
 package:
   name: "@hapic/oauth2"
-  summary: "OAuth2 and OpenID Connect client: authorization URLs, every token grant, introspection and userinfo."
+  summary: "OAuth2 and OpenID Connect client: authorization URLs, every token grant, device authorization, introspection and userinfo."
   accent: "#818cf8"
   order: 2
 ---
 
 # @hapic/oauth2
 
-An OAuth2 / OpenID Connect client — build authorization URLs, exchange every grant type for tokens, introspect and revoke them, and fetch userinfo. It extends the base [`Client`](/guide/client) and registers its own cross-realm marker, `Symbol.for('@hapic/oauth2/OAuth2Client')`, alongside the inherited `Client` marker.
+An OAuth2 / OpenID Connect client — build authorization URLs, exchange every grant type for tokens, run the device authorization flow, introspect and revoke them, and fetch userinfo. It extends the base [`Client`](/guide/client) and registers its own cross-realm marker, `Symbol.for('@hapic/oauth2/OAuth2Client')`, alongside the inherited `Client` marker.
 
 ## Installation
 
@@ -47,8 +47,9 @@ The package exports the usual registry (`createClient`, `useClient`, `setClient`
 | Property | Class | Key methods |
 |----------|-------|-------------|
 | `client.authorize` | `AuthorizeAPI` | `buildURL(params?)` |
-| `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `create` · `introspect` · `revoke` |
+| `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `createWithDeviceCode` · `pollWithDeviceCode` · `create` · `introspect` · `revoke` |
 | `client.userInfo` | `UserInfoAPI` | `get(header?)` |
+| `client.deviceAuthorization` | `DeviceAuthorizationAPI` | `create(params?, options?)` |
 
 ## Token grants
 
@@ -117,6 +118,22 @@ const refreshed = await client.token.createWithRefreshToken({
 });
 ```
 
+### Device authorization
+
+For devices without a browser or keyboard (RFC 8628): request a user code, show it, then poll the token endpoint until the user has approved.
+
+```typescript
+const authorization = await client.deviceAuthorization.create({ scope: 'openid' });
+
+console.log(`Open ${authorization.verification_uri} and enter ${authorization.user_code}`);
+
+const token = await client.token.pollWithDeviceCode(authorization, {
+    signal: AbortSignal.timeout(authorization.expires_in * 1000),
+});
+```
+
+`deviceAuthorization.create` posts to `deviceAuthorizationEndpoint` (default `/device_authorization`, also read from the discovery document). `pollWithDeviceCode` waits `interval` seconds (default 5) before each request, keeps polling on `authorization_pending`, adds 5 seconds on `slow_down`, and rejects with any other error. With `expires_in` it stops once the next wait would end after the deadline and rejects with the last pending error; aborting the `signal` rejects with its reason. Only `device_code` and the client authentication are sent.
+
 ## Introspection & revocation
 
 ```typescript
@@ -147,7 +164,7 @@ const discoveryUrl = buildOpenIDDiscoveryURL('https://auth.example.com');
 // → https://auth.example.com/.well-known/openid-configuration
 
 const client = await createClientWithOpenIDDiscoveryURL(discoveryUrl);
-// authorization / token / userinfo / introspection / revocation endpoints
+// authorization / token / userinfo / introspection / revocation / device authorization endpoints
 // are populated from the provider metadata
 
 const token = await client.token.createWithClientCredentials();

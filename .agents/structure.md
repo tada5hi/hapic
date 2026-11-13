@@ -9,7 +9,7 @@
 | [packages/client](../packages/client)                | `hapic`               | Base fetch-based HTTP client: request methods, hooks, transformers, headers, errors. **Foundation package** — no internal deps. |
 | [packages/harbor](../packages/harbor)                | `@hapic/harbor`       | Client for the [Harbor](https://goharbor.io/) container registry API (projects, repositories, artifacts, robots, webhooks). |
 | [packages/loki](../packages/loki)                    | `@hapic/loki`         | Client for [Grafana Loki](https://grafana.com/oss/loki/) (querier, distributor, compactor). |
-| [packages/oauth2](../packages/oauth2)                | `@hapic/oauth2`       | OAuth2 / OpenID Connect client (authorize, token, userinfo, provider metadata). |
+| [packages/oauth2](../packages/oauth2)                | `@hapic/oauth2`       | OAuth2 / OpenID Connect client (authorize, token, device authorization, userinfo, provider metadata). |
 | [packages/vault](../packages/vault)                  | `@hapic/vault`        | Client for [HashiCorp Vault](https://www.vaultproject.io/) (key-value v1/v2, mounts). |
 | [packages/victorialogs](../packages/victorialogs)    | `@hapic/victorialogs` | Client for [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) (ingestor, querier). |
 | [packages/docs](../packages/docs)                    | `@hapic/docs`         | VitePress documentation site (private, not published).                      |

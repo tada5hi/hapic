@@ -7,10 +7,15 @@
 
 import { HookName, MemoryTransport, createClient } from 'hapic';
 import type { OpenIDProviderMetadata } from '../../src';
-import { buildOpenIDDiscoveryURL, createClientWithOpenIDDiscoveryURL } from '../../src';
+import {
+    buildOpenIDDiscoveryURL,
+    createClientWithOpenIDDiscoveryURL,
+    parseOpenIDProviderMetadata,
+} from '../../src';
 
 const metadata : OpenIDProviderMetadata = {
     authorization_endpoint: 'http://localhost:3000/auhtorize',
+    device_authorization_endpoint: 'http://localhost:3000/device_authorization',
     id_token_signing_alg_values_supported: [
         'RS256',
     ],
@@ -59,6 +64,17 @@ describe('src/open-id', () => {
 
         url = buildOpenIDDiscoveryURL();
         expect(url).toEqual('/.well-known/openid-configuration');
+    });
+
+    it('should parse the provider metadata', () => {
+        expect(parseOpenIDProviderMetadata(metadata)).toEqual({
+            authorizationEndpoint: 'http://localhost:3000/auhtorize',
+            deviceAuthorizationEndpoint: 'http://localhost:3000/device_authorization',
+            introspectionEndpoint: 'http://localhost:3000/introspect',
+            revocationEndpoint: 'http://localhost:3000/token',
+            tokenEndpoint: 'http://localhost:3000/token',
+            userinfoEndpoint: 'http://localhost:3000/userinfo',
+        });
     });
 
     it('should create client by open-id endpoint', async () => {

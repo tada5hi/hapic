@@ -57,6 +57,11 @@ export type Options = {
      * The userinfo endpoint URL provided by the OAuth2 server.
      */
     userinfoEndpoint?: string,
+
+    /**
+     * The device authorization endpoint URL provided by the OAuth2 server (RFC 8628).
+     */
+    deviceAuthorizationEndpoint?: string,
 };
 
 export type Config = {

@@ -5,7 +5,7 @@
 <h1 align="center">@hapic/oauth2</h1>
 
 <p align="center">
-    <b>An OAuth2 and OpenID Connect client: authorize URLs, token grants, introspection, revocation and userinfo.</b><br>
+    <b>An OAuth2 and OpenID Connect client: authorize URLs, token grants, device authorization, introspection, revocation and userinfo.</b><br>
     You stop hand-building query strings, form bodies and client authentication headers,<br>
     and the authorize URL never carries a secret, whatever object you pass.
 </p>
@@ -25,6 +25,8 @@
     ·
     <a href="#token-grants">Token grants</a>
     ·
+    <a href="#device-authorization">Device authorization</a>
+    ·
     <a href="#openid-connect-discovery">Discovery</a>
     ·
     <a href="#api">API</a>
@@ -43,9 +45,9 @@ Talking to an OAuth2 server with plain `fetch` means the same chores in every pr
 | Concern | Without it | With @hapic/oauth2 |
 |---|---|---|
 | **Authorize URL** | You concatenate and encode the query yourself; a shared parameters object can put `client_secret` or `code_verifier` into a URL the browser keeps in its history. | `authorize.buildURL()` takes typed OAuth2, PKCE and OpenID Connect parameters, fills `client_id`, `redirect_uri` and `scope` from the client options, and never writes token request credentials to the URL. |
-| **Token grants** | One `URLSearchParams` body per grant, `Content-Type` set by hand, the client credentials added to each call. | One method per grant (`createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithRobotCredentials`) that sends a form body with the configured credentials. |
+| **Token grants** | One `URLSearchParams` body per grant, `Content-Type` set by hand, the client credentials added to each call. | One method per grant (`createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithDeviceCode`, `createWithRobotCredentials`) that sends a form body with the configured credentials, and `pollWithDeviceCode` for the device flow (RFC 8628). |
 | **Client authentication** | You pick body or Basic header per provider and implement both. | Body by default; `clientCredentialsAsHeader: true` moves the id and secret to a Basic header and out of the body. |
-| **Stray authorization header** | A bearer token set on your HTTP client for API calls is also sent to the token endpoint. | Token, introspection and revocation requests drop the client's `Authorization` header unless you opt in with `authorizationHeaderInherit`. |
+| **Stray authorization header** | A bearer token set on your HTTP client for API calls is also sent to the token endpoint. | Token, introspection, revocation and device authorization requests drop the client's `Authorization` header unless you opt in with `authorizationHeaderInherit`. |
 | **Endpoints** | You copy URLs from the provider's documentation or parse `.well-known/openid-configuration` yourself. | `createClientWithOpenIDDiscoveryURL()` fetches the metadata and returns a configured client. |
 | **Failures** | You check `response.ok` and parse the error body. | A 4xx/5xx rejects with an `HttpResponseError` that carries the response; guards such as `isClientErrorWithStatusCode` are exported. |
 
@@ -93,6 +95,7 @@ const token = await client.token.createWithClientCredentials();
 - [Token grants](#token-grants)
 - [Client authentication](#client-authentication)
 - [Refresh, introspect and revoke](#refresh-introspect-and-revoke)
+- [Device authorization](#device-authorization)
 - [Userinfo](#userinfo)
 - [OpenID Connect discovery](#openid-connect-discovery)
 - [Instances](#instances)
@@ -141,17 +144,18 @@ const client = new OAuth2Client({
 | `clientId` | `string` | | `client_id` of the authorize URL and of token requests |
 | `clientSecret` | `string` | | `client_secret` of token requests (body, or Basic header with `clientCredentialsAsHeader`) |
 | `redirectUri` | `string` | | `redirect_uri` of the authorize URL and of the authorization code grant |
-| `scope` | `string \| string[]` | | `scope` of the authorize URL and of the client credentials, password and refresh token grants |
-| `realmId` | `string` | | Sent as `realm_id` in the body of `token.create*` requests (a non-standard parameter for servers with realms) |
+| `scope` | `string \| string[]` | | `scope` of the authorize URL, of the device authorization request and of the client credentials, password and refresh token grants |
+| `realmId` | `string` | | Sent as `realm_id` in the body of `token.create*` and `deviceAuthorization.create` requests (a non-standard parameter for servers with realms) |
 | `authorizationEndpoint` | `string` | `authorize`, resolved against `baseURL` | `authorize.buildURL()`. Must be an absolute URL |
 | `tokenEndpoint` | `string` | `/token` | `token.create*` |
 | `introspectionEndpoint` | `string` | `/token/introspect` | `token.introspect` |
 | `revocationEndpoint` | `string` | `/token/revoke` | `token.revoke` |
 | `userinfoEndpoint` | `string` | `/userinfo` | `userInfo.get` |
+| `deviceAuthorizationEndpoint` | `string` | `/device_authorization` | `deviceAuthorization.create` |
 
-- The token, introspection, revocation and userinfo endpoints may be absolute or relative. A relative one is appended to `baseURL`, path included: `/token` with `baseURL: 'https://auth.example.com/api/'` becomes `https://auth.example.com/api/token`.
+- The token, introspection, revocation, userinfo and device authorization endpoints may be absolute or relative. A relative one is appended to `baseURL`, path included: `/token` with `baseURL: 'https://auth.example.com/api/'` becomes `https://auth.example.com/api/token`.
 - The authorization endpoint is different, because the URL is built rather than requested: set `authorizationEndpoint` to an absolute URL. Without it, `authorize` is resolved against `baseURL` like a link, so `https://auth.example.com/api/` gives `…/api/authorize` but `https://auth.example.com/api` gives `…/authorize`. A relative `authorizationEndpoint`, or neither option, makes `buildURL()` throw a `TypeError` (`Invalid URL`).
-- `client.options` is one object shared by `client.authorize`, `client.token` and `client.userInfo`. Changing a property later (`client.options.clientId = 'other'`) affects all of them.
+- `client.options` is one object shared by `client.authorize`, `client.token`, `client.userInfo` and `client.deviceAuthorization`. Changing a property later (`client.options.clientId = 'other'`) affects all of them.
 
 ## Authorization URL
 
@@ -260,6 +264,7 @@ console.log(token);
 | `createWithPassword(parameters)` | `password` | `username`, `password`, `scope?` | `scope`, `client_id`, `client_secret`, `realm_id` |
 | `createWithAuthorizationCode(parameters)` | `authorization_code` | `code`, `code_verifier?`, `redirect_uri?` | `redirect_uri`, `client_id`, `client_secret`, `realm_id` |
 | `createWithRefreshToken(parameters)` | `refresh_token` | `refresh_token`, `scope?` | `scope`, `client_id`, `client_secret`, `realm_id` |
+| `createWithDeviceCode(parameters)` | `urn:ietf:params:oauth:grant-type:device_code` | `device_code` | `client_id`, `client_secret`, `realm_id` |
 | `createWithRobotCredentials(parameters)` | `robot_credentials` | `id`, `secret` | `client_id`, `client_secret`, `realm_id` |
 | `create(parameters)` | from `parameters.grant_type` | any of the above, with `grant_type` | as for that grant |
 
@@ -269,7 +274,7 @@ console.log(token);
 
 ## Client authentication
 
-The second argument of every token method (`create*`, `introspect`, `revoke`) controls how the request is authenticated:
+The second argument of every token method (`create*`, `pollWithDeviceCode`, `introspect`, `revoke`) and of `deviceAuthorization.create` controls how the request is authenticated:
 
 ```typescript
 // client id and secret in a Basic header instead of the body
@@ -310,7 +315,7 @@ token = await client.token.createWithClientCredentials({}, {
 
 Rules:
 
-- The client's own `Authorization` header is removed from every token, introspection and revocation request, unless `authorizationHeaderInherit` is set and the header exists.
+- The client's own `Authorization` header is removed from every token, introspection, revocation and device authorization request, unless `authorizationHeaderInherit` is set and the header exists.
 - Otherwise `authorizationHeader` wins, then the Basic header of `clientCredentialsAsHeader` (when both an id and a secret are known). Without either, the request carries no `Authorization` header and the credentials, if any, travel in the body.
 - Every request is sent with `Content-Type: application/x-www-form-urlencoded` and `Accept: application/json`.
 - A request that hits its `timeout` rejects with a `NetworkError` whose `code` is `ETIMEDOUT`; test for it with `isClientErrorDueTimeout` from `hapic`.
@@ -350,6 +355,31 @@ await client.token.introspect(
 );
 ```
 
+## Device authorization
+
+For a device without a browser or keyboard (a CLI, a TV, a printer), RFC 8628 replaces the redirect: the device requests a user code, the user enters it on another device, and the device polls the token endpoint until the user has approved.
+
+```typescript
+// 1. request a device code and a user code
+const authorization = await client.deviceAuthorization.create({ scope: 'openid profile' });
+
+// 2. show the user where to go and what to enter
+console.log(`Open ${authorization.verification_uri} and enter ${authorization.user_code}`);
+// or render authorization.verification_uri_complete as a QR code
+
+// 3. poll the token endpoint until the user has approved
+const controller = new AbortController();
+const token = await client.token.pollWithDeviceCode(authorization, {
+    signal: controller.signal,
+});
+```
+
+- `deviceAuthorization.create(parameters?, options?)` posts a form body to `deviceAuthorizationEndpoint` and fills `client_id`, `client_secret`, `realm_id` and `scope` from the client options when you leave them out. It follows the [client authentication](#client-authentication) rules of the token methods. It resolves with `device_code`, `user_code`, `verification_uri`, `expires_in` and, when present, `verification_uri_complete` and `interval`.
+- `token.pollWithDeviceCode(parameters, options?)` waits `interval` seconds (5 when unset), then calls `createWithDeviceCode`, and repeats while the server answers `authorization_pending`. A `slow_down` adds 5 seconds to the interval for this and every later request. Any other error, such as `access_denied` or `expired_token`, rejects as is.
+- You can pass the device authorization response as it is: only `device_code`, `client_id`, `client_secret` and `realm_id` are sent. With `expires_in`, polling stops once the next wait would end after that many seconds from the start of the call, and rejects with the last `authorization_pending` or `slow_down` error. At least one request is always made.
+- Aborting `signal` rejects with its `reason`, during a wait or a request. `timeout` applies to each request, not to the whole polling.
+- `createWithDeviceCode({ device_code })` makes a single request, for your own polling loop. No `scope` is sent with the device code grant.
+
 ## Userinfo
 
 ```typescript
@@ -372,7 +402,7 @@ profile = await client.userInfo.get();
 
 ## OpenID Connect discovery
 
-`createClientWithOpenIDDiscoveryURL()` requests the provider metadata and returns an `OAuth2Client` whose `authorizationEndpoint`, `tokenEndpoint`, `introspectionEndpoint`, `revocationEndpoint` and `userinfoEndpoint` come from it.
+`createClientWithOpenIDDiscoveryURL()` requests the provider metadata and returns an `OAuth2Client` whose `authorizationEndpoint`, `tokenEndpoint`, `introspectionEndpoint`, `revocationEndpoint`, `userinfoEndpoint` and `deviceAuthorizationEndpoint` come from it.
 
 ```typescript
 import {
@@ -399,7 +429,7 @@ The second argument is either client options or an existing client:
 - **Client options** (`baseURL`, `headers`, `transport`, `timeout`, …) configure the discovery request and become the `request` options of the returned client.
 - **A client** (a `hapic` `Client` or any service client): the discovery request is sent with it, so its hooks run for that one request. The returned client is built from `client.toOptions()`: its defaults, its current headers (including an `Authorization` header) and the same transport instance. **Its hooks are not carried over**, because hooks belong to a client instance; register them on the returned client.
 - A client of an older `hapic` copy without `toOptions()` falls back to its `defaults` plus its current `Authorization` header.
-- Only the five endpoints are copied. `clientId`, `clientSecret`, `redirectUri` and `scope` stay unset, and `issuer` and `jwks_uri` are not used: the client does not validate ID tokens.
+- Only these endpoints are copied. `clientId`, `clientSecret`, `redirectUri` and `scope` stay unset, and `issuer` and `jwks_uri` are not used: the client does not validate ID tokens.
 - `buildOpenIDDiscoveryURL(baseURL)` resolves `.well-known/openid-configuration` against `baseURL` like a link: keep a trailing slash to keep the last path segment (`…/realms/master` without the slash gives `…/realms/.well-known/…`). Without an argument it returns `/.well-known/openid-configuration`.
 - `parseOpenIDProviderMetadata(metadata)` turns metadata you already have into the `options` block.
 
@@ -464,9 +494,10 @@ try {
 
 | Export | Kind | Purpose |
 |---|---|---|
-| `OAuth2Client` | class | Client with `authorize`, `token`, `userInfo` and `options` |
+| `OAuth2Client` | class | Client with `authorize`, `token`, `userInfo`, `deviceAuthorization` and `options` |
 | `AuthorizeAPI` | class | `buildURL(parameters?)` |
-| `TokenAPI` | class | `create`, `createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithRobotCredentials`, `introspect`, `revoke` |
+| `TokenAPI` | class | `create`, `createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithDeviceCode`, `createWithRobotCredentials`, `pollWithDeviceCode`, `introspect`, `revoke` |
+| `DeviceAuthorizationAPI` | class | `create(parameters?, options?)` |
 | `UserInfoAPI` | class | `get(header?)` |
 | `buildAuthorizeURL` | function | Authorize URL from an endpoint and parameters |
 | `createClientWithOpenIDDiscoveryURL` | function | Client from a discovery document |
@@ -480,14 +511,15 @@ try {
 | `AuthorizeResponseType`, `AuthorizeResponseMode`, `AuthorizeCodeChallengeMethod`, `AuthorizeDisplay`, `AuthorizePrompt`, `ResponseType` | enums | Parameter values |
 | `Options`, `Config`, `ConfigInput` | types | Client configuration |
 | `AuthorizeParameters`, `AuthorizeParameterValue` | types | Authorize URL parameters |
-| `TokenGrantParameters`, `Token*GrantParameters`, `TokenGrantResponse`, `TokenBaseOptions`, `TokenIntrospectParameters`, `TokenRevokeParameters`, `ClientAuthenticationParameters` | types | Token requests |
+| `TokenGrantParameters`, `Token*GrantParameters`, `TokenGrantResponse`, `TokenBaseOptions`, `TokenIntrospectParameters`, `TokenRevokeParameters`, `TokenDeviceCodePollParameters`, `ClientAuthenticationParameters` | types | Token requests |
+| `DeviceAuthorizationParameters`, `DeviceAuthorizationResponse` | types | Device authorization requests |
 | `OpenIDProviderMetadata`, `JwtPayload`, `ResponseTypeCombinations` | types | Discovery and token payloads |
 | default export | `OAuth2Client` | An unconfigured client, not the registry's `'default'` |
 
 ## Notes
 
 - **`AuthorizeParameters` has an index signature** for custom parameters. An object typed with an `interface` has no implicit index signature and is not assignable to it, and neither is a type with a non-string extra property. Use a `type` alias, build the object inline, or spread it (`buildURL({ ...parameters })`). The index signature also means a misspelt key (`redirect_url`) is not a type error: it is sent as a custom parameter.
-- **The token methods change the objects you pass.** `create*` writes `client_id`, `client_secret`, `scope`, `redirect_uri` and `realm_id` from the client options into your parameters object, and every token method stores the resolved `clientId`, `clientSecret` and `realmId` in your per-request options object. Pass fresh objects, and never reuse a token parameters object for `buildURL()`.
+- **The token methods change the objects you pass.** `create*` writes `client_id`, `client_secret`, `scope`, `redirect_uri` and `realm_id` from the client options into your parameters object, and every token method stores the resolved `clientId`, `clientSecret` and `realmId` in your per-request options object. `deviceAuthorization.create` does the same; `pollWithDeviceCode` works on copies. Pass fresh objects, and never reuse a token parameters object for `buildURL()`.
 - **Introspection and revocation do not send the configured client credentials by themselves.** Set `clientCredentialsAsHeader: true`, pass `client_id` and `client_secret`, or set an `Authorization` header (see [Refresh, introspect and revoke](#refresh-introspect-and-revoke)).
 - **`clientId` and `clientSecret` in the per-request options only take effect with `clientCredentialsAsHeader: true`.** Without it they are not sent; put `client_id` and `client_secret` in the parameters to send them in the body.
 - **`authorizationEndpoint` must be absolute.** A relative value throws a `TypeError` in `buildURL()`, while the other endpoints may be relative to `baseURL`.

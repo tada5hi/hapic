@@ -46,11 +46,42 @@ export type TokenRobotCredentialsGrantParameters = {
     secret: string,
 } & ClientAuthenticationParameters;
 
+/**
+ * Device access token request (RFC 8628 3.4).
+ */
+export type TokenDeviceCodeGrantParameters = {
+    grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+    device_code: string,
+} & ClientAuthenticationParameters;
+
 export type TokenGrantParameters =    TokenClientCredentialsGrantParameters |
     TokenPasswordGrantParameters |
     TokenAuthorizationCodeGrantParameters |
     TokenRefreshTokenGrantParameters |
-    TokenRobotCredentialsGrantParameters;
+    TokenRobotCredentialsGrantParameters |
+    TokenDeviceCodeGrantParameters;
+
+/**
+ * Parameters for polling the token endpoint with a device code (RFC 8628 3.4, 3.5).
+ * A device authorization response can be passed as is; only the device code and
+ * the client authentication parameters are sent.
+ */
+export type TokenDeviceCodePollParameters = Omit<TokenDeviceCodeGrantParameters, 'grant_type'> & {
+    /**
+     * Seconds to wait before each request.
+     *
+     * default: 5
+     */
+    interval?: number,
+
+    /**
+     * Lifetime of the device code in seconds, measured from the start of polling.
+     * Polling stops with the last error once the next wait would end after it.
+     *
+     * default: undefined (no deadline)
+     */
+    expires_in?: number,
+};
 
 // ------------------------------------------------------------------
 
