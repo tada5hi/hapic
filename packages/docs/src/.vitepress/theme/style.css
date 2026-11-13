@@ -235,3 +235,64 @@
     background-clip: text;
     color: transparent;
 }
+
+/*
+ * Transparent nav over the dark hero on the landing page (pageClass: hc-home).
+ * Unlayered on purpose: VitePress's own component styles are unlayered, so an
+ * override inside a layer would lose.
+ *
+ * The hero extends under the fixed nav. 960px is VitePress's own breakpoint
+ * for making the nav fixed (VPNav.vue) and for VPContent's
+ * `padding-top: var(--vp-nav-height)` (VPContent.vue). This is the single
+ * source of the hero's top padding from 960px up.
+ */
+@media (min-width: 960px) {
+    .Layout.hc-home .VPContent {
+        padding-top: 0;
+    }
+
+    .Layout.hc-home .hc-hero {
+        padding-top: calc(var(--vp-nav-height) + 5rem);
+    }
+}
+
+/* Below 960px the nav is not fixed: it sits above the hero and needs the same
+ * background, or a light strip floats over a dark page. */
+@media (max-width: 959px) {
+    .Layout.hc-home .VPNav {
+        background-color: var(--hc-dark-bg);
+    }
+}
+
+.Layout.hc-home .VPNavBar.top:not(.screen-open) {
+    --vp-nav-bg-color: transparent;
+    --vp-c-gutter: transparent;
+}
+
+/* Re-scope the text variables on the bar's own items only. Setting them on
+ * `.VPNavBar` would also paint the flyout dropdown's text light on white. */
+.Layout.hc-home .VPNavBar.top:not(.screen-open) :is(
+    .VPNavBarTitle,
+    .VPNavBarMenu,
+    .VPNavBarSearch,
+    .VPNavBarAppearance,
+    .VPNavBarSocialLinks,
+    .VPNavBarHamburger
+),
+.Layout.hc-home .VPNavBar.top:not(.screen-open) .VPNavBarExtra > .button {
+    --vp-c-text-1: var(--hc-dark-fg);
+    --vp-c-text-2: var(--hc-dark-fg-muted);
+    --vp-c-brand-1: var(--hc-color-accent-400);
+    --vp-c-divider: var(--hc-dark-border);
+    --vp-c-bg-alt: rgb(255 255 255 / 0.06);
+    --vp-input-border-color: var(--hc-dark-border);
+    --vp-input-switch-bg-color: rgb(255 255 255 / 0.08);
+}
+
+/* `.VPFlyout:hover { color: var(--vp-c-brand-1) }` (VPFlyout.vue) resolves the
+ * hero accent into a literal colour on the flyout root, which then inherits
+ * into the open dropdown. Neutralise it on the ancestor. */
+.Layout.hc-home .VPNavBar.top:not(.screen-open) .VPNavBarMenuGroup:hover,
+.Layout.hc-home .VPNavBar.top:not(.screen-open) .VPNavBarExtra:hover {
+    color: var(--hc-dark-fg);
+}

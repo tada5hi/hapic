@@ -109,14 +109,27 @@ const head = computed(() => (frontmatter.value as HomeFrontmatter).packages);
     text-decoration: none;
 }
 
-.hc-package-name a:hover {
+/* The name link stays the card's single link; its stretched ::after makes the
+ * whole card (position: relative above) the click target. */
+.hc-package-name a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 14px;
+}
+
+.hc-package:hover .hc-package-name a {
     color: var(--vp-c-brand-1);
 }
 
 .hc-package-name a:focus-visible {
+    outline: none;
+}
+
+.hc-package-name a:focus-visible::after {
     outline: 2px solid var(--hc-color-accent-500);
-    outline-offset: 2px;
-    border-radius: 4px;
+    outline-offset: -2px;
 }
 
 .hc-package-summary {

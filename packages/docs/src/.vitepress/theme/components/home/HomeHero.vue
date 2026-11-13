@@ -63,9 +63,11 @@ const { copied, copy } = useCopy();
     color: var(--hc-dark-fg);
 }
 
+/* The top padding from 960px up, where the hero slides under the fixed nav,
+ * lives with the nav overrides at the end of style.css. */
 @media (min-width: 960px) {
     .hc-hero {
-        padding: 136px 0 72px;
+        padding-bottom: 72px;
     }
 }
 
