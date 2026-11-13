@@ -7,17 +7,13 @@
 <script lang="ts">
 import type { PipelineScenario, PipelineScenarioId } from './types';
 
-type ScenarioId = PipelineScenarioId;
-
-type Scenario = PipelineScenario;
-
 /*
  * Each scenario mirrors Client.request (packages/client/src/module.ts):
  * a 400 to 599 status leaves the track after decode into the responseError
  * hooks, a failed or timed out dispatch leaves it at fetch into the
  * requestError hooks, and the response hooks run only on success.
  */
-const SCENARIOS: Scenario[] = [
+const SCENARIOS: PipelineScenario[] = [
     {
         id: 'ok',
         label: '200 OK',
@@ -49,7 +45,7 @@ const SCENARIOS: Scenario[] = [
 ];
 
 /** Seconds for one loop of the packet; travel takes the first 72%. */
-const DURATION: Record<ScenarioId, number> = {
+const DURATION: Record<PipelineScenarioId, number> = {
     ok: 3,
     retry: 8,
     network: 2.2,
@@ -66,11 +62,11 @@ import {
 } from 'vue';
 import HomePipelineDiagram from './HomePipelineDiagram.vue';
 
-const currentId = ref<ScenarioId>('retry');
+const currentId = ref<PipelineScenarioId>('retry');
 const playing = ref(true);
 const autoAdvance = ref(true);
 
-const current = computed(() => SCENARIOS.find((s) => s.id === currentId.value) as Scenario);
+const current = computed(() => SCENARIOS.find((s) => s.id === currentId.value) as PipelineScenario);
 
 const tone = computed(() => {
     if (current.value.result === 'thrown') {
@@ -101,7 +97,7 @@ const schedule = () => {
     }, DURATION[currentId.value] * LOOPS * 1000);
 };
 
-const select = (id: ScenarioId) => {
+const select = (id: PipelineScenarioId) => {
     autoAdvance.value = false;
     stop();
     currentId.value = id;

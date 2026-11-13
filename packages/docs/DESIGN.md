@@ -9,7 +9,7 @@ the eye catcher. VitePress 1.6 default theme, plain CSS, no Tailwind, no extra d
 ## Palette and surfaces
 
 - Tokens live in `src/.vitepress/theme/style.css`: the `--hc-*` scale (indigo primary, cyan accent, as in the
-  logo), the bridge to `--vp-c-brand-*`, and the method colours used by the scenario chips.
+  logo), warning and error, and the bridge to `--vp-c-brand-*`. The scenario chips use accent, warning and error.
 - The hero, the footer and `.hc-code` blocks use the `--hc-dark-*` tokens and stay dark in both colour
   modes. All other landing sections follow the colour mode.
 
@@ -42,7 +42,7 @@ neither do the site `description` and `og:` texts in `config.mjs`. Rephrase inst
 1. Add a frontmatter key to `src/index.md` and its type to `HomeFrontmatter` in `types.ts`.
 2. Create `theme/components/home/Home<Name>.vue` reading it via `useData().frontmatter`; use the shared
    classes `hc-section` (or `hc-section-alt`), `hc-wrap`, `hc-eyebrow`, `hc-heading`, `hc-lead`.
-3. Mount it in `Home.vue`, keeping light and dark sections alternating.
+3. Mount it in `Home.vue`, keeping page and soft backgrounds (`hc-section` / `hc-section-alt`) alternating.
 
 ## Adding a package card
 

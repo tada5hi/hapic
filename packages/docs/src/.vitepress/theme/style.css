@@ -6,25 +6,13 @@
  */
 
 /*
- * hapic design tokens. The marketing components on the landing page read
- * every color/border/radius through these custom properties, so dark-mode
- * flips work without per-component overrides.
- *
- * VitePress's `--vp-c-brand-*` tokens are aliased to the hapic primary
- * scale so the docs chrome (sidebar accents, hero buttons, heading
- * underlines) follows the marketing palette.
+ * Site theme: the hapic colour scales (indigo primary, cyan accent, status
+ * colours), the bridge that points VitePress's `--vp-c-brand-*` and button
+ * tokens at the primary scale, the fixed dark surface tokens, the shared
+ * landing page classes (`hc-*`) and, at the end, the unlayered nav overrides
+ * for the landing page. See packages/docs/DESIGN.md.
  */
 :root {
-    --hc-color-bg: #ffffff;
-    --hc-color-bg-elevated: #f8fafc;
-    --hc-color-bg-muted: #f1f5f9;
-
-    --hc-color-fg: #0f172a;
-    --hc-color-fg-muted: #475569;
-
-    --hc-color-border: #e2e8f0;
-    --hc-color-border-muted: #f1f5f9;
-
     --hc-color-primary-300: #a5b4fc;
     --hc-color-primary-400: #818cf8;
     --hc-color-primary-500: #6366f1;
@@ -37,15 +25,8 @@
 
     --hc-color-warning-500: #f59e0b;
     --hc-color-error-500: #ef4444;
-    --hc-color-success-500: #22c55e;
 
     --hc-color-on-primary: #ffffff;
-
-    --hc-method-get: #22c55e;
-    --hc-method-post: #6366f1;
-    --hc-method-put: #f59e0b;
-    --hc-method-patch: #06b6d4;
-    --hc-method-delete: #ef4444;
 
     --vp-c-brand-1: var(--hc-color-primary-600);
     --vp-c-brand-2: var(--hc-color-primary-700);
@@ -59,22 +40,9 @@
     --vp-button-brand-border: var(--hc-color-primary-600);
     --vp-button-brand-hover-border: var(--hc-color-primary-500);
     --vp-button-brand-active-border: var(--hc-color-primary-700);
-
-    --vp-home-hero-name-color: transparent;
-    --vp-home-hero-name-background: linear-gradient(120deg, var(--hc-color-primary-500), var(--hc-color-accent-500));
 }
 
 .dark {
-    --hc-color-bg: #171717;
-    --hc-color-bg-elevated: #262626;
-    --hc-color-bg-muted: #1d1d1d;
-
-    --hc-color-fg: #f1f5f9;
-    --hc-color-fg-muted: #a3a3a3;
-
-    --hc-color-border: #333333;
-    --hc-color-border-muted: #262626;
-
     --hc-color-primary-300: #a5b4fc;
     --hc-color-primary-400: #818cf8;
     --hc-color-primary-500: #6366f1;
@@ -192,18 +160,23 @@
 }
 
 .hc-btn:focus-visible {
-    outline: 2px solid var(--hc-color-accent-400);
+    outline: 2px solid var(--vp-c-brand-1);
     outline-offset: 2px;
+}
+
+/* The hero is a fixed dark surface: the brand ring lacks contrast there. */
+.hc-hero .hc-btn:focus-visible {
+    outline-color: var(--hc-color-accent-400);
 }
 
 .hc-btn-primary {
     background-image: linear-gradient(100deg, var(--hc-color-primary-500), var(--hc-color-accent-500));
-    color: var(--hc-dark-fg-strong);
+    color: var(--hc-color-on-primary);
 }
 
 .hc-btn-primary:hover {
     opacity: 0.9;
-    color: var(--hc-dark-fg-strong);
+    color: var(--hc-color-on-primary);
 }
 
 .hc-btn-ghost {
@@ -228,6 +201,19 @@
     font-size: 13px;
     line-height: 1.65;
     white-space: pre;
+}
+
+/* Visually hidden, still read by assistive technology. */
+.hc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .hc-gradient-text {

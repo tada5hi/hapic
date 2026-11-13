@@ -121,10 +121,15 @@ const onKeydown = (event: KeyboardEvent) => {
                     <button
                         type="button"
                         class="hc-codetabs-copy"
+                        :aria-label="`Copy ${codeTabs.tabs[active].label} code`"
                         @click="copy(codeTabs.tabs[active].code)"
                     >
                         {{ copied ? 'Copied' : 'Copy' }}
                     </button>
+                    <span
+                        class="hc-sr-only"
+                        role="status"
+                    >{{ copied ? 'Copied' : '' }}</span>
                 </div>
                 <pre class="hc-code"><code>{{ codeTabs.tabs[active].code }}</code></pre>
             </div>
@@ -204,9 +209,14 @@ const onKeydown = (event: KeyboardEvent) => {
     color: var(--hc-dark-fg);
 }
 
-.hc-codetabs-tab:focus-visible,
+.hc-codetabs-tab:focus-visible {
+    outline: 2px solid var(--vp-c-brand-1);
+    outline-offset: 2px;
+}
+
+/* The copy button sits on the dark code block. */
 .hc-codetabs-copy:focus-visible {
-    outline: 2px solid var(--hc-color-accent-500);
+    outline: 2px solid var(--hc-color-accent-400);
     outline-offset: 2px;
 }
 

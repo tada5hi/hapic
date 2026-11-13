@@ -8,6 +8,7 @@
 import { computed } from 'vue';
 import { useData } from 'vitepress';
 import type { HomeFrontmatter } from './types';
+import { toHref } from './href';
 import { useCopy } from './use-copy';
 
 const { frontmatter } = useData();
@@ -32,15 +33,20 @@ const { copied, copy } = useCopy();
             <div class="hc-hero-actions">
                 <a
                     class="hc-btn hc-btn-primary"
-                    :href="hero.primary.link"
+                    :href="toHref(hero.primary.link)"
                 >{{ hero.primary.text }}</a>
                 <button
                     type="button"
                     class="hc-btn hc-btn-ghost hc-hero-install"
+                    aria-label="Copy install command"
                     @click="copy(hero.install)"
                 >
                     {{ copied ? 'Copied' : hero.install }}
                 </button>
+                <span
+                    class="hc-sr-only"
+                    role="status"
+                >{{ copied ? 'Copied' : '' }}</span>
             </div>
             <p class="hc-hero-meta">
                 {{ hero.meta.join(' · ') }}

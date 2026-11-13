@@ -128,7 +128,7 @@ const head = computed(() => (frontmatter.value as HomeFrontmatter).packages);
 }
 
 .hc-package-name a:focus-visible::after {
-    outline: 2px solid var(--hc-color-accent-500);
+    outline: 2px solid var(--vp-c-brand-1);
     outline-offset: -2px;
 }
 

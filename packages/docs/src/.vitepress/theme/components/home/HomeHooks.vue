@@ -8,6 +8,7 @@
 import { computed } from 'vue';
 import { useData } from 'vitepress';
 import type { HomeFrontmatter } from './types';
+import { toHref } from './href';
 
 const { frontmatter } = useData();
 
@@ -54,7 +55,7 @@ const points = computed(() => hooks.value.points.map((point) => {
                 </ul>
                 <a
                     class="hc-btn hc-btn-primary"
-                    :href="hooks.action.link"
+                    :href="toHref(hooks.action.link)"
                 >{{ hooks.action.text }} <span aria-hidden="true">→</span></a>
             </div>
             <pre class="hc-code hc-hooks-code"><code>{{ hooks.code }}</code></pre>

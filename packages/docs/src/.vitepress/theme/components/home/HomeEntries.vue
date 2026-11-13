@@ -8,6 +8,7 @@
 import { computed } from 'vue';
 import { useData } from 'vitepress';
 import type { HomeFrontmatter } from './types';
+import { toHref } from './href';
 
 const { frontmatter } = useData();
 
@@ -44,7 +45,7 @@ const number = (index: number) => String(index + 1).padStart(2, '0');
                         {{ number(index) }}
                     </p>
                     <h3 class="hc-entry-title">
-                        <a :href="item.link">{{ item.title }}</a>
+                        <a :href="toHref(item.link)">{{ item.title }}</a>
                     </h3>
                     <p class="hc-entry-text">
                         {{ item.description }}
@@ -54,7 +55,7 @@ const number = (index: number) => String(index + 1).padStart(2, '0');
                             v-for="link in item.links"
                             :key="link.link"
                         >
-                            <a :href="link.link"><span
+                            <a :href="toHref(link.link)"><span
                                 class="hc-entry-arrow"
                                 aria-hidden="true"
                             >→</span>{{ link.text }}</a>
@@ -145,7 +146,7 @@ const number = (index: number) => String(index + 1).padStart(2, '0');
 }
 
 .hc-entry a:focus-visible {
-    outline: 2px solid var(--hc-color-accent-500);
+    outline: 2px solid var(--vp-c-brand-1);
     outline-offset: 2px;
     border-radius: 4px;
 }
