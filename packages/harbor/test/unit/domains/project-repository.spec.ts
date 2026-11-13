@@ -97,7 +97,7 @@ describe('src/domains/project-repository', () => {
         const request = transport.requests.at(-1)!;
 
         expect(request.method).toBe('GET');
-        expect(request.url).toBe('projects/foo/repositories?q=name%3Dfoo%252Fbar&page_size=1');
+        expect(request.url).toBe('projects/foo/repositories?q=name%3D%255Cfoo%252Fbar&page_size=1');
     });
 
     it('should update resource', async () => {
@@ -170,8 +170,24 @@ describe('src/domains/project-repository', () => {
         const result = await api.findOne('foo/a/b');
 
         expect(result?.name).toBe('foo/a/b');
-        // q decodes (twice) to `name=foo/a/b`: exact match, not `~` substring
-        expect(transport.requests.at(-1)!.url).toBe('projects/foo/repositories?q=name%3Dfoo%252Fa%252Fb&page_size=1');
+        // q decodes (twice) to `name=\foo/a/b`: a leading `\` forces an exact match
+        expect(transport.requests.at(-1)!.url).toBe('projects/foo/repositories?q=name%3D%255Cfoo%252Fa%252Fb&page_size=1');
+    });
+
+    it('should find resource by an exact name that looks like a fuzzy match', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: [],
+            }),
+        });
+        const api = new ProjectRepositoryAPI({ client: createClient({ transport }) });
+
+        await api.findOne({ projectName: '~foo', repositoryName: 'bar' });
+
+        expect(transport.requests.at(-1)!.url)
+            .toBe('projects/~foo/repositories?q=name%3D%255C%257Efoo%252Fbar&page_size=1');
     });
 
     it('should get all pages without mutating the query', async () => {
