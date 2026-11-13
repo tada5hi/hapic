@@ -96,3 +96,142 @@
     --vp-c-bg-soft: #262626;
     --vp-c-bg-elv: #262626;
 }
+
+/*
+ * Fixed dark surfaces (hero, footer) and the landing page motif. These stay
+ * dark in both colour modes; everything else follows the colour mode.
+ */
+:root {
+    --hc-dark-bg: #0a0a12;
+    --hc-dark-bg-elevated: #0f1020;
+    --hc-dark-fg: #e8e9f3;
+    --hc-dark-fg-muted: #a5a8c0;
+    --hc-dark-border: #262842;
+
+    --hc-gradient: linear-gradient(100deg, var(--hc-color-primary-400), var(--hc-color-accent-400));
+
+    --hc-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/*
+ * Shared landing page classes. Section components compose these and keep
+ * only their own layout in scoped styles.
+ */
+.hc-section {
+    padding: 64px 0;
+    background-color: var(--vp-c-bg);
+    color: var(--vp-c-text-1);
+}
+
+@media (min-width: 768px) {
+    .hc-section {
+        padding: 88px 0;
+    }
+}
+
+.hc-section-alt {
+    background-color: var(--vp-c-bg-soft);
+}
+
+.hc-wrap {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.hc-eyebrow {
+    margin: 0 0 10px;
+    font-family: var(--hc-font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    color: var(--vp-c-brand-1);
+}
+
+.hc-heading {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--vp-c-text-1);
+}
+
+.hc-lead {
+    max-width: 600px;
+    margin: 0 0 28px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--vp-c-text-2);
+}
+
+.hc-card {
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 14px;
+    background-color: var(--vp-c-bg-elv);
+}
+
+.hc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+}
+
+.hc-btn:focus-visible {
+    outline: 2px solid var(--hc-color-accent-400);
+    outline-offset: 2px;
+}
+
+.hc-btn-primary {
+    background-image: linear-gradient(100deg, var(--hc-color-primary-500), var(--hc-color-accent-500));
+    color: #ffffff;
+}
+
+.hc-btn-primary:hover {
+    opacity: 0.9;
+    color: #ffffff;
+}
+
+.hc-btn-ghost {
+    border-color: var(--vp-c-divider);
+    background-color: transparent;
+    color: var(--vp-c-text-1);
+}
+
+.hc-btn-ghost:hover {
+    border-color: var(--vp-c-brand-1);
+}
+
+.hc-code {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    border: 1px solid var(--hc-dark-border);
+    border-radius: 12px;
+    background-color: var(--hc-dark-bg-elevated);
+    color: var(--hc-dark-fg);
+    font-family: var(--hc-font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre;
+}
+
+.hc-gradient-text {
+    background-image: var(--hc-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
