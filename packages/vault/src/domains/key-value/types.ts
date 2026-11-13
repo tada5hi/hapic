@@ -25,6 +25,10 @@ export type KeyValueV2Payload = {
     data: Record<string, any>
 };
 
+export type KeyValueV2VersionsPayload = {
+    versions: number[]
+};
+
 /**
  * Metadata of a single secret version.
  */

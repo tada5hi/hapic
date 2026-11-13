@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -12,6 +12,7 @@ import type {
     KeyValueV2CreateResponse,
     KeyValueV2GetOneResponse,
     KeyValueV2Payload,
+    KeyValueV2VersionsPayload,
 } from './types';
 
 export class KeyValueV2API extends BaseAPI {
@@ -73,7 +74,10 @@ export class KeyValueV2API extends BaseAPI {
     }
 
     /**
-     * Delete a secret.
+     * Soft delete the latest version of a secret.
+     *
+     * The version is no longer returned by reads, but its data is kept
+     * and can be restored with undeleteVersions.
      *
      * @param mount The mount point on which the secret engine is mounted.
      * @param path The secret path relative to the secret engine mount.
@@ -81,8 +85,81 @@ export class KeyValueV2API extends BaseAPI {
     async delete(
         mount: string,
         path: string,
-    ) {
+    ) : Promise<void> {
+        await this.client.delete(`${mount}/data/${path}`);
+    }
+
+    /**
+     * Permanently delete the metadata and all versions of a secret.
+     *
+     * This cannot be undone.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     */
+    async deleteMetadata(
+        mount: string,
+        path: string,
+    ) : Promise<void> {
         await this.client.delete(`${mount}/metadata/${path}`);
+    }
+
+    /**
+     * Soft delete the given versions of a secret.
+     *
+     * The versions are no longer returned by reads, but their data is kept
+     * and can be restored with undeleteVersions.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param versions The versions to delete.
+     */
+    async deleteVersions(
+        mount: string,
+        path: string,
+        versions: number[],
+    ) : Promise<void> {
+        const payload : KeyValueV2VersionsPayload = { versions };
+
+        await this.client.post(`${mount}/delete/${path}`, payload);
+    }
+
+    /**
+     * Restore soft deleted versions of a secret.
+     *
+     * Destroyed versions cannot be restored.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param versions The versions to restore.
+     */
+    async undeleteVersions(
+        mount: string,
+        path: string,
+        versions: number[],
+    ) : Promise<void> {
+        const payload : KeyValueV2VersionsPayload = { versions };
+
+        await this.client.post(`${mount}/undelete/${path}`, payload);
+    }
+
+    /**
+     * Permanently remove the data of the given versions of a secret.
+     *
+     * This cannot be undone; the version metadata is kept and marked as destroyed.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param versions The versions to destroy.
+     */
+    async destroyVersions(
+        mount: string,
+        path: string,
+        versions: number[],
+    ) : Promise<void> {
+        const payload : KeyValueV2VersionsPayload = { versions };
+
+        await this.client.put(`${mount}/destroy/${path}`, payload);
     }
 
     /**

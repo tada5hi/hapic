@@ -113,8 +113,8 @@ describe('src/domains/key-value/v2', () => {
         expect(new Headers(transport.requests.at(-1)!.headers).get('content-type')).toBe('application/json');
     });
 
-    it('should delete resource', async () => {
-        const transport = new MemoryTransport({ fetch: () => ({ status: 200 }) });
+    it('should soft delete the latest version', async () => {
+        const transport = new MemoryTransport({ fetch: () => ({ status: 204 }) });
 
         const api = new KeyValueV2API({ client: createClient({ transport }) });
 
@@ -123,8 +123,48 @@ describe('src/domains/key-value/v2', () => {
         const req = transport.requests.at(-1)!;
 
         expect(req.method).toBe('DELETE');
-        expect(req.url).toBe('foo/metadata/bar');
+        expect(req.url).toBe('foo/data/bar');
         expect(req.body).toBeUndefined();
+    });
+
+    it('should delete metadata and all versions', async () => {
+        const transport = new MemoryTransport({ fetch: () => ({ status: 204 }) });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        await api.deleteMetadata('foo', 'a/b');
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('DELETE');
+        expect(req.url).toBe('foo/metadata/a/b');
+        expect(req.body).toBeUndefined();
+    });
+
+    it.each([
+        ['deleteVersions', 'POST', 'delete'],
+        ['undeleteVersions', 'POST', 'undelete'],
+        ['destroyVersions', 'PUT', 'destroy'],
+    ] as const)('should %s', async (name, method, segment) => {
+        const transport = new MemoryTransport({ fetch: () => ({ status: 204 }) });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        await api[name]('foo', 'a/b', [1, 2]);
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe(method);
+        expect(req.url).toBe(`foo/${segment}/a/b`);
+        expect(JSON.parse(req.body as string)).toEqual({ versions: [1, 2] });
+
+        await api[name]('foo', 'a/b', []);
+
+        const empty = transport.requests.at(-1)!;
+
+        expect(transport.requests).toHaveLength(2);
+        expect(empty.method).toBe(method);
+        expect(JSON.parse(empty.body as string)).toEqual({ versions: [] });
     });
 
     it('should save resource', async () => {
