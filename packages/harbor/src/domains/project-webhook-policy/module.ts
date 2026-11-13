@@ -5,13 +5,11 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { merge } from 'smob';
 import { extractResourceIDOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
 import { buildRequestPath, getCollection, withResourceName } from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
-    ProjectWebhookEventType,
     ProjectWebhookPolicy,
     ProjectWebhookPolicyCreateContext,
     ProjectWebhookPolicyCreateResponse,
@@ -32,7 +30,7 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
         const response = await this.client
             .post(
                 buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies']),
-                this.extendPayload(context.data),
+                this.extendPayload(context.data, true),
                 withResourceName(context.isProjectName),
             );
 
@@ -103,23 +101,26 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             );
     }
 
-    protected extendPayload(data: Partial<ProjectWebhookPolicy>) : Partial<ProjectWebhookPolicy> {
-        data.name = data.name || (Math.random() + 1).toString(36).substring(7);
+    /**
+     * Fill in `enabled` (and, on create, a random `name`) when absent.
+     * Harbor replaces the whole policy on update and requires
+     * `event_types` and `targets`, so those are sent as given.
+     * The input is not modified.
+     */
+    protected extendPayload(
+        data: Partial<ProjectWebhookPolicy>,
+        withName = false,
+    ) : Partial<ProjectWebhookPolicy> {
+        const output = { ...data };
 
-        if (typeof data.enabled === 'undefined') {
-            data.enabled = true;
+        if (withName && !output.name) {
+            output.name = (Math.random() + 1).toString(36).substring(7);
         }
 
-        if (typeof data.targets === 'undefined') {
-            data.targets = [];
+        if (typeof output.enabled === 'undefined') {
+            output.enabled = true;
         }
 
-        if (typeof data.event_types === 'undefined') {
-            data.event_types = ['PUSH_ARTIFACT'];
-        } else {
-            data.event_types = merge(['PUSH_ARTIFACT'] satisfies ProjectWebhookEventType[], data.event_types);
-        }
-
-        return data;
+        return output;
     }
 }

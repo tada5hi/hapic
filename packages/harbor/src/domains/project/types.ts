@@ -19,10 +19,44 @@ export type Project = {
     metadata: ProjectMetadata
 };
 
+/**
+ * A boolean project metadata value, sent as a string.
+ */
+export type ProjectMetadataFlag = 'true' | 'false';
+
+/**
+ * Project metadata. Every value is a string on the wire
+ * (swagger `ProjectMetadata`).
+ */
 export type ProjectMetadata = {
-    public: boolean,
-    auto_scan?: string,
-    severity?: 'none' | 'low' | 'medium' | 'high' | 'critical'
+    public: ProjectMetadataFlag,
+    enable_content_trust?: ProjectMetadataFlag,
+    enable_content_trust_cosign?: ProjectMetadataFlag,
+    prevent_vul?: ProjectMetadataFlag,
+    severity?: 'none' | 'low' | 'medium' | 'high' | 'critical',
+    auto_scan?: ProjectMetadataFlag,
+    auto_sbom_generation?: ProjectMetadataFlag,
+    reuse_sys_cve_allowlist?: ProjectMetadataFlag,
+    retention_id?: string,
+    proxy_speed_kb?: string,
+    max_upstream_conn?: string,
+    proxy_cache_local_on_not_found?: ProjectMetadataFlag
+};
+
+export type ProjectCVEAllowlistItem = {
+    cve_id: string
+};
+
+/**
+ * The CVE allowlist of a project (swagger `CVEAllowlist`).
+ */
+export type ProjectCVEAllowlist = {
+    id?: number,
+    project_id?: number,
+    expires_at?: number | null,
+    items?: ProjectCVEAllowlistItem[],
+    creation_time?: string,
+    update_time?: string
 };
 
 export type ProjectCreatePayload = {
@@ -32,11 +66,13 @@ export type ProjectCreatePayload = {
     storage_limit?: number
 };
 
+/**
+ * Harbor applies only `metadata` and `cve_allowlist` on update;
+ * metadata keys left out keep their value.
+ */
 export type ProjectUpdatePayload = {
-    project_name: string,
-    public?: boolean,
-    registry_id?: string | number | null,
-    storage_limit?: number
+    metadata?: Partial<ProjectMetadata>,
+    cve_allowlist?: ProjectCVEAllowlist
 };
 
 export type ProjectCreateResponse = {

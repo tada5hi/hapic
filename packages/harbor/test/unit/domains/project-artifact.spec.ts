@@ -32,18 +32,21 @@ describe('src/domains/project-artifact', () => {
         const transport = new MemoryTransport();
         const api = new ProjectRepositoryArtifactAPI({ client: createClient({ transport }) });
 
+        const source = {
+            repositoryName: 'biz',
+            projectName: 'baz',
+        };
+
         await api.copy({
             repositoryName: 'bar',
             projectName: 'foo',
-        }, {
-            repositoryName: 'biz',
-            projectName: 'baz',
-        });
+        }, source);
 
         const request = transport.requests.at(-1)!;
 
         expect(request.method).toBe('POST');
-        expect(request.url).toBe('projects/foo/repositories/bar/artifacts?from=baz/biz:latest');
+        expect(request.url).toBe('projects/foo/repositories/bar/artifacts?from=baz%2Fbiz%3Alatest');
+        expect(source).toEqual({ repositoryName: 'biz', projectName: 'baz' });
     });
 
     it('should get resources', async () => {
@@ -97,7 +100,7 @@ describe('src/domains/project-artifact', () => {
 
         expect(transport.requests.map((r) => `${r.method} ${r.url}`)).toEqual([
             'GET projects/foo/repositories/a%252Fb/artifacts?q=tags%3Dv1',
-            'POST projects/foo/repositories/a%252Fb/artifacts?from=baz/biz:latest',
+            'POST projects/foo/repositories/a%252Fb/artifacts?from=baz%2Fbiz%3Alatest',
             'DELETE projects/foo/repositories/a%252Fb/artifacts/sha256%3Aabc',
         ]);
     });

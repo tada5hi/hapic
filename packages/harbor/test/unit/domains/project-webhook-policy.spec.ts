@@ -7,6 +7,7 @@
 
 import { MemoryTransport, createClient } from 'hapic';
 import { ProjectWebhookPolicyAPI } from '../../../src';
+import type { ProjectWebhookEventType } from '../../../src';
 
 describe('src/domains/project-webhook-policy', () => {
     it('should create resource', async () => {
@@ -19,6 +20,12 @@ describe('src/domains/project-webhook-policy', () => {
                 name: 'foo',
                 project_id: 1,
                 description: '',
+                event_types: ['SCANNING_STOPPED', 'QUOTA_EXCEED'],
+                targets: [{
+                    type: 'http', 
+                    address: 'https://example.com', 
+                    skip_cert_verify: false, 
+                }],
             },
         });
 
@@ -30,10 +37,45 @@ describe('src/domains/project-webhook-policy', () => {
             project_id: 1,
             enabled: true,
             description: '',
-            event_types: ['PUSH_ARTIFACT'],
+            event_types: ['SCANNING_STOPPED', 'QUOTA_EXCEED'],
             name: 'foo',
-            targets: [],
+            targets: [{
+                type: 'http', 
+                address: 'https://example.com', 
+                skip_cert_verify: false, 
+            }],
         });
+    });
+
+    it('should not force event types or targets on create', async () => {
+        const transport = new MemoryTransport();
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+
+        await api.create({
+            projectIdOrName: 1,
+            data: { name: 'foo', enabled: false },
+        });
+
+        expect(JSON.parse(transport.requests.at(-1)!.body as string)).toEqual({
+            name: 'foo',
+            enabled: false,
+        });
+    });
+
+    it('should not mutate the input on create', async () => {
+        const transport = new MemoryTransport();
+        const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+        const data = { event_types: ['PULL_ARTIFACT' as const] };
+
+        await api.create({ projectIdOrName: 1, data });
+
+        expect(data).toEqual({ event_types: ['PULL_ARTIFACT'] });
+
+        const body = JSON.parse(transport.requests.at(-1)!.body as string);
+
+        expect(body.event_types).toEqual(['PULL_ARTIFACT']);
+        expect(typeof body.name).toBe('string');
+        expect(body.name.length).toBeGreaterThan(0);
     });
 
     it('should get resources', async () => {
@@ -101,11 +143,12 @@ describe('src/domains/project-webhook-policy', () => {
     it('should update resource', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectWebhookPolicyAPI({ client: createClient({ transport }) });
+        const data = { name: 'baz', event_types: ['TAG_RETENTION' as const] };
 
         await api.update({
             projectIdOrName: 1,
             id: 1,
-            data: { name: 'baz' },
+            data,
         });
 
         const request = transport.requests.at(-1)!;
@@ -114,11 +157,11 @@ describe('src/domains/project-webhook-policy', () => {
         expect(request.url).toBe('projects/1/webhook/policies/1');
         expect(JSON.parse(request.body as string)).toEqual({
             enabled: true,
-            event_types: ['PUSH_ARTIFACT'],
+            event_types: ['TAG_RETENTION'],
             id: 1,
             name: 'baz',
-            targets: [],
         });
+        expect(data).toEqual({ name: 'baz', event_types: ['TAG_RETENTION'] });
     });
 
     it('should delete resource', async () => {
@@ -131,5 +174,28 @@ describe('src/domains/project-webhook-policy', () => {
 
         expect(request.method).toBe('DELETE');
         expect(request.url).toBe('projects/1/webhook/policies/1');
+    });
+
+    it('should type the event types accepted by Harbor', () => {
+        const supported = [
+            'PUSH_ARTIFACT',
+            'PULL_ARTIFACT',
+            'DELETE_ARTIFACT',
+            'QUOTA_EXCEED',
+            'QUOTA_WARNING',
+            'SCANNING_FAILED',
+            'SCANNING_STOPPED',
+            'SCANNING_COMPLETED',
+            'REPLICATION',
+            'TAG_RETENTION',
+        ] satisfies ProjectWebhookEventType[];
+
+        // @ts-expect-error QUOTA_EXCEEDED is not a Harbor event type
+        const quota: ProjectWebhookEventType = 'QUOTA_EXCEEDED';
+        // @ts-expect-error chart events are not Harbor event types
+        const chart: ProjectWebhookEventType = 'UPLOAD_CHART';
+
+        expect(supported).toHaveLength(10);
+        expect([quota, chart]).toHaveLength(2);
     });
 });

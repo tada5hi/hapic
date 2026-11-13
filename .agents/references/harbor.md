@@ -11,9 +11,11 @@ Source of truth: [Harbor REST API swagger](https://github.com/goharbor/harbor/bl
 - `X-Is-Resource-Name: true` makes Harbor read a `{project_name_or_id}` path parameter as a name. Only the project and webhook policy routes declare it.
 - A repository name containing `/` must be URL-encoded twice in the path (`a/b` becomes `a%252Fb`); the handlers unescape it once more.
 - Create responses carry the new numeric id at the end of the `Location` header.
-- Project robots are listed with `q=Level=project,ProjectID=<id>` (capitalised keys); without it only system robots are returned. A robot's `level` and `name` cannot change on update.
-- Webhook event types accepted by the server: `PUSH_ARTIFACT`, `PULL_ARTIFACT`, `DELETE_ARTIFACT`, `QUOTA_EXCEED`, `QUOTA_WARNING`, `SCANNING_FAILED`, `SCANNING_STOPPED`, `SCANNING_COMPLETED`, `REPLICATION`, `TAG_RETENTION` (`pkg/notification/notification.go`). A policy needs at least one target.
-- A project update applies only `metadata` and `cve_allowlist`; metadata values are strings (`public: "true"`).
+- Project robots are listed with `q=Level=project,ProjectID=<id>` (capitalised keys, `server/v2.0/handler/robot.go` `ListRobot`); without them only system robots are returned. `RobotQuery` types these keys.
+- Robots: create and update require `level` (`system` or `project`) and at least one permission whose `kind` is `system` or `project` (`robot.go` `validate`). Create needs a `duration` of `-1` or a positive number of days, and an absent one reads as `0` and is rejected, so `RobotAPI.extendPayload` sets `-1` when absent; it is not applied on update, where an absent `duration` keeps the current one. Update must repeat the unchanged `name` and `level`, and replaces `description` and `disable`.
+- Webhook event types accepted by the server: `PUSH_ARTIFACT`, `PULL_ARTIFACT`, `DELETE_ARTIFACT`, `QUOTA_EXCEED`, `QUOTA_WARNING`, `SCANNING_FAILED`, `SCANNING_STOPPED`, `SCANNING_COMPLETED`, `REPLICATION`, `TAG_RETENTION` (`pkg/notification/notification.go`), mirrored by `ProjectWebhookEventType`. A policy needs at least one event type and one target (`server/v2.0/handler/webhook.go`); `ProjectWebhookPolicyAPI` sends both as given and fills in only `enabled: true` (and a random `name` on create). An update replaces the whole policy.
+- A project update applies only `metadata` and `cve_allowlist` (`project.go` `UpdateProject`); metadata keys left out keep their value. Every metadata value is a string (`public: "true"`, swagger `ProjectMetadata`). Create also accepts the top-level boolean `public`, which Harbor copies into `metadata.public`.
+- Artifact copy takes the source as the `from` query parameter (`project/repository:tag` or `project/repository@digest`), decoded once like any query value, so it is URL-encoded once.
 
 ## Endpoint mapping
 

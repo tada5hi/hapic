@@ -13,9 +13,11 @@ export type RobotPermissionAccess = {
     action: `${RobotPermissionAction}`
 };
 
+export type RobotLevel = 'system' | 'project';
+
 export type RobotPermission = {
     access: RobotPermissionAccess[],
-    kind: 'project',
+    kind: RobotLevel,
     namespace: string
 };
 
@@ -28,19 +30,46 @@ export type Robot = {
     update_time?: string,
     expires_at?: number,
     duration?: number,
-    level?: 'system',
+    level?: RobotLevel,
     disable?: boolean,
     editable?: boolean,
     permissions?: RobotPermission[]
 };
 
-export type RobotGetManyContext = {
-    query?: ResourceCollectionQuery<Robot>
+type RobotCollectionQuery = ResourceCollectionQuery<Robot>;
+
+/**
+ * Harbor selects project robots with the capitalised `Level` and
+ * `ProjectID` keys (`q=Level=project,ProjectID=1`); without them
+ * only system robots are listed.
+ */
+export type RobotQuery = Omit<RobotCollectionQuery, 'q'> & {
+    q?: Omit<NonNullable<RobotCollectionQuery['q']>, 'level'> & {
+        Level?: RobotLevel,
+        ProjectID?: number
+    }
 };
 
-export type RobotCreatePayload = Omit<Robot, 'id'>;
+export type RobotGetManyContext = {
+    query?: RobotQuery
+};
 
-export type RobotUpdatePayload = Omit<Robot, 'id'>;
+type RobotPayloadRequired = {
+    name: string,
+    level: RobotLevel,
+    permissions: RobotPermission[]
+};
+
+/**
+ * Harbor requires a level and at least one permission.
+ */
+export type RobotCreatePayload = Omit<Robot, 'id' | keyof RobotPayloadRequired> & RobotPayloadRequired;
+
+/**
+ * Harbor requires the unchanged name and level
+ * and at least one permission.
+ */
+export type RobotUpdatePayload = RobotCreatePayload;
 
 export type RobotUpdateSecretResponse = {
     secret: string

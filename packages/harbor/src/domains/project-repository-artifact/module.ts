@@ -34,15 +34,14 @@ export class ProjectRepositoryArtifactAPI extends BaseAPI {
         if (typeof source === 'string') {
             from = source;
         } else {
-            if (!source.artifactTag && !source.artifactDigest) {
-                source.artifactTag = 'latest';
-            }
-
-            from = buildProjectRepositoryLongName(source);
+            from = buildProjectRepositoryLongName({
+                ...source,
+                ...(!source.artifactTag && !source.artifactDigest ? { artifactTag: 'latest' } : {}),
+            });
         }
 
         await this.client
-            .post(`${buildRepositoryPath(destination.projectName, destination.repositoryName, ['artifacts'])}?from=${from}`);
+            .post(buildRepositoryPath(destination.projectName, destination.repositoryName, ['artifacts'], { from }));
     }
 
     async delete(context: ProjectArtifactDeleteContext) {
