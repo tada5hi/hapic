@@ -48,7 +48,7 @@ The package exports the usual registry (`createClient`, `useClient`, `setClient`
 |----------|-------|-------------|
 | `client.authorize` | `AuthorizeAPI` | `buildURL(params?)` |
 | `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `createWithDeviceCode` · `pollWithDeviceCode` · `create` · `introspect` · `revoke` |
-| `client.userInfo` | `UserInfoAPI` | `get(header?)` |
+| `client.userInfo` | `UserInfoAPI` | `get(header?, options?)` |
 | `client.deviceAuthorization` | `DeviceAuthorizationAPI` | `create(params?, options?)` |
 
 ## Token grants
@@ -148,6 +148,17 @@ await client.token.revoke({ token: token.access_token });
 ```typescript
 const profile = await client.userInfo.get(token.access_token);
 // { sub, name, email, … }
+```
+
+A second argument (`UserInfoOptions`) takes a `signal` to abort the request and a `timeout` in milliseconds; without a `timeout` the client's timeout applies:
+
+```typescript
+const controller = new AbortController();
+
+await client.userInfo.get(token.access_token, {
+    signal: controller.signal,
+    timeout: 5_000,
+});
 ```
 
 ## OpenID Connect discovery

@@ -5,44 +5,5 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { AuthorizationHeader } from 'hapic';
-import { HeaderName, stringifyAuthorizationHeader } from 'hapic';
-import { BaseAPI } from '../base';
-import type { BaseAPIContext } from '../types';
-
-export class UserInfoAPI extends BaseAPI {
-    constructor(context?: BaseAPIContext) {
-        super(context);
-    }
-
-    // -----------------------------------------------------------------------------------
-
-    /**
-     * @throws Error
-     * @param header
-     */
-    async get<T extends Record<string, any> = Record<string, any>>(
-        header?: string | AuthorizationHeader,
-    ) : Promise<T> {
-        const headers : Record<string, string> = { [HeaderName.ACCEPT]: 'application/json' };
-
-        if (header) {
-            if (typeof header === 'string') {
-                if (!header.includes(' ')) {
-                    headers.Authorization = `Bearer ${header}`;
-                } else {
-                    headers.Authorization = header;
-                }
-            } else {
-                headers.Authorization = stringifyAuthorizationHeader(header);
-            }
-        }
-
-        const { data } = await this.client.get(
-            (this.options.userinfoEndpoint || '/userinfo'),
-            { headers },
-        );
-
-        return data;
-    }
-}
+export * from './module';
+export * from './types';
