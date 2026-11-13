@@ -6,7 +6,7 @@
  */
 
 import type { RequestBaseOptions, RequestTransformer } from 'hapic';
-import { HeaderName } from 'hapic';
+import { isHttpResponseError } from 'hapic';
 import type { JwtPayload } from '../../types';
 
 import { BaseAPI } from '../base';
@@ -15,6 +15,8 @@ import type {
     TokenAuthorizationCodeGrantParameters,
     TokenBaseOptions,
     TokenClientCredentialsGrantParameters,
+    TokenDeviceCodeGrantParameters,
+    TokenDeviceCodePollParameters,
     TokenGrantParameters,
     TokenGrantResponse,
     TokenIntrospectParameters,
@@ -23,7 +25,23 @@ import type {
     TokenRevokeParameters,
     TokenRobotCredentialsGrantParameters,
 } from './types';
-import { createRequestTransformerForTokenAPIRequest } from './utils';
+import {
+    buildRequestOptionsForTokenAPIRequest,
+    buildRequestTransformersForTokenAPIRequest,
+    buildURLSearchParamsForTokenAPIRequest,
+    extendClientAuthenticationParameters,
+} from './utils';
+import { wait } from './utils/wait';
+
+/**
+ * Default polling interval in seconds (RFC 8628 3.2).
+ */
+const DEVICE_CODE_POLL_INTERVAL = 5;
+
+/**
+ * Seconds added to the polling interval on a slow_down error (RFC 8628 3.5).
+ */
+const DEVICE_CODE_POLL_SLOW_DOWN = 5;
 
 export class TokenAPI extends BaseAPI {
     async createWithRefreshToken(
@@ -74,6 +92,78 @@ export class TokenAPI extends BaseAPI {
             grant_type: 'robot_credentials',
             ...parameters,
         }, options);
+    }
+
+    async createWithDeviceCode(
+        parameters: Omit<TokenDeviceCodeGrantParameters, 'grant_type'>,
+        options: TokenBaseOptions = {},
+    ): Promise<TokenGrantResponse> {
+        return this.create({
+            grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+            ...parameters,
+        }, options);
+    }
+
+    /**
+     * Poll the token endpoint with a device code until the user
+     * completed the device authorization (RFC 8628 3.4, 3.5).
+     *
+     * Waits `interval` seconds (default 5) before each request. An
+     * `authorization_pending` error continues polling, `slow_down` adds
+     * 5 seconds to the interval; any other error is thrown. With `expires_in`,
+     * the last of these errors is thrown once the next wait would end after
+     * the deadline. Aborting `options.signal` rejects with its reason.
+     *
+     * @throws Error
+     * @param parameters
+     * @param options
+     */
+    async pollWithDeviceCode(
+        parameters: TokenDeviceCodePollParameters,
+        options: TokenBaseOptions = {},
+    ): Promise<TokenGrantResponse> {
+        const startedAt = Date.now();
+        const deadline = typeof parameters.expires_in === 'number' ?
+            startedAt + (parameters.expires_in * 1000) :
+            undefined;
+
+        let interval = typeof parameters.interval === 'number' && parameters.interval > 0 ?
+            parameters.interval :
+            DEVICE_CODE_POLL_INTERVAL;
+
+        let lastError : unknown;
+
+        while (true) {
+            if (
+                typeof lastError !== 'undefined' &&
+                typeof deadline !== 'undefined' &&
+                Date.now() + (interval * 1000) > deadline
+            ) {
+                throw lastError;
+            }
+
+            await wait(interval * 1000, options.signal);
+
+            try {
+                // fresh objects per request: create() and the transformers mutate them
+                return await this.createWithDeviceCode(
+                    this.pickDeviceCodeGrantParameters(parameters),
+                    { ...options },
+                );
+            } catch (e) {
+                const code = isHttpResponseError(e) ?
+                    e.response?.data?.error :
+                    undefined;
+
+                if (code === 'slow_down') {
+                    interval += DEVICE_CODE_POLL_SLOW_DOWN;
+                } else if (code !== 'authorization_pending') {
+                    throw e;
+                }
+
+                lastError = e;
+            }
+        }
     }
 
     // ------------------------------------------------------------------
@@ -158,53 +248,42 @@ export class TokenAPI extends BaseAPI {
         parameters: ClientAuthenticationParameters,
         options: TokenBaseOptions = {},
     ) : RequestBaseOptions {
-        const requestOptions : RequestBaseOptions = {
-            transform: this.buildRequestTransformers(parameters, options),
-            headers: { [HeaderName.ACCEPT]: 'application/json' },
-        };
-
-        if (options.signal) {
-            requestOptions.signal = options.signal;
-        }
-
-        if (typeof options.timeout !== 'undefined') {
-            requestOptions.timeout = options.timeout;
-        }
-
-        return requestOptions;
+        return buildRequestOptionsForTokenAPIRequest(
+            this.buildRequestTransformers(parameters, options),
+            options,
+        );
     }
 
     protected buildRequestTransformers(
         parameters: ClientAuthenticationParameters,
         options: TokenBaseOptions = {},
     ) : RequestTransformer[] {
-        const transformers : RequestTransformer[] = [];
+        return buildRequestTransformersForTokenAPIRequest(
+            this.client,
+            this.options,
+            parameters,
+            options,
+        );
+    }
 
-        if (!options.clientId) {
-            if (this.options.clientId) {
-                options.clientId = this.options.clientId;
-            }
+    protected pickDeviceCodeGrantParameters(
+        parameters: TokenDeviceCodePollParameters,
+    ) : Omit<TokenDeviceCodeGrantParameters, 'grant_type'> {
+        const output : Omit<TokenDeviceCodeGrantParameters, 'grant_type'> = { device_code: parameters.device_code };
 
-            if (this.options.clientSecret) {
-                options.clientSecret = this.options.clientSecret;
-            }
+        if (parameters.client_id) {
+            output.client_id = parameters.client_id;
         }
 
-        if (!options.realmId && this.options.realmId) {
-            options.realmId = this.options.realmId;
+        if (parameters.client_secret) {
+            output.client_secret = parameters.client_secret;
         }
 
-        transformers.push(createRequestTransformerForTokenAPIRequest(parameters, options));
-
-        if (this.client.defaults.transform) {
-            if (Array.isArray(this.client.defaults.transform)) {
-                transformers.push(...this.client.defaults.transform);
-            } else {
-                transformers.push(this.client.defaults.transform);
-            }
+        if (parameters.realm_id) {
+            output.realm_id = parameters.realm_id;
         }
 
-        return transformers;
+        return output;
     }
 
     // ------------------------------------------------------------------
@@ -212,7 +291,8 @@ export class TokenAPI extends BaseAPI {
     extendCreateParameters(parameters: TokenGrantParameters): TokenGrantParameters {
         if (
             parameters.grant_type !== 'authorization_code' &&
-            parameters.grant_type !== 'robot_credentials'
+            parameters.grant_type !== 'robot_credentials' &&
+            parameters.grant_type !== 'urn:ietf:params:oauth:grant-type:device_code'
         ) {
             if (!parameters.scope && this.options.scope) {
                 parameters.scope = this.options.scope;
@@ -225,23 +305,7 @@ export class TokenAPI extends BaseAPI {
             }
         }
 
-        if (!parameters.client_id) {
-            if (parameters.client_secret) {
-                delete parameters.client_secret;
-            }
-
-            if (this.options.clientId) {
-                parameters.client_id = this.options.clientId;
-            }
-
-            if (this.options.clientSecret) {
-                parameters.client_secret = this.options.clientSecret;
-            }
-        }
-
-        if (!parameters.realm_id && this.options.realmId) {
-            parameters.realm_id = this.options.realmId;
-        }
+        extendClientAuthenticationParameters(parameters, this.options);
 
         return parameters;
     }
@@ -251,23 +315,6 @@ export class TokenAPI extends BaseAPI {
     protected buildURLSearchParams(
         input: Record<string, any>,
     ) : URLSearchParams {
-        const urlSearchParams = new URLSearchParams();
-        const keys = Object.keys(input);
-
-        for (const key of keys) {
-            const value = input[key];
-
-            if (typeof value === 'string' && !!value) {
-                urlSearchParams.append(key, value);
-            } else if (Array.isArray(value)) {
-                const str = value.filter((el) => el).join(' ');
-
-                if (str) {
-                    urlSearchParams.append(key, str);
-                }
-            }
-        }
-
-        return urlSearchParams;
+        return buildURLSearchParamsForTokenAPIRequest(input);
     }
 }

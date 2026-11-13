@@ -6,4 +6,5 @@
  */
 
 export * from './header-transformation';
+export * from './request-options';
 export * from './request-transformation';
