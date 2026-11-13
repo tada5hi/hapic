@@ -237,4 +237,143 @@ describe('src/request/timeout', () => {
         expect(response.data).toEqual({ ok: true });
         expect(transport.requests[1].signal?.aborted).toBe(false);
     });
+
+    describe('caller abort reasons', () => {
+        async function abortWith(reason: unknown) {
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport: createHangingTransport(),
+                timeout: 1000,
+            });
+            const controller = new AbortController();
+
+            const promise = client.get('slow', { signal: controller.signal });
+
+            setTimeout(() => controller.abort(reason), 10);
+
+            return catchError(promise);
+        }
+
+        async function abortBeforeWith(reason: unknown) {
+            const transport = createHangingTransport();
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport,
+                timeout: 1000,
+            });
+            const controller = new AbortController();
+
+            controller.abort(reason);
+
+            const error = await catchError(client.get('slow', { signal: controller.signal }));
+
+            expect(transport.requests).toHaveLength(0);
+
+            return error;
+        }
+
+        function expectCallerAbort(error: unknown) {
+            expect(isNetworkError(error)).toBe(true);
+            expect(isClientError(error) && error.code).toBe(ErrorCode.CONNECTION_ABORTED);
+            expect(isClientErrorDueTimeout(error)).toBe(false);
+            expect(isClientErrorDueNetworkIssue(error)).toBe(false);
+        }
+
+        it.each([
+            ['in flight', abortWith],
+            ['before dispatch', abortBeforeWith],
+        ])('should report a string reason as a caller abort (%s)', async (_name, run) => {
+            const error = await run('cancel');
+
+            expectCallerAbort(error);
+
+            const cause = isClientError(error) ? error.cause : undefined;
+
+            expect(cause).toBeInstanceOf(Error);
+            expect((cause as Error).name).toBe('AbortError');
+            expect((cause as Error).cause).toBe('cancel');
+        });
+
+        it.each([
+            ['in flight', abortWith],
+            ['before dispatch', abortBeforeWith],
+        ])('should report a custom-named error reason as a caller abort (%s)', async (_name, run) => {
+            const reason = new Error('x');
+
+            reason.name = 'CancelError';
+
+            const error = await run(reason);
+
+            expectCallerAbort(error);
+            expect(isClientError(error) && error.cause).toBe(reason);
+        });
+
+        it('should report the caller\'s own timeout signal as a caller abort', async () => {
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport: createHangingTransport(),
+                timeout: 1000,
+            });
+            const signal = AbortSignal.timeout(10);
+
+            const error = await catchError(client.get('slow', { signal }));
+
+            expectCallerAbort(error);
+            expect(isClientError(error) && error.cause).toBe(signal.reason);
+            expect((signal.reason as Error).name).toBe('TimeoutError');
+        });
+
+        it('should report a caller abort while the body is read', async () => {
+            const transport = new MemoryTransport({
+                fetch: (request) => new Response(new ReadableStream({
+                    start(controller) {
+                        controller.enqueue(new TextEncoder().encode('{"partial":'));
+                    },
+                    pull(controller) {
+                        return waitForAbort(request).catch((e) => controller.error(e));
+                    },
+                }), { status: 200, headers: { 'content-type': 'application/json' } }),
+            });
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport,
+                timeout: 1000,
+            });
+            const controller = new AbortController();
+
+            const promise = client.get('slow-body', { signal: controller.signal });
+
+            setTimeout(() => controller.abort('cancel'), 10);
+
+            expectCallerAbort(await catchError(promise));
+        });
+    });
+
+    describe('absent per-request values', () => {
+        it('should keep the client timeout for a per-request timeout of undefined', async () => {
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport: createHangingTransport(),
+                timeout: 20,
+            });
+
+            const error = await catchError(client.get('slow', { timeout: undefined }));
+
+            expect(isClientErrorDueTimeout(error)).toBe(true);
+        });
+
+        it('should keep the client signal for a per-request signal of undefined', async () => {
+            const transport = new MemoryTransport();
+            const controller = new AbortController();
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport,
+                signal: controller.signal,
+            });
+
+            await client.get('fast', { signal: undefined, timeout: undefined });
+
+            expect(transport.requests.at(-1)!.signal).toBe(controller.signal);
+        });
+    });
 });

@@ -51,9 +51,9 @@ export function createClientError<T = any>(
 
     const errorName = context.error ? context.error.name : undefined;
 
-    let code: ErrorCode | undefined;
+    let { code } = context;
 
-    if (!context.response) {
+    if (!context.response && !code) {
         if (errorName === 'TimeoutError') {
             code = ErrorCode.CONNECTION_TIMEOUT;
         } else if (errorName === 'AbortError') {

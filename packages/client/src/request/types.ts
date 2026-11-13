@@ -54,7 +54,11 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
     /**
      * Abort the request after this many milliseconds.
      * Only a finite number above 0 arms it; anything else means no timeout.
-     * A timed-out request rejects with the error code ETIMEDOUT.
+     * It covers reading the response body, so for a stream response it keeps
+     * running while the stream is consumed.
+     * A timed-out request rejects with the error code ETIMEDOUT; an abort
+     * through the caller signal keeps ECONNABORTED, whatever its reason.
+     * A per-request value of undefined keeps the client default.
      *
      * default: undefined (no timeout)
      */

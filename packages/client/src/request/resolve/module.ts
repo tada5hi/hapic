@@ -22,6 +22,8 @@ import type { RequestResolveContext } from './types';
  * - every option (incl. transform, responseTransform, params and query):
  *   a per-request value REPLACES the client default as a whole; an option
  *   is taken from the defaults only when the request does not set it.
+ * - signal + timeout: as above, but a per-request value of undefined keeps
+ *   the client default.
  * - headers: LAYERED; per-request headers win, client default headers fill
  *   in the absent keys.
  * - url: resolved against the per-request baseURL, falling back to the
@@ -48,6 +50,15 @@ export function resolveRequestOptions<RT extends `${ResponseType}` = `${Response
         headers,
         url: baseURL ? withBase(config.url, baseURL) : config.url,
     };
+
+    // signal + timeout: an absent per-request value keeps the client default.
+    if (typeof config.signal === 'undefined') {
+        options.signal = defaults.signal;
+    }
+
+    if (typeof config.timeout === 'undefined') {
+        options.timeout = defaults.timeout;
+    }
 
     if (options.query || options.params) {
         options.url = withQuery(

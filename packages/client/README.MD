@@ -144,7 +144,9 @@ export default {
     /**
      * Abort the request after this many milliseconds.
      * Only a finite number above 0 arms it; anything else means no timeout.
-     * A timed-out request rejects with the error code ETIMEDOUT (isClientErrorDueTimeout).
+     * It covers reading the response body (a stream keeps it running while consumed).
+     * A timed-out request rejects with the error code ETIMEDOUT (isClientErrorDueTimeout);
+     * an abort through the caller signal keeps ECONNABORTED, whatever its reason.
      *
      * default: undefined (no timeout)
      */

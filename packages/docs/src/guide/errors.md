@@ -148,12 +148,16 @@ try {
 
 ## Timeouts
 
-A `timeout` (milliseconds, on the client or per request) arms a fresh timer for every dispatch, a request retried by an error hook included. It is combined with a caller `signal`, so whichever fires first aborts the request; the timer also covers reading the response body. A `signal` that is already aborted rejects before anything is dispatched.
+A `timeout` (milliseconds, on the client or per request) arms a fresh timer for every dispatch, a request retried by an error hook included. It is combined with a caller `signal`, so whichever fires first aborts the request. A `signal` that is already aborted rejects before anything is dispatched. A per-request `timeout` or `signal` of `undefined` keeps the client default.
+
+The timeout bounds the whole exchange, reading the response body included. For `responseType: 'stream'` the body is not read by hapic, so the timer keeps running while you consume the stream: a stream read past the timeout fails.
+
+The code is decided by **which signal** fired, not by the shape of the abort reason. The timeout hapic armed answers `'ETIMEDOUT'`; the caller's signal always answers `'ECONNABORTED'`, whatever its reason is: a string (wrapped into an `AbortError` whose `cause` is the string), an `Error` of any name (kept as `cause`), or the `TimeoutError` of the caller's own `AbortSignal.timeout(...)`. This relies on the transport rejecting with the signal's reason, as `fetch` does; a custom transport that rejects with an error of its own is classified by that error's name (`TimeoutError` → `'ETIMEDOUT'`, `AbortError` → `'ECONNABORTED'`).
 
 | Cause | `code` | `isClientErrorDueTimeout` | `isClientErrorDueNetworkIssue` |
 |-------|--------|---------------------------|--------------------------------|
 | `timeout` elapsed | `'ETIMEDOUT'` | `true` | `true` |
-| caller `signal` aborted | `'ECONNABORTED'` | `false` | `false` |
+| caller `signal` aborted (any reason) | `'ECONNABORTED'` | `false` | `false` |
 
 ## Error codes
 

@@ -146,4 +146,28 @@ describe('src/request/resolve', () => {
 
         expect(withoutBase.url).toBe('https://api.test/users');
     });
+
+    it('should keep the default signal and timeout for an undefined per-request value only', () => {
+        const controller = new AbortController();
+        const defaults : RequestBaseOptions = {
+            credentials: 'include',
+            signal: controller.signal,
+            timeout: 1000,
+        };
+
+        const options = resolveRequestOptions({
+            defaults,
+            headers: new Headers(),
+            config: {
+                url: 'users',
+                credentials: undefined,
+                signal: undefined,
+                timeout: undefined,
+            },
+        });
+
+        expect(options.signal).toBe(controller.signal);
+        expect(options.timeout).toBe(1000);
+        expect(options.credentials).toBeUndefined();
+    });
 });
