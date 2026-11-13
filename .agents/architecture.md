@@ -14,14 +14,14 @@ This keeps transport concerns in one place and lets each service package focus p
 `packages/client/src/module.ts` is the heart of the system. A `request(config)` call:
 
 ```
-1. Build headers   → merge per-request headers over the client's default headers
+1. Resolve options → request/resolve: per-request options replace defaults; headers layered over the client's
 2. Resolve URL     → withBase(url, baseURL); then withQuery(...) for params/query (bigint → string via traverse)
 3. Request hooks   → hookManager.triggerReqHook(options)            (HookName.REQUEST)
 4. Transformers    → apply options.transform fn(s) to the body
 5. Dispatch        → fetch(url, init), with/without proxy (createProxy from node-fetch-native)
 6. Decode          → pick by responseType OR detectResponseType(Content-Type):
                        stream | blob | arrayBuffer | text | json (JSON.parse, falling back to text)
-                     → response.data is exposed via a lazy getter/setter
+                     → responseTransform fn(s) (not for streams; 4xx/5xx bodies too) → lazy response.data getter/setter
 7. Error check     → status 400–599 → createClientError(...) → error hooks (REQUEST_ERROR / RESPONSE_ERROR)
 8. Response hooks  → hookManager.triggerResHook(response)           (HookName.RESPONSE)
 ```
