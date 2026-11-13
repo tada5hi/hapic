@@ -52,6 +52,14 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     transform?: RequestTransformer | RequestTransformer[],
     /**
+     * Abort the request after this many milliseconds.
+     * Only a finite number above 0 arms it; anything else means no timeout.
+     * A timed-out request rejects with the error code ETIMEDOUT.
+     *
+     * default: undefined (no timeout)
+     */
+    timeout?: number,
+    /**
      * Proxy agent configuration (Node.js only).
      */
     agent?: ((url: URL) => any) | any

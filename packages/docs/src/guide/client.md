@@ -38,6 +38,7 @@ const client = createClient({
     responseType: ResponseType.JSON,
     params: { tenant: 'acme' },
     proxy: true,
+    timeout: 10_000,
     transform: (body, headers) => body,
     responseTransform: (data) => data,
 });
@@ -53,6 +54,7 @@ const client = createClient({
 | `transform` | `RequestTransformer \| RequestTransformer[]` | Function(s) that reshape the outgoing body and headers. See [Transformers](/guide/transformers). |
 | `responseTransform` | `ResponseTransformer \| ResponseTransformer[]` | Function(s) that reshape the decoded response data (also for 4xx/5xx bodies; skipped for streams). |
 | `proxy` | `ProxyOptions \| boolean` | Proxy configuration. `true` (default) honours `HTTP(S)_PROXY` env vars; `false` disables. See [Proxy & Environments](/guide/proxy). |
+| `timeout` | `number` | Abort the request after this many milliseconds. Only a finite number above `0` arms it; absent, `0`, a negative number or `NaN` mean no timeout. A timed-out request rejects with code `'ETIMEDOUT'` (see [Timeouts](/guide/errors#timeouts)). Never passed to fetch. |
 
 ::: tip RequestInit lives here too
 Because the options object **is** a `RequestInit`, anything fetch accepts works: `method`, `credentials`, `mode`, `cache`, `redirect`, `signal` (for `AbortController`), and so on.

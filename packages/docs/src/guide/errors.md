@@ -24,7 +24,7 @@ class ClientError<T = any> extends BaseError {   // BaseError comes from @ebec/c
 Two subclasses narrow the failure mode:
 
 - **`HttpResponseError`** — the server answered with a `4xx`/`5xx` status. `response` and `status` are set; `code` defaults to `'HTTP_RESPONSE_ERROR'`.
-- **`NetworkError`** — the request never produced a response (DNS failure, connection reset, abort). `response` is `undefined` and `code` carries the reason (e.g. `'ECONNRESET'`, `'ECONNABORTED'`).
+- **`NetworkError`** — the request never produced a response (DNS failure, connection reset, abort). `response` is `undefined` and `code` carries the reason (e.g. `'ECONNRESET'`, `'ECONNABORTED'`, `'ETIMEDOUT'`).
 
 ```
 BaseError (@ebec/core)
@@ -126,9 +126,34 @@ True when the failure never produced a response and was not an explicit abort �
 import { isClientErrorDueNetworkIssue } from 'hapic';
 
 if (isClientErrorDueNetworkIssue(error)) {
-    // connection reset, DNS failure, … — safe to retry with backoff
+    // connection reset, DNS failure, timeout, … — safe to retry with backoff
 }
 ```
+
+### `isClientErrorDueTimeout`
+
+True when the request was aborted by its [`timeout`](/guide/client#configuration-options). An abort through the caller's own `signal` keeps the code `'ECONNABORTED'` and answers `false`:
+
+```typescript
+import { isClientErrorDueTimeout } from 'hapic';
+
+try {
+    await client.get('slow', { timeout: 5_000 });
+} catch (error) {
+    if (isClientErrorDueTimeout(error)) {
+        // no response within 5 seconds
+    }
+}
+```
+
+## Timeouts
+
+A `timeout` (milliseconds, on the client or per request) arms a fresh timer for every dispatch, a request retried by an error hook included. It is combined with a caller `signal`, so whichever fires first aborts the request; the timer also covers reading the response body. A `signal` that is already aborted rejects before anything is dispatched.
+
+| Cause | `code` | `isClientErrorDueTimeout` | `isClientErrorDueNetworkIssue` |
+|-------|--------|---------------------------|--------------------------------|
+| `timeout` elapsed | `'ETIMEDOUT'` | `true` | `true` |
+| caller `signal` aborted | `'ECONNABORTED'` | `false` | `false` |
 
 ## Error codes
 
@@ -139,6 +164,7 @@ import { ErrorCode } from 'hapic';
 
 ErrorCode.CONNECTION_ABORTED;            // 'ECONNABORTED'
 ErrorCode.CONNECTION_CLOSED;             // 'ECONNRESET'
+ErrorCode.CONNECTION_TIMEOUT;            // 'ETIMEDOUT'
 ErrorCode.AUTHORIZATION_HEADER_INVALID;  // 'auth_header_invalid'
 ErrorCode.AUTHORIZATION_HEADER_PARSE;    // 'auth_header_parse'
 ErrorCode.AUTHORIZATION_HEADER_TYPE_PARSE; // 'auth_header_type_parse'

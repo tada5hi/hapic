@@ -36,7 +36,7 @@ import {
     extendRequestOptionsWithDefaults,
     isRequestPayloadSupported,
 } from './request';
-import { resolveRequestOptions } from './request/resolve';
+import { resolveRequestOptions, resolveRequestSignal } from './request/resolve';
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
@@ -250,10 +250,21 @@ export class Client implements IClient {
                 params,
                 query,
                 transform,
+                timeout,
+                signal,
                 ...transportRequest
             } = options;
 
-            response = await this.transport.dispatch(transportRequest as TransportRequest);
+            const requestSignal = resolveRequestSignal({ signal, timeout });
+
+            if (requestSignal) {
+                requestSignal.throwIfAborted();
+            }
+
+            response = await this.transport.dispatch({
+                ...transportRequest,
+                ...(requestSignal ? { signal: requestSignal } : {}),
+            } as TransportRequest);
         } catch (e: any) {
             return handleError('request', {
                 request: options,
@@ -261,7 +272,23 @@ export class Client implements IClient {
             });
         }
 
-        response = await decodeResponse<T, RT>(response, options);
+        try {
+            response = await decodeResponse<T, RT>(response, options);
+        } catch (e: any) {
+            const error = toError(e);
+
+            if (
+                !error ||
+                (error.name !== 'AbortError' && error.name !== 'TimeoutError')
+            ) {
+                throw e;
+            }
+
+            return handleError('request', {
+                request: options,
+                error,
+            });
+        }
 
         if (
             response.status >= 400 &&

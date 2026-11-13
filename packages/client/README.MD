@@ -141,6 +141,14 @@ export default {
             return data;
         }
     ],
+    /**
+     * Abort the request after this many milliseconds.
+     * Only a finite number above 0 arms it; anything else means no timeout.
+     * A timed-out request rejects with the error code ETIMEDOUT (isClientErrorDueTimeout).
+     *
+     * default: undefined (no timeout)
+     */
+    timeout: 10_000,
 };
 ```
 
