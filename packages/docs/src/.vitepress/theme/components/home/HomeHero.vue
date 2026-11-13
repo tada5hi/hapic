@@ -5,36 +5,16 @@
   view the LICENSE file that was distributed with this source code.
 -->
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue';
+import { computed } from 'vue';
 import { useData } from 'vitepress';
 import type { HomeFrontmatter } from './types';
+import { useCopy } from './use-copy';
 
 const { frontmatter } = useData();
 
 const hero = computed(() => (frontmatter.value as HomeFrontmatter).hero);
 
-const copied = ref(false);
-let copyTimer: ReturnType<typeof setTimeout> | undefined;
-
-const copyInstall = async () => {
-    if (typeof navigator === 'undefined' || !navigator.clipboard) {
-        return;
-    }
-
-    try {
-        await navigator.clipboard.writeText(hero.value.install);
-    } catch {
-        return;
-    }
-
-    copied.value = true;
-    clearTimeout(copyTimer);
-    copyTimer = setTimeout(() => {
-        copied.value = false;
-    }, 1500);
-};
-
-onBeforeUnmount(() => clearTimeout(copyTimer));
+const { copied, copy } = useCopy();
 </script>
 
 <template>
@@ -57,8 +37,7 @@ onBeforeUnmount(() => clearTimeout(copyTimer));
                 <button
                     type="button"
                     class="hc-btn hc-btn-ghost hc-hero-install"
-                    :aria-label="copied ? 'Copied' : `Copy ${hero.install}`"
-                    @click="copyInstall"
+                    @click="copy(hero.install)"
                 >
                     {{ copied ? 'Copied' : hero.install }}
                 </button>

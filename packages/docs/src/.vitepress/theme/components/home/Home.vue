@@ -5,12 +5,12 @@
   view the LICENSE file that was distributed with this source code.
 -->
 <script setup lang="ts">
-import CodeTabs from '../CodeTabs.vue';
-import FeatureGrid from '../FeatureGrid.vue';
-import Hero from '../Hero.vue';
-import HooksSpotlight from '../HooksSpotlight.vue';
 import PackageShowcase from '../PackageShowcase.vue';
+import HomeCodeTabs from './HomeCodeTabs.vue';
+import HomeEntries from './HomeEntries.vue';
+import HomeFeatures from './HomeFeatures.vue';
 import HomeHero from './HomeHero.vue';
+import HomeHooks from './HomeHooks.vue';
 import HomePipeline from './HomePipeline.vue';
 </script>
 
@@ -19,10 +19,10 @@ import HomePipeline from './HomePipeline.vue';
         <HomeHero>
             <HomePipeline />
         </HomeHero>
-        <Hero />
-        <FeatureGrid />
-        <CodeTabs />
-        <HooksSpotlight />
+        <HomeEntries />
+        <HomeHooks />
+        <HomeFeatures />
+        <HomeCodeTabs />
         <PackageShowcase />
     </div>
 </template>

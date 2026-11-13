@@ -501,7 +501,7 @@ onBeforeUnmount(stop);
 
         <p
             class="hc-pipe-outcome"
-            aria-live="polite"
+            :aria-live="autoAdvance && playing ? 'off' : 'polite'"
         >
             {{ current.outcome }}
         </p>

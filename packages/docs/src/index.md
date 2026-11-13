@@ -112,7 +112,7 @@ codeTabs:
   description: No client builders, no interceptor registries. A function call and a few options.
   tabs:
     - label: Install
-      code: npm install hapic --save
+      code: npm install hapic
     - label: Configure
       code: |
         // client.ts

@@ -60,14 +60,11 @@ client.on('responseError', async (error) => {
     if (isClientErrorWithStatusCode(error, 401)) {
         const token = await refreshAccessToken();
 
-        // returning RequestOptions re-runs the original request
-        return {
-            ...error.request,
-            headers: {
-                ...error.request.headers,
-                authorization: `Bearer ${token}`,
-            },
-        };
+        const headers = new Headers(error.request.headers);
+        headers.set('authorization', `Bearer ${token}`);
+
+        // returning RequestOptions runs the original request again
+        return { ...error.request, headers };
     }
 
     // everything else keeps throwing
