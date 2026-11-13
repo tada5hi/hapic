@@ -27,6 +27,34 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.0.0](https://github.com/tada5hi/hapic/compare/harbor-v3.0.2...harbor-v4.0.0) (2026-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **harbor:** buildRobotPermissionForAllResources now grants every project-scope robot policy of Harbor v2.16.0.
+
+### Features
+
+* **harbor:** align types and endpoints with the harbor v2.16 api ([#1120](https://github.com/tada5hi/hapic/issues/1120)) ([a1209b4](https://github.com/tada5hi/hapic/commit/a1209b4f90c978e29f7dd0757d3c01172bd802e3))
+* share one domain api base across service clients ([#1115](https://github.com/tada5hi/hapic/issues/1115)) ([90b8221](https://github.com/tada5hi/hapic/commit/90b82219c49c5451df9cd9f76e84ce47b8df4e9d))
+
+
+### Bug Fixes
+
+* **harbor:** align webhook, project and robot payloads with the harbor api ([#1116](https://github.com/tada5hi/hapic/issues/1116)) ([b1f881f](https://github.com/tada5hi/hapic/commit/b1f881f8592e6fe88d567429ef1631535eb3424c))
+* **harbor:** centralize request conventions and correct path and query encoding ([#1114](https://github.com/tada5hi/hapic/issues/1114)) ([877a65a](https://github.com/tada5hi/hapic/commit/877a65a1f1f2e444b1152408a8ad92cb9f7d53ca))
+* resolve pre-release audit findings in client, harbor, vault and oauth2 ([#1122](https://github.com/tada5hi/hapic/issues/1122)) ([cea84c2](https://github.com/tada5hi/hapic/commit/cea84c2cc49cc9a9a3a7865c9b83eb8f686b78cb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+  * peerDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+
 ## [3.0.2](https://github.com/tada5hi/hapic/compare/harbor-v3.0.1...harbor-v3.0.2) (2026-08-18)
 
 

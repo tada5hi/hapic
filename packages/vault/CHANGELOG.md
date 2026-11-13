@@ -195,6 +195,33 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.0.0](https://github.com/tada5hi/hapic/compare/vault-v3.0.2...vault-v4.0.0) (2026-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **vault:** mount.getMany and mount.getOne return Mount entries instead of MountCreatePayload.
+
+### Features
+
+* share one domain api base across service clients ([#1115](https://github.com/tada5hi/hapic/issues/1115)) ([90b8221](https://github.com/tada5hi/hapic/commit/90b82219c49c5451df9cd9f76e84ce47b8df4e9d))
+* **vault:** align types and endpoints with the vault 2.x api ([#1119](https://github.com/tada5hi/hapic/issues/1119)) ([1d1e4e1](https://github.com/tada5hi/hapic/commit/1d1e4e11f7b6de7e0687190019670134a08f0596))
+
+
+### Bug Fixes
+
+* resolve pre-release audit findings in client, harbor, vault and oauth2 ([#1122](https://github.com/tada5hi/hapic/issues/1122)) ([cea84c2](https://github.com/tada5hi/hapic/commit/cea84c2cc49cc9a9a3a7865c9b83eb8f686b78cb))
+* **vault:** correct key-value v2 patch content type and mount tune endpoint ([#1111](https://github.com/tada5hi/hapic/issues/1111)) ([2292b8c](https://github.com/tada5hi/hapic/commit/2292b8c8f21c67652d2f5820b54d1e3134ba7463))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+  * peerDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+
 ## [3.0.2](https://github.com/tada5hi/hapic/compare/vault-v3.0.1...vault-v3.0.2) (2026-08-18)
 
 
