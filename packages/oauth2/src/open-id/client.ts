@@ -6,7 +6,7 @@
  */
 
 import type { ClientOptionsInput, IClient } from 'hapic';
-import { HeaderName, createClient, isClient } from 'hapic';
+import { createClient, isClient } from 'hapic';
 import { OAuth2Client } from '../module';
 import { parseOpenIDProviderMetadata } from './provider-metadata';
 import type { OpenIDProviderMetadata } from './types';
@@ -19,10 +19,10 @@ import type { OpenIDProviderMetadata } from './types';
  * them (incl. a `transport`).
  *
  * When a client is passed, the discovery request is sent with it and the
- * returned client is built from its `defaults` plus its current
- * authorization header. Its transport, other headers set or unset after
- * construction, and its hooks are **not** carried over (hooks are bound
- * to a client instance); configure them on the returned client.
+ * returned client is built from its current configuration (`toOptions()`):
+ * defaults, headers and transport (the same instance). Its hooks are **not**
+ * carried over (hooks are bound to a client instance); register them on the
+ * returned client.
  *
  * @param url (.e.g. .well-known/openid-configuration)
  * @param options
@@ -42,16 +42,8 @@ export async function createClientWithOpenIDDiscoveryURL(
 
     const { data }: { data: OpenIDProviderMetadata } = await options.get(url);
 
-    const client = new OAuth2Client({
-        request: options.defaults,
+    return new OAuth2Client({
+        request: options.toOptions(),
         options: parseOpenIDProviderMetadata(data),
     });
-
-    const authorization = options.getAuthorizationHeader();
-
-    if (authorization) {
-        client.setHeader(HeaderName.AUTHORIZATION, authorization);
-    }
-
-    return client;
 }

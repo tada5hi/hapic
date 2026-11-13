@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { MemoryTransport, createClient } from 'hapic';
+import { HookName, MemoryTransport, createClient } from 'hapic';
 import type { OpenIDProviderMetadata } from '../../src';
 import { buildOpenIDDiscoveryURL, createClientWithOpenIDDiscoveryURL } from '../../src';
 
@@ -102,6 +102,46 @@ describe('src/open-id', () => {
         const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), driver);
 
         expect(client.getAuthorizationHeader()).toBe('Basic Zm9vOmJhcg==');
+    });
+
+    it('should keep the transport and headers of the passed client', async () => {
+        const transport = createMetadataTransport();
+        const driver = createClient({ transport, headers: { 'x-removed': '1' } });
+
+        driver.setHeader('x-tenant', 'acme');
+        driver.unsetHeader('x-removed');
+
+        const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), driver);
+
+        await client.token.createWithClientCredentials({
+            client_id: 'client',
+            client_secret: 'secret',
+        });
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.url).toBe('http://localhost:3000/token');
+        expect(new Headers(req.headers).get('x-tenant')).toBe('acme');
+        expect(new Headers(req.headers).get('x-removed')).toBeNull();
+    });
+
+    it('should not carry over the hooks of the passed client', async () => {
+        const transport = createMetadataTransport();
+        const driver = createClient({ transport });
+        const hook = vi.fn((options) => options);
+
+        driver.on(HookName.REQUEST, hook);
+
+        const client = await createClientWithOpenIDDiscoveryURL(buildOpenIDDiscoveryURL(), driver);
+
+        expect(hook).toHaveBeenCalledTimes(1);
+
+        await client.token.createWithClientCredentials({
+            client_id: 'client',
+            client_secret: 'secret',
+        });
+
+        expect(hook).toHaveBeenCalledTimes(1);
     });
 
     it('should keep the transport passed with plain options', async () => {
