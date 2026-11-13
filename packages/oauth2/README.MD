@@ -202,6 +202,22 @@ console.log(token);
 // { active: true, ... }
 ```
 
+Every token request (`create*`, `introspect`, `revoke`) also accepts a `signal` and a
+`timeout` (milliseconds, overrides the client timeout) in its options. A timed-out request
+rejects with the code `ETIMEDOUT` (`isClientErrorDueTimeout` from `hapic`).
+
+```typescript
+const controller = new AbortController();
+
+token = await client.token.introspect(
+    { token: 'xxx' },
+    {
+        signal: controller.signal,
+        timeout: 5_000,
+    }
+);
+```
+
 ### UserInfo
 
 ```typescript

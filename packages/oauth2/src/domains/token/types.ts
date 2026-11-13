@@ -123,7 +123,22 @@ export type TokenBaseOptions = {
      *
      * default: false
      */
-    clientCredentialsAsHeader?: boolean
+    clientCredentialsAsHeader?: boolean,
+
+    /**
+     * Abort the current request with this signal.
+     *
+     * default: undefined
+     */
+    signal?: AbortSignal,
+
+    /**
+     * Abort the current request after this many milliseconds.
+     * Overrides the client timeout.
+     *
+     * default: undefined (the client timeout)
+     */
+    timeout?: number
 };
 
 // ------------------------------------------------------------------
