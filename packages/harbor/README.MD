@@ -142,8 +142,13 @@ const harbor = new HarborClient({
     // ...
 });
 
+// Harbor applies only `metadata` and `cve_allowlist` on update;
+// metadata values are strings
 await harbor.project.update(1, {
-    project_name: 'new-name'
+    metadata: {
+        public: 'true',
+        auto_scan: 'true'
+    }
 });
 ```
 
@@ -380,11 +385,17 @@ const harbor = new HarborClient({
 });
 
 await harbor.projectWebhookPolicy.create({
-    name: 'webhook',
-    // ...
-}, {
     projectIdOrName: 1,
-    // isProjectName: false
+    // isProjectName: false,
+    data: {
+        name: 'webhook',
+        event_types: ['PUSH_ARTIFACT'],
+        targets: [{
+            type: 'http',
+            address: 'https://example.com/hook',
+            skip_cert_verify: false
+        }]
+    }
 });
 ```
 
@@ -459,8 +470,15 @@ const harbor = new HarborClient({
     // ...
 });
 
-const data = await harbor.robots.create({
+const data = await harbor.robot.create({
     name: 'system',
+    level: 'system',
+    permissions: [{
+        kind: 'project',
+        namespace: '*',
+        access: [{ resource: 'repository', action: 'pull' }]
+    }],
+    // duration defaults to -1 (never expires)
 });
 console.log(data);
 // { name: 'xxx', ... }
@@ -476,10 +494,12 @@ const harbor = new HarborClient({
     // ...
 });
 
-const response = await harbor.robots.getMany({
+// without `Level`, Harbor lists system robots only
+const response = await harbor.robot.getMany({
     query: {
         q: {
-            name: 'robot'
+            Level: 'project',
+            ProjectID: 1
         }
     }
 });
@@ -497,7 +517,7 @@ const harbor = new HarborClient({
     // ...
 });
 
-const data = await harbor.robots.getOne(1);
+const data = await harbor.robot.getOne(1);
 console.log(data);
 // { name: 'xxx', ... }
 ```
@@ -512,13 +532,14 @@ const harbor = new HarborClient({
     // ...
 });
 
-const data = await harbor.robots.update(1, {
+// name and level must match the existing robot
+await harbor.robot.update(1, {
     name: 'system',
+    level: 'system',
+    permissions: [/* ... */],
     description: 'foo',
     disable: true
 });
-console.log(data);
-// { name: 'xxx', ... }
 ```
 
 **`UpdateSecret`**
@@ -532,7 +553,7 @@ const harbor = new HarborClient({
 });
 
 // optional provie a secret as second argument.
-const data = await harbor.robots.updateSecret(1);
+const data = await harbor.robot.updateSecret(1);
 console.log(data);
 // { secret: 'xxx', ... }
 ```
@@ -547,7 +568,7 @@ const harbor = new HarborClient({
     // ...
 });
 
-await harbor.robots.delete(1);
+await harbor.robot.delete(1);
 ```
 
 ## License

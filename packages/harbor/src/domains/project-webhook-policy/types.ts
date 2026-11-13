@@ -7,17 +7,18 @@
 
 import type { ResourceCollectionQuery } from '../types';
 
-export type ProjectWebhookEventType =    'PUSH_ARTIFACT' |
+/**
+ * Event types accepted by Harbor (pkg/notification/notification.go).
+ */
+export type ProjectWebhookEventType = 'PUSH_ARTIFACT' |
     'PULL_ARTIFACT' |
     'DELETE_ARTIFACT' |
-    'DELETE_CHART' |
-    'DOWNLOAD_CHART' |
-    'UPLOAD_CHART' |
-    'QUOTA_EXCEEDED' |
+    'QUOTA_EXCEED' |
     'QUOTA_WARNING' |
-    'REPLICATION' |
     'SCANNING_FAILED' |
+    'SCANNING_STOPPED' |
     'SCANNING_COMPLETED' |
+    'REPLICATION' |
     'TAG_RETENTION';
 
 export type ProjectWebhookTarget = {
@@ -30,7 +31,7 @@ export type ProjectWebhookTarget = {
 export type ProjectWebhookPolicy = {
     creation_time?: string;
     description?: string;
-    enabled: true;
+    enabled: boolean;
     event_types: ProjectWebhookEventType[];
     id: number;
     name: string;

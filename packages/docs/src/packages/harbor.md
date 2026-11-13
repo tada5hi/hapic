@@ -45,7 +45,7 @@ The package also exports the standard registry — `createClient`, `useClient`, 
 | `client.projectRepository` | `ProjectRepositoryAPI` | `getMany` · `getOne` · `getAll` · `findOne` · `update` · `delete` |
 | `client.projectRepositoryArtifact` | `ProjectRepositoryArtifactAPI` | `getMany` · `copy` · `delete` |
 | `client.projectRepositoryArtifactLabel` | `ProjectRepositoryArtifactLabelAPI` | `create` · `delete` |
-| `client.projectWebhookPolicy` | `ProjectWebhookPolicyAPI` | `create` · `getMany` · `getOne` · `getAll` · `findOne` · `update` · `delete` · `deleteByName` |
+| `client.projectWebhookPolicy` | `ProjectWebhookPolicyAPI` | `create` · `getMany` · `getOne` · `findOne` · `update` · `delete` · `deleteByName` |
 | `client.robot` | `RobotAPI` | `create` · `getMany` · `getOne` · `update` · `updateSecret` · `delete` |
 
 Collection methods (`getMany`) return a `{ data, meta }` shape; `getOne` returns the entity; mutations return the created entity or `void`.
@@ -64,6 +64,12 @@ const project = await client.project.getOne(id);
 // list with pagination
 const { data, meta } = await client.project.getMany({
     query: { page: 1, page_size: 20 },
+});
+
+// update: Harbor applies only `metadata` and `cve_allowlist`,
+// and metadata values are strings
+await client.project.update(id, {
+    metadata: { public: 'true', auto_scan: 'true' },
 });
 
 // delete
@@ -96,14 +102,42 @@ await client.projectRepositoryArtifact.copy(
 const robot = await client.robot.create({
     name: 'ci',
     description: 'CI/CD automation',
+    level: 'project',
+    permissions: [{
+        kind: 'project',
+        namespace: 'team-a',
+        access: [{ resource: 'repository', action: 'pull' }],
+    }],
+    // duration defaults to -1 (never expires)
 });
 // robot.secret is the generated credential
+
+// list the robots of a project (Harbor's `q` keys are capitalised)
+const { data: robots } = await client.robot.getMany({
+    query: { q: { Level: 'project', ProjectID: 1 } },
+});
 
 // rotate the secret
 const { secret } = await client.robot.updateSecret(robot.id);
 
 await client.robot.delete(robot.id);
 ```
+
+### Webhook policies
+
+```typescript
+await client.projectWebhookPolicy.create({
+    projectIdOrName: 'team-a',
+    isProjectName: true,
+    data: {
+        name: 'ci',
+        event_types: ['PUSH_ARTIFACT', 'SCANNING_COMPLETED'],
+        targets: [{ type: 'http', address: 'https://ci.example.com/hook', skip_cert_verify: false }],
+    },
+});
+```
+
+Harbor requires at least one event type and one target; both are sent as given. `enabled` defaults to `true`. An update replaces the whole policy, so pass every field you want to keep.
 
 ## Error handling
 

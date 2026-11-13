@@ -67,7 +67,7 @@ export class RobotAPI extends BaseAPI {
         data: RobotUpdatePayload,
     ): Promise<void> {
         await this.client
-            .put(buildRequestPath(['robots', id]), this.extendPayload({ ...data, id }));
+            .put(buildRequestPath(['robots', id]), { ...data, id });
     }
 
     async delete(id: Robot['id']): Promise<void> {
@@ -75,14 +75,18 @@ export class RobotAPI extends BaseAPI {
             .delete(buildRequestPath(['robots', id]));
     }
 
+    /**
+     * Set `duration` to `-1` (never expires) when absent:
+     * Harbor rejects a create request without a valid duration.
+     * The input is not modified.
+     */
     extendPayload<T extends Record<string, any>>(data: T) : T {
-        return merge((data || {}), {
-            description: '',
-            duration: -1,
-            level: 'system',
-            editable: true,
-            disable: false,
-            permissions: [],
-        } satisfies Partial<Robot>) as T;
+        const output : Record<string, any> = { ...data };
+
+        if (typeof output.duration === 'undefined' || output.duration === null) {
+            output.duration = -1;
+        }
+
+        return output as T;
     }
 }

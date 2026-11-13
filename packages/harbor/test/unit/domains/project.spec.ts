@@ -7,7 +7,7 @@
 
 import { MemoryTransport, createClient } from 'hapic';
 import { HeaderName, ProjectAPI } from '../../../src';
-import type { ProjectCreatePayload } from '../../../src';
+import type { ProjectCreatePayload, ProjectMetadata, ProjectUpdatePayload } from '../../../src';
 
 describe('src/domains/project', () => {
     it('should create resource', async () => {
@@ -61,7 +61,14 @@ describe('src/domains/project', () => {
     it('should update resource', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectAPI({ client: createClient({ transport }) });
-        const payload : ProjectCreatePayload = { project_name: 'name' };
+        const payload : ProjectUpdatePayload = {
+            metadata: {
+                public: 'true', 
+                auto_scan: 'false', 
+                severity: 'high', 
+            },
+            cve_allowlist: { items: [{ cve_id: 'CVE-2019-10164' }], expires_at: null },
+        };
 
         await api.update(1, payload);
 
@@ -76,7 +83,7 @@ describe('src/domains/project', () => {
     it('should update resource by name', async () => {
         const transport = new MemoryTransport();
         const api = new ProjectAPI({ client: createClient({ transport }) });
-        const payload : ProjectCreatePayload = { project_name: 'name' };
+        const payload : ProjectUpdatePayload = { metadata: { public: 'false' } };
 
         await api.update('name', payload, true);
 
@@ -218,5 +225,32 @@ describe('src/domains/project', () => {
 
         expect(options).toEqual({});
         expect(transport.requests.at(-1)!.url).toBe('projects?page_size=50&page=1');
+    });
+
+    it('should type project metadata as Harbor wire strings', () => {
+        const metadata = {
+            public: 'true',
+            enable_content_trust: 'false',
+            enable_content_trust_cosign: 'false',
+            prevent_vul: 'true',
+            severity: 'critical',
+            auto_scan: 'true',
+            auto_sbom_generation: 'false',
+            reuse_sys_cve_allowlist: 'true',
+            retention_id: '1',
+            proxy_speed_kb: '-1',
+            max_upstream_conn: '-1',
+            proxy_cache_local_on_not_found: 'false',
+        } satisfies ProjectMetadata;
+
+        // @ts-expect-error metadata values are strings on the wire
+        const invalid: ProjectMetadata = { public: true };
+
+        // @ts-expect-error a project update does not take create fields
+        const update: ProjectUpdatePayload = { project_name: 'name' };
+
+        const create: ProjectCreatePayload = { project_name: 'name', public: true };
+
+        expect([metadata, invalid, update, create]).toHaveLength(4);
     });
 });
