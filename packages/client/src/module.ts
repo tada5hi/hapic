@@ -12,7 +12,7 @@ import type { ResponseType } from './constants';
 import { MethodName } from './constants';
 import type { ITransport, TransportRequest } from './transport';
 import { FetchTransport, isTransport } from './transport';
-import type { ClientOptionsInput, IClient } from './types';
+import type { ClientOptions, ClientOptionsInput, IClient } from './types';
 import type {
     HookErrorFn,
     HookFn,
@@ -70,6 +70,24 @@ export class Client implements IClient {
         this.transport = transport ?? new FetchTransport();
 
         markInstanceof(this, CLIENT_INSTANCE);
+    }
+
+    // ---------------------------------------------------------------------------------
+
+    /**
+     * Return the current configuration as client options: the defaults,
+     * the current headers and the transport. Passing the result to a client
+     * constructor creates a client that is configured the same way.
+     *
+     * The options and headers are copies; the transport is the same instance.
+     * Hooks are not part of it.
+     */
+    public toOptions(): ClientOptions {
+        return {
+            ...this.defaults,
+            headers: new Headers(this.headers),
+            transport: this.transport,
+        };
     }
 
     // ---------------------------------------------------------------------------------

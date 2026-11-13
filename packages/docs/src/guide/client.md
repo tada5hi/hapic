@@ -103,6 +103,16 @@ client.unsetHeaders();        // clear all default headers
 
 For authorization specifically, prefer the dedicated helpers covered in [Headers & Authorization](/guide/headers).
 
+## Copying the configuration
+
+`toOptions()` returns the client's current configuration as constructor options: the defaults, the current headers (including ones set or unset after construction) and the transport.
+
+```typescript
+const copy = new Client(client.toOptions());
+```
+
+The options and headers are copies, so changing one client does not affect the other. The transport is the same instance. Hooks are not included; register them on the new client.
+
 ## What's next
 
 - [Request Methods](/guide/request-methods) — the verbs you'll call most.

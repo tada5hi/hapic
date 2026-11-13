@@ -62,6 +62,14 @@ export interface IClient {
     // ---------------------------------------------------------------------------------
 
     /**
+     * Return the current configuration (defaults, current headers, transport)
+     * as client options. Hooks are not part of it.
+     */
+    toOptions(): ClientOptions;
+
+    // ---------------------------------------------------------------------------------
+
+    /**
      * Return the base url.
      */
     getBaseURL(): string | undefined;

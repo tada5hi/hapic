@@ -9,9 +9,55 @@ import {
     Client, 
     HeaderName, 
     HookName,
+    MemoryTransport,
 } from '../../src';
 
 describe('src/module', () => {
+    it('should export its current configuration as client options', async () => {
+        const transport = new MemoryTransport();
+        const client = new Client({
+            baseURL: 'https://example.com/',
+            headers: { 'x-initial': '1', 'x-removed': '1' },
+            transport,
+        });
+
+        client.setHeader('x-tenant', 'acme');
+        client.unsetHeader('x-removed');
+        client.setBaseURL('https://api.example.com/');
+
+        const options = client.toOptions();
+
+        expect(options.transport).toBe(transport);
+        expect(options.baseURL).toBe('https://api.example.com/');
+
+        const copy = new Client(options);
+
+        expect(copy.getBaseURL()).toBe('https://api.example.com/');
+        expect(copy.getHeader('x-initial')).toBe('1');
+        expect(copy.getHeader('x-tenant')).toBe('acme');
+        expect(copy.getHeader('x-removed')).toBeNull();
+
+        await copy.get('foo');
+
+        expect(transport.requests.at(-1)!.url).toBe('https://api.example.com/foo');
+    });
+
+    it('should export options detached from the client', () => {
+        const client = new Client({ baseURL: 'https://example.com/' });
+
+        client.setHeader('x-tenant', 'acme');
+
+        const options = client.toOptions();
+        const copy = new Client(options);
+
+        copy.setHeader('x-tenant', 'other');
+        copy.setBaseURL('https://other.example.com/');
+
+        expect(client.getHeader('x-tenant')).toBe('acme');
+        expect(client.getBaseURL()).toBe('https://example.com/');
+        expect(new Headers(options.headers).get('x-tenant')).toBe('acme');
+    });
+
     it('should set/unset header', () => {
         const client = new Client();
 

@@ -57,6 +57,8 @@ export class Client implements IClient {
     setHeader / getHeader / unsetHeader / unsetHeaders(...)
     setAuthorizationHeader / getAuthorizationHeader / unsetAuthorizationHeader(...)
 
+    toOptions(): ClientOptions   // defaults + current headers (copies) + transport (same instance); no hooks
+
     on(name, fn): number    // register a hook, returns an id
     off(name, fn?): this    // remove a specific hook or all hooks for a name
 }
