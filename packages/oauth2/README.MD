@@ -523,6 +523,10 @@ try {
 | `isHapicError`, `isClientError`, `isHttpResponseError`, `isNetworkError`, `isClientErrorWithStatusCode`, `isClientErrorDueNetworkIssue` | functions | [Errors](#errors), re-exported from `hapic` |
 | `transformHeadersForTokenAPIRequest(headers, options?)` | function | Apply the token request header rules to a `Headers` object: set `Content-Type: application/x-www-form-urlencoded`, drop the client's `Authorization` header unless `authorizationHeaderInherit`, then set `authorizationHeader`, or the client credentials as Basic with `clientCredentialsAsHeader` (see [Client authentication](#client-authentication)) |
 | `createRequestTransformerForTokenAPIRequest(parameters, options?)` | function | A `hapic` request transformer that applies the same header rules and, with `clientCredentialsAsHeader`, removes `client_id` and `client_secret` from the body. Use it for a custom request to an endpoint of the authorization server |
+| `buildRequestTransformersForTokenAPIRequest(client, defaults, parameters, options?)` | function | The transformers of a token style request: the header rules first, then the client's default transformers. Fills `clientId`, `clientSecret` and `realmId` of `options` from `defaults` |
+| `buildRequestOptionsForTokenAPIRequest(transform, options?)` | function | Request options with the transformers, `Accept: application/json`, and the `signal` and `timeout` of `options` |
+| `buildURLSearchParamsForTokenAPIRequest(input)` | function | A form body: non empty strings as is, arrays joined with spaces, everything else left out |
+| `extendClientAuthenticationParameters(parameters, defaults)` | function | Fill `client_id`, `client_secret` and `realm_id` of `parameters` from the client options |
 | `scopeToArray`, `scopeToString` | functions | Convert a scope between `'a b'` and `['a', 'b']` (`scopeToString` removes duplicates) |
 | `AuthorizeResponseType`, `AuthorizeResponseMode`, `AuthorizeCodeChallengeMethod`, `AuthorizeDisplay`, `AuthorizePrompt`, `ResponseType` | enums | Parameter values |
 | `Options`, `Config`, `ConfigInput` | types | Client configuration |

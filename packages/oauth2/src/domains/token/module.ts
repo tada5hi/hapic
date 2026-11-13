@@ -30,7 +30,7 @@ import {
     buildRequestTransformersForTokenAPIRequest,
     buildURLSearchParamsForTokenAPIRequest,
     extendClientAuthenticationParameters,
-} from './utils/request-options';
+} from './utils';
 import { wait } from './utils/wait';
 
 /**

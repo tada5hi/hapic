@@ -17,7 +17,6 @@ import { createRequestTransformerForTokenAPIRequest } from './request-transforma
 
 /*
  * Request building shared by the token and the device authorization API.
- * Internal: not re-exported from the package.
  */
 
 /**

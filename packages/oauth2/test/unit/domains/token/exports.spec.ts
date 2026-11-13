@@ -5,9 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Headers, stringifyAuthorizationHeader } from 'hapic';
+import { Headers, createClient, stringifyAuthorizationHeader } from 'hapic';
 import {
+    buildRequestOptionsForTokenAPIRequest,
+    buildRequestTransformersForTokenAPIRequest,
+    buildURLSearchParamsForTokenAPIRequest,
     createRequestTransformerForTokenAPIRequest,
+    extendClientAuthenticationParameters,
     transformHeadersForTokenAPIRequest,
 } from '../../../../src';
 
@@ -46,5 +50,30 @@ describe('src/domains/token (exports)', () => {
             username: 'client',
             password: 'secret',
         }));
+    });
+
+    it('should export the request building helpers from the package root', () => {
+        const defaults = { clientId: 'client', clientSecret: 'secret' };
+        const parameters = extendClientAuthenticationParameters({ scope: ['foo', 'bar'] }, defaults);
+
+        expect(parameters).toEqual({
+            scope: ['foo', 'bar'],
+            client_id: 'client',
+            client_secret: 'secret',
+        });
+
+        const body = buildURLSearchParamsForTokenAPIRequest(parameters);
+
+        expect(body.get('scope')).toBe('foo bar');
+        expect(body.get('client_id')).toBe('client');
+
+        const controller = new AbortController();
+        const transform = buildRequestTransformersForTokenAPIRequest(createClient(), defaults, parameters);
+        const options = buildRequestOptionsForTokenAPIRequest(transform, { signal: controller.signal, timeout: 50 });
+
+        expect(typeof transform[0]).toBe('function');
+        expect(options.transform).toBe(transform);
+        expect(options.signal).toBe(controller.signal);
+        expect(options.timeout).toBe(50);
     });
 });

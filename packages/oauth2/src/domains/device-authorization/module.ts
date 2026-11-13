@@ -12,7 +12,7 @@ import {
     buildRequestTransformersForTokenAPIRequest,
     buildURLSearchParamsForTokenAPIRequest,
     extendClientAuthenticationParameters,
-} from '../token/utils/request-options';
+} from '../token';
 import type { DeviceAuthorizationParameters, DeviceAuthorizationResponse } from './types';
 
 export class DeviceAuthorizationAPI extends BaseAPI {
