@@ -1,7 +1,7 @@
 {
     "name": "@hapic/vault",
     "version": "3.0.2",
-    "description": "A vault http api client.",
+    "description": "A HashiCorp Vault client for key-value v1 and v2 secrets and secrets engine mounts.",
     "type": "module",
     "main": "dist/index.mjs",
     "types": "dist/index.d.mts",
@@ -13,7 +13,8 @@
         }
     },
     "files": [
-        "dist/"
+        "dist/",
+        "assets/"
     ],
     "engines": {
         "node": ">=22.0.0"
@@ -37,7 +38,8 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/hapic.git"
+        "url": "git+https://github.com/Tada5hi/hapic.git",
+        "directory": "packages/vault"
     },
     "bugs": {
         "url": "https://github.com/Tada5hi/hapic/issues"

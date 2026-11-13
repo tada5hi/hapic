@@ -1,7 +1,7 @@
 {
     "name": "@hapic/loki",
     "version": "2.0.2",
-    "description": "A http client for grafana loki.",
+    "description": "Typed HTTP client for Grafana Loki: push log streams, run LogQL queries and manage deletion requests.",
     "type": "module",
     "main": "dist/index.mjs",
     "types": "dist/index.d.mts",
@@ -13,7 +13,8 @@
         }
     },
     "files": [
-        "dist/"
+        "dist/",
+        "assets/"
     ],
     "engines": {
         "node": ">=22.0.0"
@@ -33,7 +34,7 @@
         "grafana",
         "loki",
         "logs",
-        "aggregatrion"
+        "aggregation"
     ],
     "repository": {
         "type": "git",

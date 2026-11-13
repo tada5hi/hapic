@@ -1,7 +1,7 @@
 {
     "name": "@hapic/harbor",
     "version": "3.0.2",
-    "description": "A harbor http api client.",
+    "description": "A typed client for the Harbor container registry API: projects, repositories, artifacts, webhooks and robots.",
     "type": "module",
     "main": "dist/index.mjs",
     "types": "dist/index.d.mts",
@@ -13,7 +13,8 @@
         }
     },
     "files": [
-        "dist/"
+        "dist/",
+        "assets/"
     ],
     "engines": {
         "node": ">=22.0.0"
@@ -38,7 +39,8 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/hapi.git"
+        "url": "git+https://github.com/Tada5hi/hapic.git",
+        "directory": "packages/harbor"
     },
     "bugs": {
         "url": "https://github.com/Tada5hi/hapi/issues"

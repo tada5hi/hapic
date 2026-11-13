@@ -1,7 +1,7 @@
 {
     "name": "hapic",
     "version": "3.0.2",
-    "description": "A http api client based on axios.",
+    "description": "A fetch-based HTTP client for Node.js, browsers and workers.",
     "type": "module",
     "main": "dist/index.mjs",
     "types": "dist/index.d.mts",
@@ -13,7 +13,8 @@
         }
     },
     "files": [
-        "dist/"
+        "dist/",
+        "assets/"
     ],
     "engines": {
         "node": ">=22.0.0"
@@ -45,7 +46,8 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/hapic.git"
+        "url": "git+https://github.com/Tada5hi/hapic.git",
+        "directory": "packages/client"
     },
     "bugs": {
         "url": "https://github.com/Tada5hi/hapic/issues"
