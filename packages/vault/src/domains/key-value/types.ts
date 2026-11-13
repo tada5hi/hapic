@@ -83,10 +83,10 @@ export type KeyValueV2ConfigPayload = Partial<KeyValueV2Config>;
  * Who performed an operation on a secret version.
  */
 export type KeyValueV2Attribution = {
-    actor: string,
-    operation: string,
-    entity_id: string,
-    client_id: string
+    actor?: string,
+    operation?: string,
+    entity_id?: string,
+    client_id?: string
 };
 
 export type KeyValueV2MetadataVersion = {

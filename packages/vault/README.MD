@@ -211,8 +211,7 @@ const client = new VaultClient({
 await client.mount.create(
     'engine',
     {
-        type: 'kv',
-        generate_signing_key: true
+        type: 'kv'
     }
 );
 ```
