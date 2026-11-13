@@ -25,7 +25,7 @@ export class CompactorAPI extends BaseAPI {
             'loki/api/v1/delete',
             {},
             {
-                ...(this.options.compactorURL ? { baseURL: this.options.compactorURL } : {}),
+                ...this.withBaseURL(this.options.compactorURL),
                 params,
                 headers,
             },
@@ -46,7 +46,7 @@ export class CompactorAPI extends BaseAPI {
         await this.client.delete(
             'loki/api/v1/delete',
             {
-                ...(this.options.compactorURL ? { baseURL: this.options.compactorURL } : {}),
+                ...this.withBaseURL(this.options.compactorURL),
                 params,
                 headers,
             },

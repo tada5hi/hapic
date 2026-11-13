@@ -23,7 +23,7 @@ export class QuerierAPI extends BaseAPI {
         const { data } = await this.client.get(
             'loki/api/v1/query',
             {
-                ...(this.options.querierURL ? { baseURL: this.options.querierURL } : {}),
+                ...this.withBaseURL(this.options.querierURL),
                 headers,
                 params: options,
             },
@@ -47,7 +47,7 @@ export class QuerierAPI extends BaseAPI {
         const { data } = await this.client.get(
             'loki/api/v1/query_range',
             {
-                ...(this.options.querierURL ? { baseURL: this.options.querierURL } : {}),
+                ...this.withBaseURL(this.options.querierURL),
                 headers,
                 params: options,
             },
