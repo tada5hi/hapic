@@ -54,13 +54,22 @@ const isExternal = (link: string) => /^https?:\/\//.test(link);
                 class="hc-footer-col"
                 aria-label="Docs"
             >
-                <h2>Docs</h2>
+                <p class="hc-footer-heading">Docs</p>
                 <ul>
                     <li
                         v-for="item in docs"
                         :key="item.link"
                     >
-                        <a :href="withBase(item.link)">{{ item.text }}</a>
+                        <a
+                            v-if="isExternal(item.link)"
+                            :href="item.link"
+                            target="_blank"
+                            rel="noopener"
+                        >{{ item.text }}</a>
+                        <a
+                            v-else
+                            :href="withBase(item.link)"
+                        >{{ item.text }}</a>
                     </li>
                 </ul>
             </nav>
@@ -68,7 +77,7 @@ const isExternal = (link: string) => /^https?:\/\//.test(link);
                 class="hc-footer-col"
                 aria-label="Packages"
             >
-                <h2>Packages</h2>
+                <p class="hc-footer-heading">Packages</p>
                 <ul>
                     <li
                         v-for="item in packages"
@@ -82,7 +91,7 @@ const isExternal = (link: string) => /^https?:\/\//.test(link);
                 class="hc-footer-col"
                 aria-label="Project"
             >
-                <h2>Project</h2>
+                <p class="hc-footer-heading">Project</p>
                 <ul>
                     <li
                         v-for="item in footer.project"
@@ -167,7 +176,7 @@ const isExternal = (link: string) => /^https?:\/\//.test(link);
     margin-bottom: 8px;
     font-size: 15px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--hc-dark-fg-strong);
     text-decoration: none;
 }
 
@@ -176,14 +185,14 @@ const isExternal = (link: string) => /^https?:\/\//.test(link);
     margin: 0;
 }
 
-.hc-footer-col h2 {
+.hc-footer-heading {
     margin: 0 0 10px;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.1em;
     line-height: 1.4;
     text-transform: uppercase;
-    color: #ffffff;
+    color: var(--hc-dark-fg-strong);
 }
 
 .hc-footer-col ul {
@@ -203,7 +212,7 @@ const isExternal = (link: string) => /^https?:\/\//.test(link);
 }
 
 .hc-footer .hc-footer-logo {
-    color: #ffffff;
+    color: var(--hc-dark-fg-strong);
 }
 
 .hc-footer a:hover {

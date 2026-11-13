@@ -7,8 +7,8 @@
 
 export type PackageCard = { name: string, summary: string, accent: string, order: number, link: string };
 
-function fail(url: string, key: string, problem: string): never {
-    throw new Error(`packages frontmatter: ${url}: "package.${key}" ${problem}`);
+function invalid(url: string, key: string, problem: string): Error {
+    return new Error(`packages frontmatter: ${url}: "package.${key}" ${problem}`);
 }
 
 /**
@@ -26,7 +26,7 @@ export function buildPackageCard(url: string, frontmatter: Record<string, unknow
     const text = (key: 'name' | 'summary' | 'accent'): string => {
         const value = record[key];
         if (typeof value !== 'string' || value.trim().length === 0) {
-            fail(url, key, 'must be a non empty string');
+            throw invalid(url, key, 'must be a non empty string');
         }
 
         return value;
@@ -34,7 +34,7 @@ export function buildPackageCard(url: string, frontmatter: Record<string, unknow
 
     const { order } = record;
     if (typeof order !== 'number' || !Number.isFinite(order)) {
-        fail(url, 'order', 'must be a finite number');
+        throw invalid(url, 'order', 'must be a finite number');
     }
 
     return {

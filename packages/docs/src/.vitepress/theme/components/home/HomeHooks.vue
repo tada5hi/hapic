@@ -45,8 +45,8 @@ const points = computed(() => hooks.value.points.map((point) => {
                 </p>
                 <ul class="hc-hooks-points">
                     <li
-                        v-for="point in points"
-                        :key="point.name + point.text"
+                        v-for="(point, index) in points"
+                        :key="index"
                     >
                         <strong v-if="point.name">{{ point.name }}</strong>
                         <span>{{ point.text }}</span>

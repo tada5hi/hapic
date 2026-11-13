@@ -5,7 +5,9 @@
   view the LICENSE file that was distributed with this source code.
 -->
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
+import {
+    computed, nextTick, ref, useId,
+} from 'vue';
 import { useData } from 'vitepress';
 import type { HomeFrontmatter } from './types';
 import { useCopy } from './use-copy';
@@ -24,8 +26,10 @@ const setTabRef = (index: number, el: unknown) => {
 
 const { copied, copy, reset } = useCopy();
 
-const tabId = (index: number) => `hc-codetabs-tab-${index}`;
-const panelId = 'hc-codetabs-panel';
+// Unique per instance and stable between server render and hydration.
+const idPrefix = `hc-codetabs-${useId()}`;
+const tabId = (index: number) => `${idPrefix}-tab-${index}`;
+const panelId = `${idPrefix}-panel`;
 
 const activate = async (index: number, focus = false) => {
     if (index !== active.value) {

@@ -104,6 +104,7 @@
 :root {
     --hc-dark-bg: #0a0a12;
     --hc-dark-bg-elevated: #0f1020;
+    --hc-dark-fg-strong: #ffffff;
     --hc-dark-fg: #e8e9f3;
     --hc-dark-fg-muted: #a5a8c0;
     --hc-dark-border: #262842;
@@ -197,12 +198,12 @@
 
 .hc-btn-primary {
     background-image: linear-gradient(100deg, var(--hc-color-primary-500), var(--hc-color-accent-500));
-    color: #ffffff;
+    color: var(--hc-dark-fg-strong);
 }
 
 .hc-btn-primary:hover {
     opacity: 0.9;
-    color: #ffffff;
+    color: var(--hc-dark-fg-strong);
 }
 
 .hc-btn-ghost {

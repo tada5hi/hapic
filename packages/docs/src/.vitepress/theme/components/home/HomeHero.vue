@@ -96,7 +96,7 @@ const { copied, copy } = useCopy();
     font-weight: 800;
     line-height: 1.04;
     letter-spacing: -0.035em;
-    color: #ffffff;
+    color: var(--hc-dark-fg-strong);
 }
 
 .hc-hero-lead {
