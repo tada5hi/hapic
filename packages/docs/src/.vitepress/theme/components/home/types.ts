@@ -7,6 +7,20 @@
 
 export type HomeLink = { text: string, link: string };
 
+export type PipelineScenarioId = 'ok' | 'retry' | 'network' | 'timeout';
+
+export type PipelineScenario = {
+    id: PipelineScenarioId,
+    label: string,
+    outcome: string,
+    exit: 'none' | 'decode' | 'fetch',
+    result: 'response' | 'retry' | 'thrown',
+};
+
+export type PipelineExit = PipelineScenario['exit'];
+
+export type PipelineLayoutId = 'h' | 'v';
+
 export type HomeHeroData = {
     eyebrow: string,
     title: string,

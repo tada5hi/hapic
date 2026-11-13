@@ -1,0 +1,723 @@
+<!--
+  Copyright (c) 2026.
+  Author Peter Placzek (tada5hi)
+  For the full copyright and license information,
+  view the LICENSE file that was distributed with this source code.
+-->
+<script lang="ts">
+import type { PipelineExit, PipelineLayoutId, PipelineScenario } from './types';
+
+type Segment = {
+    d: string,
+    tone: 'track' | 'warn' | 'fail',
+};
+
+type Route = {
+    /** The path the packet travels. */
+    packet: string,
+    /** Its length in user units, to size the packet's tail. */
+    length: number,
+    /** The static active path, drawn brighter than the rest. */
+    highlight: Segment[],
+};
+
+type Label = {
+    text: string,
+    x: number,
+    y: number,
+    anchor: 'start' | 'middle' | 'end',
+    /** The scenario exit or result that lights the label. */
+    lit: PipelineExit | PipelineScenario['result'],
+};
+
+type Layout = {
+    id: PipelineLayoutId,
+    width: number,
+    height: number,
+    box: { width: number, height: number },
+    boxes: { x: number, y: number }[],
+    error: { x: number, y: number, width: number, height: number },
+    track: { d: string, x1: number, y1: number, x2: number, y2: number },
+    drops: Record<'fetch' | 'decode', string>,
+    arc: string,
+    labels: Label[],
+    routes: Record<PipelineExit, Route>,
+};
+
+const STAGES = ['request', 'hooks', 'transform', 'fetch', 'decode', 'hooks', 'response'] as const;
+
+/** Stages a packet reaches before it leaves the track at fetch. */
+const STAGES_UNTIL_FETCH = 4;
+
+/** Length of the packet's tail in user units. */
+const TAIL = 48;
+
+/*
+ * Geometry. Lengths are measured from the paths (the arcs by sampling the
+ * cubic); keyframe fractions in the styles below depend on them.
+ */
+const LAYOUTS: Layout[] = [
+    {
+        // horizontal, 640px and wider
+        id: 'h',
+        width: 940,
+        height: 222,
+        box: { width: 112, height: 36 },
+        boxes: STAGES.map((_, i) => ({ x: 138 * i, y: 50 })),
+        error: {
+            x: 500, y: 150, width: 216, height: 36,
+        },
+        track: {
+            d: 'M56 68 H884', x1: 56, y1: 68, x2: 884, y2: 68,
+        },
+        drops: {
+            fetch: 'M539 68 V150',
+            decode: 'M677 68 V150',
+        },
+        arc: 'M500 168 C260 168 56 204 56 90',
+        labels: [
+            {
+                text: 'NetworkError', x: 531, y: 118, anchor: 'end', lit: 'fetch',
+            },
+            {
+                text: 'HttpResponseError', x: 685, y: 118, anchor: 'start', lit: 'decode',
+            },
+            {
+                text: 'new options', x: 240, y: 198, anchor: 'middle', lit: 'retry',
+            },
+        ],
+        routes: {
+            none: {
+                packet: 'M56 68 H884',
+                length: 828,
+                highlight: [{ d: 'M56 68 H884', tone: 'track' }],
+            },
+            decode: {
+                packet: 'M56 68 H677 V168 H500 C260 168 56 204 56 86 V68 H884',
+                length: 2232,
+                highlight: [
+                    { d: 'M56 68 H884', tone: 'track' },
+                    { d: 'M677 68 V150', tone: 'warn' },
+                ],
+            },
+            fetch: {
+                packet: 'M56 68 H539 V168',
+                length: 583,
+                highlight: [
+                    { d: 'M56 68 H539', tone: 'track' },
+                    { d: 'M539 68 V150', tone: 'fail' },
+                ],
+            },
+        },
+    },
+    {
+        // vertical stack, below 640px
+        id: 'v',
+        width: 320,
+        height: 396,
+        box: { width: 160, height: 36 },
+        boxes: STAGES.map((_, i) => ({ x: 24, y: 12 + 56 * i })),
+        error: {
+            x: 204, y: 208, width: 108, height: 36,
+        },
+        track: {
+            d: 'M104 30 V366', x1: 104, y1: 30, x2: 104, y2: 366,
+        },
+        drops: {
+            fetch: 'M104 226 H204',
+            decode: 'M104 282 H258 V244',
+        },
+        arc: 'M258 208 C258 120 258 30 188 30',
+        labels: [],
+        routes: {
+            none: {
+                packet: 'M104 30 V366',
+                length: 336,
+                highlight: [{ d: 'M104 30 V366', tone: 'track' }],
+            },
+            decode: {
+                packet: 'M104 30 V282 H258 V208 C258 120 258 30 184 30 H104 V366',
+                length: 1112,
+                highlight: [
+                    { d: 'M104 30 V366', tone: 'track' },
+                    { d: 'M104 282 H258 V244', tone: 'warn' },
+                ],
+            },
+            fetch: {
+                packet: 'M104 30 V226 H214',
+                length: 306,
+                highlight: [
+                    { d: 'M104 30 V226', tone: 'track' },
+                    { d: 'M104 226 H204', tone: 'fail' },
+                ],
+            },
+        },
+    },
+];
+</script>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+
+/*
+ * One diagram per layout. The <svg> is the component root, so it is its own
+ * block and Vue patches its dynamic children in the SVG namespace.
+ */
+const props = defineProps<{
+    layout: PipelineLayoutId,
+    scenario: PipelineScenario,
+}>();
+
+const geometry = computed(() => LAYOUTS.find((item) => item.id === props.layout) as Layout);
+
+const route = computed(() => geometry.value.routes[props.scenario.exit]);
+
+const reach = computed(() => (props.scenario.exit === 'fetch' ? STAGES_UNTIL_FETCH : STAGES.length));
+
+const tail = (input: Route) => `0 200 ${(TAIL / input.length * 100).toFixed(2)} 0`;
+
+const isLabelLit = (label: Label) => label.lit === props.scenario.exit || label.lit === props.scenario.result;
+</script>
+
+<template>
+    <svg
+        class="hc-pipe-svg"
+        :class="`hc-pipe-svg--${geometry.id}`"
+        :viewBox="`0 0 ${geometry.width} ${geometry.height}`"
+        aria-hidden="true"
+        focusable="false"
+    >
+        <defs>
+            <linearGradient
+                :id="`hc-pipe-${geometry.id}-track`"
+                gradientUnits="userSpaceOnUse"
+                :x1="geometry.track.x1"
+                :y1="geometry.track.y1"
+                :x2="geometry.track.x2"
+                :y2="geometry.track.y2"
+            >
+                <stop stop-color="#818cf8" />
+                <stop
+                    offset="1"
+                    stop-color="#22d3ee"
+                />
+            </linearGradient>
+            <filter
+                :id="`hc-pipe-${geometry.id}-glow`"
+                filterUnits="userSpaceOnUse"
+                x="0"
+                y="0"
+                :width="geometry.width"
+                :height="geometry.height"
+            >
+                <feGaussianBlur
+                    stdDeviation="4"
+                    result="blur"
+                />
+                <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+            <marker
+                :id="`hc-pipe-${geometry.id}-head`"
+                viewBox="0 0 10 10"
+                refX="7"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+            >
+                <path
+                    d="M0 0 L10 5 L0 10 Z"
+                    fill="#f59e0b"
+                />
+            </marker>
+        </defs>
+
+        <path
+            class="hc-pipe-rail"
+            :d="geometry.track.d"
+            :stroke="`url(#hc-pipe-${geometry.id}-track)`"
+        />
+        <path
+            class="hc-pipe-drop"
+            :d="geometry.drops.fetch"
+        />
+        <path
+            class="hc-pipe-drop"
+            :d="geometry.drops.decode"
+        />
+        <path
+            class="hc-pipe-arc hc-pipe-anim"
+            :d="geometry.arc"
+            :marker-end="`url(#hc-pipe-${geometry.id}-head)`"
+        />
+
+        <path
+            v-for="segment in route.highlight"
+            :key="segment.d"
+            class="hc-pipe-line"
+            :class="`is-${segment.tone}`"
+            :d="segment.d"
+            :stroke="segment.tone === 'track' ? `url(#hc-pipe-${geometry.id}-track)` : undefined"
+            :filter="`url(#hc-pipe-${geometry.id}-glow)`"
+        />
+
+        <g
+            v-for="(box, index) in geometry.boxes"
+            :key="index"
+            class="hc-pipe-box"
+            :class="{ 'is-off': index >= reach }"
+        >
+            <rect
+                :x="box.x"
+                :y="box.y"
+                :width="geometry.box.width"
+                :height="geometry.box.height"
+                rx="8"
+            />
+            <text
+                :x="box.x + geometry.box.width / 2"
+                :y="box.y + geometry.box.height / 2"
+            >{{ STAGES[index] }}</text>
+        </g>
+
+        <g class="hc-pipe-error">
+            <rect
+                :x="geometry.error.x"
+                :y="geometry.error.y"
+                :width="geometry.error.width"
+                :height="geometry.error.height"
+                rx="8"
+            />
+            <text
+                :x="geometry.error.x + geometry.error.width / 2"
+                :y="geometry.error.y + geometry.error.height / 2"
+            >error hooks</text>
+        </g>
+
+        <text
+            v-for="label in geometry.labels"
+            :key="label.text"
+            class="hc-pipe-label"
+            :class="{ 'is-lit': isLabelLit(label) }"
+            :x="label.x"
+            :y="label.y"
+            :text-anchor="label.anchor"
+        >{{ label.text }}</text>
+
+        <g
+            :key="scenario.id"
+            class="hc-pipe-motion"
+        >
+            <rect
+                v-if="scenario.result === 'thrown'"
+                class="hc-pipe-halo hc-pipe-anim"
+                :x="geometry.error.x"
+                :y="geometry.error.y"
+                :width="geometry.error.width"
+                :height="geometry.error.height"
+                rx="8"
+                :filter="`url(#hc-pipe-${geometry.id}-glow)`"
+            />
+            <rect
+                v-else
+                class="hc-pipe-halo hc-pipe-anim"
+                :x="geometry.boxes[STAGES.length - 1].x"
+                :y="geometry.boxes[STAGES.length - 1].y"
+                :width="geometry.box.width"
+                :height="geometry.box.height"
+                rx="8"
+                :filter="`url(#hc-pipe-${geometry.id}-glow)`"
+            />
+            <path
+                class="hc-pipe-packet hc-pipe-tail hc-pipe-anim"
+                :d="route.packet"
+                pathLength="100"
+                :stroke-dasharray="tail(route)"
+            />
+            <path
+                class="hc-pipe-packet hc-pipe-head hc-pipe-anim"
+                :d="route.packet"
+                pathLength="100"
+                :filter="`url(#hc-pipe-${geometry.id}-glow)`"
+            />
+        </g>
+    </svg>
+</template>
+
+<style scoped>
+.hc-pipe-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.hc-pipe-svg--v {
+    display: none;
+    max-width: 360px;
+}
+
+@media (max-width: 639px) {
+    .hc-pipe-svg--h {
+        display: none;
+    }
+
+    .hc-pipe-svg--v {
+        display: block;
+    }
+}
+
+.hc-pipe-rail {
+    fill: none;
+    stroke-width: 2;
+    opacity: 0.22;
+}
+
+.hc-pipe-drop {
+    fill: none;
+    stroke: var(--hc-dark-border);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 4;
+}
+
+.hc-pipe-arc {
+    fill: none;
+    stroke: var(--hc-pipe-warn);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 6;
+    opacity: 0.22;
+    transition: opacity 0.3s;
+}
+
+.is-retry .hc-pipe-arc {
+    stroke-width: 2;
+    opacity: 1;
+    animation: hc-pipe-march 0.9s linear infinite;
+}
+
+.hc-pipe-line {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.hc-pipe-line.is-warn {
+    stroke: var(--hc-pipe-warn);
+}
+
+.hc-pipe-line.is-fail {
+    stroke: var(--hc-pipe-fail);
+}
+
+.hc-pipe-box rect,
+.hc-pipe-error rect {
+    fill: var(--hc-dark-bg-elevated);
+    stroke: rgba(129, 140, 248, 0.55);
+    stroke-width: 1.25;
+    transition: stroke 0.3s;
+}
+
+.hc-pipe-box text,
+.hc-pipe-error text,
+.hc-pipe-label {
+    font-family: var(--hc-font-mono);
+    font-weight: 600;
+    fill: var(--hc-dark-fg);
+    dominant-baseline: central;
+    text-anchor: middle;
+}
+
+.hc-pipe-box text {
+    font-size: 15px;
+}
+
+.hc-pipe-error text {
+    font-size: 14px;
+}
+
+.hc-pipe-svg--v .hc-pipe-error text {
+    font-size: 13px;
+}
+
+.hc-pipe-box,
+.hc-pipe-error {
+    transition: opacity 0.3s;
+}
+
+.hc-pipe-box.is-off,
+.is-ok .hc-pipe-error {
+    opacity: 0.38;
+}
+
+.is-ok .hc-pipe-error rect {
+    stroke: var(--hc-dark-border);
+}
+
+.is-warn .hc-pipe-error rect {
+    stroke: var(--hc-pipe-warn);
+}
+
+.is-warn .hc-pipe-error text {
+    fill: var(--hc-pipe-warn);
+}
+
+.hc-pipe-label {
+    font-size: 12px;
+    font-weight: 500;
+    fill: var(--hc-dark-fg-muted);
+    opacity: 0.45;
+    transition: opacity 0.3s;
+}
+
+.hc-pipe-label.is-lit {
+    fill: var(--hc-pipe-tone);
+    opacity: 1;
+}
+
+/* motion */
+
+.hc-pipe-halo {
+    fill: color-mix(in srgb, var(--hc-pipe-tone) 14%, transparent);
+    stroke: var(--hc-pipe-tone);
+    stroke-width: 2;
+    opacity: 0;
+    animation: hc-pipe-arrive var(--hc-pipe-duration) linear infinite;
+}
+
+.hc-pipe.is-warn .hc-pipe-halo {
+    --hc-pipe-tone: var(--hc-pipe-ok);
+}
+
+.hc-pipe-packet {
+    --hc-pipe-packet: var(--hc-pipe-ok);
+
+    fill: none;
+    stroke: var(--hc-pipe-packet);
+    stroke-linecap: round;
+    animation-name: hc-pipe-travel;
+    animation-duration: var(--hc-pipe-duration);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.hc-pipe-head {
+    --hc-pipe-packet: #cffafe;
+
+    stroke-width: 10;
+    stroke-dasharray: 0.001 200;
+}
+
+.hc-pipe-tail {
+    stroke-width: 3;
+    stroke-opacity: 0.45;
+}
+
+.is-timeout .hc-pipe-svg--h .hc-pipe-packet {
+    animation-name: hc-pipe-stall-h, hc-pipe-tint-fail;
+}
+
+.is-timeout .hc-pipe-svg--v .hc-pipe-packet {
+    animation-name: hc-pipe-stall-v, hc-pipe-tint-fail;
+}
+
+.is-network .hc-pipe-packet {
+    animation-name: hc-pipe-travel, hc-pipe-tint-fail;
+}
+
+.is-retry .hc-pipe-svg--h .hc-pipe-packet {
+    animation-name: hc-pipe-travel, hc-pipe-tint-retry-h;
+}
+
+.is-retry .hc-pipe-svg--v .hc-pipe-packet {
+    animation-name: hc-pipe-travel, hc-pipe-tint-retry-v;
+}
+
+.is-paused .hc-pipe-anim {
+    animation-play-state: paused;
+}
+
+/*
+ * Every loop: travel during the first 72%, show the end state, fade out.
+ * The packet paths use pathLength="100", so offsets are percentages.
+ */
+@keyframes hc-pipe-travel {
+    0% {
+        stroke-dashoffset: 0;
+        opacity: 0;
+    }
+
+    4% {
+        opacity: 1;
+    }
+
+    72% {
+        stroke-dashoffset: -100;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        stroke-dashoffset: -100;
+        opacity: 0;
+    }
+}
+
+/* timeout: the packet waits at fetch (71% of the path, 55% stacked) until the timer fires */
+@keyframes hc-pipe-stall-h {
+    0% {
+        stroke-dashoffset: 0;
+        opacity: 0;
+    }
+
+    4% {
+        opacity: 1;
+    }
+
+    30%,
+    56% {
+        stroke-dashoffset: -71;
+    }
+
+    72% {
+        stroke-dashoffset: -100;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        stroke-dashoffset: -100;
+        opacity: 0;
+    }
+}
+
+@keyframes hc-pipe-stall-v {
+    0% {
+        stroke-dashoffset: 0;
+        opacity: 0;
+    }
+
+    4% {
+        opacity: 1;
+    }
+
+    30%,
+    56% {
+        stroke-dashoffset: -55;
+    }
+
+    72% {
+        stroke-dashoffset: -100;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        stroke-dashoffset: -100;
+        opacity: 0;
+    }
+}
+
+@keyframes hc-pipe-tint-fail {
+    0%,
+    66% {
+        stroke: var(--hc-pipe-packet);
+    }
+
+    72%,
+    100% {
+        stroke: var(--hc-pipe-fail);
+    }
+}
+
+/* retry: amber from the drop after decode until the arc reaches request (28% to 63% of the path) */
+@keyframes hc-pipe-tint-retry-h {
+    0%,
+    19% {
+        stroke: var(--hc-pipe-packet);
+    }
+
+    21%,
+    44% {
+        stroke: var(--hc-pipe-warn);
+    }
+
+    46%,
+    100% {
+        stroke: var(--hc-pipe-packet);
+    }
+}
+
+/* stacked: 23% to 70% of the path */
+@keyframes hc-pipe-tint-retry-v {
+    0%,
+    15% {
+        stroke: var(--hc-pipe-packet);
+    }
+
+    17%,
+    49% {
+        stroke: var(--hc-pipe-warn);
+    }
+
+    51%,
+    100% {
+        stroke: var(--hc-pipe-packet);
+    }
+}
+
+@keyframes hc-pipe-arrive {
+    0%,
+    70% {
+        opacity: 0;
+    }
+
+    74%,
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes hc-pipe-march {
+    to {
+        stroke-dashoffset: -12;
+    }
+}
+
+/* reduced motion: nothing moves, the active path stays highlighted */
+
+@media (prefers-reduced-motion: reduce) {
+    .hc-pipe-anim {
+        animation: none !important;
+    }
+
+    .hc-pipe-packet {
+        display: none;
+    }
+
+    .hc-pipe-halo {
+        opacity: 1;
+    }
+
+    .hc-pipe-arc,
+    .hc-pipe-box,
+    .hc-pipe-error,
+    .hc-pipe-label,
+    .hc-pipe-box rect,
+    .hc-pipe-error rect {
+        transition: none;
+    }
+}
+</style>
