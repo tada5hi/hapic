@@ -167,6 +167,123 @@ describe('src/domains/key-value/v2', () => {
         expect(JSON.parse(empty.body as string)).toEqual({ versions: [] });
     });
 
+    it('should read the engine config', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {
+                    data: {
+                        cas_required: false, 
+                        delete_version_after: '0s', 
+                        max_versions: 0, 
+                    }, 
+                },
+            }),
+        });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        const response = await api.getConfig('secret');
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('secret/config');
+        expect(req.body).toBeUndefined();
+        expect(response.data.max_versions).toBe(0);
+    });
+
+    it('should write the engine config', async () => {
+        const transport = new MemoryTransport({ fetch: () => ({ status: 204 }) });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        await api.setConfig('secret', {
+            max_versions: 5,
+            cas_required: false,
+            delete_version_after: '3h25m19s',
+        });
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('POST');
+        expect(req.url).toBe('secret/config');
+        expect(JSON.parse(req.body as string)).toEqual({
+            max_versions: 5,
+            cas_required: false,
+            delete_version_after: '3h25m19s',
+        });
+    });
+
+    it('should read secret metadata', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: { data: { current_version: 3, versions: {} } },
+            }),
+        });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        const response = await api.getMetadata('secret', 'a/b');
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('secret/metadata/a/b');
+        expect(req.body).toBeUndefined();
+        expect(response.data.current_version).toBe(3);
+    });
+
+    it('should write secret metadata', async () => {
+        const transport = new MemoryTransport({ fetch: () => ({ status: 204 }) });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        await api.saveMetadata('secret', 'a/b', {
+            max_versions: 5,
+            custom_metadata: { foo: 'abc' },
+        });
+
+        const req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('POST');
+        expect(req.url).toBe('secret/metadata/a/b');
+        expect(JSON.parse(req.body as string)).toEqual({
+            max_versions: 5,
+            custom_metadata: { foo: 'abc' },
+        });
+    });
+
+    it('should read secret subkeys', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: { data: { subkeys: { foo: null }, metadata: { version: 1 } } },
+            }),
+        });
+
+        const api = new KeyValueV2API({ client: createClient({ transport }) });
+
+        const response = await api.getSubkeys('m', 'p');
+
+        let req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('m/subkeys/p');
+        expect(response.data.subkeys).toEqual({ foo: null });
+
+        await api.getSubkeys('m', 'p', { version: 2, depth: 1 });
+
+        req = transport.requests.at(-1)!;
+
+        expect(req.method).toBe('GET');
+        expect(req.url).toBe('m/subkeys/p?version=2&depth=1');
+    });
+
     it('should save resource', async () => {
         const transport = new MemoryTransport({
             fetch: () => ({

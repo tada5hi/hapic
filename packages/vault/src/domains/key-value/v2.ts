@@ -8,10 +8,17 @@
 import { HeaderName } from '../../constants';
 import { BaseAPI } from '../base';
 import type { BaseAPIContext } from '../types';
+import type { ResourceResponse } from '../../types';
 import type {
+    KeyValueV2Config,
+    KeyValueV2ConfigPayload,
     KeyValueV2CreateResponse,
     KeyValueV2GetOneResponse,
+    KeyValueV2Metadata,
+    KeyValueV2MetadataPayload,
     KeyValueV2Payload,
+    KeyValueV2Subkeys,
+    KeyValueV2SubkeysOptions,
     KeyValueV2VersionsPayload,
 } from './types';
 
@@ -160,6 +167,78 @@ export class KeyValueV2API extends BaseAPI {
         const payload : KeyValueV2VersionsPayload = { versions };
 
         await this.client.put(`${mount}/destroy/${path}`, payload);
+    }
+
+    /**
+     * Read the engine configuration of a mount.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     */
+    async getConfig(mount: string) : Promise<ResourceResponse<KeyValueV2Config>> {
+        const { data } = await this.client.get(`${mount}/config`);
+
+        return data;
+    }
+
+    /**
+     * Write the engine configuration of a mount.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param data
+     */
+    async setConfig(mount: string, data: KeyValueV2ConfigPayload) : Promise<void> {
+        await this.client.post(`${mount}/config`, data);
+    }
+
+    /**
+     * Read the metadata and version list of a secret.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     */
+    async getMetadata(mount: string, path: string) : Promise<ResourceResponse<KeyValueV2Metadata>> {
+        const { data } = await this.client.get(`${mount}/metadata/${path}`);
+
+        return data;
+    }
+
+    /**
+     * Create or replace the metadata of a secret.
+     * This does not create a new version.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param data
+     */
+    async saveMetadata(mount: string, path: string, data: KeyValueV2MetadataPayload) : Promise<void> {
+        await this.client.post(`${mount}/metadata/${path}`, data);
+    }
+
+    /**
+     * Read the key structure of a secret version, with every leaf value replaced by null.
+     *
+     * @param mount The mount point on which the secret engine is mounted.
+     * @param path The secret path relative to the secret engine mount.
+     * @param options
+     */
+    async getSubkeys(
+        mount: string,
+        path: string,
+        options: KeyValueV2SubkeysOptions = {},
+    ) : Promise<ResourceResponse<KeyValueV2Subkeys>> {
+        const query : Record<string, number> = {};
+
+        if (typeof options.version !== 'undefined') {
+            query.version = options.version;
+        }
+
+        if (typeof options.depth !== 'undefined') {
+            query.depth = options.depth;
+        }
+
+        const { data } = await this.client.get(`${mount}/subkeys/${path}`, { query });
+
+        return data;
     }
 
     /**
