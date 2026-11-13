@@ -1,0 +1,17 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="vt-logo-title">
+    <title id="vt-logo-title">@hapic/vault logo: a combination dial with tick marks and a pointer</title>
+    <defs>
+        <linearGradient id="vt-logo-g" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#d946ef"/>
+        </linearGradient>
+    </defs>
+    <g stroke="url(#vt-logo-g)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <circle cx="128" cy="136" r="80" stroke-dasharray="4 24"/>
+        <circle cx="128" cy="136" r="48"/>
+        <!-- the hand turns to its mark; the static attributes hold the settled state -->
+        <path d="M128 136l26-26"><animateTransform attributeName="transform" type="rotate" from="-150 128 136" to="0 128 136" begin="0s" dur="1.2s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0.8 0.2 1"/></path>
+        <path d="M112 24h32l-16 24z" fill="url(#vt-logo-g)" stroke="none"/>
+        <circle cx="128" cy="136" r="10" fill="url(#vt-logo-g)" stroke="none"/>
+    </g>
+</svg>

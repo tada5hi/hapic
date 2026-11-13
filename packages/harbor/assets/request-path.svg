@@ -1,0 +1,117 @@
+<svg width="960" height="696" viewBox="0 0 960 696" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hb-title hb-desc">
+    <title id="hb-title">How @hapic/harbor turns an artifact lookup into a Harbor request</title>
+    <desc id="hb-desc">A call to projectRepositoryArtifact.getOne with projectName team-a, repositoryName base/node, tagOrDigest sha256:9f2c, a query and acceptVulnerabilities becomes one GET request. The project name and the digest are URL-encoded once, the repository name twice (base/node becomes base%252Fnode), a missing tag becomes latest, the query becomes ?with_scan_overview=true and acceptVulnerabilities becomes the X-Accept-Vulnerabilities header. Harbor's router decodes the path once to base%2Fnode and the handler unescapes it again to base/node.</desc>
+
+    <style>
+        :root {
+            --fg: #1E1B4B;
+            --muted: #575A7B;
+            --panel: #F5F6FC;
+            --panel-edge: #D4D6EC;
+            --card: #FFFFFF;
+            --rail: #8E90B4;
+            --indigo: #6366F1;
+            --teal: #0D9488;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fg: #EEF0FF;
+                --muted: #A3A6C8;
+                --panel: #161A2C;
+                --panel-edge: #3A3F63;
+                --card: #0D1117;
+                --rail: #6A6E96;
+                --indigo: #818CF8;
+                --teal: #2DD4BF;
+            }
+        }
+        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; fill: var(--fg); font-size: 13px; }
+        .muted { fill: var(--muted); }
+        .code { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; }
+        .label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+        .panel { fill: var(--panel); stroke: var(--panel-edge); }
+        .card { fill: var(--card); stroke: var(--panel-edge); }
+        .card-indigo { fill: var(--card); stroke: var(--indigo); stroke-width: 1.5; }
+        .card-teal { fill: var(--card); stroke: var(--teal); stroke-width: 1.5; }
+        .rail { stroke: var(--rail); stroke-width: 2; }
+        .accent-indigo { fill: var(--indigo); }
+        .accent-teal { fill: var(--teal); }
+        .arrow-head { fill: var(--rail); }
+    </style>
+
+    <defs>
+        <marker id="hb-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path class="arrow-head" d="M0 0 L10 5 L0 10 Z"/>
+        </marker>
+    </defs>
+
+    <!-- 1. the call -->
+    <rect class="panel" x="16" y="16" width="928" height="216" rx="18"/>
+    <text class="label" x="36" y="44">Your call</text>
+    <rect class="card-indigo" x="36" y="58" width="888" height="160" rx="12"/>
+    <text class="code" x="56" y="84"><tspan class="accent-indigo">harbor.projectRepositoryArtifact.getOne</tspan>({</text>
+    <text class="code" x="80" y="104">projectName: 'team-a',</text>
+    <text class="code" x="80" y="124">repositoryName: 'base/node',</text>
+    <text class="code" x="80" y="144">tagOrDigest: 'sha256:9f2c',</text>
+    <text class="code" x="80" y="164">query: { with_scan_overview: true },</text>
+    <text class="code" x="80" y="184">acceptVulnerabilities: 'application/vnd.security.vulnerability.report; version=1.1',</text>
+    <text class="code" x="56" y="204">});</text>
+
+    <path class="rail" d="M480 232 V256" marker-end="url(#hb-head)"/>
+
+    <!-- 2. what the client sends -->
+    <rect class="panel" x="16" y="260" width="928" height="288" rx="18"/>
+    <text class="label" x="36" y="288">What the client sends</text>
+    <text class="label" x="300" y="288">Sent as</text>
+    <text class="label" x="620" y="288">Rule</text>
+
+    <rect class="card" x="36" y="298" width="888" height="30" rx="8"/>
+    <text class="code" x="56" y="318">projectName</text>
+    <text class="code" x="300" y="318">team-a</text>
+    <text class="muted" x="620" y="318">path segment, URL-encoded once</text>
+
+    <rect class="card" x="36" y="334" width="888" height="30" rx="8"/>
+    <text class="code" x="56" y="354">repositoryName</text>
+    <text class="code accent-teal" x="300" y="354">base%252Fnode</text>
+    <text class="muted" x="620" y="354">URL-encoded twice: / → %2F → %252F</text>
+
+    <rect class="card" x="36" y="370" width="888" height="30" rx="8"/>
+    <text class="code" x="56" y="390">tagOrDigest</text>
+    <text class="code" x="300" y="390">sha256%3A9f2c</text>
+    <text class="muted" x="620" y="390">encoded once, latest when absent</text>
+
+    <rect class="card" x="36" y="406" width="888" height="30" rx="8"/>
+    <text class="code" x="56" y="426">query</text>
+    <text class="code" x="300" y="426">?with_scan_overview=true</text>
+    <text class="muted" x="620" y="426">form-encoded query string</text>
+
+    <rect class="card" x="36" y="442" width="888" height="30" rx="8"/>
+    <text class="code" x="56" y="462">acceptVulnerabilities</text>
+    <text class="code" x="300" y="462">X-Accept-Vulnerabilities</text>
+    <text class="muted" x="620" y="462">request header, only when given</text>
+
+    <rect class="card-teal" x="36" y="482" width="888" height="52" rx="12"/>
+    <text class="code" x="56" y="503"><tspan class="accent-teal" font-weight="600">GET</tspan> projects/team-a/repositories/base%252Fnode/artifacts/sha256%3A9f2c?with_scan_overview=true</text>
+    <text class="code muted" x="56" y="523">Authorization: Basic …   X-Accept-Vulnerabilities: application/vnd.security.vulnerability.report; version=1.1</text>
+
+    <path class="rail" d="M480 548 V572" marker-end="url(#hb-head)"/>
+
+    <!-- 3. what Harbor does with the repository name -->
+    <rect class="panel" x="16" y="576" width="928" height="104" rx="18"/>
+    <text class="label" x="36" y="604">Harbor</text>
+
+    <rect class="card" x="36" y="620" width="180" height="40" rx="10"/>
+    <text class="code" x="126" y="645" text-anchor="middle">base%252Fnode</text>
+
+    <path class="rail" d="M216 640 H392" marker-end="url(#hb-head)"/>
+    <text class="muted" x="304" y="630" font-size="11" text-anchor="middle">router decodes the path</text>
+
+    <rect class="card" x="396" y="620" width="180" height="40" rx="10"/>
+    <text class="code" x="486" y="645" text-anchor="middle">base%2Fnode</text>
+
+    <path class="rail" d="M576 640 H752" marker-end="url(#hb-head)"/>
+    <text class="muted" x="664" y="630" font-size="11" text-anchor="middle">handler unescapes again</text>
+
+    <rect class="card-teal" x="756" y="620" width="168" height="40" rx="10"/>
+    <text class="code" x="840" y="645" text-anchor="middle">base/node</text>
+</svg>

@@ -62,7 +62,7 @@ await client.ingestor.insert(entry);
 
 ## Querying logs
 
-`query` runs a [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/) expression and returns an array of matching entries. The response stream is parsed for you into plain objects.
+`query` runs a [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/) expression and returns an array of matching entries. The response (newline-delimited JSON) is read in full and parsed for you into plain objects.
 
 ```typescript
 const results = await client.querier.query({

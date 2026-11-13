@@ -100,7 +100,7 @@ Releases are automated by [release-please](https://github.com/googleapis/release
 
 - `release-type: node`, `include-component-in-tag: true` — each package is released independently with a component-tagged release (e.g. `client-vX`, `harbor-vX`).
 - The `node-workspace` plugin keeps cross-package `peerDependencies` ranges in sync; this needs `updatePeerDependencies: true` in its config, without it only `devDependencies` are bumped.
-- A squash commit gets **one** `BREAKING CHANGE:` footer naming every break: release-please keeps only the first footer of a squashed message. Check the release PR's changelog after merging a breaking change; a wrong entry is corrected with a `BEGIN_COMMIT_OVERRIDE` block in the merged PR's description.
+- A squash commit gets **one** `BREAKING CHANGE:` footer naming every break: release-please keeps a single footer per commit, also inside a `BEGIN_COMMIT_OVERRIDE` block. Check the release PR's changelog after merging a breaking change; a wrong entry is corrected with a `BEGIN_COMMIT_OVERRIDE` block in the merged PR's description.
 - `bump-minor-pre-major` / `bump-patch-for-minor-pre-major` govern pre-1.0 bumps.
 - On a release commit to `master`, CI builds and publishes via `npx monoship`.
 

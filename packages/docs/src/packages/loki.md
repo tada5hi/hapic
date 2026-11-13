@@ -48,7 +48,7 @@ The package exports the usual registry (`createClient`, `useClient`, `setClient`
 | `client.compactor` | `CompactorAPI` | `createDeletionRequest(params)` · `cancelDeletionRequest(params)` |
 
 ::: tip Timestamps are nanoseconds
-Loki works in **nanosecond** Unix epochs. Pass them as `bigint`, `string`, or `number`. The exported `nanoSeconds()` returns "now" as a `bigint`.
+Loki works in **nanosecond** Unix epochs. Pass them as `bigint` or `string`; a `number` cannot hold a nanosecond epoch without losing precision, and push values and the query `time` do not accept one. The exported `nanoSeconds()` returns "now" as a `bigint`.
 :::
 
 ## Pushing logs

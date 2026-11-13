@@ -1,0 +1,14 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="lk-logo-title">
+    <title id="lk-logo-title">@hapic/loki logo: a query lens over a list of log lines</title>
+    <defs>
+        <linearGradient id="lk-logo-g" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#f59e0b"/>
+        </linearGradient>
+    </defs>
+    <g stroke="url(#lk-logo-g)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M40 68h150M40 108h60M40 148h44M40 188h80"/>
+        <!-- the lens slides over the lines; the static attributes hold the settled state -->
+        <g><circle cx="156" cy="142" r="40"/><path d="M186 172l34 34"/><animateTransform attributeName="transform" type="translate" from="-56 -40" to="0 0" begin="0s" dur="1.1s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0.8 0.2 1"/></g>
+    </g>
+</svg>

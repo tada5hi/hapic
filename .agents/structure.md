@@ -98,9 +98,11 @@ Every published package is **ESM-only** (`"type": "module"`) and exposes a singl
       "import": "./dist/index.mjs"
     }
   },
-  "files": ["dist/"]
+  "files": ["dist/", "assets/"]
 }
 ```
+
+Each package keeps the images its README shows (`logo.svg`, diagrams) in `packages/<pkg>/assets/`. The README references them by relative path (`./assets/logo.svg`); npm rewrites such paths through `repository.directory`, so every package manifest sets it. The root README uses the hapic mark and the request lifecycle diagram from `packages/client/assets/`, and the docs site logo (`packages/docs/src/public/logo.svg`) is a static copy of that mark.
 
 The public API of each package is whatever its `src/index.ts` barrel re-exports. Anything not re-exported from `index.ts` is internal.
 

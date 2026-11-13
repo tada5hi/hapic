@@ -24,7 +24,8 @@ const client = new OAuth2Client({
         clientSecret: 'super-secret',
         redirectUri: 'https://app.example.com/callback',
         tokenEndpoint: '/oauth2/token',
-        authorizationEndpoint: '/oauth2/authorize',
+        // must be an absolute URL: it is built into a link, not requested
+        authorizationEndpoint: 'https://auth.example.com/oauth2/authorize',
         userinfoEndpoint: '/oauth2/userinfo',
         scope: ['openid', 'profile', 'email'],
     },
