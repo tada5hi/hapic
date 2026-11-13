@@ -11,11 +11,14 @@ import Hero from '../Hero.vue';
 import HooksSpotlight from '../HooksSpotlight.vue';
 import PackageShowcase from '../PackageShowcase.vue';
 import HomeHero from './HomeHero.vue';
+import HomePipeline from './HomePipeline.vue';
 </script>
 
 <template>
     <div class="hc-home-root">
-        <HomeHero />
+        <HomeHero>
+            <HomePipeline />
+        </HomeHero>
         <Hero />
         <FeatureGrid />
         <CodeTabs />
