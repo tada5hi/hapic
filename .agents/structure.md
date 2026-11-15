@@ -9,7 +9,7 @@
 | [packages/client](../packages/client)                | `hapic`               | Base fetch-based HTTP client: request methods, hooks, transformers, headers, errors. **Foundation package** — no internal deps. |
 | [packages/harbor](../packages/harbor)                | `@hapic/harbor`       | Client for the [Harbor](https://goharbor.io/) container registry API (projects, repositories, artifacts, robots, webhooks). |
 | [packages/loki](../packages/loki)                    | `@hapic/loki`         | Client for [Grafana Loki](https://grafana.com/oss/loki/) (querier, distributor, compactor). |
-| [packages/oauth2](../packages/oauth2)                | `@hapic/oauth2`       | OAuth2 / OpenID Connect client (authorize, token, userinfo, provider metadata). |
+| [packages/oauth2](../packages/oauth2)                | `@hapic/oauth2`       | OAuth2 / OpenID Connect client (authorize, token, device authorization, userinfo, provider metadata). |
 | [packages/vault](../packages/vault)                  | `@hapic/vault`        | Client for [HashiCorp Vault](https://www.vaultproject.io/) (key-value v1/v2, mounts). |
 | [packages/victorialogs](../packages/victorialogs)    | `@hapic/victorialogs` | Client for [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) (ingestor, querier). |
 | [packages/docs](../packages/docs)                    | `@hapic/docs`         | VitePress documentation site (private, not published).                      |
@@ -43,10 +43,11 @@ packages/client/src/
 ├── module.ts           # Client class — request(), get/post/put/patch/delete/head(), header & hook management
 ├── registry.ts         # createClientRegistry({ create, id }) — factory for the singleton-registry functions
 ├── instance.ts         # Base Client's registry: create/use/set/has/unsetClient, isClient (built via createClientRegistry)
+├── domain/             # Shared abstract BaseAPI<OPTIONS> + BaseAPIContext for service-client domain objects
 ├── constants.ts        # ResponseType, MethodName enums
 ├── fetch.ts            # Cross-env fetch/Headers/Blob/FormData/AbortController + proxy (node-fetch-native)
 ├── request/            # RequestBaseOptions/RequestOptions types, defaults, payload helpers, transformers
-├── response/           # Response type, response-type detection, status/type checks
+├── response/           # Response type, response-type detection, status/type checks, event stream (SSE) parser
 ├── hook/               # HookManager, HookName enum, request/response/error hook fn types
 ├── header/             # Header name constants + authorization header (Basic / Bearer / api-key)
 ├── error/              # ClientError + NetworkError/HttpResponseError (@ebec/core BaseError), ErrorCode, isClientError* helpers
@@ -67,9 +68,9 @@ packages/<service>/src/
 ├── config/             # Config / ConfigInput types (request options + connectionString/connectionOptions)
 ├── types.ts             # Top-level shared types for the package
 ├── domains/            # One subdirectory per API domain
-│   ├── base.ts         #   abstract BaseAPI — holds the `client` reference
+│   ├── base.ts         #   abstract BaseAPI — thin subclass of `hapic`'s BaseAPI (binds the package's Options)
 │   ├── index.ts        #   barrel of all domain APIs
-│   ├── types.ts         #   BaseAPIContext, shared collection/query/response types
+│   ├── types.ts         #   BaseAPIContext (alias of `hapic`'s), shared collection/query/response types
 │   └── <domain>/
 │       ├── module.ts   #     <Domain>API extends BaseAPI — the endpoint methods
 │       ├── types.ts     #     request/response payload types for the domain
@@ -97,9 +98,11 @@ Every published package is **ESM-only** (`"type": "module"`) and exposes a singl
       "import": "./dist/index.mjs"
     }
   },
-  "files": ["dist/"]
+  "files": ["dist/", "assets/"]
 }
 ```
+
+Each package keeps the images its README shows (`logo.svg`, diagrams) in `packages/<pkg>/assets/`. The README references them by relative path (`./assets/logo.svg`); npm rewrites such paths through `repository.directory`, so every package manifest sets it. The root README uses the hapic mark and the request lifecycle diagram from `packages/client/assets/`, and the docs site logo (`packages/docs/src/public/logo.svg`) is a static copy of that mark.
 
 The public API of each package is whatever its `src/index.ts` barrel re-exports. Anything not re-exported from `index.ts` is internal.
 

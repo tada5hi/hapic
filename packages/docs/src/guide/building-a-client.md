@@ -18,33 +18,20 @@ MyClient extends Client
 
 ## A domain API
 
-Group endpoints into a class that holds a `client` and calls through it. Mirroring the `@hapic/*` packages, give it a `BaseAPI` to hold the client reference:
+Group endpoints into a class that holds a `client` and calls through it. `hapic` exports the abstract `BaseAPI` every `@hapic/*` package builds on — extend it instead of writing your own. `BaseAPI` takes a `BaseAPIContext` (`{ client?, options? }`). `client` is either a ready client to share or raw request options to create a dedicated one from; `options` is an optional object of your own settings, typed by the generic parameter (`BaseAPI<MyOptions>`). It provides:
 
-```typescript
-// base.ts
-import { type IClient, type RequestBaseOptions, createClient, isClient } from 'hapic';
+| Member | Purpose |
+|--------|---------|
+| `setClient(input?)` | Use the given client, or create one from request options. |
+| `setOptions(options?)` | Replace the options object (`{}` when omitted). |
+| `setOption(key, value)` | Set one option on the held options object. |
+| `withBaseURL(url?)` *(protected)* | `{ baseURL: url }` when `url` is set, else `{}` — spread it into request options to target a different host. |
 
-export interface BaseAPIContext {
-    client?: IClient | RequestBaseOptions;
-}
-
-export abstract class BaseAPI {
-    protected client!: IClient;
-
-    protected constructor(context: BaseAPIContext = {}) {
-        this.setClient(context.client);
-    }
-
-    setClient(input?: IClient | RequestBaseOptions) {
-        // accept a ready client, or raw options to build one
-        this.client = isClient(input) ? input : createClient(input);
-    }
-}
-```
+The options object is held by reference: pass the **same** object to every domain API of your client so a `setOption` on one is visible to all of them.
 
 ```typescript
 // users.ts
-import { BaseAPI } from './base';
+import { BaseAPI } from 'hapic';
 
 interface User { id: number; name: string }
 

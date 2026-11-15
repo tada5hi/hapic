@@ -14,14 +14,16 @@ This keeps transport concerns in one place and lets each service package focus p
 `packages/client/src/module.ts` is the heart of the system. A `request(config)` call:
 
 ```
-1. Build headers   → merge per-request headers over the client's default headers
+1. Resolve options → request/resolve: per-request options replace defaults; headers layered over the client's
 2. Resolve URL     → withBase(url, baseURL); then withQuery(...) for params/query (bigint → string via traverse)
 3. Request hooks   → hookManager.triggerReqHook(options)            (HookName.REQUEST)
 4. Transformers    → apply options.transform fn(s) to the body
 5. Dispatch        → fetch(url, init), with/without proxy (createProxy from node-fetch-native)
+                     → `timeout` is pipeline-only: a fresh AbortSignal.timeout per dispatch, combined with the caller signal (AbortSignal.any); never in the transport's init
 6. Decode          → pick by responseType OR detectResponseType(Content-Type):
                        stream | blob | arrayBuffer | text | json (JSON.parse, falling back to text)
-                     → response.data is exposed via a lazy getter/setter
+                     → responseTransform fn(data, headers, status) (not for streams; 4xx/5xx bodies too, where a
+                       throwing fn leaves the body untransformed) → lazy response.data getter/setter
 7. Error check     → status 400–599 → createClientError(...) → error hooks (REQUEST_ERROR / RESPONSE_ERROR)
 8. Response hooks  → hookManager.triggerResHook(response)           (HookName.RESPONSE)
 ```
@@ -56,6 +58,8 @@ export class Client implements IClient {
     setHeader / getHeader / unsetHeader / unsetHeaders(...)
     setAuthorizationHeader / getAuthorizationHeader / unsetAuthorizationHeader(...)
 
+    toOptions(): ClientOptions   // defaults + current headers (copies) + transport (same instance); no hooks
+
     on(name, fn): number    // register a hook, returns an id
     off(name, fn?): this    // remove a specific hook or all hooks for a name
 }
@@ -80,19 +84,32 @@ export class HarborClient extends BaseClient {           // BaseClient = Client 
 }
 ```
 
-`@hapic/oauth2`'s `OAuth2Client` registers its own marker (`markInstanceof(this, Symbol.for('@hapic/oauth2/OAuth2Client'))`) in addition to the inherited `Client` marker, and passes an extra `options` object into each domain API context. Markers are namespaced (`hapic/…`, `@hapic/<pkg>/…`) to avoid cross-library `Symbol.for` collisions.
+`@hapic/oauth2`'s `OAuth2Client` registers its own marker (`markInstanceof(this, Symbol.for('@hapic/oauth2/OAuth2Client'))`) in addition to the inherited `Client` marker. Markers are namespaced (`hapic/…`, `@hapic/<pkg>/…`) to avoid cross-library `Symbol.for` collisions.
 
 ### Domain API + BaseAPI
 
+All domain objects build on one generic base exported by `hapic` (`packages/client/src/domain/`):
+
 ```typescript
-// domains/base.ts — shared base for all domain APIs
-export abstract class BaseAPI {
-    protected client!: IClient;   // the client contract, not the concrete `Client` class
-    protected constructor(context?: BaseAPIContext) { this.setClient(context?.client); }
-    setClient(input?: IClient | RequestBaseOptions) {
-        this.client = isClient(input) ? input : createClient(input);  // accepts a client OR raw options
-    }
+// packages/client/src/domain/ — shared base for all domain APIs
+export type BaseAPIContext<OPTIONS extends Record<string, any> = Record<string, any>> = {
+    client?: IClient | RequestBaseOptions,   // a client to share, OR raw options to create one from
+    options?: OPTIONS,                       // held by reference
+};
+
+export abstract class BaseAPI<OPTIONS extends Record<string, any> = Record<string, any>> {
+    protected client: IClient;               // the client contract, not the concrete `Client` class
+    protected options: OPTIONS;
+    constructor(context: BaseAPIContext<OPTIONS> = {});
+    setClient(input?: IClient | RequestBaseOptions): void;   // isClient(input) ? input : createClient(input)
+    setOptions(options?: OPTIONS): void;                     // replaces the reference ({} when omitted)
+    setOption<K extends keyof OPTIONS>(key: K, value: OPTIONS[K]): void;   // mutates the held object
+    protected withBaseURL(baseURL?: string): { baseURL?: string };       // { baseURL } when non-empty, else {}
 }
+
+// packages/<service>/src/domains/base.ts — a thin per-package subclass
+export abstract class BaseAPI extends SharedBaseAPI<Options> {}      // loki, oauth2, victorialogs
+export abstract class BaseAPI extends SharedBaseAPI {}               // harbor (vault adds a deprecated `setDriver` alias)
 
 // domains/project/module.ts — a concrete domain
 export class ProjectAPI extends BaseAPI {
@@ -100,11 +117,14 @@ export class ProjectAPI extends BaseAPI {
         const { data } = await this.client.get(`projects/${id}`);
         return data;
     }
-    // create / update / delete / getMany / getAll ...
 }
 ```
 
-**Conventions:** domain classes are named `<Domain>API` and live in `domains/<domain>/module.ts`. They never call `fetch` directly — always go through `this.client`. They take a `BaseAPIContext` (`{ client?: IClient | RequestBaseOptions }`), so a domain API can be used standalone (it will create its own client) or share the parent client.
+**Conventions:** domain classes are named `<Domain>API` and live in `domains/<domain>/module.ts`. They never call `fetch` directly — always go through `this.client`. They take the package's `BaseAPIContext` (an alias of the shared one, typed with the package's `Options`), so a domain API can be used standalone (it will create its own client) or share the parent client. Never re-implement the base in a service package; subclass it only to bind `Options` or add package-specific aliases.
+
+**One options object per service client.** A service client with `Options` (`LokiClient`, `OAuth2Client`, `VictoriaLogsClient`) resolves `input.options || {}` once and passes that same object to every domain object (`OAuth2Client` also exposes it as `client.options`). A `setOption` on any domain object, or a mutation of that object, is therefore visible to all of them; only `setOptions` detaches a single domain object.
+
+**Per-service base URL override.** A domain method that targets a separately deployed component spreads `...this.withBaseURL(this.options.<x>URL)` into its request options; an unset or empty value keeps the client's `baseURL`.
 
 ### Singleton instance registry
 

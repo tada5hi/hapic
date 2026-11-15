@@ -8,7 +8,10 @@
 export type ProjectArtifactLabel = {
     id: number,
     name: string,
+    description?: string,
+    color?: string,
     scope: string,
+    project_id?: number,
     update_time: string,
     creation_time: string
 };

@@ -99,13 +99,24 @@ Common types: `feat`, `fix`, `chore`, `build`, `ci`, `docs`, `refactor`, `test`.
 Releases are automated by [release-please](https://github.com/googleapis/release-please) (config in `release-please-config.json`, versions tracked in `.release-please-manifest.json`):
 
 - `release-type: node`, `include-component-in-tag: true` — each package is released independently with a component-tagged release (e.g. `client-vX`, `harbor-vX`).
-- The `node-workspace` plugin keeps cross-package `peerDependencies` ranges in sync.
+- The `node-workspace` plugin keeps cross-package `peerDependencies` ranges in sync; this needs `updatePeerDependencies: true` in its config, without it only `devDependencies` are bumped.
+- A squash commit gets **one** `BREAKING CHANGE:` footer naming every break: release-please keeps a single footer per commit, also inside a `BEGIN_COMMIT_OVERRIDE` block. Check the release PR's changelog after merging a breaking change; a wrong entry is corrected with a `BEGIN_COMMIT_OVERRIDE` block in the merged PR's description.
 - `bump-minor-pre-major` / `bump-patch-for-minor-pre-major` govern pre-1.0 bumps.
 - On a release commit to `master`, CI builds and publishes via `npx monoship`.
 
 ## CI/CD
 
 GitHub Actions (`.github/workflows/main.yml`) on push/PR to `master`: **install → build → (lint ‖ test matrix) → release + docs deploy**. The test matrix covers `client`, `harbor`, `oauth2` only. Docs deploy publishes the VitePress site to GitHub Pages (`hapic.tada5hi.net`) on `master`. See [testing.md](testing.md#ci-pipeline). Reusable composite actions live in `.github/actions/{install,build}`.
+
+## References
+
+Each service client mirrors an upstream HTTP API. Its reference file in [`.agents/references/`](references/) names the upstream source of truth and maps upstream endpoints to this project's domain methods: [harbor](references/harbor.md), [loki](references/loki.md), [oauth2](references/oauth2.md), [vault](references/vault.md), [victorialogs](references/victorialogs.md). Reference files are read on demand and are not imported by `CLAUDE.md`.
+
+When looking something up in an upstream API or its source, update the matching reference file with:
+
+- the upstream endpoint, spec section or source file
+- the corresponding file and method in this project
+- any behavioral difference between the two
 
 ## Best Practices
 

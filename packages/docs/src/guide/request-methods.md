@@ -96,6 +96,15 @@ const { data } = await useClient().get('report.csv', {
 });
 ```
 
+A per-request `timeout` (milliseconds) bounds a single call and overrides the client default. It combines with a `signal`: whichever fires first aborts the request.
+
+```typescript
+const { data } = await useClient().get('report.csv', {
+    signal: controller.signal,
+    timeout: 5_000,
+});
+```
+
 ## The generic `request`
 
 When you need full control — or a verb without a shortcut — call `request` directly with a `url` and `method`:

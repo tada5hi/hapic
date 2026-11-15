@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2021.
+ * Copyright (c) 2021-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -45,6 +45,14 @@ export class VaultClient extends Client {
         if (connectionOptions) {
             this.setBaseURL(connectionOptions.host);
             this.setHeader('X-Vault-Token', connectionOptions.token);
+
+            // the namespace belongs to the connection: one of a previous
+            // connection must not be sent to the new host
+            if (connectionOptions.namespace) {
+                this.setNamespace(connectionOptions.namespace);
+            } else {
+                this.unsetNamespace();
+            }
         }
 
         return this;

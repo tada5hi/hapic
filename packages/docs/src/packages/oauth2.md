@@ -1,6 +1,14 @@
+---
+package:
+  name: "@hapic/oauth2"
+  summary: "OAuth2 and OpenID Connect client: authorization URLs, every token grant, device authorization, introspection and userinfo."
+  accent: "#818cf8"
+  order: 2
+---
+
 # @hapic/oauth2
 
-An OAuth2 / OpenID Connect client — build authorization URLs, exchange every grant type for tokens, introspect and revoke them, and fetch userinfo. It extends the base [`Client`](/guide/client) and registers its own cross-realm marker, `Symbol.for('@hapic/oauth2/OAuth2Client')`, alongside the inherited `Client` marker.
+An OAuth2 / OpenID Connect client — build authorization URLs, exchange every grant type for tokens, run the device authorization flow, introspect and revoke them, and fetch userinfo. It extends the base [`Client`](/guide/client) and registers its own cross-realm marker, `Symbol.for('@hapic/oauth2/OAuth2Client')`, alongside the inherited `Client` marker.
 
 ## Installation
 
@@ -24,7 +32,8 @@ const client = new OAuth2Client({
         clientSecret: 'super-secret',
         redirectUri: 'https://app.example.com/callback',
         tokenEndpoint: '/oauth2/token',
-        authorizationEndpoint: '/oauth2/authorize',
+        // must be an absolute URL: it is built into a link, not requested
+        authorizationEndpoint: 'https://auth.example.com/oauth2/authorize',
         userinfoEndpoint: '/oauth2/userinfo',
         scope: ['openid', 'profile', 'email'],
     },
@@ -38,8 +47,9 @@ The package exports the usual registry (`createClient`, `useClient`, `setClient`
 | Property | Class | Key methods |
 |----------|-------|-------------|
 | `client.authorize` | `AuthorizeAPI` | `buildURL(params?)` |
-| `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `create` · `introspect` · `revoke` |
-| `client.userInfo` | `UserInfoAPI` | `get(header?)` |
+| `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `createWithDeviceCode` · `pollWithDeviceCode` · `create` · `introspect` · `revoke` |
+| `client.userInfo` | `UserInfoAPI` | `get(header?, options?)` |
+| `client.deviceAuthorization` | `DeviceAuthorizationAPI` | `create(params?, options?)` |
 
 ## Token grants
 
@@ -79,6 +89,27 @@ const token = await client.token.createWithAuthorizationCode({
 });
 ```
 
+`buildURL` fills `client_id`, `redirect_uri` and `scope` from the client options when omitted and defaults `response_type` to `code`. Besides the OAuth2 parameters (`response_mode`, `state`, `code_challenge`, `code_challenge_method`), it accepts the typed OpenID Connect authentication request parameters `nonce`, `display`, `prompt`, `max_age`, `ui_locales`, `id_token_hint`, `login_hint` and `acr_values`. Any other key (e.g. `audience`, `resource`) is passed through to the URL as well:
+
+```typescript
+const url = client.authorize.buildURL({
+    scope: ['openid', 'profile'],
+    nonce: 'n-0S6_WzA2Mj',
+    prompt: ['login', 'consent'], // → prompt=login+consent
+    max_age: 0,
+    acr_values: 'urn:mace:incommon:iap:silver',
+    audience: 'https://api.example.com', // custom parameter
+});
+```
+
+Array values of the typed parameters are space-joined, an array of any other parameter repeats it once per item (e.g. `resource`, RFC 8707), numbers are stringified, and empty (`''`, `null`, `undefined`) values are skipped. Values of other types are ignored. The same logic is available standalone as `buildAuthorizeURL(endpoint, parameters)`.
+
+Any other key of the parameters object is written to the URL as a custom parameter and replaces a parameter of the same name the endpoint already carries. The credentials of the token request (`client_secret`, `client_assertion`, `code_verifier`, `password`, `refresh_token`) are the exception: the authorize URL is opened in the browser, so they are never written to it. Keep them out of the object anyway, and pass a dedicated parameters object, not one shared with the token request.
+
+::: warning Type change
+`AuthorizeParameters` has an index signature for custom parameters. An object typed as an `interface`, or one with a non-string extra property, is no longer assignable; use a `type` alias or build the object inline.
+:::
+
 ### Refresh
 
 ```typescript
@@ -86,6 +117,22 @@ const refreshed = await client.token.createWithRefreshToken({
     refresh_token: token.refresh_token!,
 });
 ```
+
+### Device authorization
+
+For devices without a browser or keyboard (RFC 8628): request a user code, show it, then poll the token endpoint until the user has approved.
+
+```typescript
+const authorization = await client.deviceAuthorization.create({ scope: 'openid' });
+
+console.log(`Open ${authorization.verification_uri} and enter ${authorization.user_code}`);
+
+const token = await client.token.pollWithDeviceCode(authorization, {
+    signal: AbortSignal.timeout(authorization.expires_in * 1000),
+});
+```
+
+`deviceAuthorization.create` posts to `deviceAuthorizationEndpoint` (default `/device_authorization`, also read from the discovery document). `pollWithDeviceCode` waits `interval` seconds (default 5) before each request, keeps polling on `authorization_pending`, adds 5 seconds on `slow_down`, and rejects with any other error. With `expires_in` it stops once the next wait would end after the deadline and rejects with the last pending error; aborting the `signal` rejects with its reason. Only `device_code` and the client authentication are sent.
 
 ## Introspection & revocation
 
@@ -103,6 +150,17 @@ const profile = await client.userInfo.get(token.access_token);
 // { sub, name, email, … }
 ```
 
+A second argument (`UserInfoOptions`) takes a `signal` to abort the request and a `timeout` in milliseconds; without a `timeout` the client's timeout applies:
+
+```typescript
+const controller = new AbortController();
+
+await client.userInfo.get(token.access_token, {
+    signal: controller.signal,
+    timeout: 5_000,
+});
+```
+
 ## OpenID Connect discovery
 
 Skip hand-wiring endpoints: fetch the provider's `.well-known/openid-configuration` and build a client from it.
@@ -117,8 +175,13 @@ const discoveryUrl = buildOpenIDDiscoveryURL('https://auth.example.com');
 // → https://auth.example.com/.well-known/openid-configuration
 
 const client = await createClientWithOpenIDDiscoveryURL(discoveryUrl);
-// authorization / token / userinfo / introspection / revocation endpoints
+// authorization / token / userinfo / introspection / revocation / device authorization endpoints
 // are populated from the provider metadata
 
 const token = await client.token.createWithClientCredentials();
 ```
+
+The second argument is either client options or an existing client used for the discovery request:
+
+- **Client options** (`baseURL`, `headers`, `transport`, …) configure both the discovery request and the returned client.
+- **A client**: the returned client is built from its current configuration (`client.toOptions()`): defaults, headers and transport, where the transport is the same instance. Its hooks are **not** carried over (hooks are bound to a client instance), so register those on the returned client.

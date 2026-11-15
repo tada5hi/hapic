@@ -8,7 +8,12 @@
 import { Client, markInstanceof } from 'hapic';
 import type { ConfigInput, Options } from './config';
 
-import { AuthorizeAPI, TokenAPI, UserInfoAPI } from './domains';
+import {
+    AuthorizeAPI,
+    DeviceAuthorizationAPI,
+    TokenAPI,
+    UserInfoAPI,
+} from './domains';
 
 export const OAUTH2_CLIENT_INSTANCE = Symbol.for('@hapic/oauth2/OAuth2Client');
 
@@ -16,6 +21,8 @@ export class OAuth2Client extends Client {
     public readonly options : Options;
 
     public authorize: AuthorizeAPI;
+
+    public deviceAuthorization: DeviceAuthorizationAPI;
 
     public token : TokenAPI;
 
@@ -35,5 +42,6 @@ export class OAuth2Client extends Client {
         this.token = new TokenAPI({ client: this, options });
         this.authorize = new AuthorizeAPI({ client: this, options });
         this.userInfo = new UserInfoAPI({ client: this, options });
+        this.deviceAuthorization = new DeviceAuthorizationAPI({ client: this, options });
     }
 }

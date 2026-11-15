@@ -6,25 +6,13 @@
  */
 
 /*
- * hapic design tokens. The marketing components on the landing page read
- * every color/border/radius through these custom properties, so dark-mode
- * flips work without per-component overrides.
- *
- * VitePress's `--vp-c-brand-*` tokens are aliased to the hapic primary
- * scale so the docs chrome (sidebar accents, hero buttons, heading
- * underlines) follows the marketing palette.
+ * Site theme: the hapic colour scales (indigo primary, cyan accent, status
+ * colours), the bridge that points VitePress's `--vp-c-brand-*` and button
+ * tokens at the primary scale, the fixed dark surface tokens, the shared
+ * landing page classes (`hc-*`) and, at the end, the unlayered nav overrides
+ * for the landing page. See packages/docs/DESIGN.md.
  */
 :root {
-    --hc-color-bg: #ffffff;
-    --hc-color-bg-elevated: #f8fafc;
-    --hc-color-bg-muted: #f1f5f9;
-
-    --hc-color-fg: #0f172a;
-    --hc-color-fg-muted: #475569;
-
-    --hc-color-border: #e2e8f0;
-    --hc-color-border-muted: #f1f5f9;
-
     --hc-color-primary-300: #a5b4fc;
     --hc-color-primary-400: #818cf8;
     --hc-color-primary-500: #6366f1;
@@ -34,18 +22,12 @@
     --hc-color-accent-400: #22d3ee;
     --hc-color-accent-500: #06b6d4;
     --hc-color-accent-600: #0891b2;
+    --hc-color-accent-700: #0e7490;
 
     --hc-color-warning-500: #f59e0b;
     --hc-color-error-500: #ef4444;
-    --hc-color-success-500: #22c55e;
 
     --hc-color-on-primary: #ffffff;
-
-    --hc-method-get: #22c55e;
-    --hc-method-post: #6366f1;
-    --hc-method-put: #f59e0b;
-    --hc-method-patch: #06b6d4;
-    --hc-method-delete: #ef4444;
 
     --vp-c-brand-1: var(--hc-color-primary-600);
     --vp-c-brand-2: var(--hc-color-primary-700);
@@ -59,22 +41,9 @@
     --vp-button-brand-border: var(--hc-color-primary-600);
     --vp-button-brand-hover-border: var(--hc-color-primary-500);
     --vp-button-brand-active-border: var(--hc-color-primary-700);
-
-    --vp-home-hero-name-color: transparent;
-    --vp-home-hero-name-background: linear-gradient(120deg, var(--hc-color-primary-500), var(--hc-color-accent-500));
 }
 
 .dark {
-    --hc-color-bg: #171717;
-    --hc-color-bg-elevated: #262626;
-    --hc-color-bg-muted: #1d1d1d;
-
-    --hc-color-fg: #f1f5f9;
-    --hc-color-fg-muted: #a3a3a3;
-
-    --hc-color-border: #333333;
-    --hc-color-border-muted: #262626;
-
     --hc-color-primary-300: #a5b4fc;
     --hc-color-primary-400: #818cf8;
     --hc-color-primary-500: #6366f1;
@@ -95,4 +64,224 @@
     --vp-c-bg-alt: #101010;
     --vp-c-bg-soft: #262626;
     --vp-c-bg-elv: #262626;
+}
+
+/*
+ * Fixed dark surfaces (hero, footer) and the landing page motif. These stay
+ * dark in both colour modes; everything else follows the colour mode.
+ */
+:root {
+    --hc-dark-bg: #0a0a12;
+    --hc-dark-bg-elevated: #0f1020;
+    --hc-dark-fg-strong: #ffffff;
+    --hc-dark-fg: #e8e9f3;
+    --hc-dark-fg-muted: #a5a8c0;
+    --hc-dark-border: #262842;
+
+    --hc-gradient: linear-gradient(100deg, var(--hc-color-primary-400), var(--hc-color-accent-400));
+
+    --hc-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/*
+ * Shared landing page classes. Section components compose these and keep
+ * only their own layout in scoped styles.
+ */
+.hc-section {
+    padding: 64px 0;
+    background-color: var(--vp-c-bg);
+    color: var(--vp-c-text-1);
+}
+
+@media (min-width: 768px) {
+    .hc-section {
+        padding: 88px 0;
+    }
+}
+
+.hc-section-alt {
+    background-color: var(--vp-c-bg-soft);
+}
+
+.hc-wrap {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.hc-eyebrow {
+    margin: 0 0 10px;
+    font-family: var(--hc-font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    color: var(--vp-c-brand-1);
+}
+
+.hc-heading {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--vp-c-text-1);
+}
+
+.hc-lead {
+    max-width: 600px;
+    margin: 0 0 28px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--vp-c-text-2);
+}
+
+.hc-card {
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 14px;
+    background-color: var(--vp-c-bg-elv);
+}
+
+.hc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+}
+
+.hc-btn:focus-visible {
+    outline: 2px solid var(--vp-c-brand-1);
+    outline-offset: 2px;
+}
+
+/* The hero is a fixed dark surface: the brand ring lacks contrast there. */
+.hc-hero .hc-btn:focus-visible {
+    outline-color: var(--hc-color-accent-400);
+}
+
+.hc-btn-primary {
+    /* Both stops keep white 14px text above 4.5:1 (6.3:1 and 5.4:1). */
+    background-image: linear-gradient(100deg, var(--hc-color-primary-600), var(--hc-color-accent-700));
+    color: var(--hc-color-on-primary);
+}
+
+.hc-btn-primary:hover {
+    opacity: 0.9;
+    color: var(--hc-color-on-primary);
+}
+
+.hc-btn-ghost {
+    border-color: var(--vp-c-divider);
+    background-color: transparent;
+    color: var(--vp-c-text-1);
+}
+
+.hc-btn-ghost:hover {
+    border-color: var(--vp-c-brand-1);
+}
+
+.hc-code {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    border: 1px solid var(--hc-dark-border);
+    border-radius: 12px;
+    background-color: var(--hc-dark-bg-elevated);
+    color: var(--hc-dark-fg);
+    font-family: var(--hc-font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre;
+}
+
+/* Visually hidden, still read by assistive technology. */
+.hc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.hc-gradient-text {
+    background-image: var(--hc-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/*
+ * Transparent nav over the dark hero on the landing page (pageClass: hc-home).
+ * Unlayered on purpose: VitePress's own component styles are unlayered, so an
+ * override inside a layer would lose.
+ *
+ * The hero extends under the fixed nav. 960px is VitePress's own breakpoint
+ * for making the nav fixed (VPNav.vue) and for VPContent's
+ * `padding-top: var(--vp-nav-height)` (VPContent.vue). This is the single
+ * source of the hero's top padding from 960px up.
+ */
+@media (min-width: 960px) {
+    .Layout.hc-home .VPContent {
+        padding-top: 0;
+    }
+
+    .Layout.hc-home .hc-hero {
+        padding-top: calc(var(--vp-nav-height) + 5rem);
+    }
+}
+
+/* Below 960px the nav is not fixed: it sits above the hero and needs the same
+ * background, or a light strip floats over a dark page. */
+@media (max-width: 959px) {
+    .Layout.hc-home .VPNav {
+        background-color: var(--hc-dark-bg);
+    }
+}
+
+.Layout.hc-home .VPNavBar.top:not(.screen-open) {
+    --vp-nav-bg-color: transparent;
+    --vp-c-gutter: transparent;
+}
+
+/* Re-scope the text variables on the bar's own items only. Setting them on
+ * `.VPNavBar` would also paint the flyout dropdown's text light on white. */
+.Layout.hc-home .VPNavBar.top:not(.screen-open) :is(
+    .VPNavBarTitle,
+    .VPNavBarMenu,
+    .VPNavBarSearch,
+    .VPNavBarAppearance,
+    .VPNavBarSocialLinks,
+    .VPNavBarHamburger
+),
+.Layout.hc-home .VPNavBar.top:not(.screen-open) .VPNavBarExtra > .button {
+    --vp-c-text-1: var(--hc-dark-fg);
+    --vp-c-text-2: var(--hc-dark-fg-muted);
+    --vp-c-brand-1: var(--hc-color-accent-400);
+    --vp-c-divider: var(--hc-dark-border);
+    --vp-c-bg-alt: rgb(255 255 255 / 0.06);
+    --vp-input-border-color: var(--hc-dark-border);
+    --vp-input-switch-bg-color: rgb(255 255 255 / 0.08);
+}
+
+/* `.VPFlyout:hover { color: var(--vp-c-brand-1) }` (VPFlyout.vue) resolves the
+ * hero accent into a literal colour on the flyout root, which then inherits
+ * into the open dropdown. Neutralise it on the ancestor. */
+.Layout.hc-home .VPNavBar.top:not(.screen-open) .VPNavBarMenuGroup:hover,
+.Layout.hc-home .VPNavBar.top:not(.screen-open) .VPNavBarExtra:hover {
+    color: var(--hc-dark-fg);
 }

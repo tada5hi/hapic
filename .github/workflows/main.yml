@@ -8,6 +8,9 @@ on:
         branches: [ master ]
     pull_request:
         branches: [ master ]
+    # Publishes the versions on the dispatched ref without cutting a release;
+    # for re-running a publish that failed after release-please tagged it.
+    workflow_dispatch:
 
 env:
     PRIMARY_NODE_VERSION: 24
@@ -101,26 +104,27 @@ jobs:
         needs: [build, tests]
         steps:
             -   uses: googleapis/release-please-action@v5
+                if: github.event_name == 'push'
                 id: release
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}
 
             -   name: Checkout
-                if: steps.release.outputs.releases_created == 'true'
+                if: github.event_name == 'workflow_dispatch' || steps.release.outputs.releases_created == 'true'
                 uses: actions/checkout@v7
 
             -   name: Install
-                if: steps.release.outputs.releases_created == 'true'
+                if: github.event_name == 'workflow_dispatch' || steps.release.outputs.releases_created == 'true'
                 uses: ./.github/actions/install
                 with:
                     node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
             -   name: Build
-                if: steps.release.outputs.releases_created == 'true'
+                if: github.event_name == 'workflow_dispatch' || steps.release.outputs.releases_created == 'true'
                 uses: ./.github/actions/build
 
             -   name: Publish
-                if: steps.release.outputs.releases_created == 'true'
+                if: github.event_name == 'workflow_dispatch' || steps.release.outputs.releases_created == 'true'
                 run: npx monoship
 
     docs:

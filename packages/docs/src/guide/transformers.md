@@ -69,7 +69,25 @@ const { data } = await client.get('users/1');
 // if the server returns { result: {…} }, `data` is the inner object
 ```
 
-Like request transformers, `responseTransform` accepts a single function or an array, on the client or per request.
+Like request transformers, `responseTransform` accepts a single function or an array, on the client or per request. An array runs in order, each function receiving the previous output, and a per-request `responseTransform` replaces the client one.
+
+It runs on every decoded body, including 4xx/5xx responses (so `error.response.data` is transformed too), and is skipped when the body is left as a stream (`responseType: 'stream'`, or a detected `text/event-stream`), since nothing is decoded.
+
+Each function receives the decoded data, the response headers and the status. Use the status to treat an error body differently:
+
+```typescript
+const client = createClient({
+    responseTransform: (data, headers, status) => {
+        if (status >= 400) {
+            return data?.error ?? data;
+        }
+
+        return data?.result ?? data;
+    },
+});
+```
+
+A transformer written for the success shape alone still runs on error bodies. If it throws there, the body is left untransformed and the usual `HttpResponseError` is thrown, so error hooks keep working. If it returns `undefined` for a shape it does not know, `error.response.data` loses the error details, so check the status or fall back to the input as above. A transformer that throws on a successful response is not caught.
 
 ## Transformers vs. hooks
 

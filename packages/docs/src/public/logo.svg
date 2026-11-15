@@ -1,12 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="hapic logo">
-  <defs>
-    <linearGradient id="hc-grad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#6366f1"/>
-      <stop offset="1" stop-color="#06b6d4"/>
-    </linearGradient>
-  </defs>
-  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#hc-grad)"/>
-  <path d="M20 24 L12 32 L20 40" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <path d="M44 24 L52 32 L44 40" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <path d="M36 18 L28 46" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hc-logo-title">
+    <title id="hc-logo-title">hapic logo: a client block with three lines leaving it</title>
+    <defs>
+        <linearGradient id="hc-logo-g" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#06b6d4"/>
+        </linearGradient>
+    </defs>
+    <g stroke="url(#hc-logo-g)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <rect x="40" y="56" width="104" height="144" rx="24"/>
+        <g><path d="M144 92h36" stroke="#6366f1"/><circle cx="192" cy="92" r="11" fill="#6366f1" stroke="none"/></g>
+        <g><path d="M144 128h60" stroke="#3b82f6"/><circle cx="216" cy="128" r="11" fill="#3b82f6" stroke="none"/></g>
+        <g><path d="M144 164h24" stroke="#06b6d4"/><circle cx="180" cy="164" r="11" fill="#06b6d4" stroke="none"/></g>
+    </g>
 </svg>

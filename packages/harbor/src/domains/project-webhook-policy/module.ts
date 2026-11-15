@@ -1,19 +1,31 @@
 /*
- * Copyright (c) 2022-2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { merge } from 'smob';
-import { HeaderName } from '../../constants';
-import { buildQueryString, extractResourceIDOfResponse, extractResourceMetaOfResponse } from '../../utils';
+import { ResponseType } from 'hapic';
+import { extractResourceIDOfResponse } from '../../utils';
 import { BaseAPI } from '../base';
+import {
+    buildRequestPath,
+    exactMatch,
+    getCollection,
+    withResourceName,
+} from '../request';
 import type { BaseAPIContext, ResourceCollectionResponse } from '../types';
 import type {
-    ProjectWebhookEventType,
+    ProjectWebhookExecution,
+    ProjectWebhookExecutionGetManyContext,
+    ProjectWebhookExecutionTask,
+    ProjectWebhookExecutionTaskGetManyContext,
+    ProjectWebhookExecutionTaskLogContext,
+    ProjectWebhookLastTrigger,
+    ProjectWebhookLastTriggersContext,
     ProjectWebhookPolicy,
     ProjectWebhookPolicyCreateContext,
+    ProjectWebhookPolicyCreatePayload,
     ProjectWebhookPolicyCreateResponse,
     ProjectWebhookPolicyDeleteByNameContext,
     ProjectWebhookPolicyDeleteContext,
@@ -21,6 +33,8 @@ import type {
     ProjectWebhookPolicyGetManyContext,
     ProjectWebhookPolicyGetOneContext,
     ProjectWebhookPolicyUpdateContext,
+    ProjectWebhookSupportedEvents,
+    ProjectWebhookSupportedEventsContext,
 } from './types';
 
 export class ProjectWebhookPolicyAPI extends BaseAPI {
@@ -29,54 +43,31 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
     }
 
     async create(context: ProjectWebhookPolicyCreateContext) : Promise<ProjectWebhookPolicyCreateResponse> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         const response = await this.client
             .post(
-                `projects/${context.projectIdOrName}/webhook/policies`,
-                this.extendPayload(context.data),
-                { headers },
+                buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies']),
+                this.extendPayload(context.data, true),
+                withResourceName(context.isProjectName),
             );
 
         return { id: extractResourceIDOfResponse(response) };
     }
 
     async getMany(context: ProjectWebhookPolicyGetManyContext) : Promise<ResourceCollectionResponse<ProjectWebhookPolicy>> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
-        const response = await this.client
-            .get(
-                `projects/${context.projectIdOrName}/webhook/policies${buildQueryString(context.query)}`,
-                { headers },
-            );
-
-        return {
-            data: response.data,
-            meta: extractResourceMetaOfResponse(response),
-        };
+        return getCollection(
+            this.client,
+            buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies'], context.query),
+            withResourceName(context.isProjectName),
+        );
     }
 
     async getOne(
         context: ProjectWebhookPolicyGetOneContext,
     ) : Promise<ProjectWebhookPolicy> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         const response = await this.client
             .get(
-                `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
-                { headers },
+                buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies', context.id]),
+                withResourceName(context.isProjectName),
             );
 
         return response.data;
@@ -87,7 +78,8 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
             projectIdOrName: context.projectIdOrName,
             isProjectName: context.isProjectName,
             query: {
-                q: { name: context.name },
+                // exact match, also for a name starting with `~`, `[`, `{` or `(`
+                q: { name: exactMatch(context.name) },
                 page_size: 1,
             },
         });
@@ -96,19 +88,13 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
     }
 
     async update(context: ProjectWebhookPolicyUpdateContext): Promise<void> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         await this.client.put(
-            `projects/${context.projectIdOrName}/webhook/policies/${context.id}`,
+            buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies', context.id]),
             this.extendPayload({
                 ...context.data,
                 id: context.id,
             }),
-            { headers },
+            withResourceName(context.isProjectName),
         );
     }
 
@@ -125,33 +111,110 @@ export class ProjectWebhookPolicyAPI extends BaseAPI {
     }
 
     async delete(context: ProjectWebhookPolicyDeleteContext) : Promise<any> {
-        const headers: Record<string, any> = {};
-
-        if (context.isProjectName) {
-            headers[HeaderName.IS_RESOURCE_NAME] = true;
-        }
-
         await this.client
-            .delete(`projects/${context.projectIdOrName}/webhook/policies/${context.id}`, { headers });
+            .delete(
+                buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'policies', context.id]),
+                withResourceName(context.isProjectName),
+            );
     }
 
-    protected extendPayload(data: Partial<ProjectWebhookPolicy>) : Partial<ProjectWebhookPolicy> {
-        data.name = data.name || (Math.random() + 1).toString(36).substring(7);
-
-        if (typeof data.enabled === 'undefined') {
-            data.enabled = true;
-        }
-
-        if (typeof data.targets === 'undefined') {
-            data.targets = [];
-        }
-
-        if (typeof data.event_types === 'undefined') {
-            data.event_types = ['PUSH_ARTIFACT'];
-        } else {
-            data.event_types = merge(['PUSH_ARTIFACT'] satisfies ProjectWebhookEventType[], data.event_types);
-        }
+    /**
+     * Get the event types, notify types and payload formats Harbor supports.
+     */
+    async getSupportedEvents(context: ProjectWebhookSupportedEventsContext) : Promise<ProjectWebhookSupportedEvents> {
+        const { data } = await this.client.get(
+            buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'events']),
+            withResourceName(context.isProjectName),
+        );
 
         return data;
+    }
+
+    /**
+     * Get the last trigger time of each policy and event type.
+     * Deprecated upstream.
+     */
+    async getLastTriggers(context: ProjectWebhookLastTriggersContext) : Promise<ProjectWebhookLastTrigger[]> {
+        const { data } = await this.client.get(
+            buildRequestPath(['projects', context.projectIdOrName, 'webhook', 'lasttrigger']),
+            withResourceName(context.isProjectName),
+        );
+
+        return data;
+    }
+
+    async getExecutions(
+        context: ProjectWebhookExecutionGetManyContext,
+    ) : Promise<ResourceCollectionResponse<ProjectWebhookExecution>> {
+        return getCollection(
+            this.client,
+            buildRequestPath(
+                ['projects', context.projectIdOrName, 'webhook', 'policies', context.id, 'executions'],
+                context.query,
+            ),
+            withResourceName(context.isProjectName),
+        );
+    }
+
+    async getExecutionTasks(
+        context: ProjectWebhookExecutionTaskGetManyContext,
+    ) : Promise<ResourceCollectionResponse<ProjectWebhookExecutionTask>> {
+        return getCollection(
+            this.client,
+            buildRequestPath(
+                ['projects', context.projectIdOrName, 'webhook', 'policies', context.id, 'executions', context.executionId, 'tasks'],
+                context.query,
+            ),
+            withResourceName(context.isProjectName),
+        );
+    }
+
+    /**
+     * Get the log of a webhook task as plain text.
+     */
+    async getExecutionTaskLog(context: ProjectWebhookExecutionTaskLogContext) : Promise<string> {
+        const { data } = await this.client.get(
+            buildRequestPath([
+                'projects',
+                context.projectIdOrName,
+                'webhook',
+                'policies',
+                context.id,
+                'executions',
+                context.executionId,
+                'tasks',
+                context.taskId,
+                'log',
+            ]),
+            {
+                ...withResourceName(context.isProjectName),
+                responseType: ResponseType.TEXT,
+            },
+        );
+
+        return data ?? '';
+    }
+
+    /**
+     * Fill in `enabled` (and, on create, a random `name`) when absent.
+     * Harbor replaces the whole policy on update and requires
+     * `event_types` and `targets`, so those are sent as given.
+     * The input is not modified.
+     */
+    protected extendPayload<T extends ProjectWebhookPolicyCreatePayload>(
+        data: T,
+        withName = false,
+    ) : T {
+        const output = { ...data };
+
+        if (withName && !output.name) {
+            output.name = (Math.random() + 1).toString(36).substring(7);
+        }
+
+        if (typeof output.enabled === 'undefined') {
+            output.enabled = true;
+        }
+
+        return output;
     }
 }

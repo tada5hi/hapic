@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.0](https://github.com/tada5hi/hapic/compare/loki-v2.0.2...loki-v2.1.0) (2026-11-13)
+
+
+### Features
+
+* share one domain api base across service clients ([#1115](https://github.com/tada5hi/hapic/issues/1115)) ([90b8221](https://github.com/tada5hi/hapic/commit/90b82219c49c5451df9cd9f76e84ce47b8df4e9d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+  * peerDependencies
+    * hapic bumped from ^3.0.2 to ^3.1.0
+
 ## [2.0.2](https://github.com/tada5hi/hapic/compare/loki-v2.0.1...loki-v2.0.2) (2026-08-18)
 
 

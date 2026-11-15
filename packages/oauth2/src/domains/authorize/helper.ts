@@ -8,53 +8,108 @@
 import { scopeToString } from '../../utils';
 import type { AuthorizeParameters } from './types';
 
+/**
+ * Typed parameters in the order they are written to the url.
+ * Any other parameter is appended afterwards in input order.
+ */
+const PARAMETER_KEYS = [
+    'response_type',
+    'client_id',
+    'redirect_uri',
+    'response_mode',
+    'scope',
+    'state',
+    'code_challenge',
+    'code_challenge_method',
+    'nonce',
+    'display',
+    'prompt',
+    'max_age',
+    'ui_locales',
+    'id_token_hint',
+    'login_hint',
+    'acr_values',
+];
+
+/**
+ * Credentials of the token request. The authorize URL is opened in the
+ * browser (address bar, history, referrer, provider logs), so they are
+ * never written to it, whatever the parameters object carries.
+ */
+const FORBIDDEN_PARAMETER_KEYS = [
+    'client_secret',
+    'client_assertion',
+    'code_verifier',
+    'password',
+    'refresh_token',
+];
+
+function serializeParameterValue(value: unknown) : string | undefined {
+    if (typeof value === 'number') {
+        return String(value);
+    }
+
+    if (typeof value === 'string') {
+        return value || undefined;
+    }
+
+    if (!Array.isArray(value)) {
+        return undefined;
+    }
+
+    const isStringArray = value.every((item) => typeof item === 'string');
+
+    return isStringArray ?
+        scopeToString(value) || undefined :
+        undefined;
+}
+
 export function buildAuthorizeURL(
     url: string,
     parameters: AuthorizeParameters,
 ) : string {
     const output = new URL(url);
 
-    if (parameters.response_type) {
-        output.searchParams.set(
-            'response_type',
-            Array.isArray(parameters.response_type) ?
-                scopeToString(parameters.response_type) :
-                parameters.response_type,
-        );
-    } else {
-        output.searchParams.set('response_type', 'code');
+    for (const key of PARAMETER_KEYS) {
+        const value = serializeParameterValue(parameters[key]);
+
+        if (typeof value !== 'undefined') {
+            output.searchParams.set(key, value);
+        } else if (key === 'response_type') {
+            output.searchParams.set(key, 'code');
+        }
     }
 
-    if (parameters.client_id) {
-        output.searchParams.set('client_id', parameters.client_id);
-    }
+    const keys = Object.keys(parameters).filter((key) => !PARAMETER_KEYS.includes(key) &&
+        !FORBIDDEN_PARAMETER_KEYS.includes(key));
 
-    if (parameters.redirect_uri) {
-        output.searchParams.set('redirect_uri', parameters.redirect_uri);
-    }
+    for (const key of keys) {
+        // the space-delimited list is a convention of the typed parameters,
+        // any other multi-valued parameter (e.g. resource, RFC 8707) is repeated.
+        const input = parameters[key];
+        const items = Array.isArray(input) ? input : [input];
 
-    if (parameters.response_mode) {
-        output.searchParams.set('response_mode', parameters.response_mode);
-    }
+        const values : string[] = [];
 
-    if (parameters.scope) {
-        const scope = Array.isArray(parameters.scope) ?
-            scopeToString(parameters.scope) :
-            parameters.scope;
+        for (const item of items) {
+            const value = serializeParameterValue(item);
 
-        output.searchParams.set('scope', scope);
-    }
+            if (typeof value !== 'undefined') {
+                values.push(value);
+            }
+        }
 
-    if (parameters.state) {
-        output.searchParams.set('state', parameters.state);
-    }
+        if (values.length === 0) {
+            continue;
+        }
 
-    if (parameters.code_challenge) {
-        output.searchParams.set('code_challenge', parameters.code_challenge);
-    }
+        // a parameter must not occur more than once (RFC 6749 - 3.1):
+        // the given value replaces one the endpoint already carries.
+        output.searchParams.delete(key);
 
-    if (parameters.code_challenge_method) {
-        output.searchParams.set('code_challenge_method', parameters.code_challenge_method);
+        for (const value of values) {
+            output.searchParams.append(key, value);
+        }
     }
 
     return output.href;

@@ -1,0 +1,165 @@
+<svg width="960" height="488" viewBox="0 0 960 488" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rl-title rl-desc">
+    <title id="rl-title">The hapic request lifecycle</title>
+    <desc id="rl-desc">Every call runs through Client.request. resolveRequestOptions merges the client defaults, headers and query, the request hooks may replace the options, options.transform turns the body into JSON by default, and transport.dispatch sends it. decodeResponse reads the body by responseType and runs responseTransform. A status below 400 runs the response hooks and resolves with the Response and its data. A status from 400 to 599 runs the responseError hooks with an HttpResponseError; a dispatch that fails, aborts or times out runs the requestError hooks with a NetworkError. An error hook that returns a Response resolves with it, one that returns RequestOptions runs request again from the start, and when no hook recovers the call rejects with the ClientError.</desc>
+
+    <style>
+        :root {
+            --fg: #1E1F33;
+            --muted: #5A5E78;
+            --panel: #F5F6FD;
+            --panel-edge: #D5D7EE;
+            --card: #FFFFFF;
+            --rail: #8A8EAE;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fg: #EEF0FF;
+                --muted: #A3A7C4;
+                --panel: #15172B;
+                --panel-edge: #363A5C;
+                --card: #0D0F1E;
+                --rail: #6E7294;
+            }
+        }
+        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; fill: var(--fg); }
+        .muted { fill: var(--muted); font-size: 11px; }
+        .code { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; }
+        .label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+        .title { font-size: 14px; font-weight: 600; }
+        .num { font-size: 11px; font-weight: 700; }
+        .panel { fill: var(--panel); stroke: var(--panel-edge); }
+        .card { fill: var(--card); }
+        .chip { fill: var(--card); stroke: var(--panel-edge); }
+        .rail { stroke: var(--rail); stroke-width: 2; }
+        .err { stroke: #F59E0B; stroke-width: 2; }
+    </style>
+
+    <defs>
+        <marker id="rl-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#8A8EAE"/>
+        </marker>
+        <marker id="rl-head-err" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#F59E0B"/>
+        </marker>
+    </defs>
+
+    <!-- request side -->
+    <rect class="panel" x="36" y="16" width="872" height="136" rx="16"/>
+    <text class="label" x="56" y="40">Client.request(config): outgoing</text>
+
+    <rect class="card" x="56" y="52" width="186" height="88" rx="12" stroke="#6366F1" stroke-width="1.5"/>
+    <circle cx="74" cy="71" r="10" fill="#6366F1" fill-opacity="0.2"/>
+    <text class="num" x="74" y="75" text-anchor="middle">1</text>
+    <text class="title" x="92" y="76">Resolve options</text>
+    <text class="code" x="70" y="96">resolveRequestOptions()</text>
+    <text class="muted" x="70" y="114">request options replace</text>
+    <text class="muted" x="70" y="129">defaults, headers layer</text>
+
+    <rect class="card" x="274" y="52" width="186" height="88" rx="12" stroke="#6366F1" stroke-width="1.5"/>
+    <circle cx="292" cy="71" r="10" fill="#6366F1" fill-opacity="0.2"/>
+    <text class="num" x="292" y="75" text-anchor="middle">2</text>
+    <text class="title" x="310" y="76">Request hooks</text>
+    <text class="code" x="288" y="96">on('request', fn)</text>
+    <text class="muted" x="288" y="114">run in order, each may</text>
+    <text class="muted" x="288" y="129">return new options</text>
+
+    <rect class="card" x="492" y="52" width="186" height="88" rx="12" stroke="#6366F1" stroke-width="1.5"/>
+    <circle cx="510" cy="71" r="10" fill="#6366F1" fill-opacity="0.2"/>
+    <text class="num" x="510" y="75" text-anchor="middle">3</text>
+    <text class="title" x="528" y="76">Transform body</text>
+    <text class="code" x="506" y="96">options.transform</text>
+    <text class="muted" x="506" y="114">default: objects to JSON</text>
+    <text class="muted" x="506" y="129">plus content-type, accept</text>
+
+    <rect class="card" x="710" y="52" width="186" height="88" rx="12" stroke="#6366F1" stroke-width="1.5"/>
+    <circle cx="728" cy="71" r="10" fill="#6366F1" fill-opacity="0.2"/>
+    <text class="num" x="728" y="75" text-anchor="middle">4</text>
+    <text class="title" x="746" y="76">Dispatch</text>
+    <text class="code" x="724" y="96">transport.dispatch()</text>
+    <text class="muted" x="724" y="114">FetchTransport by default</text>
+    <text class="muted" x="724" y="129">signal + timeout armed</text>
+
+    <path class="rail" d="M242 96 H270" marker-end="url(#rl-head)"/>
+    <path class="rail" d="M460 96 H488" marker-end="url(#rl-head)"/>
+    <path class="rail" d="M678 96 H706" marker-end="url(#rl-head)"/>
+
+    <!-- response side, right to left -->
+    <rect class="panel" x="36" y="172" width="872" height="136" rx="16"/>
+    <text class="label" x="56" y="196">incoming</text>
+
+    <rect class="card" x="710" y="208" width="186" height="88" rx="12" stroke="#06B6D4" stroke-width="1.5"/>
+    <circle cx="728" cy="227" r="10" fill="#06B6D4" fill-opacity="0.22"/>
+    <text class="num" x="728" y="231" text-anchor="middle">5</text>
+    <text class="title" x="746" y="232">Decode</text>
+    <text class="code" x="724" y="252">decodeResponse()</text>
+    <text class="muted" x="724" y="270">reads by responseType</text>
+    <text class="muted" x="724" y="285">runs responseTransform</text>
+
+    <rect class="card" x="492" y="208" width="186" height="88" rx="12" stroke="#06B6D4" stroke-width="1.5"/>
+    <circle cx="510" cy="227" r="10" fill="#06B6D4" fill-opacity="0.22"/>
+    <text class="num" x="510" y="231" text-anchor="middle">6</text>
+    <text class="title" x="528" y="232">Status check</text>
+    <text class="code" x="506" y="252">status 400-599?</text>
+    <text class="muted" x="506" y="270">yes: error path below</text>
+    <text class="muted" x="506" y="285">no: continue</text>
+
+    <rect class="card" x="274" y="208" width="186" height="88" rx="12" stroke="#06B6D4" stroke-width="1.5"/>
+    <circle cx="292" cy="227" r="10" fill="#06B6D4" fill-opacity="0.22"/>
+    <text class="num" x="292" y="231" text-anchor="middle">7</text>
+    <text class="title" x="310" y="232">Response hooks</text>
+    <text class="code" x="288" y="252">on('response', fn)</text>
+    <text class="muted" x="288" y="270">run in order, each may</text>
+    <text class="muted" x="288" y="285">return a new Response</text>
+
+    <rect class="card" x="56" y="208" width="186" height="88" rx="12" stroke="#06B6D4" stroke-width="2.5"/>
+    <text class="title" x="70" y="232">Resolves</text>
+    <text class="code" x="70" y="252">Response &amp; { data }</text>
+    <text class="muted" x="70" y="270">the awaited result of</text>
+    <text class="muted" x="70" y="285">get(), post(), request()</text>
+
+    <path class="rail" d="M710 252 H682" marker-end="url(#rl-head)"/>
+    <path class="rail" d="M492 252 H464" marker-end="url(#rl-head)"/>
+    <path class="rail" d="M274 252 H246" marker-end="url(#rl-head)"/>
+
+    <!-- dispatch to decode -->
+    <path class="rail" d="M803 140 V204" marker-end="url(#rl-head)"/>
+    <rect class="chip" x="755" y="153" width="96" height="19" rx="9.5"/>
+    <text class="code" x="803" y="166" text-anchor="middle">raw Response</text>
+
+    <!-- error path -->
+    <rect class="panel" x="36" y="328" width="872" height="144" rx="16" stroke-dasharray="5 5"/>
+    <text class="label" x="56" y="352">error path</text>
+
+    <rect class="card" x="492" y="368" width="404" height="88" rx="12" stroke="#F59E0B" stroke-width="1.5"/>
+    <text class="title" x="508" y="392">Error hooks</text>
+    <text class="code" x="508" y="412">on('requestError' | 'responseError', fn)</text>
+    <text class="muted" x="508" y="430">requestError: no response, dispatch failed, aborted or timed out</text>
+    <text class="muted" x="508" y="446">responseError: status 400-599 (HttpResponseError)</text>
+
+    <!-- 4xx/5xx from the status check -->
+    <path class="err" d="M585 296 V364" marker-end="url(#rl-head-err)"/>
+    <rect class="chip" x="525" y="334" width="120" height="19" rx="9.5"/>
+    <text class="code" x="585" y="347" text-anchor="middle">HttpResponseError</text>
+
+    <!-- dispatch failure, abort or timeout -->
+    <path class="err" d="M896 96 H926 V412 H900" marker-end="url(#rl-head-err)"/>
+    <rect class="chip" x="838" y="334" width="88" height="19" rx="9.5"/>
+    <text class="code" x="882" y="347" text-anchor="middle">NetworkError</text>
+
+    <!-- outcomes -->
+    <rect class="chip" x="56" y="372" width="396" height="24" rx="12"/>
+    <text x="72" y="388" font-size="12">returns a <tspan class="code">Response</tspan>: the call resolves with it</text>
+    <rect class="chip" x="56" y="402" width="396" height="24" rx="12"/>
+    <text x="72" y="418" font-size="12">returns <tspan class="code">RequestOptions</tspan>: <tspan class="code">request()</tspan> runs again from 1</text>
+    <rect class="chip" x="56" y="432" width="396" height="24" rx="12"/>
+    <text x="72" y="448" font-size="12">nothing recovers: the call rejects with the <tspan class="code">ClientError</tspan></text>
+
+    <path class="err" d="M492 412 L456 384" marker-end="url(#rl-head-err)"/>
+    <path class="err" d="M492 412 H456" marker-end="url(#rl-head-err)"/>
+    <path class="err" d="M492 412 L456 444" marker-end="url(#rl-head-err)"/>
+
+    <!-- recovered response resolves -->
+    <path class="err" d="M150 372 V300" stroke-dasharray="5 4" marker-end="url(#rl-head-err)"/>
+    <!-- retry loops back to step 1 -->
+    <path class="err" d="M56 414 H22 V96 H52" stroke-dasharray="5 4" marker-end="url(#rl-head-err)"/>
+</svg>

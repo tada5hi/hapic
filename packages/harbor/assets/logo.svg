@@ -1,0 +1,16 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hb-logo-title">
+    <title id="hb-logo-title">@hapic/harbor logo: three containers stacked on a ship hull</title>
+    <defs>
+        <linearGradient id="hb-logo-g" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#14b8a6"/>
+        </linearGradient>
+    </defs>
+    <g stroke="url(#hb-logo-g)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M36 172h184l-22 38H58z"/>
+        <rect x="60" y="116" width="60" height="42" rx="6"/>
+        <rect x="134" y="116" width="60" height="42" rx="6"/>
+        <!-- the top container is lowered onto the stack; the static attributes hold the settled state -->
+        <rect x="97" y="62" width="60" height="42" rx="6"><animateTransform attributeName="transform" type="translate" from="0 -44" to="0 0" begin="0s" dur="0.9s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.2 0.8 0.2 1"/><animate attributeName="opacity" from="0" to="1" begin="0s" dur="0.4s" repeatCount="1" fill="freeze"/></rect>
+    </g>
+</svg>

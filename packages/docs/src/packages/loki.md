@@ -1,3 +1,11 @@
+---
+package:
+  name: "@hapic/loki"
+  summary: "Grafana Loki client: push log streams and run LogQL instant and range queries."
+  accent: "#f59e0b"
+  order: 4
+---
+
 # @hapic/loki
 
 A client for [Grafana Loki](https://grafana.com/oss/loki/) — push log streams through the distributor, query them with LogQL through the querier, and schedule deletions through the compactor. It extends the base [`Client`](/guide/client).
@@ -48,7 +56,7 @@ The package exports the usual registry (`createClient`, `useClient`, `setClient`
 | `client.compactor` | `CompactorAPI` | `createDeletionRequest(params)` · `cancelDeletionRequest(params)` |
 
 ::: tip Timestamps are nanoseconds
-Loki works in **nanosecond** Unix epochs. Pass them as `bigint`, `string`, or `number`. The exported `nanoSeconds()` returns "now" as a `bigint`.
+Loki works in **nanosecond** Unix epochs. Pass them as `bigint` or `string`; a `number` cannot hold a nanosecond epoch without losing precision, and push values and the query `time` do not accept one. The exported `nanoSeconds()` returns "now" as a `bigint`.
 :::
 
 ## Pushing logs

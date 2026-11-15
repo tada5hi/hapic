@@ -1,35 +1,20 @@
 /*
- * Copyright (c) 2022.
+ * Copyright (c) 2022-2026.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { createClient, isClient } from 'hapic';
-import type {
-    IClient,
-    RequestBaseOptions,
-} from 'hapic';
-import type { BaseAPIContext } from './types';
+import { BaseAPI as SharedBaseAPI } from 'hapic';
+import type { IClient, RequestBaseOptions } from 'hapic';
 
-export abstract class BaseAPI {
-    protected client!: IClient;
-
-    // -----------------------------------------------------------------------------------
-
-    protected constructor(context?: BaseAPIContext) {
-        context = context || {};
-
-        this.setDriver(context.client);
-    }
-
-    // -----------------------------------------------------------------------------------
-
+export abstract class BaseAPI extends SharedBaseAPI {
+    /**
+     * @deprecated Use `setClient` instead.
+     *
+     * @param input
+     */
     setDriver(input?: IClient | RequestBaseOptions) {
-        if (isClient(input)) {
-            this.client = input;
-        } else {
-            this.client = createClient(input);
-        }
+        this.setClient(input);
     }
 }

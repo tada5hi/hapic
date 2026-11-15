@@ -32,5 +32,9 @@ export function parseOpenIDProviderMetadata(
         options.revocationEndpoint = data.revocation_endpoint;
     }
 
+    if (data.device_authorization_endpoint) {
+        options.deviceAuthorizationEndpoint = data.device_authorization_endpoint;
+    }
+
     return options;
 }

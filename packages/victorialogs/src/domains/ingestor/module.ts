@@ -22,7 +22,7 @@ export class IngestorAPI extends BaseAPI {
             '/insert/jsonline',
             data,
             {
-                ...(this.options.ingesterURL ? { baseURL: this.options.ingesterURL } : {}),
+                ...this.withBaseURL(this.options.ingesterURL),
                 headers,
             },
         );

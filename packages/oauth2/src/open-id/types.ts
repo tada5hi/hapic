@@ -67,5 +67,10 @@ export type OpenIDProviderMetadata = {
     /**
      * The OpenID Connect UserInfo endpoint URL.
      */
-    userinfo_endpoint?: string
+    userinfo_endpoint?: string,
+
+    /**
+     * The fully qualified URL of the server’s device authorization endpoint defined by RFC 8628
+     */
+    device_authorization_endpoint?: string
 };

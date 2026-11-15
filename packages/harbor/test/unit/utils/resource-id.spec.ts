@@ -6,7 +6,7 @@
  */
 
 import { Headers } from 'hapic';
-import { HeaderName, extractResourceIDOfResponse } from '../../../src';
+import { HeaderName, extractResourceIDOfResponse, extractResourceNameOfResponse } from '../../../src';
 
 describe('src/utils/resource-id', () => {
     it('should extract resource id of response', () => {
@@ -31,5 +31,14 @@ describe('src/utils/resource-id', () => {
         id = extractResourceIDOfResponse({ headers });
 
         expect(id).toBeUndefined();
+    });
+
+    it('should extract resource name of response', () => {
+        const headers = new Headers();
+
+        headers.set(HeaderName.LOCATION, '/api/v2.0/projects/my-proj');
+
+        expect(extractResourceNameOfResponse({ headers })).toEqual('my-proj');
+        expect(extractResourceNameOfResponse({ headers: new Headers() })).toBeUndefined();
     });
 });

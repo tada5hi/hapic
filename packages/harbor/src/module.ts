@@ -72,7 +72,7 @@ export class HarborClient extends BaseClient {
 
     async search(q: string): Promise<SearchResult> {
         const { data } = await this
-            .get(`search?q=${q}`);
+            .get('search', { query: { q } });
 
         return data;
     }

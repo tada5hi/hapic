@@ -1,0 +1,135 @@
+<svg width="960" height="640" viewBox="0 0 960 640" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="oa-flow-title oa-flow-desc">
+    <title id="oa-flow-title">The authorization code flow with PKCE as @hapic/oauth2 drives it</title>
+    <desc id="oa-flow-desc">Your app creates a code verifier and its S256 code challenge and calls authorize.buildURL with the state and the challenge. The browser is redirected to the authorization endpoint with response_type, client_id, redirect_uri, scope, state and code_challenge in the URL. After the user signs in, the authorization server redirects back to redirect_uri with a code and the state. Your app checks the state and calls token.createWithAuthorizationCode with the code and the code verifier, which posts a form body to the token endpoint, with the client secret in the body or, with clientCredentialsAsHeader, in a Basic authorization header. The server answers with the tokens. The client secret, client assertion, code verifier, password and refresh token are never written to the authorize URL.</desc>
+
+    <style>
+        :root {
+            --fg: #1F2335;
+            --muted: #5B6078;
+            --panel: #F6F7FB;
+            --panel-edge: #D5D8E6;
+            --card: #FFFFFF;
+            --rail: #8A8FA8;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fg: #EEF0FA;
+                --muted: #A0A6BE;
+                --panel: #161827;
+                --panel-edge: #3A3E55;
+                --card: #0E1020;
+                --rail: #6E7390;
+            }
+        }
+        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; fill: var(--fg); }
+        .muted { fill: var(--muted); }
+        .code { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; }
+        .label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+        .title { font-size: 15px; font-weight: 600; }
+        .panel { fill: var(--panel); stroke: var(--panel-edge); }
+        .card { fill: var(--card); }
+        .chip { fill: var(--card); stroke: var(--panel-edge); }
+        .life { stroke: var(--rail); stroke-dasharray: 4 5; }
+        .step { font-size: 11px; font-weight: 700; fill: #FFFFFF; }
+    </style>
+
+    <defs>
+        <marker id="oa-flow-front" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#6366f1"/>
+        </marker>
+        <marker id="oa-flow-back" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#22c55e"/>
+        </marker>
+    </defs>
+
+    <!-- sequence panel -->
+    <rect class="panel" x="16" y="16" width="928" height="436" rx="18"/>
+
+    <!-- lifelines -->
+    <path class="life" d="M170 88 V436"/>
+    <path class="life" d="M480 88 V436"/>
+    <path class="life" d="M790 88 V436"/>
+
+    <!-- participants -->
+    <rect class="card" x="50" y="32" width="240" height="56" rx="12" stroke="#6366f1" stroke-width="1.5"/>
+    <text class="title" x="170" y="56" text-anchor="middle">Your app</text>
+    <text class="code muted" x="170" y="76" font-size="12" text-anchor="middle">OAuth2Client</text>
+
+    <rect class="card" x="360" y="32" width="240" height="56" rx="12" stroke="var(--panel-edge)" stroke-width="1.5"/>
+    <text class="title" x="480" y="56" text-anchor="middle">Browser</text>
+    <text class="muted" x="480" y="76" font-size="12" text-anchor="middle">the user's user agent</text>
+
+    <rect class="card" x="670" y="32" width="240" height="56" rx="12" stroke="#22c55e" stroke-width="1.5"/>
+    <text class="title" x="790" y="56" text-anchor="middle">Authorization server</text>
+    <text class="code muted" x="790" y="76" font-size="12" text-anchor="middle">authorize · token endpoint</text>
+
+    <!-- 1: build the URL -->
+    <rect class="card" x="36" y="104" width="300" height="48" rx="10" stroke="#6366f1"/>
+    <circle cx="56" cy="128" r="10" fill="#6366f1"/>
+    <text class="step" x="56" y="132" text-anchor="middle">1</text>
+    <text class="code" x="74" y="124" font-size="12">authorize.buildURL({ state,</text>
+    <text class="code" x="102" y="141" font-size="12">code_challenge })</text>
+
+    <!-- 2: redirect the browser -->
+    <path d="M170 182 H476" stroke="#6366f1" stroke-width="2" marker-end="url(#oa-flow-front)"/>
+    <rect class="chip" x="226" y="170" width="196" height="24" rx="12"/>
+    <circle cx="240" cy="182" r="8" fill="#6366f1"/>
+    <text class="step" x="240" y="186" text-anchor="middle" font-size="10">2</text>
+    <text x="330" y="186" font-size="12" text-anchor="middle">redirect to the URL</text>
+
+    <!-- 3: authorization request -->
+    <path d="M480 222 H786" stroke="#6366f1" stroke-width="2" marker-end="url(#oa-flow-front)"/>
+    <rect class="chip" x="512" y="210" width="246" height="24" rx="12"/>
+    <circle cx="526" cy="222" r="8" fill="#6366f1"/>
+    <text class="step" x="526" y="226" text-anchor="middle" font-size="10">3</text>
+    <text class="code" x="644" y="226" font-size="11" text-anchor="middle">GET …?code_challenge=…</text>
+
+    <!-- 4: sign in -->
+    <rect class="card" x="660" y="248" width="260" height="32" rx="10" stroke="var(--panel-edge)"/>
+    <text x="790" y="269" font-size="12" text-anchor="middle">the user signs in and consents</text>
+
+    <!-- 5: redirect back -->
+    <path d="M790 306 H484" stroke="#6366f1" stroke-width="2" marker-end="url(#oa-flow-front)"/>
+    <rect class="chip" x="512" y="294" width="246" height="24" rx="12"/>
+    <circle cx="526" cy="306" r="8" fill="#6366f1"/>
+    <text class="step" x="526" y="310" text-anchor="middle" font-size="10">4</text>
+    <text class="code" x="644" y="310" font-size="11" text-anchor="middle">redirect_uri?code=…&amp;state=…</text>
+
+    <!-- 6: callback -->
+    <path d="M480 346 H174" stroke="#6366f1" stroke-width="2" marker-end="url(#oa-flow-front)"/>
+    <rect class="chip" x="206" y="334" width="246" height="24" rx="12"/>
+    <circle cx="220" cy="346" r="8" fill="#6366f1"/>
+    <text class="step" x="220" y="350" text-anchor="middle" font-size="10">5</text>
+    <text x="336" y="350" font-size="12" text-anchor="middle">callback: you check state</text>
+
+    <!-- 7: token request -->
+    <path d="M170 386 H786" stroke="#22c55e" stroke-width="2" marker-end="url(#oa-flow-back)"/>
+    <rect class="chip" x="234" y="374" width="452" height="24" rx="12"/>
+    <circle cx="248" cy="386" r="8" fill="#22c55e"/>
+    <text class="step" x="248" y="390" text-anchor="middle" font-size="10">6</text>
+    <text class="code" x="466" y="390" font-size="11" text-anchor="middle">token.createWithAuthorizationCode({ code, code_verifier })</text>
+
+    <!-- 8: tokens -->
+    <path d="M790 426 H174" stroke="#22c55e" stroke-width="2" marker-end="url(#oa-flow-back)"/>
+    <rect class="chip" x="274" y="414" width="412" height="24" rx="12"/>
+    <circle cx="288" cy="426" r="8" fill="#22c55e"/>
+    <text class="step" x="288" y="430" text-anchor="middle" font-size="10">7</text>
+    <text class="code" x="486" y="430" font-size="11" text-anchor="middle">{ access_token, refresh_token?, id_token? }</text>
+
+    <!-- what goes where -->
+    <rect class="card" x="16" y="472" width="456" height="152" rx="14" stroke="#6366f1" stroke-width="1.5"/>
+    <text class="label" x="36" y="498">Front channel: the authorize URL</text>
+    <text x="36" y="522" font-size="12" class="muted">Visible in the address bar, history and server logs.</text>
+    <text class="code" x="36" y="548" font-size="12">response_type=code · client_id · redirect_uri</text>
+    <text class="code" x="36" y="568" font-size="12">scope · state · code_challenge(_method)</text>
+    <text x="36" y="594" font-size="12">Never written, even when passed: client_secret,</text>
+    <text x="36" y="612" font-size="12">client_assertion, code_verifier, password, refresh_token</text>
+
+    <rect class="card" x="488" y="472" width="456" height="152" rx="14" stroke="#22c55e" stroke-width="1.5"/>
+    <text class="label" x="508" y="498">Back channel: the token request</text>
+    <text x="508" y="522" font-size="12" class="muted">POST to tokenEndpoint, application/x-www-form-urlencoded.</text>
+    <text class="code" x="508" y="548" font-size="12">grant_type · code · code_verifier · redirect_uri</text>
+    <text class="code" x="508" y="568" font-size="12">client_id · client_secret</text>
+    <text x="508" y="594" font-size="12">With clientCredentialsAsHeader: the client id and</text>
+    <text x="508" y="612" font-size="12">secret move from the body to a Basic header.</text>
+</svg>

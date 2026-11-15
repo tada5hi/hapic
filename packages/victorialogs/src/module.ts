@@ -26,7 +26,10 @@ export class VictoriaLogsClient extends Client {
 
         markInstanceof(this, VICTORIALOGS_CLIENT_INSTANCE);
 
-        this.ingestor = new IngestorAPI({ client: this, options: input.options });
-        this.querier = new QuerierAPI({ client: this, options: input.options });
+        // one options object, shared by all domain objects
+        const options = input.options || {};
+
+        this.ingestor = new IngestorAPI({ client: this, options });
+        this.querier = new QuerierAPI({ client: this, options });
     }
 }

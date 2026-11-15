@@ -69,3 +69,11 @@ export function isClientErrorDueNetworkIssue(
         Boolean(error.code) &&
         error.code !== ErrorCode.CONNECTION_ABORTED;
 }
+
+export function isClientErrorDueTimeout(
+    error?: unknown,
+) : boolean {
+    return isClientError(error) &&
+        !error.response &&
+        error.code === ErrorCode.CONNECTION_TIMEOUT;
+}

@@ -1,7 +1,7 @@
 {
     "name": "@hapic/loki",
-    "version": "2.0.2",
-    "description": "A http client for grafana loki.",
+    "version": "2.1.0",
+    "description": "Typed HTTP client for Grafana Loki: push log streams, run LogQL queries and manage deletion requests.",
     "type": "module",
     "main": "dist/index.mjs",
     "types": "dist/index.d.mts",
@@ -13,7 +13,8 @@
         }
     },
     "files": [
-        "dist/"
+        "dist/",
+        "assets/"
     ],
     "engines": {
         "node": ">=22.0.0"
@@ -33,22 +34,22 @@
         "grafana",
         "loki",
         "logs",
-        "aggregatrion"
+        "aggregation"
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/hapic.git",
+        "url": "git+https://github.com/tada5hi/hapic.git",
         "directory": "packages/loki"
     },
     "bugs": {
-        "url": "https://github.com/Tada5hi/hapic/issues"
+        "url": "https://github.com/tada5hi/hapic/issues"
     },
-    "homepage": "https://github.com/Tada5hi/hapic#readme",
+    "homepage": "https://github.com/tada5hi/hapic#readme",
     "devDependencies": {
-        "hapic": "^3.0.2"
+        "hapic": "^3.1.0"
     },
     "peerDependencies": {
-        "hapic": "^3.0.2"
+        "hapic": "^3.1.0"
     },
     "publishConfig": {
         "access": "public"

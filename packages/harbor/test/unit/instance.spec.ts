@@ -55,4 +55,20 @@ describe('src/instance', () => {
 
         unsetClient();
     });
+
+    it('should encode the search query', async () => {
+        const transport = new MemoryTransport({
+            fetch: () => ({
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+                body: {},
+            }),
+        });
+
+        const client = new HarborClient({ request: { transport } });
+
+        await client.search('a&b c+d');
+
+        expect(new URL(`http://h/${transport.requests.at(-1)!.url}`).searchParams.get('q')).toBe('a&b c+d');
+    });
 });

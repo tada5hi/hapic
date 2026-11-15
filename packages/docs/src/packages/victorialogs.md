@@ -1,3 +1,11 @@
+---
+package:
+  name: "@hapic/victorialogs"
+  summary: "VictoriaLogs client: ingest logs as JSON lines and query them with LogsQL."
+  accent: "#10b981"
+  order: 5
+---
+
 # @hapic/victorialogs
 
 A client for [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) — ingest JSON-line logs and query them with LogsQL. It extends the base [`Client`](/guide/client).
@@ -62,7 +70,7 @@ await client.ingestor.insert(entry);
 
 ## Querying logs
 
-`query` runs a [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/) expression and returns an array of matching entries. The response stream is parsed for you into plain objects.
+`query` runs a [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/) expression and returns an array of matching entries. The response (newline-delimited JSON) is read in full and parsed for you into plain objects.
 
 ```typescript
 const results = await client.querier.query({

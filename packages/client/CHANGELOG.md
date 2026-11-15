@@ -247,6 +247,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.1.0](https://github.com/tada5hi/hapic/compare/client-v3.0.2...client-v3.1.0) (2026-11-13)
+
+
+### Features
+
+* **client:** add a request timeout and a timeout error code ([#1121](https://github.com/tada5hi/hapic/issues/1121)) ([87e437c](https://github.com/tada5hi/hapic/commit/87e437c174191e9ce880d2566495a3cfeddd06aa))
+* **client:** add parseEventStream to read server-sent events ([#1103](https://github.com/tada5hi/hapic/issues/1103)) ([b770f5d](https://github.com/tada5hi/hapic/commit/b770f5dc4205a12bab7134f688ce9db06ebf3c24))
+* **client:** add toOptions to export the client configuration ([e043bf1](https://github.com/tada5hi/hapic/commit/e043bf1451ada365b81bd71528d247cf92f90bc0))
+* share one domain api base across service clients ([#1115](https://github.com/tada5hi/hapic/issues/1115)) ([90b8221](https://github.com/tada5hi/hapic/commit/90b82219c49c5451df9cd9f76e84ce47b8df4e9d))
+
+
+### Bug Fixes
+
+* **client:** apply responseTransform and split request() into resolve and decode stages ([#1113](https://github.com/tada5hi/hapic/issues/1113)) ([8da9000](https://github.com/tada5hi/hapic/commit/8da900065cd31c8232e39da0a5bd4815076031ac))
+* resolve pre-release audit findings in client, harbor, vault and oauth2 ([#1122](https://github.com/tada5hi/hapic/issues/1122)) ([cea84c2](https://github.com/tada5hi/hapic/commit/cea84c2cc49cc9a9a3a7865c9b83eb8f686b78cb))
+
 ## [3.0.2](https://github.com/tada5hi/hapic/compare/client-v3.0.1...client-v3.0.2) (2026-08-18)
 
 

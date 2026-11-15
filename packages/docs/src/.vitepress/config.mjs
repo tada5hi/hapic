@@ -9,7 +9,7 @@ import { defineConfig } from 'vitepress';
 
 export default defineConfig({
     title: 'hapic',
-    description: 'A tiny, fetch-based HTTP client for TypeScript — request & response hooks, transformers, authorization helpers, and a family of typed service clients.',
+    description: 'A tiny HTTP client for TypeScript, built on fetch. Request and response hooks, transformers, authorization helpers and a family of typed service clients.',
     base: '/',
     cleanUrls: true,
     lastUpdated: true,
@@ -22,10 +22,10 @@ export default defineConfig({
         }],
         ['meta', { name: 'theme-color', content: '#6366f1' }],
         ['meta', { property: 'og:type', content: 'website' }],
-        ['meta', { property: 'og:title', content: 'hapic — HTTP API Client' }],
+        ['meta', { property: 'og:title', content: 'hapic, the HTTP API client' }],
         ['meta', {
             property: 'og:description',
-            content: 'A tiny, fetch-based HTTP client for TypeScript.',
+            content: 'A tiny HTTP client for TypeScript, built on fetch.',
         }],
     ],
 
@@ -121,9 +121,15 @@ export default defineConfig({
 
         search: { provider: 'local' },
 
-        footer: {
-            message: 'Released under the MIT License.',
-            copyright: 'Copyright © 2021-present Peter Placzek',
+        siteFooter: {
+            tagline: 'A tiny HTTP API client built on fetch.',
+            license: 'Released under the MIT License.',
+            copyright: 'Copyright © 2021 to present, Peter Placzek',
+            project: [
+                { text: 'GitHub', link: 'https://github.com/tada5hi/hapic' },
+                { text: 'npm', link: 'https://www.npmjs.com/package/hapic' },
+                { text: 'Releases', link: 'https://github.com/tada5hi/hapic/releases' },
+            ],
         },
     },
 });

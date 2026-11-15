@@ -1,0 +1,15 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="vl-logo-title">
+    <title id="vl-logo-title">@hapic/victorialogs logo: a V with log lines inside it</title>
+    <defs>
+        <linearGradient id="vl-logo-g" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#f43f5e"/>
+        </linearGradient>
+    </defs>
+    <g stroke="url(#vl-logo-g)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M48 56l80 152 80-152"/>
+        <!-- the log lines appear one after the other; the static attributes hold the settled state -->
+        <path d="M100 72h56"><animate attributeName="opacity" from="0" to="1" begin="0s" dur="0.6s" repeatCount="1" fill="freeze"/></path>
+        <path d="M114 108h28"><animate attributeName="opacity" values="0;0;1" keyTimes="0;0.45;1" begin="0s" dur="1.1s" repeatCount="1" fill="freeze"/></path>
+    </g>
+</svg>

@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { withBase, withQuery } from 'ufo';
 import type { ClientErrorCreateContext } from './error/types';
 import { Headers } from './fetch';
 
-import { MethodName, ResponseType } from './constants';
+import type { ResponseType } from './constants';
+import { MethodName } from './constants';
 import type { ITransport, TransportRequest } from './transport';
 import { FetchTransport, isTransport } from './transport';
-import type { ClientOptionsInput, IClient } from './types';
+import type { ClientOptions, ClientOptionsInput, IClient } from './types';
 import type {
     HookErrorFn,
     HookFn,
@@ -31,17 +31,17 @@ import {
     HookManager,
     HookName,
 } from './hook';
-import {
-    detectResponseType,
-} from './response';
+import { decodeResponse } from './response/decode';
 import {
     extendRequestOptionsWithDefaults,
     isRequestPayloadSupported,
 } from './request';
+import type { RequestSignals } from './request/resolve';
+import { resolveRequestAbort, resolveRequestOptions, resolveRequestSignals } from './request/resolve';
 import { createClientError, toError } from './error';
 import type { AuthorizationHeader } from './header';
-import { HeaderName, HeaderStore, stringifyAuthorizationHeader } from './header';
-import { markInstanceof, traverse } from './utils';
+import { HeaderName, stringifyAuthorizationHeader } from './header';
+import { markInstanceof } from './utils';
 
 export const CLIENT_INSTANCE = Symbol.for('hapic/Client');
 
@@ -70,6 +70,35 @@ export class Client implements IClient {
         this.transport = transport ?? new FetchTransport();
 
         markInstanceof(this, CLIENT_INSTANCE);
+    }
+
+    // ---------------------------------------------------------------------------------
+
+    /**
+     * Return the current configuration as client options: the defaults,
+     * the current headers and the transport. Passing the result to a client
+     * constructor creates a client that is configured the same way.
+     *
+     * The options and headers are copies: arrays and plain objects among the
+     * defaults (e.g. transform, responseTransform, params, query, a proxy
+     * options object) are copied one level deep, so changing them on either
+     * client does not affect the other. Functions, signals, the transport
+     * and other class instances are the same instances.
+     * Hooks are not part of it.
+     */
+    public toOptions(): ClientOptions {
+        const output : Record<string, any> = {};
+        const keys = Object.keys(this.defaults) as (keyof RequestBaseOptions)[];
+
+        for (const key of keys) {
+            output[key] = copyShallow(this.defaults[key]);
+        }
+
+        return {
+            ...output,
+            headers: new Headers(this.headers),
+            transport: this.transport,
+        };
     }
 
     // ---------------------------------------------------------------------------------
@@ -188,34 +217,11 @@ export class Client implements IClient {
         RT extends `${ResponseType}` = `${ResponseType.JSON}`,
         R = Response<ResponseData<RT, T>>,
     >(config: RequestOptions<RT>): Promise<R> {
-        const headers = new Headers(config.headers);
-
-        // lay the client default headers beneath the per-request headers
-        new HeaderStore(headers).merge(this.headers, { overwrite: false });
-
-        const baseURL = config.baseURL || this.defaults.baseURL;
-        let options : RequestOptions<RT> = {
-            ...this.defaults as RequestBaseOptions<RT>,
-            ...config,
-            headers,
-            url: baseURL ? withBase(config.url, baseURL) : config.url,
-        };
-
-        if (options.query || options.params) {
-            options.url = withQuery(
-                options.url,
-                traverse({
-                    ...options.params,
-                    ...options.query,
-                }, (value) => {
-                    if (typeof value === 'bigint') {
-                        return value.toString();
-                    }
-
-                    return value;
-                }),
-            );
-        }
+        let options = resolveRequestOptions<RT>({
+            defaults: this.defaults as RequestBaseOptions<RT>,
+            headers: this.headers,
+            config,
+        });
 
         options = await this.hookManager.triggerReqHook(
             options,
@@ -259,6 +265,7 @@ export class Client implements IClient {
         };
 
         let response : Response<ResponseData<RT, T>>;
+        let signals : RequestSignals = {};
 
         try {
             if (!isRequestPayloadSupported(options.method)) {
@@ -274,62 +281,58 @@ export class Client implements IClient {
                 params,
                 query,
                 transform,
+                timeout,
+                signal,
                 ...transportRequest
             } = options;
 
-            response = await this.transport.dispatch(transportRequest as TransportRequest);
+            signals = resolveRequestSignals({ signal, timeout });
+
+            if (signals.signal) {
+                signals.signal.throwIfAborted();
+            }
+
+            response = await this.transport.dispatch({
+                ...transportRequest,
+                ...(signals.signal ? { signal: signals.signal } : {}),
+            } as TransportRequest);
         } catch (e: any) {
+            const abort = resolveRequestAbort(e, signals);
+
             return handleError('request', {
                 request: options,
-                error: toError(e),
+                error: abort ? abort.error : toError(e),
+                code: abort ? abort.code : undefined,
             });
         }
 
-        const responseType = options.responseType ||
-            detectResponseType(response.headers.get(HeaderName.CONTENT_TYPE));
+        try {
+            response = await decodeResponse<T, RT>(response, options);
+        } catch (e: any) {
+            const abort = resolveRequestAbort(e, signals);
 
-        let data : ResponseData<RT, T>;
-
-        switch (responseType) {
-            case ResponseType.STREAM: {
-                data = response.body as ResponseData<RT, T>;
-
-                break;
+            if (abort) {
+                return handleError('request', {
+                    request: options,
+                    error: abort.error,
+                    code: abort.code,
+                });
             }
-            case ResponseType.BLOB: {
-                data = await response.blob() as ResponseData<RT, T>;
 
-                break;
-            }
-            case ResponseType.ARRAY_BUFFER: {
-                data = await response.arrayBuffer() as ResponseData<RT, T>;
+            const error = toError(e);
 
-                break;
+            if (
+                !error ||
+                (error.name !== 'AbortError' && error.name !== 'TimeoutError')
+            ) {
+                throw e;
             }
-            case ResponseType.TEXT: {
-                data = await response.text() as ResponseData<RT, T>;
 
-                break;
-            }
-            default: {
-                const temp = await response.text();
-
-                try {
-                    data = JSON.parse(temp);
-                } catch {
-                    data = temp as ResponseData<RT, T>;
-                }
-            }
+            return handleError('request', {
+                request: options,
+                error,
+            });
         }
-
-        Object.defineProperty(response, 'data', {
-            get() {
-                return data;
-            },
-            set(value: ResponseData<RT, T>) {
-                data = value;
-            },
-        });
 
         if (
             response.status >= 400 &&
@@ -515,4 +518,24 @@ export class Client implements IClient {
 
         return this;
     }
+}
+
+/**
+ * Copy an array or a plain object one level deep; leave any other value
+ * (primitives, functions, class instances) as it is.
+ */
+function copyShallow<T>(input: T) : T {
+    if (Array.isArray(input)) {
+        return [...input] as T;
+    }
+
+    if (typeof input === 'object' && input !== null) {
+        const prototype = Object.getPrototypeOf(input);
+
+        if (prototype === Object.prototype || prototype === null) {
+            return { ...input };
+        }
+    }
+
+    return input;
 }
