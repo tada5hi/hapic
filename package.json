@@ -52,14 +52,14 @@
         "@tada5hi/tsconfig": "^0.7.2",
         "@types/node": "^26.6.6",
         "@vitest/coverage-v8": "^5.1.0",
-        "eslint": "^10.14.0",
+        "eslint": "^10.15.0",
         "eslint-plugin-vue": "^10.12.1",
         "husky": "^9.1.7",
         "monoship": "^2.2.1",
         "nx": "^24.0.6",
         "tsdown": "^0.23.7",
         "typescript": "^6.0.3",
-        "typescript-eslint": "^8.72.2",
+        "typescript-eslint": "^8.73.0",
         "vitest": "^5.1.0"
     }
 }
