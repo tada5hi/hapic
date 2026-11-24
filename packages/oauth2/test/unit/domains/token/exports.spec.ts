@@ -6,6 +6,7 @@
  */
 
 import { Headers, createClient, stringifyAuthorizationHeader } from 'hapic';
+import type { ClientAuthenticationParameters } from '../../../../src';
 import {
     buildRequestOptionsForTokenAPIRequest,
     buildRequestTransformersForTokenAPIRequest,
@@ -54,7 +55,10 @@ describe('src/domains/token (exports)', () => {
 
     it('should export the request building helpers from the package root', () => {
         const defaults = { clientId: 'client', clientSecret: 'secret' };
-        const parameters = extendClientAuthenticationParameters({ scope: ['foo', 'bar'] }, defaults);
+        const parameters = extendClientAuthenticationParameters<ClientAuthenticationParameters & { scope: string[] }>(
+            { scope: ['foo', 'bar'] },
+            defaults,
+        );
 
         expect(parameters).toEqual({
             scope: ['foo', 'bar'],

@@ -114,8 +114,15 @@ export function buildRequestOptionsForTokenAPIRequest(
 }
 
 /**
+ * Parameters repeated once per array item instead of being
+ * joined with spaces (RFC 8693 2.1, RFC 8707 2).
+ */
+const REPEATED_PARAMETERS = ['audience', 'resource'];
+
+/**
  * Build a form body: non empty strings as is, numbers and booleans
- * stringified, arrays joined with spaces, everything else left out.
+ * stringified, arrays joined with spaces (`audience` and `resource`
+ * repeated per item), everything else left out.
  */
 export function buildURLSearchParamsForTokenAPIRequest(
     input: Record<string, any>,
@@ -130,6 +137,12 @@ export function buildURLSearchParamsForTokenAPIRequest(
             urlSearchParams.append(key, value);
         } else if (typeof value === 'number' || typeof value === 'boolean') {
             urlSearchParams.append(key, String(value));
+        } else if (Array.isArray(value) && REPEATED_PARAMETERS.includes(key)) {
+            for (const el of value) {
+                if (typeof el === 'string' && !!el) {
+                    urlSearchParams.append(key, el);
+                }
+            }
         } else if (Array.isArray(value)) {
             const str = value.filter((el) => el).join(' ');
 
