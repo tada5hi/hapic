@@ -71,6 +71,22 @@ describe('src/transport/fetch (upload progress)', () => {
         expect(calls[0]!.init.body).toBeUndefined();
     });
 
+    it('should send a stream body with duplex half without listener', async () => {
+        const calls : FetchCall[] = [];
+        const transport = new FetchTransport({ fetch: createFetchStub(calls) });
+        const body = new Blob(['hello']).stream();
+
+        await transport.dispatch({
+            url: 'https://api.test/',
+            method: 'POST',
+            body,
+            proxy: false,
+        });
+
+        expect(calls[0]!.init.body).toBe(body);
+        expect(calls[0]!.init.duplex).toBe('half');
+    });
+
     it('should count a stream body while fetch reads it', async () => {
         const calls : FetchCall[] = [];
         const events : UploadProgressEvent[] = [];
@@ -228,6 +244,28 @@ describe('src/transport/fetch (upload progress, server)', () => {
             });
         }
     }
+
+    it('should upload a stream body without listener', async () => {
+        const received : string[] = [];
+
+        await withServer((req, res) => {
+            let body = '';
+
+            req.on('data', (chunk: Buffer) => {
+                body += chunk.toString();
+            });
+            req.on('end', () => {
+                received.push(body);
+                res.end('ok');
+            });
+        }, async (baseURL) => {
+            const client = new Client({ baseURL, proxy: false });
+
+            await client.post('media', new Blob(['hello']).stream());
+
+            expect(received).toEqual(['hello']);
+        });
+    });
 
     it('should upload a stream body with its content-length', async () => {
         const received : { length?: string, bytes: number }[] = [];

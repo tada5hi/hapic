@@ -59,8 +59,7 @@ export class FetchTransport implements ITransport {
                     onUploadProgress,
                     Number.isNaN(length) ? undefined : length,
                 ),
-                duplex: 'half',
-            } as TransportRequest);
+            });
         }
 
         const total = getBodySize(input.body);
@@ -79,6 +78,11 @@ export class FetchTransport implements ITransport {
             proxy,
             ...init
         } = request;
+
+        // fetch requires duplex for a stream body.
+        if (isWebStream(init.body) && !('duplex' in init)) {
+            (init as RequestInit & { duplex?: string }).duplex = 'half';
+        }
 
         if (proxy === false) {
             return this.fetch(url, init);
