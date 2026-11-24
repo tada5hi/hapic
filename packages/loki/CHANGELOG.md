@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.2](https://github.com/tada5hi/hapic/compare/loki-v2.1.1...loki-v2.1.2) (2026-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.2.0 to ^3.2.1
+  * peerDependencies
+    * hapic bumped from ^3.2.0 to ^3.2.1
+
 ## [2.1.1](https://github.com/tada5hi/hapic/compare/loki-v2.1.0...loki-v2.1.1) (2026-11-24)
 
 

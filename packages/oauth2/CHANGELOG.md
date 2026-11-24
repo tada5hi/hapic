@@ -183,6 +183,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.3.1](https://github.com/tada5hi/hapic/compare/oauth2-v4.3.0...oauth2-v4.3.1) (2026-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.2.0 to ^3.2.1
+  * peerDependencies
+    * hapic bumped from ^3.2.0 to ^3.2.1
+
 ## [4.3.0](https://github.com/tada5hi/hapic/compare/oauth2-v4.2.0...oauth2-v4.3.0) (2026-11-24)
 
 
