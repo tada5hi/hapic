@@ -11,3 +11,4 @@ export * from './hapic-error';
 export * from './entities';
 export * from './module';
 export * from './helpers';
+export type { ClientErrorCloneOptions, ErrorTransformer } from './types';

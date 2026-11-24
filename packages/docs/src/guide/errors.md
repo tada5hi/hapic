@@ -164,13 +164,14 @@ The code is decided first by **which signal** fired. The timeout hapic armed ans
 
 By default a `ClientError` keeps everything about the failed request: `request` holds the resolved options (the URL, the merged headers with the `Authorization` header, the body) and `cause` holds the transport's error. An application that logs or serializes the error carries the credentials along.
 
-The `keepRequestOnError` and `keepCauseOnError` options leave them out:
+The `errorTransform` option reshapes the error before it is thrown. `stripClientError` leaves the request details and the cause out:
 
 ```typescript
+import { createClient, stripClientError } from 'hapic';
+
 const client = createClient({
     baseURL: 'https://auth.example/',
-    keepRequestOnError: false,
-    keepCauseOnError: false,
+    errorTransform: stripClientError,
 });
 
 try {
@@ -183,14 +184,28 @@ try {
 }
 ```
 
-- `keepRequestOnError: false`: `request` is `{ method, url }` only. The headers (`Authorization`, cookies, API keys), the body and every other request option are dropped.
-- `keepCauseOnError: false`: the error has no `cause`, the transport's error.
+`stripClientError` keeps only `method` and `url` of the request, so the headers (`Authorization`, cookies, API keys), the body and every other request option are dropped, and it removes the `cause`, the transport's error.
 
-`message`, stack, `code`, `status`, `statusText` and `response` stay, and the error is a new instance of the same class, so every guard (`isHttpResponseError`, `isNetworkError`, `isClientErrorDueTimeout`, …) still matches. A custom subclass thrown by an error hook becomes its built-in class (`HttpResponseError` or `NetworkError`), since its constructor and own fields are unknown to hapic.
+For anything else, `cloneClientError(error, { request?, cause? })` creates a copy with the request and/or the cause you pass, for example to drop only the `Authorization` header:
 
-Only the error that leaves the client is reduced. [Error hooks](/guide/hooks#error-hooks-can-recover) still receive the full error, so a hook can read `error.request` and retry with fresh credentials. When no hook recovers, the client throws the reduced error.
+```typescript
+const client = createClient({
+    errorTransform: (error) => {
+        const headers = new Headers(error.request.headers);
+        headers.delete('authorization');
 
-Both options can be set on the client or per request; a per-request value replaces the client default.
+        return cloneClientError(error, { request: { ...error.request, headers } });
+    },
+});
+```
+
+Both helpers keep `message`, stack, `code`, `status`, `statusText` and `response`, and return a new instance of the same class, so every guard (`isHttpResponseError`, `isNetworkError`, `isClientErrorDueTimeout`, …) still matches. A custom subclass thrown by an error hook becomes its built in class (`HttpResponseError` or `NetworkError`), since its constructor and own fields are unknown to hapic.
+
+The transform may also return an error of your own; the guards then no longer match it. If the transform throws, the client throws the untransformed error.
+
+Only the error that leaves the client is transformed. [Error hooks](/guide/hooks#error-hooks-can-recover) still receive the full error, so a hook can read `error.request` and retry with fresh credentials. When no hook recovers, the client throws the transformed error.
+
+The option can be set on the client or per request; a per-request value replaces the client default.
 
 ## Error codes
 

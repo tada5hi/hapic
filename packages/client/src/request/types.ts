@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { ErrorTransformer } from '../error/types';
 import type { ProxyOptions } from '../types';
 import type { ResponseType } from '../constants';
 import type { ResponseTransformer } from '../response';
@@ -72,24 +73,15 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     timeout?: number,
     /**
-     * Keep the resolved request options on the error the client throws as
-     * error.request: the merged headers (incl. the Authorization header),
-     * the body and the other options. With false, error.request holds the
-     * method and the url only, so logging or serializing the error does not
-     * expose credentials or a request body.
-     * Error hooks still receive the full error; only the error thrown when
-     * no hook recovers is reduced.
+     * Reshape the error the client throws when no error hook recovers,
+     * e.g. stripClientError to drop the request headers, body and cause, so
+     * logging or serializing the error does not expose credentials.
+     * Error hooks still receive the full error. When the function throws,
+     * the untransformed error is thrown.
      *
-     * default: true
+     * default: undefined
      */
-    keepRequestOnError?: boolean,
-    /**
-     * Keep the transport's error as error.cause on the error the client
-     * throws. Error hooks still receive the full error.
-     *
-     * default: true
-     */
-    keepCauseOnError?: boolean,
+    errorTransform?: ErrorTransformer,
     /**
      * Report the progress of sending the request body: called with the bytes
      * sent so far (loaded) and the body size in bytes (total, when known).

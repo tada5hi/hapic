@@ -8,7 +8,7 @@
 import type { RequestOptions } from '../../request';
 import { HttpResponseError, NetworkError } from '../entities';
 import { ClientError } from '../module';
-import type { ClientErrorContext } from '../types';
+import type { ClientErrorCloneOptions, ClientErrorContext } from '../types';
 
 type ClientErrorCtor = new (ctx: ClientErrorContext) => ClientError;
 
@@ -29,35 +29,24 @@ function resolveCtor(error: ClientError) : ClientErrorCtor {
 }
 
 /**
- * Reduce a client error to what keepRequestOnError and keepCauseOnError
- * keep: a fresh instance of the same class (so the @instanceof marker chain
- * and every guard still match), without the request headers and body (only
- * method and url are kept) and/or the cause. Message, stack and response stay.
- *
- * Returns the input itself when the options keep everything.
+ * Create a fresh instance of the error's built-in class (so the @instanceof
+ * marker chain and every guard still match) with the given request and/or
+ * cause. Message, code, stack and response are kept.
  */
-export function redactClientError<T = any>(
+export function cloneClientError<T = any>(
     error: ClientError<T>,
-    options: Pick<RequestOptions, 'keepRequestOnError' | 'keepCauseOnError'> = {},
+    options: ClientErrorCloneOptions = {},
 ) : ClientError<T> {
-    const keepRequest = options.keepRequestOnError !== false;
-    const keepCause = options.keepCauseOnError !== false;
-
-    if (keepRequest && keepCause) {
-        return error;
-    }
-
-    const request = keepRequest ?
-        error.request :
-        { method: error.request?.method, url: error.request?.url } as RequestOptions;
+    const request = 'request' in options ? options.request : error.request;
+    const cause = 'cause' in options ? options.cause : error.cause;
 
     const Ctor = resolveCtor(error);
     const output = new Ctor({
         message: error.message,
         code: error.code as ClientErrorContext['code'],
-        request,
+        request: request as RequestOptions,
         response: error.response,
-        ...(keepCause && error.cause !== undefined ? { error: error.cause as Error } : {}),
+        ...(cause !== undefined ? { error: cause as Error } : {}),
     }) as ClientError<T>;
 
     if (error.stack) {
@@ -65,4 +54,16 @@ export function redactClientError<T = any>(
     }
 
     return output;
+}
+
+/**
+ * Clone the error without the request headers and body (only method and
+ * url are kept) and without the cause, so logging or serializing it does
+ * not expose credentials or a request body.
+ */
+export function stripClientError<T = any>(error: ClientError<T>) : ClientError<T> {
+    return cloneClientError(error, {
+        request: { method: error.request?.method, url: error.request?.url } as RequestOptions,
+        cause: undefined,
+    });
 }

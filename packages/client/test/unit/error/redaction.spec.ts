@@ -13,12 +13,14 @@ import {
     HttpResponseError,
     MemoryTransport,
     NetworkError,
+    cloneClientError,
     isClientError,
     isClientErrorDueNetworkIssue,
     isClientErrorWithStatusCode,
     isHapicError,
     isHttpResponseError,
     isNetworkError,
+    stripClientError,
 } from '../../../src';
 import type { ClientError, ClientOptionsInput } from '../../../src';
 
@@ -108,9 +110,9 @@ describe('src/error/redaction', () => {
         });
     });
 
-    describe('keepRequestOnError = false', () => {
+    describe('errorTransform: stripClientError', () => {
         it('should throw an http response error without headers and body', async () => {
-            const { client } = createNotFoundClient({ keepRequestOnError: false });
+            const { client } = createNotFoundClient({ errorTransform: stripClientError });
 
             const error = await catchError(client.post(`roles/1?${QUERY}`, { secret: SECRET }));
 
@@ -132,8 +134,8 @@ describe('src/error/redaction', () => {
             expect(error.response!.url).toContain(QUERY);
         });
 
-        it('should keep the cause unless disabled', async () => {
-            const { client } = createFailingClient({ keepRequestOnError: false });
+        it('should keep the cause when only the request is replaced', async () => {
+            const { client } = createFailingClient({ errorTransform: (e) => cloneClientError(e, { request: { method: e.request.method, url: e.request.url } as ClientError['request'] }) });
 
             const error = await catchError(client.get(`roles/1?${QUERY}`));
 
@@ -141,7 +143,7 @@ describe('src/error/redaction', () => {
         });
 
         it('should throw a network error without headers and body', async () => {
-            const { client } = createFailingClient({ keepRequestOnError: false, keepCauseOnError: false });
+            const { client } = createFailingClient({ errorTransform: stripClientError });
 
             const error = await catchError(client.post(`roles?${QUERY}`, { secret: SECRET }));
 
@@ -159,22 +161,22 @@ describe('src/error/redaction', () => {
         it('should apply a per-request option', async () => {
             const { client } = createNotFoundClient();
 
-            const error = await catchError(client.get(`roles/1?${QUERY}`, { keepRequestOnError: false, keepCauseOnError: false }));
+            const error = await catchError(client.get(`roles/1?${QUERY}`, { errorTransform: stripClientError }));
 
             expectNoLeak(error);
             expect(error.request.headers).toBeUndefined();
         });
 
-        it('should let a per-request option re-enable the details', async () => {
-            const { client } = createNotFoundClient({ keepRequestOnError: false });
+        it('should let a per-request option replace the client default', async () => {
+            const { client } = createNotFoundClient({ errorTransform: stripClientError });
 
-            const error = await catchError(client.get(`roles/1?${QUERY}`, { keepRequestOnError: true }));
+            const error = await catchError(client.get(`roles/1?${QUERY}`, { errorTransform: (e) => e }));
 
             expect((error.request.headers as Headers).get('authorization')).toContain(TOKEN);
         });
 
         it('should hand the full error to the error hook', async () => {
-            const { client } = createNotFoundClient({ keepRequestOnError: false, keepCauseOnError: false });
+            const { client } = createNotFoundClient({ errorTransform: stripClientError });
 
             let seen : ClientError | undefined;
 
@@ -210,8 +212,7 @@ describe('src/error/redaction', () => {
             const client = new Client({
                 baseURL: 'https://auth.example/',
                 transport,
-                keepRequestOnError: false,
-                keepCauseOnError: false,
+                errorTransform: stripClientError,
             });
 
             client.on(HookName.RESPONSE_ERROR, (e) => ({
@@ -227,7 +228,7 @@ describe('src/error/redaction', () => {
         });
 
         it('should redact the error a failed retry throws', async () => {
-            const { client } = createNotFoundClient({ keepRequestOnError: false, keepCauseOnError: false });
+            const { client } = createNotFoundClient({ errorTransform: stripClientError });
 
             let retried = false;
 
@@ -252,7 +253,7 @@ describe('src/error/redaction', () => {
         it('should reduce a subclass thrown by a hook to its built-in class', async () => {
             class CustomNetworkError extends NetworkError {}
 
-            const { client } = createFailingClient({ keepCauseOnError: false });
+            const { client } = createFailingClient({ errorTransform: (e) => cloneClientError(e, { cause: undefined }) });
 
             client.on(HookName.REQUEST_ERROR, (e) => {
                 throw new CustomNetworkError({
@@ -270,9 +271,9 @@ describe('src/error/redaction', () => {
         });
     });
 
-    describe('keepCauseOnError = false', () => {
+    describe('cloneClientError', () => {
         it('should drop the cause and keep the request', async () => {
-            const { client } = createFailingClient({ keepCauseOnError: false });
+            const { client } = createFailingClient({ errorTransform: (e) => cloneClientError(e, { cause: undefined }) });
 
             const error = await catchError(client.get(`roles/1?${QUERY}`));
 
@@ -280,6 +281,31 @@ describe('src/error/redaction', () => {
             expect(error.cause).toBeUndefined();
             expect(JSON.stringify(error)).not.toContain('"cause"');
             expect(error.request.url).toContain(QUERY);
+        });
+    });
+
+    describe('errorTransform', () => {
+        it('should throw what the transform returns', async () => {
+            const { client } = createNotFoundClient({ errorTransform: (e) => new RangeError(e.message) });
+
+            const error = await catchError(client.get('roles/1'));
+
+            expect(error).toBeInstanceOf(RangeError);
+            expect(isClientError(error)).toBe(false);
+            expect(error.message).toContain('404');
+        });
+
+        it('should throw the untransformed error when the transform throws', async () => {
+            const { client } = createNotFoundClient({
+                errorTransform: () => {
+                    throw new Error('boom');
+                },
+            });
+
+            const error = await catchError(client.get('roles/1'));
+
+            expect(isHttpResponseError(error)).toBe(true);
+            expect(error.message).toContain('404');
         });
     });
 });

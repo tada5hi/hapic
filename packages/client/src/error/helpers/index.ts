@@ -6,5 +6,6 @@
  */
 
 export * from './check';
+export * from './clone';
 export * from './create';
 export * from './extend';

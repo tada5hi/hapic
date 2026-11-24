@@ -40,7 +40,6 @@ import {
 import type { RequestSignals } from './request/resolve';
 import { resolveRequestAbort, resolveRequestOptions, resolveRequestSignals } from './request/resolve';
 import { createClientError, isClientError, toError } from './error';
-import { redactClientError } from './error/helpers/redact';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 import { markInstanceof } from './utils';
@@ -263,12 +262,21 @@ export class Client implements IClient {
                 );
             } catch (e) {
                 // Hooks saw the full error; the error that leaves the client
-                // is reduced to what keepRequestOnError and keepCauseOnError keep.
-                if (!isClientError(e)) {
+                // goes through errorTransform. A throwing transform leaves it
+                // untransformed.
+                if (!isClientError(e) || !options.errorTransform) {
                     throw e;
                 }
 
-                throw redactClientError(e, options);
+                let output : unknown;
+
+                try {
+                    output = options.errorTransform(e);
+                } catch {
+                    throw e;
+                }
+
+                throw output;
             }
 
             if (recovery.type === 'response') {
@@ -298,8 +306,7 @@ export class Client implements IClient {
                 transform,
                 timeout,
                 signal,
-                keepRequestOnError,
-                keepCauseOnError,
+                errorTransform,
                 ...transportRequest
             } = options;
 
