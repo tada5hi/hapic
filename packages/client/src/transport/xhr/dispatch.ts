@@ -29,6 +29,20 @@ function parseResponseHeaders(input: string) : Headers {
     return headers;
 }
 
+/**
+ * Serialize a request url like xhr.responseURL is (absolute, normalized),
+ * resolved against the document's location in a browser.
+ */
+function toAbsoluteURL(input: string) : string {
+    try {
+        const base = (globalContext as any).location?.href;
+
+        return new URL(input, base).href;
+    } catch {
+        return input;
+    }
+}
+
 function createAbortError() : Error {
     const error = new Error('The operation was aborted.');
 
@@ -101,11 +115,12 @@ export function dispatchXMLHttpRequest(request: TransportRequest) : Promise<Resp
             });
 
             // A constructed Response has an empty url and is never redirected.
-            const responseURL = xhr.responseURL || url;
+            const requestURL = toAbsoluteURL(url);
+            const responseURL = xhr.responseURL || requestURL;
 
             Object.defineProperties(response, {
                 url: { value: responseURL, configurable: true },
-                redirected: { value: responseURL !== url, configurable: true },
+                redirected: { value: responseURL !== requestURL, configurable: true },
             });
 
             resolve(response);

@@ -85,6 +85,19 @@ describe('src/transport/xhr', () => {
         expect(moved.redirected).toBe(true);
     });
 
+    it('should not report a redirect for a url that only differs in its serialization', async () => {
+        FakeXMLHttpRequest.onSend = (xhr) => {
+            xhr.responseURL = 'https://api.test/a%20b?x=1';
+            xhr.respond({ status: 200, body: '' });
+        };
+
+        const transport = new XhrTransport();
+        const response = await transport.dispatch({ url: 'https://API.test/a b?x=1' });
+
+        expect(response.url).toBe('https://api.test/a%20b?x=1');
+        expect(response.redirected).toBe(false);
+    });
+
     it('should pass a stream response request to the fallback transport', async () => {
         const fallback = new MemoryTransport();
         const transport = new XhrTransport({ fallback });
