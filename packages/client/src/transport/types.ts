@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import type { ResponseType } from '../constants';
 import type { ProxyOptions } from '../types';
 
 export type UploadProgressEvent = {
@@ -35,7 +36,13 @@ export type TransportRequest = RequestInit & {
      * Report the bytes of the request body sent so far.
      * Pipeline-only for fetch: a transport never passes it on to `fetch`.
      */
-    onUploadProgress?: UploadProgressListener
+    onUploadProgress?: UploadProgressListener,
+    /**
+     * The response type the pipeline will decode the body as. A hint a
+     * transport may ignore (e.g. to avoid buffering a stream response);
+     * never passed on to fetch.
+     */
+    responseType?: `${ResponseType}`
 };
 
 /**

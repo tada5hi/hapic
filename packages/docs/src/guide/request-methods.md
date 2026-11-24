@@ -127,9 +127,13 @@ Only the dispatch changes: the base URL, headers, hooks (a hook retrying the req
 | Node.js | Sent by `fetch` as a stream counting the bytes it hands out (`duplex: 'half'`). A body of known size keeps its `content-length` and `content-type`; a form data body is read into memory first to know its size. |
 | Elsewhere | Sent by `fetch` as usual; one event (`loaded` = `total`) is reported once the body is sent, when its size is known. |
 
+A request with `responseType: 'stream'` is never sent by `XMLHttpRequest`, which would hold the response back until it is complete; it goes by `fetch` instead.
+
+A response received by `XMLHttpRequest` carries the final `url` and `redirected`, as one from `fetch` does.
+
 A request without a body reports nothing, and an error thrown by the listener is ignored. In browsers, a request with an upload listener is never a CORS "simple request", so an upload to another origin is preflighted.
 
-To send every request by `XMLHttpRequest`, use the `XhrTransport`. It reads the whole response before resolving (no streamed responses), ignores the `proxy` option and passes a request it cannot send (no `XMLHttpRequest`, or a stream body) to its `fallback` transport (default: a `FetchTransport`):
+To send every request by `XMLHttpRequest`, use the `XhrTransport`. It reads the whole response before resolving (no streamed responses), ignores the `proxy` option and passes a request it cannot send (no `XMLHttpRequest`, a stream body or `responseType: 'stream'`) to its `fallback` transport (default: a `FetchTransport`):
 
 ```typescript
 import { Client, XhrTransport } from 'hapic';

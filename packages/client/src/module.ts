@@ -272,11 +272,11 @@ export class Client implements IClient {
                 delete options.body;
             }
 
-            // Strip the pipeline-only options; the remainder (url, proxy and the
-            // merged fetch init) is the flattened TransportRequest.
+            // Strip the pipeline-only options; the remainder (url, proxy, the
+            // responseType hint, the upload listener and the merged fetch init)
+            // is the flattened TransportRequest.
             const {
                 baseURL,
-                responseType,
                 responseTransform,
                 params,
                 query,

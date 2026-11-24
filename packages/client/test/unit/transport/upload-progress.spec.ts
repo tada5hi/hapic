@@ -233,6 +233,44 @@ describe('src/transport/fetch (upload progress)', () => {
         expect(inspect.strategy({ ...request, body: new ReadableStream() })).toBe('stream');
     });
 
+    it('should not use XMLHttpRequest for a stream response', async () => {
+        vi.stubGlobal('XMLHttpRequest', FakeXMLHttpRequest);
+
+        class InspectTransport extends FetchTransport {
+            strategy(request: TransportRequest) {
+                return this.resolveUploadStrategy(request);
+            }
+        }
+
+        const inspect = new InspectTransport();
+
+        expect(inspect.strategy({
+            url: 'https://api.test/', 
+            body: 'data', 
+            responseType: 'stream', 
+        })).toBe('stream');
+        expect(inspect.strategy({
+            url: 'https://api.test/', 
+            body: 'data', 
+            responseType: 'json', 
+        })).toBe('xhr');
+    });
+
+    it('should not pass the response type on to fetch', async () => {
+        const calls : FetchCall[] = [];
+        const client = new Client({
+            baseURL: 'https://api.test/',
+            proxy: false,
+            transport: new FetchTransport({ fetch: createFetchStub(calls) }),
+        });
+
+        await client.post('media', 'data', { responseType: 'text' });
+        await client.post('media', 'data', { responseType: 'stream', onUploadProgress: () => {} });
+
+        expect(Object.keys(calls[0]!.init).sort()).toEqual(['body', 'headers', 'method']);
+        expect(calls[1]!.init).not.toHaveProperty('responseType');
+    });
+
     it('should report one event once the body is sent elsewhere', async () => {
         class PlainTransport extends FetchTransport {
             protected override resolveUploadStrategy() : FetchUploadStrategy {
@@ -333,6 +371,17 @@ describe('src/module (upload progress)', () => {
         expect(transport.requests).toHaveLength(2);
         expect(transport.requests[0]!.onUploadProgress).toBe(listener);
         expect(transport.requests[1]!.onUploadProgress).toBe(listener);
+    });
+
+    it('should hand the response type to the transport', async () => {
+        const transport = new MemoryTransport();
+        const client = new Client({ baseURL: 'https://api.test/', transport });
+
+        await client.get('events', { responseType: 'stream' });
+        await client.get('data');
+
+        expect(transport.requests[0]!.responseType).toBe('stream');
+        expect(transport.requests[1]!.responseType).toBeUndefined();
     });
 
     it('should use a client default listener', async () => {

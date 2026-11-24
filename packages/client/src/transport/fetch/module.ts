@@ -84,7 +84,8 @@ export class FetchTransport implements ITransport {
      * Pick how a request with a body and an upload progress listener is sent:
      *
      * - xhr: XMLHttpRequest exists, the body is one it takes, no proxy options
-     *   object is set (proxies are Node.js only) and no custom fetch was given.
+     *   object is set (proxies are Node.js only), the response is not read as
+     *   a stream (XHR buffers it) and no custom fetch was given.
      * - stream: Node.js; fetch sends the body as a byte-counting stream.
      * - fetch: plain fetch, one event once the body is sent (when its size is known).
      */
@@ -93,6 +94,7 @@ export class FetchTransport implements ITransport {
             hasXMLHttpRequest() &&
             !this.hasCustomFetch &&
             !isObject(request.proxy) &&
+            request.responseType !== 'stream' &&
             isXMLHttpRequestBody(request.body)
         ) {
             return 'xhr';
@@ -160,6 +162,7 @@ export class FetchTransport implements ITransport {
         const {
             url,
             proxy,
+            responseType,
             ...init
         } = request;
 

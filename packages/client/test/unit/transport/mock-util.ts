@@ -43,6 +43,8 @@ export class FakeXMLHttpRequest extends EventTarget {
 
     response : ArrayBuffer | null = null;
 
+    responseURL = '';
+
     protected responseHeaders = '';
 
     constructor() {

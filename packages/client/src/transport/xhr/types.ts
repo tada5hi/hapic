@@ -10,7 +10,8 @@ import type { ITransport } from '../types';
 export type XhrTransportOptions = {
     /**
      * The transport for a request XMLHttpRequest cannot send: where no
-     * XMLHttpRequest exists, or for a body it does not take (a stream).
+     * XMLHttpRequest exists, for a body it does not take (a stream), or for a
+     * response read as a stream (XHR buffers the whole response).
      *
      * default: a FetchTransport.
      */

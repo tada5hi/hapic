@@ -19,7 +19,8 @@ import type { XhrTransportOptions } from './types';
  *
  * The response body is read in full before the promise resolves (no
  * streaming), and the proxy option does not apply. A request XMLHttpRequest
- * cannot send (none exists, or a stream body) goes to the fallback transport.
+ * cannot send (none exists, a stream body, or a stream response type) goes
+ * to the fallback transport.
  */
 export class XhrTransport implements ITransport {
     protected fallback : ITransport | undefined;
@@ -33,6 +34,7 @@ export class XhrTransport implements ITransport {
     async dispatch(request: TransportRequest) : Promise<Response> {
         if (
             hasXMLHttpRequest() &&
+            request.responseType !== 'stream' &&
             (request.body === null || typeof request.body === 'undefined' || isXMLHttpRequestBody(request.body))
         ) {
             return dispatchXMLHttpRequest(request);

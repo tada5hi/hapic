@@ -27,6 +27,7 @@ interface ITransport {
         url: string,
         proxy?: ProxyOptions | boolean,
         onUploadProgress?: (event: { loaded: number, total?: number }) => void,
+        responseType?: 'json' | 'text' | 'blob' | 'arrayBuffer' | 'stream', // a hint; never sent to fetch
     }): Promise<Response>;
 }
 ```

@@ -360,13 +360,14 @@ describe('src/transport', () => {
             expect(init.body).toBe('{"a":1}');
             // pipeline-internal options do not leak across the boundary
             expect(init.baseURL).toBeUndefined();
-            expect(init.responseType).toBeUndefined();
             expect(init.responseTransform).toBeUndefined();
             expect(init.transform).toBeUndefined();
             expect(init.query).toBeUndefined();
             expect(init.params).toBeUndefined();
             // the query was applied to the URL, not passed through as an option
             expect(transport.requests.at(-1)!.url).toBe('https://api.test/x?p=1');
+            // the response type is a declared hint of the transport request
+            expect(init.responseType).toBe('json');
         });
 
         it('should pass a binary response body through without JSON serialization', async () => {

@@ -94,11 +94,21 @@ export function dispatchXMLHttpRequest(request: TransportRequest) : Promise<Resp
             const nullBody = requestMethod === 'HEAD' ||
                 NULL_BODY_STATUSES.includes(xhr.status);
 
-            resolve(createResponse(nullBody ? null : xhr.response, {
+            const response = createResponse(nullBody ? null : xhr.response, {
                 status: xhr.status,
                 statusText: xhr.statusText,
                 headers: parseResponseHeaders(xhr.getAllResponseHeaders()),
-            }));
+            });
+
+            // A constructed Response has an empty url and is never redirected.
+            const responseURL = xhr.responseURL || url;
+
+            Object.defineProperties(response, {
+                url: { value: responseURL, configurable: true },
+                redirected: { value: responseURL !== url, configurable: true },
+            });
+
+            resolve(response);
         });
 
         xhr.addEventListener('error', () => {

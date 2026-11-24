@@ -64,6 +64,37 @@ describe('src/transport/xhr', () => {
         expect(await response.json()).toEqual({ id: 1 });
     });
 
+    it('should set the response url and redirected', async () => {
+        FakeXMLHttpRequest.onSend = (xhr) => xhr.respond({ status: 200, body: '' });
+
+        const transport = new XhrTransport();
+        const direct = await transport.dispatch({ url: 'https://api.test/a' });
+
+        expect(direct.url).toBe('https://api.test/a');
+        expect(direct.redirected).toBe(false);
+        expect(Object.keys(direct)).not.toContain('url');
+
+        FakeXMLHttpRequest.onSend = (xhr) => {
+            xhr.responseURL = 'https://api.test/b';
+            xhr.respond({ status: 200, body: '' });
+        };
+
+        const moved = await transport.dispatch({ url: 'https://api.test/a' });
+
+        expect(moved.url).toBe('https://api.test/b');
+        expect(moved.redirected).toBe(true);
+    });
+
+    it('should pass a stream response request to the fallback transport', async () => {
+        const fallback = new MemoryTransport();
+        const transport = new XhrTransport({ fallback });
+
+        await transport.dispatch({ url: 'https://api.test/', responseType: 'stream' });
+
+        expect(FakeXMLHttpRequest.instances).toHaveLength(0);
+        expect(fallback.requests).toHaveLength(1);
+    });
+
     it('should build a null body for 204 and HEAD', async () => {
         FakeXMLHttpRequest.onSend = (xhr) => xhr.respond({ status: 204, body: '' });
 
