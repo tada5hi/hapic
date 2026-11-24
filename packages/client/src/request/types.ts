@@ -77,7 +77,7 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      * e.g. stripClientError to drop the request headers, body and cause, so
      * logging or serializing the error does not expose credentials.
      * Error hooks still receive the full error. When the function throws,
-     * the untransformed error is thrown.
+     * the error is thrown as stripClientError returns it.
      *
      * default: undefined
      */

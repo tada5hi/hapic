@@ -295,17 +295,19 @@ describe('src/error/redaction', () => {
             expect(error.message).toContain('404');
         });
 
-        it('should throw the untransformed error when the transform throws', async () => {
+        it('should throw the stripped error when the transform throws', async () => {
             const { client } = createNotFoundClient({
                 errorTransform: () => {
                     throw new Error('boom');
                 },
             });
 
-            const error = await catchError(client.get('roles/1'));
+            const error = await catchError(client.post(`roles/1?${QUERY}`, { secret: SECRET }));
 
+            expectNoLeak(error);
             expect(isHttpResponseError(error)).toBe(true);
             expect(error.message).toContain('404');
+            expect(error.request).toEqual({ method: 'POST', url: `https://auth.example/roles/1?${QUERY}` });
         });
     });
 });

@@ -39,7 +39,12 @@ import {
 } from './request';
 import type { RequestSignals } from './request/resolve';
 import { resolveRequestAbort, resolveRequestOptions, resolveRequestSignals } from './request/resolve';
-import { createClientError, isClientError, toError } from './error';
+import {
+    createClientError,
+    isClientError,
+    stripClientError,
+    toError,
+} from './error';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 import { markInstanceof } from './utils';
@@ -262,8 +267,8 @@ export class Client implements IClient {
                 );
             } catch (e) {
                 // Hooks saw the full error; the error that leaves the client
-                // goes through errorTransform. A throwing transform leaves it
-                // untransformed.
+                // goes through errorTransform. A throwing transform must not
+                // let the full error out, so the stripped error is thrown.
                 if (!isClientError(e) || !options.errorTransform) {
                     throw e;
                 }
@@ -273,7 +278,7 @@ export class Client implements IClient {
                 try {
                     output = options.errorTransform(e);
                 } catch {
-                    throw e;
+                    throw stripClientError(e);
                 }
 
                 throw output;
