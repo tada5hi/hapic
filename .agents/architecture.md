@@ -28,7 +28,7 @@ This keeps transport concerns in one place and lets each service package focus p
 8. Response hooks  → hookManager.triggerResHook(response)           (HookName.RESPONSE)
 ```
 
-`get` / `delete` / `head` / `post` / `put` / `patch` are thin wrappers that set `method` (+ `body` for write methods) and delegate to `request`. Bodies are stripped for methods that don't support a payload (`isRequestPayloadSupported`).
+`get` / `delete` / `head` / `post` / `put` / `patch` are thin wrappers that set `method` (+ `body` for write methods) and delegate to `request`. Bodies are stripped only for `GET` and `HEAD`, which fetch refuses a body for (`isRequestPayloadSupported`); any other method, `DELETE` included, sends a body set in its config.
 
 ### Error hooks can recover
 

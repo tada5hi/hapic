@@ -371,6 +371,7 @@ export class Client implements IClient {
 
     /**
      * Delete a resource with the DELETE method.
+     * A body set in the config is sent.
      *
      * @param url
      * @param config
