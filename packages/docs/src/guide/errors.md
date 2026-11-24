@@ -201,7 +201,7 @@ const client = createClient({
 
 Both helpers keep `message`, stack, `code`, `status`, `statusText` and `response`, and return a new instance of the same class, so every guard (`isHttpResponseError`, `isNetworkError`, `isClientErrorDueTimeout`, …) still matches. A custom subclass thrown by an error hook becomes its built in class (`HttpResponseError` or `NetworkError`), since its constructor and own fields are unknown to hapic.
 
-The transform may also return an error of your own; the guards then no longer match it. If the transform throws, the client throws the untransformed error.
+The transform may also return an error of your own; the guards then no longer match it. If the transform throws, the client throws the error as `stripClientError` returns it, so a failing transform never lets the request headers, body or cause out.
 
 Only the error that leaves the client is transformed. [Error hooks](/guide/hooks#error-hooks-can-recover) still receive the full error, so a hook can read `error.request` and retry with fresh credentials. When no hook recovers, the client throws the transformed error.
 
