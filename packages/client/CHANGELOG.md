@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.2.0](https://github.com/tada5hi/hapic/compare/client-v3.1.0...client-v3.2.0) (2026-11-24)
+
+
+### Features
+
+* token exchange, upload progress, errors without credentials and transport fixes ([#1144](https://github.com/tada5hi/hapic/issues/1144)) ([8167eb5](https://github.com/tada5hi/hapic/commit/8167eb5fdd3dafcbd4aa68965c9d8c0a95bc43cb))
+
 ## [3.1.0](https://github.com/tada5hi/hapic/compare/client-v3.0.2...client-v3.1.0) (2026-11-13)
 
 

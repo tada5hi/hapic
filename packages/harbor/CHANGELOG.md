@@ -27,6 +27,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.0.1](https://github.com/tada5hi/hapic/compare/harbor-v4.0.0...harbor-v4.0.1) (2026-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.1.0 to ^3.2.0
+  * peerDependencies
+    * hapic bumped from ^3.1.0 to ^3.2.0
+
 ## [4.0.0](https://github.com/tada5hi/hapic/compare/harbor-v3.0.2...harbor-v4.0.0) (2026-11-13)
 
 

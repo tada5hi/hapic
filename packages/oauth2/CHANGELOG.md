@@ -183,6 +183,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * peerDependencies
     * hapic bumped from ^2.4.0 to ^2.5.0
 
+## [4.3.0](https://github.com/tada5hi/hapic/compare/oauth2-v4.2.0...oauth2-v4.3.0) (2026-11-24)
+
+
+### Features
+
+* **oauth2:** keep extension parameters while polling with a device code ([20dd868](https://github.com/tada5hi/hapic/commit/20dd8682c5b02759d0deca9cadcb7f4cce8cd214)), closes [#1129](https://github.com/tada5hi/hapic/issues/1129)
+* token exchange, upload progress, errors without credentials and transport fixes ([#1144](https://github.com/tada5hi/hapic/issues/1144)) ([8167eb5](https://github.com/tada5hi/hapic/commit/8167eb5fdd3dafcbd4aa68965c9d8c0a95bc43cb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * hapic bumped from ^3.1.0 to ^3.2.0
+  * peerDependencies
+    * hapic bumped from ^3.1.0 to ^3.2.0
+
 ## [4.2.0](https://github.com/tada5hi/hapic/compare/oauth2-v4.1.0...oauth2-v4.2.0) (2026-11-13)
 
 
