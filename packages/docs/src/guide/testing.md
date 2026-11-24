@@ -82,7 +82,23 @@ expect(transport.requests.at(-1)?.url).toBe('projects?page_size=10');
 | `requests` | Array of every recorded request (`RequestInit & { url, proxy }`) in dispatch order; use `requests.at(-1)` for the most recent. |
 | `reset()` | Clear the recorded requests. The `fetch` handler is left in place. |
 
-With no `fetch` handler, every dispatch resolves with an empty `200` response. To vary the response by request, branch inside the handler (e.g. on `request.url` / `request.method`); for different responses on successive calls, keep a counter in the handler's closure.
+With no `fetch` handler, every dispatch resolves with an empty `200` response.
+
+Like `fetch`, `MemoryTransport` honors the request signal, so abort and `timeout` paths can be tested without a wrapper. If the signal is already aborted, or aborts while the handler is still pending, the dispatch rejects with the signal's reason, and the client reports it as for a real request (`ECONNABORTED` for a caller abort, `ETIMEDOUT` for the `timeout` option). A response body (including a `ReadableStream` you return as `body`) errors with that reason when the signal aborts while it is read, which lets you test a slow body under `timeout`:
+
+```typescript
+const client = new Client({
+    baseURL: 'https://api.test/',
+    timeout: 50,
+    transport: new MemoryTransport({
+        fetch: () => ({ status: 200, body: new ReadableStream({ pull: () => new Promise(() => {}) }) }),
+    }),
+});
+
+await client.get('slow'); // rejects with a NetworkError, code ETIMEDOUT
+```
+
+To vary the response by request, branch inside the handler (e.g. on `request.url` / `request.method`); for different responses on successive calls, keep a counter in the handler's closure.
 
 ## Custom transports in production
 
