@@ -70,6 +70,67 @@ describe('src/transport', () => {
             expect(transport.requests.at(-1)!.body).toBeUndefined();
         });
 
+        it('should strip the body for head requests', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+
+            await client.head('thing', { body: { a: 1 } });
+
+            expect(transport.requests.at(-1)!.body).toBeUndefined();
+        });
+
+        it('should send an explicit body for delete requests', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+
+            await client.delete('items/1', { body: { lock: 3 } });
+
+            const init = transport.requests.at(-1)!;
+
+            expect(init.method).toBe('DELETE');
+            expect(init.body).toBe('{"lock":3}');
+            expect((init.headers as Headers).get(HeaderName.CONTENT_TYPE))
+                .toBe('application/json');
+        });
+
+        it('should send an explicit body for options requests', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+
+            await client.request({
+                method: 'OPTIONS',
+                url: 'thing',
+                body: { a: 1 },
+            } as any);
+
+            expect(transport.requests.at(-1)!.body).toBe('{"a":1}');
+        });
+
+        it('should send no body and no content type for a delete without body', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+
+            await client.delete('items/1');
+
+            const init = transport.requests.at(-1)!;
+
+            expect(init.body).toBeUndefined();
+            expect((init.headers as Headers).has(HeaderName.CONTENT_TYPE)).toBe(false);
+        });
+
+        it('should send no body for a delete without body under a json content type', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({
+                baseURL: 'https://api.test/',
+                transport,
+                headers: { [HeaderName.CONTENT_TYPE]: 'application/json' },
+            });
+
+            await client.delete('items/1');
+
+            expect(transport.requests.at(-1)!.body).toBeUndefined();
+        });
+
         it('should transform the body for write methods', async () => {
             const transport = new MemoryTransport();
             const client = new Client({ baseURL: 'https://api.test/', transport });
@@ -81,6 +142,30 @@ describe('src/transport', () => {
             expect(init.body).toBe('{"a":1}');
             expect((init.headers as Headers).get(HeaderName.CONTENT_TYPE))
                 .toBe('application/json');
+        });
+
+        it('should pass a ReadableStream body through unchanged', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+            const body = new ReadableStream();
+
+            await client.post('thing', body);
+
+            const init = transport.requests.at(-1)!;
+
+            expect(init.body).toBe(body);
+            expect((init.headers as Headers).has(HeaderName.CONTENT_TYPE)).toBe(false);
+        });
+
+        it('should pass a ReadableStream body of another realm through unchanged', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+            // a stream of another realm (e.g. an iframe) fails instanceof
+            const body = { [Symbol.toStringTag]: 'ReadableStream', getReader() {} };
+
+            await client.post('thing', body);
+
+            expect(transport.requests.at(-1)!.body).toBe(body);
         });
     });
 

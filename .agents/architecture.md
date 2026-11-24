@@ -20,6 +20,8 @@ This keeps transport concerns in one place and lets each service package focus p
 4. Transformers    → apply options.transform fn(s) to the body
 5. Dispatch        → fetch(url, init), with/without proxy (createProxy from node-fetch-native)
                      → `timeout` is pipeline-only: a fresh AbortSignal.timeout per dispatch, combined with the caller signal (AbortSignal.any); never in the transport's init
+                     → `onUploadProgress` is a declared TransportRequest field, never in fetch's init; FetchTransport wraps a
+                       ReadableStream body in a counting stream (duplex 'half'); any other body is sent unchanged + one final event (size known)
 6. Decode          → pick by responseType OR detectResponseType(Content-Type):
                        stream | blob | arrayBuffer | text | json (JSON.parse, falling back to text)
                      → responseTransform fn(data, headers, status) (not for streams; 4xx/5xx bodies too, where a
@@ -28,7 +30,7 @@ This keeps transport concerns in one place and lets each service package focus p
 8. Response hooks  → hookManager.triggerResHook(response)           (HookName.RESPONSE)
 ```
 
-`get` / `delete` / `head` / `post` / `put` / `patch` are thin wrappers that set `method` (+ `body` for write methods) and delegate to `request`. Bodies are stripped for methods that don't support a payload (`isRequestPayloadSupported`).
+`get` / `delete` / `head` / `post` / `put` / `patch` are thin wrappers that set `method` (+ `body` for write methods) and delegate to `request`. Bodies are stripped only for `GET` and `HEAD`, which fetch refuses a body for (`isRequestPayloadSupported`); any other method, `DELETE` included, sends a body set in its config.
 
 ### Error hooks can recover
 

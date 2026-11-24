@@ -8,11 +8,32 @@
 import type { ProxyOptions } from '../types';
 import type { ResponseType } from '../constants';
 import type { ResponseTransformer } from '../response';
+import type { UploadProgressListener } from '../transport/types';
 
 export type RequestInit = globalThis.RequestInit;
 export type RequestInfo = globalThis.RequestInfo;
 
 export type RequestTransformer = (data: any, headers: Headers) => any;
+
+/**
+ * What the error the client finally throws carries about the failed request.
+ */
+export type RequestErrorOptions = {
+    /**
+     * Keep the resolved request options on error.request: the merged headers
+     * (incl. the Authorization header), the body and the other options.
+     * With false, error.request holds the method and the url only.
+     *
+     * default: true
+     */
+    request?: boolean,
+    /**
+     * Keep the transport's error as error.cause.
+     *
+     * default: true
+     */
+    cause?: boolean,
+};
 export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`> = Omit<RequestInit, 'body'> & {
     /**
      * The base URL for the HTTP endpoints.
@@ -69,6 +90,27 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      * default: undefined (no timeout)
      */
     timeout?: number,
+    /**
+     * Leave the request headers and body, and/or the cause, out of the error
+     * the client throws (e.g. { request: false, cause: false }), so logging
+     * or serializing it does not expose the Authorization header or a
+     * request body. Method, url, message and response are kept.
+     * Error hooks still receive the full error; only the error thrown when
+     * no hook recovers is reduced.
+     *
+     * default: { request: true, cause: true }
+     */
+    errors?: RequestErrorOptions,
+    /**
+     * Report the progress of sending the request body: called with the bytes
+     * sent so far (loaded) and the body size in bytes (total, when known).
+     * A ReadableStream body reports while fetch reads it; any other body
+     * reports a single event once it is sent (when its size is known).
+     * An error thrown by the listener is ignored.
+     *
+     * default: undefined
+     */
+    onUploadProgress?: UploadProgressListener,
     /**
      * Proxy agent configuration (Node.js only).
      */

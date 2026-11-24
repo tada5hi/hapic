@@ -24,6 +24,8 @@ import type {
     TokenRefreshTokenGrantParameters,
     TokenRevokeParameters,
     TokenRobotCredentialsGrantParameters,
+    TokenTokenExchangeExtensionParameters,
+    TokenTokenExchangeParameters,
 } from './types';
 import {
     buildRequestOptionsForTokenAPIRequest,
@@ -101,6 +103,28 @@ export class TokenAPI extends BaseAPI {
         return this.create({
             grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
             ...parameters,
+        }, options);
+    }
+
+    /**
+     * Exchange a token for another one (RFC 8693).
+     *
+     * Parameters beyond RFC 8693 (e.g. Authup's `cap`) are typed by
+     * EXTENSION, which is inferred from the object passed.
+     * The scope of the client options is not applied.
+     *
+     * @param parameters
+     * @param options
+     */
+    async createWithTokenExchange<
+        EXTENSION extends TokenTokenExchangeExtensionParameters = Record<never, never>,
+    >(
+        parameters: TokenTokenExchangeParameters<EXTENSION>,
+        options: TokenBaseOptions = {},
+    ): Promise<TokenGrantResponse> {
+        return this.create({
+            ...parameters,
+            grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
         }, options);
     }
 
@@ -213,6 +237,10 @@ export class TokenAPI extends BaseAPI {
             tokenResponse.mac_algorithm = data.mac_algorithm;
         }
 
+        if (typeof data.issued_token_type === 'string') {
+            tokenResponse.issued_token_type = data.issued_token_type;
+        }
+
         return tokenResponse;
     }
 
@@ -292,7 +320,8 @@ export class TokenAPI extends BaseAPI {
         if (
             parameters.grant_type !== 'authorization_code' &&
             parameters.grant_type !== 'robot_credentials' &&
-            parameters.grant_type !== 'urn:ietf:params:oauth:grant-type:device_code'
+            parameters.grant_type !== 'urn:ietf:params:oauth:grant-type:device_code' &&
+            parameters.grant_type !== 'urn:ietf:params:oauth:grant-type:token-exchange'
         ) {
             if (!parameters.scope && this.options.scope) {
                 parameters.scope = this.options.scope;

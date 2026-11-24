@@ -7,6 +7,19 @@
 
 import type { ProxyOptions } from '../types';
 
+export type UploadProgressEvent = {
+    /**
+     * The bytes of the request body sent so far.
+     */
+    loaded: number,
+    /**
+     * The size of the request body in bytes, when known.
+     */
+    total?: number
+};
+
+export type UploadProgressListener = (event: UploadProgressEvent) => void;
+
 /**
  * A fully-resolved, ready-to-dispatch request handed to the transport.
  *
@@ -17,7 +30,12 @@ import type { ProxyOptions } from '../types';
  */
 export type TransportRequest = RequestInit & {
     url: string,
-    proxy?: ProxyOptions | boolean
+    proxy?: ProxyOptions | boolean,
+    /**
+     * Report the bytes of the request body sent so far.
+     * Pipeline-only for fetch: a transport never passes it on to `fetch`.
+     */
+    onUploadProgress?: UploadProgressListener
 };
 
 /**

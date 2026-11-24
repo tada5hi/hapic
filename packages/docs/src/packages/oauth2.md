@@ -47,7 +47,7 @@ The package exports the usual registry (`createClient`, `useClient`, `setClient`
 | Property | Class | Key methods |
 |----------|-------|-------------|
 | `client.authorize` | `AuthorizeAPI` | `buildURL(params?)` |
-| `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `createWithDeviceCode` · `pollWithDeviceCode` · `create` · `introspect` · `revoke` |
+| `client.token` | `TokenAPI` | `createWithClientCredentials` · `createWithPassword` · `createWithAuthorizationCode` · `createWithRefreshToken` · `createWithDeviceCode` · `pollWithDeviceCode` · `createWithTokenExchange` · `create` · `introspect` · `revoke` |
 | `client.userInfo` | `UserInfoAPI` | `get(header?, options?)` |
 | `client.deviceAuthorization` | `DeviceAuthorizationAPI` | `create(params?, options?)` |
 
@@ -117,6 +117,25 @@ const refreshed = await client.token.createWithRefreshToken({
     refresh_token: token.refresh_token!,
 });
 ```
+
+### Token exchange
+
+RFC 8693 trades a token for another one, e.g. a user's access token for a token of another audience. `TokenTypeIdentifier` holds the token type URIs (`ACCESS_TOKEN`, `REFRESH_TOKEN`, `ID_TOKEN`, `SAML1`, `SAML2`, `JWT`).
+
+```typescript
+import { TokenTypeIdentifier } from '@hapic/oauth2';
+
+const token = await client.token.createWithTokenExchange({
+    subject_token: userToken,
+    subject_token_type: TokenTypeIdentifier.ACCESS_TOKEN,
+    audience: ['api-a', 'api-b'], // → audience=api-a&audience=api-b
+    // parameters of the authorization server beyond RFC 8693
+    cap: ['project:read', 'node:read'], // → cap=project:read node:read
+    expires_in: 60,
+});
+```
+
+`actor_token` requires `actor_token_type`; `requested_token_type`, `resource` and `scope` are optional. An `audience` or `resource` array repeats the parameter, any other array is joined with spaces. Keys beyond RFC 8693 are sent as extension parameters with a string, number, boolean or string array value; their type is inferred from the object, or pinned with `createWithTokenExchange<{ cap: string[] }>(…)`. The `scope` of the client options is not applied. The response carries `issued_token_type` when the server sends it.
 
 ### Device authorization
 

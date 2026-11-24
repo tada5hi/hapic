@@ -15,6 +15,7 @@ import { FetchTransport, isTransport } from './transport';
 import type { ClientOptions, ClientOptionsInput, IClient } from './types';
 import type {
     HookErrorFn,
+    HookErrorRecovery,
     HookFn,
     HookReqFn,
     HookResFn,
@@ -38,7 +39,8 @@ import {
 } from './request';
 import type { RequestSignals } from './request/resolve';
 import { resolveRequestAbort, resolveRequestOptions, resolveRequestSignals } from './request/resolve';
-import { createClientError, toError } from './error';
+import { createClientError, isClientError, toError } from './error';
+import { redactClientError } from './error/helpers/redact';
 import type { AuthorizationHeader } from './header';
 import { HeaderName, stringifyAuthorizationHeader } from './header';
 import { markInstanceof } from './utils';
@@ -252,10 +254,22 @@ export class Client implements IClient {
 
             // The hook manager owns the recover-or-rethrow decision: it returns
             // a classified recovery (or throws the error when nothing recovers).
-            const recovery = await this.hookManager.triggerErrorHook(
-                step === 'request' ? HookName.REQUEST_ERROR : HookName.RESPONSE_ERROR,
-                error,
-            );
+            let recovery : HookErrorRecovery;
+
+            try {
+                recovery = await this.hookManager.triggerErrorHook(
+                    step === 'request' ? HookName.REQUEST_ERROR : HookName.RESPONSE_ERROR,
+                    error,
+                );
+            } catch (e) {
+                // Hooks saw the full error; the error that leaves the client
+                // is reduced to what the errors option keeps.
+                if (!isClientError(e) || !options.errors) {
+                    throw e;
+                }
+
+                throw redactClientError(e, options.errors);
+            }
 
             if (recovery.type === 'response') {
                 return recovery.response as R;
@@ -272,8 +286,9 @@ export class Client implements IClient {
                 delete options.body;
             }
 
-            // Strip the pipeline-only options; the remainder (url, proxy and the
-            // merged fetch init) is the flattened TransportRequest.
+            // Strip the pipeline-only options; the remainder (url, proxy, the
+            // upload listener and the merged fetch init) is the flattened
+            // TransportRequest.
             const {
                 baseURL,
                 responseType,
@@ -283,6 +298,7 @@ export class Client implements IClient {
                 transform,
                 timeout,
                 signal,
+                errors,
                 ...transportRequest
             } = options;
 
@@ -371,6 +387,7 @@ export class Client implements IClient {
 
     /**
      * Delete a resource with the DELETE method.
+     * A body set in the config is sent.
      *
      * @param url
      * @param config

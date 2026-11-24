@@ -9,13 +9,13 @@ All of them return a `Promise<Response>` whose `data` holds the decoded body. Th
 | Method | Signature | Sends a body? |
 |--------|-----------|:-------------:|
 | `get`    | `get(url, config?)`        | — |
-| `delete` | `delete(url, config?)`     | — |
+| `delete` | `delete(url, config?)`     | if `config.body` is set |
 | `head`   | `head(url, config?)`       | — |
 | `post`   | `post(url, body?, config?)`| ✓ |
 | `put`    | `put(url, body?, config?)` | ✓ |
 | `patch`  | `patch(url, body?, config?)`| ✓ |
 
-For methods that don't carry a payload (`get` / `delete` / `head`), any body is stripped before dispatch.
+`get` and `head` never send a body: fetch refuses one for `GET` and `HEAD`, so any body is stripped before dispatch. Every other method, `delete` and `OPTIONS` included, sends a body you set explicitly.
 
 ### Reading data — `GET`
 
@@ -46,6 +46,13 @@ await useClient().patch('users/3', { name: 'Hans P.' });
 
 ```typescript
 await useClient().delete('users/3');
+```
+
+A `DELETE` has no body by default. Some APIs read one (a lock, bulk delete ids); pass it in the config and it is serialized like a `POST` body:
+
+```typescript
+await useClient().delete('items/1', { body: { lock: 3 } });
+// → DELETE items/1, body {"lock":3}, Content-Type: application/json
 ```
 
 ### Checking — `HEAD`
@@ -104,6 +111,37 @@ const { data } = await useClient().get('report.csv', {
     timeout: 5_000,
 });
 ```
+
+## Upload progress
+
+Pass `onUploadProgress` to follow how much of the request body has been sent, e.g. for a progress bar. It is called with `loaded` (the bytes sent so far) and `total` (the body size in bytes, `undefined` when it is not known):
+
+```typescript
+import { openAsBlob } from 'node:fs';
+
+const file = await openAsBlob('video.mp4');
+
+// a stream body reports while it is sent
+await useClient().post('media', file.stream(), {
+    headers: { 'content-length': `${file.size}` },
+    onUploadProgress: ({ loaded, total }) => {
+        bar.value = total ? loaded / total : 0;
+    },
+    signal: controller.signal,
+});
+```
+
+Only the dispatch changes: the base URL, headers, hooks (a hook retrying the request keeps the listener, so the retry reports progress too), `timeout`, `signal` and response decoding work as for any request. How often the listener is called depends on the body:
+
+| Body | Events |
+|------|--------|
+| `ReadableStream` | One per chunk while `fetch` reads it, `total` from a `content-length` header you set. The request is sent with `duplex: 'half'`. |
+| string, `Blob`, `ArrayBuffer` (or a view), `URLSearchParams` | One (`loaded` = `total`) once the body is sent. |
+| `FormData` | None, its size is not known before it is sent. |
+
+Every other body is sent exactly as without a listener, so redirects, `keepalive` and a custom `fetch` behave the same. A request without a body reports nothing, and an error thrown by the listener is ignored.
+
+In browsers, `fetch` sends a stream body only in Chromium and only over HTTP/2; Firefox and Safari do not support it.
 
 ## The generic `request`
 

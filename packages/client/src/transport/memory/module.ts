@@ -5,8 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-// node-fetch-native is used as a fallback when no global Response is available.
-import { Response as NodeResponse } from 'node-fetch-native';
 import { Headers } from '../../fetch';
 import { isResponse } from '../../response';
 import {
@@ -17,9 +15,10 @@ import {
     isObject,
     isStream,
     isURLSearchParams,
+    isWebStream,
     markInstanceof,
 } from '../../utils';
-import { globalContext } from '../../utils/global-this.ts';
+import { createResponse } from '../helpers';
 import type { ITransport, TransportRequest } from '../types';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type {
@@ -27,9 +26,6 @@ import type {
     MemoryTransportFetch,
     MemoryTransportOptions,
 } from './types';
-
-const ResponseCtor : typeof NodeResponse = (globalContext.Response as typeof NodeResponse | undefined) ||
-    NodeResponse;
 
 function shouldSerializeBody(body: unknown) : boolean {
     if (!isObject(body) && !Array.isArray(body)) {
@@ -46,7 +42,106 @@ function shouldSerializeBody(body: unknown) : boolean {
         !isArrayBuffer(body) &&
         !isFormData(body) &&
         !isURLSearchParams(body) &&
-        !isStream(body);
+        !isStream(body) &&
+        !isWebStream(body);
+}
+
+/**
+ * Tie the response body to the signal: a read errors with the signal's reason
+ * once it aborts, as a `fetch` body does. Status, status text and headers are
+ * kept. The abort listener is removed once the body is done, errored or
+ * cancelled.
+ */
+function bindResponseSignal(response: Response, signal: AbortSignal) : Response {
+    // a node stream body (a node-fetch-native/node response) is returned as it is.
+    if (!isWebStream(response.body) || response.bodyUsed || response.body.locked) {
+        return response;
+    }
+
+    const reader = response.body.getReader();
+    let settled = false;
+    let onAbort : () => void = () => {};
+
+    const settle = () => {
+        settled = true;
+        signal.removeEventListener('abort', onAbort);
+    };
+
+    const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+            onAbort = () => {
+                if (settled) {
+                    return;
+                }
+
+                settle();
+                controller.error(signal.reason);
+                reader.cancel(signal.reason).catch(() => {});
+            };
+
+            signal.addEventListener('abort', onAbort, { once: true });
+        },
+        async pull(controller) {
+            try {
+                const { done, value } = await reader.read();
+
+                if (settled) {
+                    return;
+                }
+
+                if (done) {
+                    settle();
+                    controller.close();
+
+                    return;
+                }
+
+                controller.enqueue(value);
+            } catch (e) {
+                if (settled) {
+                    return;
+                }
+
+                settle();
+                controller.error(e);
+            }
+        },
+        cancel(reason) {
+            settle();
+
+            return reader.cancel(reason);
+        },
+    });
+
+    const output = createResponse(body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+    });
+
+    // a constructed Response has an empty url, is never redirected and of
+    // the default type: keep what the handler returned.
+    Object.defineProperties(output, {
+        url: { value: response.url, configurable: true },
+        redirected: { value: response.redirected, configurable: true },
+        type: { value: response.type, configurable: true },
+    });
+
+    return output;
+}
+
+/**
+ * Cancel the body of a handler result nobody receives (the request aborted),
+ * so the cleanup of a streaming fixture runs.
+ */
+function discardResult(pending: Promise<Response | MemoryResponseInit>) : void {
+    pending.then((result) => {
+        const { body } = result as { body?: unknown };
+
+        if (isWebStream(body) && !body.locked) {
+            body.cancel().catch(() => {});
+        }
+    }, () => {});
 }
 
 /**
@@ -75,14 +170,56 @@ export class MemoryTransport implements ITransport {
         return this;
     }
 
+    /**
+     * Answer the request with the `fetch` handler. Like `fetch`, it honors
+     * `request.signal`: an aborted signal rejects with its reason (also while
+     * the handler is pending), and the returned body errors with that reason
+     * once the signal aborts.
+     */
     async dispatch(request: TransportRequest) : Promise<Response> {
         this.requests.push(request);
 
-        const result = this.fetch ?
-            await this.fetch(request) :
-            { status: 200 };
+        const { signal } = request;
 
-        return this.toResponse(result);
+        if (!signal) {
+            return this.toResponse(await this.handle(request));
+        }
+
+        signal.throwIfAborted();
+
+        let onAbort : () => void = () => {};
+        const aborted = new Promise<never>((_resolve, reject) => {
+            onAbort = () => reject(signal.reason);
+            signal.addEventListener('abort', onAbort, { once: true });
+        });
+
+        const pending = this.handle(request);
+
+        try {
+            const result = await Promise.race([pending, aborted]);
+
+            // the handler may have won the race although the signal aborted
+            // meanwhile (e.g. synchronously inside the handler).
+            signal.throwIfAborted();
+
+            return bindResponseSignal(this.toResponse(result), signal);
+        } catch (e) {
+            if (signal.aborted) {
+                discardResult(pending);
+            }
+
+            throw e;
+        } finally {
+            signal.removeEventListener('abort', onAbort);
+        }
+    }
+
+    protected async handle(request: TransportRequest) : Promise<Response | MemoryResponseInit> {
+        if (!this.fetch) {
+            return { status: 200 };
+        }
+
+        return this.fetch(request);
     }
 
     protected toResponse(input: Response | MemoryResponseInit) : Response {
@@ -101,10 +238,10 @@ export class MemoryTransport implements ITransport {
             body = JSON.stringify(body);
         }
 
-        return new ResponseCtor(body, {
+        return createResponse(body, {
             status: input.status ?? 200,
             statusText: input.statusText,
             headers,
-        }) as unknown as Response;
+        });
     }
 }
