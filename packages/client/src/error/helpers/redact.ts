@@ -33,14 +33,17 @@ function resolveCtor(error: ClientError) : ClientErrorCtor {
 /**
  * A copy of the response without its url (a fetch response carries the
  * request's query there). The input is not changed, so the error the hooks
- * saw keeps it. The decoded data is carried over; the body was read already.
+ * saw keeps it. The decoded data is carried over, an unread body too.
  */
 function redactResponse<T>(response: Response<T>) : Response<T> {
     if (typeof response.url !== 'string' || response.url.length === 0) {
         return response;
     }
 
-    const output = new ResponseCtor(null, {
+    // an unread body (responseType stream) moves to the copy; a read one
+    // is carried over as the decoded data only.
+    const body = response.body && !response.bodyUsed ? response.body : null;
+    const output = new ResponseCtor(body as any, {
         status: response.status,
         statusText: response.statusText,
         headers: response.headers,

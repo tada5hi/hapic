@@ -97,6 +97,21 @@ function expectNoLeak(error: ClientError) {
 }
 
 describe('src/error/redaction', () => {
+    it('should keep an unread stream body on the reduced response', async () => {
+        const { client } = createNotFoundClient({ errors: { request: false, cause: false } });
+
+        let error : ClientError | undefined;
+
+        try {
+            await client.get(`roles/1?${QUERY}`, { responseType: 'stream' });
+        } catch (e) {
+            error = e as ClientError;
+        }
+
+        expect(error!.response!.url).toBe('');
+        expect(await new Response(error!.response!.body).json()).toEqual({ message: 'missing' });
+    });
+
     it('should leave the error the hook saw untouched', async () => {
         const { client } = createNotFoundClient({ errors: { request: false, cause: false } });
         let seen : ClientError | undefined;
