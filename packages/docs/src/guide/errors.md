@@ -182,7 +182,7 @@ try {
 }
 ```
 
-- `request: false`: `request` is `{ method }` only, and `message` is `<status> <statusText>`, or the error `code` when no response arrived (e.g. `'ECONNRESET'`). The URL is not in the message, the stack or `response.url`.
+- `request: false`: `request` is `{ method, url: '' }` only, and `message` is `<status> <statusText>`, or the error `code` when no response arrived (e.g. `'ECONNRESET'`). The URL is not in the message, the stack or `response.url` (the thrown error gets a copy of the response; the one error hooks saw keeps its URL).
 - `cause: false`: the error has no `cause`, so the transport's error (which may name the URL) is not serialized with it.
 
 `code`, `status`, `statusText` and `response` stay, and the error is a new instance of the same class, so every guard (`isHttpResponseError`, `isNetworkError`, `isClientErrorDueTimeout`, …) still matches.

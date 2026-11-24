@@ -97,6 +97,32 @@ function expectNoLeak(error: ClientError) {
 }
 
 describe('src/error/redaction', () => {
+    it('should leave the error the hook saw untouched', async () => {
+        const { client } = createNotFoundClient({ errors: { request: false, cause: false } });
+        let seen : ClientError | undefined;
+
+        client.on(HookName.RESPONSE_ERROR, (err) => {
+            seen = err;
+
+            throw err;
+        });
+
+        let error : ClientError | undefined;
+
+        try {
+            await client.get(`roles/1?${QUERY}`);
+        } catch (e) {
+            error = e as ClientError;
+        }
+
+        expect(error).toBeDefined();
+        expect(error!.response!.url).toBe('');
+        expect(error!.response!.status).toBe(404);
+        expect(error!.response!.data).toEqual({ message: 'missing' });
+        expect(seen!.response!.url).toContain(QUERY);
+        expect(seen!.request.url).toContain(QUERY);
+    });
+
     describe('default', () => {
         it('should keep the request and the url in the message', async () => {
             const { client } = createNotFoundClient();
@@ -124,7 +150,7 @@ describe('src/error/redaction', () => {
 
             expect(error.message).toBe('404 Not Found');
             expect(error.stack!.split('\n')[0]).toBe('HttpResponseError: 404 Not Found');
-            expect(error.request).toEqual({ method: 'GET' });
+            expect(error.request).toEqual({ method: 'GET', url: '' });
             expect(error.status).toBe(404);
             expect(error.statusText).toBe('Not Found');
             expect(error.response!.status).toBe(404);
@@ -152,7 +178,7 @@ describe('src/error/redaction', () => {
             expect(isClientErrorDueNetworkIssue(error)).toBe(true);
             expect(error.code).toBe(ErrorCode.CONNECTION_CLOSED);
             expect(error.message).toBe(ErrorCode.CONNECTION_CLOSED);
-            expect(error.request).toEqual({ method: 'POST' });
+            expect(error.request).toEqual({ method: 'POST', url: '' });
             expect(error.response).toBeUndefined();
             expect(error.cause).toBeUndefined();
         });

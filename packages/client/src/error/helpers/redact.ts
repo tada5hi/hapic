@@ -5,11 +5,16 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { Response as NodeResponse } from 'node-fetch-native';
 import type { RequestErrorOptions, RequestOptions } from '../../request';
 import type { Response } from '../../response';
 import { HttpResponseError, NetworkError } from '../entities';
 import { ClientError } from '../module';
+import { globalContext } from '../../utils/global-this.ts';
 import type { ClientErrorContext } from '../types';
+
+const ResponseCtor : typeof NodeResponse = (globalContext.Response as typeof NodeResponse | undefined) ||
+    NodeResponse;
 
 type ClientErrorCtor = new (ctx: ClientErrorContext) => ClientError;
 
@@ -26,24 +31,39 @@ function resolveCtor(error: ClientError) : ClientErrorCtor {
 }
 
 /**
- * Hide the url of a fetch response, which carries the request's query.
+ * A copy of the response without its url (a fetch response carries the
+ * request's query there). The input is not changed, so the error the hooks
+ * saw keeps it. The decoded data is carried over; the body was read already.
  */
 function redactResponse<T>(response: Response<T>) : Response<T> {
     if (typeof response.url !== 'string' || response.url.length === 0) {
         return response;
     }
 
-    const descriptor = Object.getOwnPropertyDescriptor(response, 'url');
+    const output = new ResponseCtor(null, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+    }) as unknown as Response<T>;
 
-    if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(response, 'url', {
-            configurable: true,
-            enumerable: descriptor ? descriptor.enumerable : false,
-            value: '',
-        });
-    }
+    Object.defineProperty(output, 'url', {
+        configurable: true,
+        enumerable: false,
+        value: '',
+    });
 
-    return response;
+    let { data } = response;
+
+    Object.defineProperty(output, 'data', {
+        get() {
+            return data;
+        },
+        set(value: T) {
+            data = value;
+        },
+    });
+
+    return output;
 }
 
 /**
@@ -69,7 +89,7 @@ export function redactClientError<T = any>(
     let { response } = error;
 
     if (!keepRequest) {
-        request = { method: error.request?.method } as RequestOptions;
+        request = { method: error.request?.method, url: '' } as RequestOptions;
 
         if (response) {
             message = `${response.status} ${response.statusText || ''}`.trim();

@@ -22,7 +22,7 @@ export type RequestErrorOptions = {
      * Keep the resolved request options (url with query, merged headers incl.
      * the Authorization header, body) on error.request and the url in the
      * message and stack.
-     * With false, error.request holds the method only and the message is
+     * With false, error.request holds the method and an empty url only and the message is
      * `<status> <statusText>` (or the error code when no response arrived).
      *
      * default: true
