@@ -30,6 +30,18 @@ export function isStream(input: unknown) : boolean {
         typeof input.pipe === 'function';
 }
 
+export function isWebStream(input: unknown) : input is ReadableStream<Uint8Array> {
+    if (
+        typeof ReadableStream !== 'undefined' &&
+        input instanceof ReadableStream
+    ) {
+        return true;
+    }
+
+    // a stream from another realm (e.g. an iframe)
+    return kindOfTest('ReadableStream', input);
+}
+
 export function isFormData(input: unknown) : input is FormData {
     if (
         typeof FormData !== 'undefined' &&

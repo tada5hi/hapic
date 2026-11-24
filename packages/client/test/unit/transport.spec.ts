@@ -143,6 +143,30 @@ describe('src/transport', () => {
             expect((init.headers as Headers).get(HeaderName.CONTENT_TYPE))
                 .toBe('application/json');
         });
+
+        it('should pass a ReadableStream body through unchanged', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+            const body = new ReadableStream();
+
+            await client.post('thing', body);
+
+            const init = transport.requests.at(-1)!;
+
+            expect(init.body).toBe(body);
+            expect((init.headers as Headers).has(HeaderName.CONTENT_TYPE)).toBe(false);
+        });
+
+        it('should pass a ReadableStream body of another realm through unchanged', async () => {
+            const transport = new MemoryTransport();
+            const client = new Client({ baseURL: 'https://api.test/', transport });
+            // a stream of another realm (e.g. an iframe) fails instanceof
+            const body = { [Symbol.toStringTag]: 'ReadableStream', getReader() {} };
+
+            await client.post('thing', body);
+
+            expect(transport.requests.at(-1)!.body).toBe(body);
+        });
     });
 
     describe('decode', () => {

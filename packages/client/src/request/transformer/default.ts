@@ -14,6 +14,7 @@ import {
     isSerializable,
     isStream,
     isURLSearchParams,
+    isWebStream,
     serialize,
 } from '../../utils';
 import type { RequestTransformer } from '../types';
@@ -29,7 +30,8 @@ export function createDefaultRequestTransformer() : RequestTransformer {
             isFile(data) ||
             isBlob(data) ||
             isFormData(data) ||
-            isStream(data)
+            isStream(data) ||
+            isWebStream(data)
         ) {
             return data;
         }
