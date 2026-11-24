@@ -5,8 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-// node-fetch-native is used as a fallback when no global Response is available.
-import { Response as NodeResponse } from 'node-fetch-native';
 import { Headers } from '../../fetch';
 import { isResponse } from '../../response';
 import {
@@ -17,9 +15,10 @@ import {
     isObject,
     isStream,
     isURLSearchParams,
+    isWebStream,
     markInstanceof,
 } from '../../utils';
-import { globalContext } from '../../utils/global-this.ts';
+import { createResponse } from '../helpers';
 import type { ITransport, TransportRequest } from '../types';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type {
@@ -27,9 +26,6 @@ import type {
     MemoryTransportFetch,
     MemoryTransportOptions,
 } from './types';
-
-const ResponseCtor : typeof NodeResponse = (globalContext.Response as typeof NodeResponse | undefined) ||
-    NodeResponse;
 
 function shouldSerializeBody(body: unknown) : boolean {
     if (!isObject(body) && !Array.isArray(body)) {
@@ -48,11 +44,6 @@ function shouldSerializeBody(body: unknown) : boolean {
         !isURLSearchParams(body) &&
         !isStream(body) &&
         !isWebStream(body);
-}
-
-function isWebStream(body: unknown) : body is ReadableStream {
-    return typeof ReadableStream !== 'undefined' &&
-        body instanceof ReadableStream;
 }
 
 /**
@@ -122,11 +113,11 @@ function bindResponseSignal(response: Response, signal: AbortSignal) : Response 
         },
     });
 
-    const output = new ResponseCtor(body as any, {
+    const output = createResponse(body, {
         status: response.status,
         statusText: response.statusText,
         headers: response.headers,
-    }) as unknown as Response;
+    });
 
     // a constructed Response has an empty url, is never redirected and of
     // the default type: keep what the handler returned.
@@ -247,10 +238,10 @@ export class MemoryTransport implements ITransport {
             body = JSON.stringify(body);
         }
 
-        return new ResponseCtor(body, {
+        return createResponse(body, {
             status: input.status ?? 200,
             statusText: input.statusText,
             headers,
-        }) as unknown as Response;
+        });
     }
 }

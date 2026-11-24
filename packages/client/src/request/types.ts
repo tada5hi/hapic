@@ -8,6 +8,7 @@
 import type { ProxyOptions } from '../types';
 import type { ResponseType } from '../constants';
 import type { ResponseTransformer } from '../response';
+import type { UploadProgressListener } from '../transport/types';
 
 export type RequestInit = globalThis.RequestInit;
 export type RequestInfo = globalThis.RequestInfo;
@@ -100,6 +101,16 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      * default: { request: true, cause: true }
      */
     errors?: RequestErrorOptions,
+    /**
+     * Report the progress of sending the request body: called with the bytes
+     * sent so far (loaded) and the body size in bytes (total, when known).
+     * A ReadableStream body reports while fetch reads it; any other body
+     * reports a single event once it is sent (when its size is known).
+     * An error thrown by the listener is ignored.
+     *
+     * default: undefined
+     */
+    onUploadProgress?: UploadProgressListener,
     /**
      * Proxy agent configuration (Node.js only).
      */

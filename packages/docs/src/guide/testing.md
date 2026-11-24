@@ -23,7 +23,12 @@ interface ITransport {
     // request flattens RequestInit (merged headers, transformed body, method) alongside the
     // base-/query-resolved url. Must resolve with a raw Response (body unread) and must NOT
     // throw on a 4xx/5xx status.
-    dispatch(request: RequestInit & { url: string, proxy?: ProxyOptions | boolean }): Promise<Response>;
+    dispatch(request: RequestInit & {
+        url: string,
+        proxy?: ProxyOptions | boolean,
+        onUploadProgress?: (event: { loaded: number, total?: number }) => void,
+        responseType?: 'json' | 'text' | 'blob' | 'arrayBuffer' | 'stream', // a hint; never sent to fetch
+    }): Promise<Response>;
 }
 ```
 

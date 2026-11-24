@@ -6,9 +6,10 @@
  */
 
 import type { ProxyOptions } from '../../types';
-import { createProxy, fetch } from '../../fetch';
-import { markInstanceof } from '../../utils';
+import { Headers, createProxy, fetch } from '../../fetch';
+import { isWebStream, markInstanceof } from '../../utils';
 import { globalContext } from '../../utils/global-this.ts';
+import { countUploadProgress, getBodySize, notifyUploadProgress } from '../helpers';
 import type { ITransport, TransportRequest } from '../types';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type { FetchTransportFn, FetchTransportOptions } from './types';
@@ -36,7 +37,43 @@ export class FetchTransport implements ITransport {
         markInstanceof(this, CLIENT_TRANSPORT_INSTANCE);
     }
 
+    /**
+     * Send the request; with an upload progress listener, a stream body is
+     * counted while fetch reads it, any other body reports one event once
+     * it is sent (when its size is known).
+     */
     async dispatch(request: TransportRequest) : Promise<Response> {
+        const { onUploadProgress, ...input } = request;
+
+        if (!onUploadProgress) {
+            return this.send(input);
+        }
+
+        if (isWebStream(input.body)) {
+            const length = Number.parseInt(new Headers(input.headers).get('content-length') || '', 10);
+
+            return this.send({
+                ...input,
+                body: countUploadProgress(
+                    input.body,
+                    onUploadProgress,
+                    Number.isNaN(length) ? undefined : length,
+                ),
+                duplex: 'half',
+            } as TransportRequest);
+        }
+
+        const total = getBodySize(input.body);
+        const response = await this.send(input);
+
+        if (typeof total === 'number') {
+            notifyUploadProgress(onUploadProgress, { loaded: total, total });
+        }
+
+        return response;
+    }
+
+    protected async send(request: TransportRequest) : Promise<Response> {
         const {
             url,
             proxy,
