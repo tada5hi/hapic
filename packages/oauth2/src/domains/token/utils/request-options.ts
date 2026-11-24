@@ -114,8 +114,8 @@ export function buildRequestOptionsForTokenAPIRequest(
 }
 
 /**
- * Build a form body: non empty strings as is, arrays joined with spaces,
- * everything else left out.
+ * Build a form body: non empty strings as is, numbers and booleans
+ * stringified, arrays joined with spaces, everything else left out.
  */
 export function buildURLSearchParamsForTokenAPIRequest(
     input: Record<string, any>,
@@ -128,6 +128,8 @@ export function buildURLSearchParamsForTokenAPIRequest(
 
         if (typeof value === 'string' && !!value) {
             urlSearchParams.append(key, value);
+        } else if (typeof value === 'number' || typeof value === 'boolean') {
+            urlSearchParams.append(key, String(value));
         } else if (Array.isArray(value)) {
             const str = value.filter((el) => el).join(' ');
 
