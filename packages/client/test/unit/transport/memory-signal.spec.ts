@@ -70,6 +70,22 @@ function trackListeners(signal: AbortSignal) : () => number {
 }
 
 describe('src/transport/memory (signal)', () => {
+    it('should reject when the handler aborts the signal before returning', async () => {
+        const controller = new AbortController();
+        const reason = new Error('aborted inside the handler');
+        const transport = new MemoryTransport({
+            fetch: () => {
+                controller.abort(reason);
+
+                return { body: createEndlessStream() };
+            },
+        });
+
+        const error = await catchError(dispatchWith(transport, controller.signal));
+
+        expect(error).toBe(reason);
+    });
+
     describe('pending fetch handler', () => {
         it('should reject a caller abort as ECONNABORTED', async () => {
             const client = new Client({

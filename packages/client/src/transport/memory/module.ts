@@ -180,6 +180,10 @@ export class MemoryTransport implements ITransport {
         try {
             const result = await Promise.race([this.handle(request), aborted]);
 
+            // the handler may have won the race although the signal aborted
+            // meanwhile (e.g. synchronously inside the handler).
+            signal.throwIfAborted();
+
             return bindResponseSignal(this.toResponse(result), signal);
         } finally {
             signal.removeEventListener('abort', onAbort);

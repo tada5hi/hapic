@@ -96,7 +96,9 @@ const client = new Client({
 });
 
 await client.get('slow'); // rejects with a NetworkError, code ETIMEDOUT
-``` To vary the response by request, branch inside the handler (e.g. on `request.url` / `request.method`); for different responses on successive calls, keep a counter in the handler's closure.
+```
+
+To vary the response by request, branch inside the handler (e.g. on `request.url` / `request.method`); for different responses on successive calls, keep a counter in the handler's closure.
 
 ## Custom transports in production
 
