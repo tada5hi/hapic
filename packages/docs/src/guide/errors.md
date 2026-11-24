@@ -160,6 +160,37 @@ The code is decided first by **which signal** fired. The timeout hapic armed ans
 | caller `signal` aborted with a `TimeoutError` (`AbortSignal.timeout(...)`) | `'ETIMEDOUT'` | `true` | `true` |
 | caller `signal` aborted (any other reason) | `'ECONNABORTED'` | `false` | `false` |
 
+## Errors without the request
+
+By default a `ClientError` keeps everything about the failed request: `request` holds the resolved options (the URL with its query, the merged headers with the `Authorization` header, the body), `cause` holds the transport's error, and `message` (and so `stack`) names the method and the URL. An application that logs or serializes the error carries all of that along.
+
+The `errors` option leaves it out:
+
+```typescript
+const client = createClient({
+    baseURL: 'https://auth.example/',
+    errors: { request: false, cause: false },
+});
+
+try {
+    await client.get('roles/1?q=1'); // answers 404
+} catch (error) {
+    error.message;   // '404 Not Found'
+    error.request;   // { method: 'GET' }
+    error.cause;     // undefined
+    error.response;  // status, headers and decoded data are kept
+}
+```
+
+- `request: false`: `request` is `{ method }` only, and `message` is `<status> <statusText>`, or the error `code` when no response arrived (e.g. `'ECONNRESET'`). The URL is not in the message, the stack or `response.url`.
+- `cause: false`: the error has no `cause`, so the transport's error (which may name the URL) is not serialized with it.
+
+`code`, `status`, `statusText` and `response` stay, and the error is a new instance of the same class, so every guard (`isHttpResponseError`, `isNetworkError`, `isClientErrorDueTimeout`, …) still matches.
+
+Only the error that leaves the client is reduced. [Error hooks](/guide/hooks#error-hooks-can-recover) still receive the full error, so a hook can read `error.request` and retry with fresh credentials. When no hook recovers, the client throws the reduced error.
+
+The option can be set on the client or per request; a per-request value replaces the client default as a whole.
+
 ## Error codes
 
 Every `ClientError` exposes a `code`. For HTTP errors it derives from the class name (`'HTTP_RESPONSE_ERROR'`); for the non-HTTP failure modes the `ErrorCode` enum names them:

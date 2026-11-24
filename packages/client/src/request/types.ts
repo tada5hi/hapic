@@ -13,6 +13,28 @@ export type RequestInit = globalThis.RequestInit;
 export type RequestInfo = globalThis.RequestInfo;
 
 export type RequestTransformer = (data: any, headers: Headers) => any;
+
+/**
+ * What the error the client finally throws carries about the failed request.
+ */
+export type RequestErrorOptions = {
+    /**
+     * Keep the resolved request options (url with query, merged headers incl.
+     * the Authorization header, body) on error.request and the url in the
+     * message and stack.
+     * With false, error.request holds the method only and the message is
+     * `<status> <statusText>` (or the error code when no response arrived).
+     *
+     * default: true
+     */
+    request?: boolean,
+    /**
+     * Keep the transport's error as error.cause.
+     *
+     * default: true
+     */
+    cause?: boolean,
+};
 export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`> = Omit<RequestInit, 'body'> & {
     /**
      * The base URL for the HTTP endpoints.
@@ -69,6 +91,16 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      * default: undefined (no timeout)
      */
     timeout?: number,
+    /**
+     * Leave the request and the cause out of the error the client throws
+     * (e.g. { request: false, cause: false }), so logging or serializing it
+     * does not expose the url, query or Authorization header.
+     * Error hooks still receive the full error; only the error thrown when
+     * no hook recovers is reduced.
+     *
+     * default: { request: true, cause: true }
+     */
+    errors?: RequestErrorOptions,
     /**
      * Proxy agent configuration (Node.js only).
      */

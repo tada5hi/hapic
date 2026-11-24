@@ -8,3 +8,4 @@
 export * from './check';
 export * from './create';
 export * from './extend';
+export * from './redact';
