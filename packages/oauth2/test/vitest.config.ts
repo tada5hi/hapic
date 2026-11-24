@@ -11,6 +11,11 @@ export default defineConfig({
     test: {
         globals: true,
         include: ['test/unit/**/*.{test,spec}.{js,ts}'],
+        typecheck: {
+            enabled: true,
+            include: ['test/unit/**/*.{test,spec}-d.ts'],
+            tsconfig: './tsconfig.json',
+        },
         coverage: {
             provider: 'v8',
             include: ['src/**/*.{ts,tsx,js,jsx}'],

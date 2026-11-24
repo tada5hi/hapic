@@ -54,12 +54,85 @@ export type TokenDeviceCodeGrantParameters = {
     device_code: string,
 } & ClientAuthenticationParameters;
 
+/**
+ * Additional parameters of a token exchange request, e.g. Authup's
+ * space separated `cap`. Numbers and booleans are stringified,
+ * arrays are joined with spaces.
+ */
+export type TokenTokenExchangeExtensionParameters = Record<string, string | number | boolean | string[] | undefined>;
+
+/**
+ * The actor of a token exchange (RFC 8693 2.1):
+ * `actor_token_type` is required when `actor_token` is present.
+ */
+export type TokenTokenExchangeActorParameters = {
+    actor_token?: undefined,
+    actor_token_type?: undefined,
+} | {
+    /**
+     * Token representing the acting party.
+     */
+    actor_token: string,
+    /**
+     * Type of the actor token, e.g. TokenTypeIdentifier.ACCESS_TOKEN.
+     */
+    actor_token_type: string,
+};
+
+/**
+ * Token exchange request without the grant type (RFC 8693 2.1).
+ *
+ * EXTENSION types parameters the authorization server defines
+ * beyond RFC 8693; `createWithTokenExchange` infers it from the
+ * object passed.
+ */
+export type TokenTokenExchangeParameters<
+    EXTENSION extends TokenTokenExchangeExtensionParameters = Record<never, never>,
+> = {
+    /**
+     * Token representing the party on whose behalf the request is made.
+     */
+    subject_token: string,
+    /**
+     * Type of the subject token, e.g. TokenTypeIdentifier.ACCESS_TOKEN.
+     */
+    subject_token_type: string,
+    /**
+     * Type of the requested token, e.g. TokenTypeIdentifier.ACCESS_TOKEN.
+     */
+    requested_token_type?: string,
+    /**
+     * Logical name(s) of the target service. An array repeats the parameter.
+     */
+    audience?: string | string[],
+    /**
+     * URI(s) of the target service (RFC 8707). An array repeats the parameter.
+     */
+    resource?: string | string[],
+    /**
+     * An array is joined with spaces.
+     */
+    scope?: string | string[],
+} & TokenTokenExchangeActorParameters &
+    ClientAuthenticationParameters &
+    EXTENSION;
+
+/**
+ * Token exchange request (RFC 8693 2.1).
+ */
+export type TokenTokenExchangeGrantParameters<
+    EXTENSION extends TokenTokenExchangeExtensionParameters = Record<never, never>,
+> = {
+    grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
+} & TokenTokenExchangeParameters<EXTENSION>;
+
 export type TokenGrantParameters =    TokenClientCredentialsGrantParameters |
     TokenPasswordGrantParameters |
     TokenAuthorizationCodeGrantParameters |
     TokenRefreshTokenGrantParameters |
     TokenRobotCredentialsGrantParameters |
-    TokenDeviceCodeGrantParameters;
+    TokenDeviceCodeGrantParameters |
+    TokenTokenExchangeGrantParameters;
 
 /**
  * Parameters for polling the token endpoint with a device code (RFC 8628 3.4, 3.5).
@@ -101,6 +174,12 @@ export type TokenGrantResponse = {
     mac_key?: string,
 
     mac_algorithm?: string,
+
+    /**
+     * Type of the issued token, sent in a token exchange response
+     * (RFC 8693 2.2.1), e.g. TokenTypeIdentifier.ACCESS_TOKEN.
+     */
+    issued_token_type?: string,
 
     scope?: string
 };

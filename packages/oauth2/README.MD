@@ -45,7 +45,7 @@ Talking to an OAuth2 server with plain `fetch` means the same chores in every pr
 | Concern | Without it | With @hapic/oauth2 |
 |---|---|---|
 | **Authorize URL** | You concatenate and encode the query yourself; a shared parameters object can put `client_secret` or `code_verifier` into a URL the browser keeps in its history. | `authorize.buildURL()` takes typed OAuth2, PKCE and OpenID Connect parameters, fills `client_id`, `redirect_uri` and `scope` from the client options, and never writes token request credentials to the URL. |
-| **Token grants** | One `URLSearchParams` body per grant, `Content-Type` set by hand, the client credentials added to each call. | One method per grant (`createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithDeviceCode`, `createWithRobotCredentials`) that sends a form body with the configured credentials, and `pollWithDeviceCode` for the device flow (RFC 8628). |
+| **Token grants** | One `URLSearchParams` body per grant, `Content-Type` set by hand, the client credentials added to each call. | One method per grant (`createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithDeviceCode`, `createWithRobotCredentials`, `createWithTokenExchange`) that sends a form body with the configured credentials, and `pollWithDeviceCode` for the device flow (RFC 8628). |
 | **Client authentication** | You pick body or Basic header per provider and implement both. | Body by default; `clientCredentialsAsHeader: true` moves the id and secret to a Basic header and out of the body. |
 | **Stray authorization header** | A bearer token set on your HTTP client for API calls is also sent to the token endpoint. | Token, introspection, revocation and device authorization requests drop the client's `Authorization` header unless you opt in with `authorizationHeaderInherit`. |
 | **Endpoints** | You copy URLs from the provider's documentation or parse `.well-known/openid-configuration` yourself. | `createClientWithOpenIDDiscoveryURL()` fetches the metadata and returns a configured client. |
@@ -254,6 +254,13 @@ token = await client.token.createWithRobotCredentials({
     secret: 'start123',
 });
 
+// token exchange (RFC 8693), see below
+token = await client.token.createWithTokenExchange({
+    subject_token: token.access_token,
+    subject_token_type: TokenTypeIdentifier.ACCESS_TOKEN,
+    audience: 'https://api.example.com',
+});
+
 console.log(token);
 // { access_token: '…', expires_in: 3600, token_type: 'Bearer', refresh_token: '…' }
 ```
@@ -266,11 +273,36 @@ console.log(token);
 | `createWithRefreshToken(parameters)` | `refresh_token` | `refresh_token`, `scope?` | `scope`, `client_id`, `client_secret`, `realm_id` |
 | `createWithDeviceCode(parameters)` | `urn:ietf:params:oauth:grant-type:device_code` | `device_code` | `client_id`, `client_secret`, `realm_id` |
 | `createWithRobotCredentials(parameters)` | `robot_credentials` | `id`, `secret` | `client_id`, `client_secret`, `realm_id` |
+| `createWithTokenExchange(parameters)` | `urn:ietf:params:oauth:grant-type:token-exchange` | `subject_token`, `subject_token_type`, `actor_token?` with `actor_token_type`, `requested_token_type?`, `audience?`, `resource?`, `scope?`, extension parameters | `client_id`, `client_secret`, `realm_id` |
 | `create(parameters)` | from `parameters.grant_type` | any of the above, with `grant_type` | as for that grant |
 
 - Every method also accepts `client_id`, `client_secret` and `realm_id` in the parameters. When you pass `client_id`, the configured id and secret are not added to the body; a `client_secret` without a `client_id` is replaced by the configured pair.
-- String values are written to the body, arrays are joined with spaces (`scope: ['a', 'b']` gives `scope=a b`), and empty or non-string values are left out.
-- The response keeps `access_token`, `expires_in`, `token_type` (`Bearer` when the server sends none) and, when present, `refresh_token`, `refresh_token_expires_in`, `id_token`, `mac_key` and `mac_algorithm`. Every other field, including `scope`, is dropped.
+- String values are written to the body, numbers and booleans are stringified, arrays are joined with spaces (`scope: ['a', 'b']` gives `scope=a b`), and empty values or values of other types are left out. `audience` and `resource` arrays repeat the parameter once per item instead (`audience=a&audience=b`, RFC 8693, RFC 8707).
+- The response keeps `access_token`, `expires_in`, `token_type` (`Bearer` when the server sends none) and, when present, `refresh_token`, `refresh_token_expires_in`, `id_token`, `mac_key`, `mac_algorithm` and `issued_token_type` (RFC 8693). Every other field, including `scope`, is dropped.
+
+### Token exchange
+
+`createWithTokenExchange` (RFC 8693) trades a token for another one, e.g. a user's access token for a token of another audience. `TokenTypeIdentifier` holds the token type URIs (`ACCESS_TOKEN`, `REFRESH_TOKEN`, `ID_TOKEN`, `SAML1`, `SAML2`, `JWT`).
+
+```typescript
+import { TokenTypeIdentifier } from '@hapic/oauth2';
+
+const token = await client.token.createWithTokenExchange({
+    subject_token: userToken,
+    subject_token_type: TokenTypeIdentifier.ACCESS_TOKEN,
+    actor_token: serviceToken,
+    actor_token_type: TokenTypeIdentifier.ACCESS_TOKEN,
+    audience: ['api-a', 'api-b'],
+    // parameters of the authorization server beyond RFC 8693
+    cap: ['project:read', 'node:read'],
+    expires_in: 60,
+});
+```
+
+- `actor_token_type` is required when `actor_token` is set.
+- Any other key is sent as an extension parameter with a string, number, boolean or string array value. Its type is inferred from the object; pass it explicitly (`createWithTokenExchange<{ cap: string[] }>(…)`) to pin it.
+- The `scope` of the client options is not applied: an exchange requests only the scope you pass.
+- The response carries `issued_token_type` when the server sends it.
 
 ## Client authentication
 
@@ -512,7 +544,7 @@ try {
 |---|---|---|
 | `OAuth2Client` | class | Client with `authorize`, `token`, `userInfo`, `deviceAuthorization` and `options` |
 | `AuthorizeAPI` | class | `buildURL(parameters?)` |
-| `TokenAPI` | class | `create`, `createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithDeviceCode`, `createWithRobotCredentials`, `pollWithDeviceCode`, `introspect`, `revoke` |
+| `TokenAPI` | class | `create`, `createWithClientCredentials`, `createWithPassword`, `createWithAuthorizationCode`, `createWithRefreshToken`, `createWithDeviceCode`, `createWithRobotCredentials`, `createWithTokenExchange`, `pollWithDeviceCode`, `introspect`, `revoke` |
 | `DeviceAuthorizationAPI` | class | `create(parameters?, options?)` |
 | `UserInfoAPI` | class | `get(header?, options?)` |
 | `buildAuthorizeURL` | function | Authorize URL from an endpoint and parameters |
@@ -525,13 +557,13 @@ try {
 | `createRequestTransformerForTokenAPIRequest(parameters, options?)` | function | A `hapic` request transformer that applies the same header rules and, with `clientCredentialsAsHeader`, removes `client_id` and `client_secret` from the body. Use it for a custom request to an endpoint of the authorization server |
 | `buildRequestTransformersForTokenAPIRequest(client, defaults, parameters, options?)` | function | The transformers of a token style request: the header rules first, then the client's default transformers. Fills `clientId`, `clientSecret` and `realmId` of `options` from `defaults` |
 | `buildRequestOptionsForTokenAPIRequest(transform, options?)` | function | Request options with the transformers, `Accept: application/json`, and the `signal` and `timeout` of `options` |
-| `buildURLSearchParamsForTokenAPIRequest(input)` | function | A form body: non empty strings as is, arrays joined with spaces, everything else left out |
+| `buildURLSearchParamsForTokenAPIRequest(input)` | function | A form body: non empty strings as is, numbers and booleans stringified, arrays joined with spaces (`audience` and `resource` repeated per item), everything else left out |
 | `extendClientAuthenticationParameters(parameters, defaults)` | function | Fill `client_id`, `client_secret` and `realm_id` of `parameters` from the client options |
 | `scopeToArray`, `scopeToString` | functions | Convert a scope between `'a b'` and `['a', 'b']` (`scopeToString` removes duplicates) |
-| `AuthorizeResponseType`, `AuthorizeResponseMode`, `AuthorizeCodeChallengeMethod`, `AuthorizeDisplay`, `AuthorizePrompt`, `ResponseType` | enums | Parameter values |
+| `AuthorizeResponseType`, `AuthorizeResponseMode`, `AuthorizeCodeChallengeMethod`, `AuthorizeDisplay`, `AuthorizePrompt`, `ResponseType`, `TokenTypeIdentifier` | enums | Parameter values |
 | `Options`, `Config`, `ConfigInput` | types | Client configuration |
 | `AuthorizeParameters`, `AuthorizeParameterValue` | types | Authorize URL parameters |
-| `TokenGrantParameters`, `Token*GrantParameters`, `TokenGrantResponse`, `TokenBaseOptions`, `TokenIntrospectParameters`, `TokenRevokeParameters`, `TokenDeviceCodePollParameters`, `ClientAuthenticationParameters` | types | Token requests |
+| `TokenGrantParameters`, `Token*GrantParameters`, `TokenGrantResponse`, `TokenBaseOptions`, `TokenIntrospectParameters`, `TokenRevokeParameters`, `TokenDeviceCodePollParameters`, `TokenTokenExchangeParameters`, `TokenTokenExchangeExtensionParameters`, `ClientAuthenticationParameters` | types | Token requests |
 | `DeviceAuthorizationParameters`, `DeviceAuthorizationResponse` | types | Device authorization requests |
 | `UserInfoOptions` | type | Userinfo request options |
 | `OpenIDProviderMetadata`, `JwtPayload`, `ResponseTypeCombinations` | types | Discovery and token payloads |
