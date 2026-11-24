@@ -46,7 +46,86 @@ function shouldSerializeBody(body: unknown) : boolean {
         !isArrayBuffer(body) &&
         !isFormData(body) &&
         !isURLSearchParams(body) &&
-        !isStream(body);
+        !isStream(body) &&
+        !isWebStream(body);
+}
+
+function isWebStream(body: unknown) : boolean {
+    return typeof ReadableStream !== 'undefined' &&
+        body instanceof ReadableStream;
+}
+
+/**
+ * Tie the response body to the signal: a read errors with the signal's reason
+ * once it aborts, as a `fetch` body does. Status, status text and headers are
+ * kept. The abort listener is removed once the body is done, errored or
+ * cancelled.
+ */
+function bindResponseSignal(response: Response, signal: AbortSignal) : Response {
+    if (!response.body || response.bodyUsed) {
+        return response;
+    }
+
+    const reader = response.body.getReader();
+    let settled = false;
+    let onAbort : () => void = () => {};
+
+    const settle = () => {
+        settled = true;
+        signal.removeEventListener('abort', onAbort);
+    };
+
+    const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+            onAbort = () => {
+                if (settled) {
+                    return;
+                }
+
+                settle();
+                controller.error(signal.reason);
+                reader.cancel(signal.reason).catch(() => {});
+            };
+
+            signal.addEventListener('abort', onAbort, { once: true });
+        },
+        async pull(controller) {
+            try {
+                const { done, value } = await reader.read();
+
+                if (settled) {
+                    return;
+                }
+
+                if (done) {
+                    settle();
+                    controller.close();
+
+                    return;
+                }
+
+                controller.enqueue(value);
+            } catch (e) {
+                if (settled) {
+                    return;
+                }
+
+                settle();
+                controller.error(e);
+            }
+        },
+        cancel(reason) {
+            settle();
+
+            return reader.cancel(reason);
+        },
+    });
+
+    return new ResponseCtor(body as any, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+    }) as unknown as Response;
 }
 
 /**
@@ -75,14 +154,44 @@ export class MemoryTransport implements ITransport {
         return this;
     }
 
+    /**
+     * Answer the request with the `fetch` handler. Like `fetch`, it honors
+     * `request.signal`: an aborted signal rejects with its reason (also while
+     * the handler is pending), and the returned body errors with that reason
+     * once the signal aborts.
+     */
     async dispatch(request: TransportRequest) : Promise<Response> {
         this.requests.push(request);
 
-        const result = this.fetch ?
-            await this.fetch(request) :
-            { status: 200 };
+        const { signal } = request;
 
-        return this.toResponse(result);
+        if (!signal) {
+            return this.toResponse(await this.handle(request));
+        }
+
+        signal.throwIfAborted();
+
+        let onAbort : () => void = () => {};
+        const aborted = new Promise<never>((_resolve, reject) => {
+            onAbort = () => reject(signal.reason);
+            signal.addEventListener('abort', onAbort, { once: true });
+        });
+
+        try {
+            const result = await Promise.race([this.handle(request), aborted]);
+
+            return bindResponseSignal(this.toResponse(result), signal);
+        } finally {
+            signal.removeEventListener('abort', onAbort);
+        }
+    }
+
+    protected async handle(request: TransportRequest) : Promise<Response | MemoryResponseInit> {
+        if (!this.fetch) {
+            return { status: 200 };
+        }
+
+        return this.fetch(request);
     }
 
     protected toResponse(input: Response | MemoryResponseInit) : Response {
