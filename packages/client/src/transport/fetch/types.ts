@@ -19,3 +19,7 @@ export type FetchTransportOptions = {
     fetch?: FetchTransportFn
 };
 
+/**
+ * How the FetchTransport sends a request reporting upload progress.
+ */
+export type FetchUploadStrategy = 'xhr' | 'stream' | 'fetch';

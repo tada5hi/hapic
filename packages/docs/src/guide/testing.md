@@ -23,7 +23,11 @@ interface ITransport {
     // request flattens RequestInit (merged headers, transformed body, method) alongside the
     // base-/query-resolved url. Must resolve with a raw Response (body unread) and must NOT
     // throw on a 4xx/5xx status.
-    dispatch(request: RequestInit & { url: string, proxy?: ProxyOptions | boolean }): Promise<Response>;
+    dispatch(request: RequestInit & {
+        url: string,
+        proxy?: ProxyOptions | boolean,
+        onUploadProgress?: (event: { loaded: number, total?: number }) => void,
+    }): Promise<Response>;
 }
 ```
 
@@ -98,5 +102,7 @@ const client = new Client({
     }),
 });
 ```
+
+hapic also ships an `XhrTransport`, which sends requests by `XMLHttpRequest`; see [Upload progress](./request-methods.md#upload-progress).
 
 Cross-cutting concerns that wrap a request — retry/refresh, logging, caching — belong in [hooks](./hooks.md), not in a custom transport.

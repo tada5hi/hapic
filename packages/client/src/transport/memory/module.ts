@@ -5,8 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-// node-fetch-native is used as a fallback when no global Response is available.
-import { Response as NodeResponse } from 'node-fetch-native';
 import { Headers } from '../../fetch';
 import { isResponse } from '../../response';
 import {
@@ -19,7 +17,7 @@ import {
     isURLSearchParams,
     markInstanceof,
 } from '../../utils';
-import { globalContext } from '../../utils/global-this.ts';
+import { createResponse } from '../helpers';
 import type { ITransport, TransportRequest } from '../types';
 import { CLIENT_TRANSPORT_INSTANCE } from '../utils';
 import type {
@@ -27,9 +25,6 @@ import type {
     MemoryTransportFetch,
     MemoryTransportOptions,
 } from './types';
-
-const ResponseCtor : typeof NodeResponse = (globalContext.Response as typeof NodeResponse | undefined) ||
-    NodeResponse;
 
 function shouldSerializeBody(body: unknown) : boolean {
     if (!isObject(body) && !Array.isArray(body)) {
@@ -101,10 +96,10 @@ export class MemoryTransport implements ITransport {
             body = JSON.stringify(body);
         }
 
-        return new ResponseCtor(body, {
+        return createResponse(body, {
             status: input.status ?? 200,
             statusText: input.statusText,
             headers,
-        }) as unknown as Response;
+        });
     }
 }
