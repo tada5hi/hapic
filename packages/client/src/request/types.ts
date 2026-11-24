@@ -15,25 +15,6 @@ export type RequestInfo = globalThis.RequestInfo;
 
 export type RequestTransformer = (data: any, headers: Headers) => any;
 
-/**
- * What the error the client finally throws carries about the failed request.
- */
-export type RequestErrorOptions = {
-    /**
-     * Keep the resolved request options on error.request: the merged headers
-     * (incl. the Authorization header), the body and the other options.
-     * With false, error.request holds the method and the url only.
-     *
-     * default: true
-     */
-    request?: boolean,
-    /**
-     * Keep the transport's error as error.cause.
-     *
-     * default: true
-     */
-    cause?: boolean,
-};
 export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSON}`> = Omit<RequestInit, 'body'> & {
     /**
      * The base URL for the HTTP endpoints.
@@ -91,16 +72,24 @@ export type RequestBaseOptions<R extends `${ResponseType}` = `${ResponseType.JSO
      */
     timeout?: number,
     /**
-     * Leave the request headers and body, and/or the cause, out of the error
-     * the client throws (e.g. { request: false, cause: false }), so logging
-     * or serializing it does not expose the Authorization header or a
-     * request body. Method, url, message and response are kept.
+     * Keep the resolved request options on the error the client throws as
+     * error.request: the merged headers (incl. the Authorization header),
+     * the body and the other options. With false, error.request holds the
+     * method and the url only, so logging or serializing the error does not
+     * expose credentials or a request body.
      * Error hooks still receive the full error; only the error thrown when
      * no hook recovers is reduced.
      *
-     * default: { request: true, cause: true }
+     * default: true
      */
-    errors?: RequestErrorOptions,
+    keepRequestOnError?: boolean,
+    /**
+     * Keep the transport's error as error.cause on the error the client
+     * throws. Error hooks still receive the full error.
+     *
+     * default: true
+     */
+    keepCauseOnError?: boolean,
     /**
      * Report the progress of sending the request body: called with the bytes
      * sent so far (loaded) and the body size in bytes (total, when known).

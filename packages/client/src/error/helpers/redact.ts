@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { RequestErrorOptions, RequestOptions } from '../../request';
+import type { RequestOptions } from '../../request';
 import { HttpResponseError, NetworkError } from '../entities';
 import { ClientError } from '../module';
 import type { ClientErrorContext } from '../types';
@@ -29,19 +29,19 @@ function resolveCtor(error: ClientError) : ClientErrorCtor {
 }
 
 /**
- * Reduce a client error to what the errors option keeps: a fresh instance
- * of the same class (so the @instanceof marker chain and every guard still
- * match), without the request headers and body (only method and url are
- * kept) and/or the cause. Message, stack and response stay.
+ * Reduce a client error to what keepRequestOnError and keepCauseOnError
+ * keep: a fresh instance of the same class (so the @instanceof marker chain
+ * and every guard still match), without the request headers and body (only
+ * method and url are kept) and/or the cause. Message, stack and response stay.
  *
  * Returns the input itself when the options keep everything.
  */
 export function redactClientError<T = any>(
     error: ClientError<T>,
-    options: RequestErrorOptions = {},
+    options: Pick<RequestOptions, 'keepRequestOnError' | 'keepCauseOnError'> = {},
 ) : ClientError<T> {
-    const keepRequest = options.request !== false;
-    const keepCause = options.cause !== false;
+    const keepRequest = options.keepRequestOnError !== false;
+    const keepCause = options.keepCauseOnError !== false;
 
     if (keepRequest && keepCause) {
         return error;

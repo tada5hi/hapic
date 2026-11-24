@@ -164,12 +164,13 @@ The code is decided first by **which signal** fired. The timeout hapic armed ans
 
 By default a `ClientError` keeps everything about the failed request: `request` holds the resolved options (the URL, the merged headers with the `Authorization` header, the body) and `cause` holds the transport's error. An application that logs or serializes the error carries the credentials along.
 
-The `errors` option leaves them out:
+The `keepRequestOnError` and `keepCauseOnError` options leave them out:
 
 ```typescript
 const client = createClient({
     baseURL: 'https://auth.example/',
-    errors: { request: false, cause: false },
+    keepRequestOnError: false,
+    keepCauseOnError: false,
 });
 
 try {
@@ -182,14 +183,14 @@ try {
 }
 ```
 
-- `request: false`: `request` is `{ method, url }` only. The headers (`Authorization`, cookies, API keys), the body and every other request option are dropped.
-- `cause: false`: the error has no `cause`, the transport's error.
+- `keepRequestOnError: false`: `request` is `{ method, url }` only. The headers (`Authorization`, cookies, API keys), the body and every other request option are dropped.
+- `keepCauseOnError: false`: the error has no `cause`, the transport's error.
 
 `message`, stack, `code`, `status`, `statusText` and `response` stay, and the error is a new instance of the same class, so every guard (`isHttpResponseError`, `isNetworkError`, `isClientErrorDueTimeout`, …) still matches. A custom subclass thrown by an error hook becomes its built-in class (`HttpResponseError` or `NetworkError`), since its constructor and own fields are unknown to hapic.
 
 Only the error that leaves the client is reduced. [Error hooks](/guide/hooks#error-hooks-can-recover) still receive the full error, so a hook can read `error.request` and retry with fresh credentials. When no hook recovers, the client throws the reduced error.
 
-The option can be set on the client or per request; a per-request value replaces the client default as a whole.
+Both options can be set on the client or per request; a per-request value replaces the client default.
 
 ## Error codes
 

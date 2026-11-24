@@ -108,9 +108,9 @@ describe('src/error/redaction', () => {
         });
     });
 
-    describe('errors.request = false', () => {
+    describe('keepRequestOnError = false', () => {
         it('should throw an http response error without headers and body', async () => {
-            const { client } = createNotFoundClient({ errors: { request: false } });
+            const { client } = createNotFoundClient({ keepRequestOnError: false });
 
             const error = await catchError(client.post(`roles/1?${QUERY}`, { secret: SECRET }));
 
@@ -133,7 +133,7 @@ describe('src/error/redaction', () => {
         });
 
         it('should keep the cause unless disabled', async () => {
-            const { client } = createFailingClient({ errors: { request: false } });
+            const { client } = createFailingClient({ keepRequestOnError: false });
 
             const error = await catchError(client.get(`roles/1?${QUERY}`));
 
@@ -141,7 +141,7 @@ describe('src/error/redaction', () => {
         });
 
         it('should throw a network error without headers and body', async () => {
-            const { client } = createFailingClient({ errors: { request: false, cause: false } });
+            const { client } = createFailingClient({ keepRequestOnError: false, keepCauseOnError: false });
 
             const error = await catchError(client.post(`roles?${QUERY}`, { secret: SECRET }));
 
@@ -159,22 +159,22 @@ describe('src/error/redaction', () => {
         it('should apply a per-request option', async () => {
             const { client } = createNotFoundClient();
 
-            const error = await catchError(client.get(`roles/1?${QUERY}`, { errors: { request: false, cause: false } }));
+            const error = await catchError(client.get(`roles/1?${QUERY}`, { keepRequestOnError: false, keepCauseOnError: false }));
 
             expectNoLeak(error);
             expect(error.request.headers).toBeUndefined();
         });
 
         it('should let a per-request option re-enable the details', async () => {
-            const { client } = createNotFoundClient({ errors: { request: false } });
+            const { client } = createNotFoundClient({ keepRequestOnError: false });
 
-            const error = await catchError(client.get(`roles/1?${QUERY}`, { errors: { request: true } }));
+            const error = await catchError(client.get(`roles/1?${QUERY}`, { keepRequestOnError: true }));
 
             expect((error.request.headers as Headers).get('authorization')).toContain(TOKEN);
         });
 
         it('should hand the full error to the error hook', async () => {
-            const { client } = createNotFoundClient({ errors: { request: false, cause: false } });
+            const { client } = createNotFoundClient({ keepRequestOnError: false, keepCauseOnError: false });
 
             let seen : ClientError | undefined;
 
@@ -210,7 +210,8 @@ describe('src/error/redaction', () => {
             const client = new Client({
                 baseURL: 'https://auth.example/',
                 transport,
-                errors: { request: false, cause: false },
+                keepRequestOnError: false,
+                keepCauseOnError: false,
             });
 
             client.on(HookName.RESPONSE_ERROR, (e) => ({
@@ -226,7 +227,7 @@ describe('src/error/redaction', () => {
         });
 
         it('should redact the error a failed retry throws', async () => {
-            const { client } = createNotFoundClient({ errors: { request: false, cause: false } });
+            const { client } = createNotFoundClient({ keepRequestOnError: false, keepCauseOnError: false });
 
             let retried = false;
 
@@ -251,7 +252,7 @@ describe('src/error/redaction', () => {
         it('should reduce a subclass thrown by a hook to its built-in class', async () => {
             class CustomNetworkError extends NetworkError {}
 
-            const { client } = createFailingClient({ errors: { cause: false } });
+            const { client } = createFailingClient({ keepCauseOnError: false });
 
             client.on(HookName.REQUEST_ERROR, (e) => {
                 throw new CustomNetworkError({
@@ -269,9 +270,9 @@ describe('src/error/redaction', () => {
         });
     });
 
-    describe('errors.cause = false', () => {
+    describe('keepCauseOnError = false', () => {
         it('should drop the cause and keep the request', async () => {
-            const { client } = createFailingClient({ errors: { cause: false } });
+            const { client } = createFailingClient({ keepCauseOnError: false });
 
             const error = await catchError(client.get(`roles/1?${QUERY}`));
 

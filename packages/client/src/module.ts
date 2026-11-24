@@ -263,12 +263,12 @@ export class Client implements IClient {
                 );
             } catch (e) {
                 // Hooks saw the full error; the error that leaves the client
-                // is reduced to what the errors option keeps.
-                if (!isClientError(e) || !options.errors) {
+                // is reduced to what keepRequestOnError and keepCauseOnError keep.
+                if (!isClientError(e)) {
                     throw e;
                 }
 
-                throw redactClientError(e, options.errors);
+                throw redactClientError(e, options);
             }
 
             if (recovery.type === 'response') {
@@ -298,7 +298,8 @@ export class Client implements IClient {
                 transform,
                 timeout,
                 signal,
-                errors,
+                keepRequestOnError,
+                keepCauseOnError,
                 ...transportRequest
             } = options;
 
