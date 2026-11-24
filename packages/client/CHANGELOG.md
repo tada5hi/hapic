@@ -247,6 +247,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [3.2.1](https://github.com/tada5hi/hapic/compare/client-v3.2.0...client-v3.2.1) (2026-11-24)
+
+
+### Bug Fixes
+
+* replace errors option with keepRequestOnError and keepCauseOnError ([488d262](https://github.com/tada5hi/hapic/commit/488d2623fcec4664699071a4282ebc20817d3d25))
+
 ## [3.2.0](https://github.com/tada5hi/hapic/compare/client-v3.1.0...client-v3.2.0) (2026-11-24)
 
 
