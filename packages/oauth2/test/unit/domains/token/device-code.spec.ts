@@ -7,7 +7,7 @@
 
 import type { MemoryResponseInit, TransportRequest } from 'hapic';
 import { MemoryTransport, createClient, isHttpResponseError } from 'hapic';
-import type { Options, TokenGrantResponse } from '../../../../src';
+import type { DeviceAuthorizationResponse, Options, TokenGrantResponse } from '../../../../src';
 import { TokenAPI } from '../../../../src';
 
 const tokenGrantResponse : TokenGrantResponse = {
@@ -294,7 +294,7 @@ describe('src/domains/token (device code)', () => {
         });
     });
 
-    it('should send only the device code and the client authentication', async () => {
+    it('should send every parameter except the poll controls and the user fields', async () => {
         vi.useFakeTimers();
 
         const transport = createTransport([
@@ -308,28 +308,47 @@ describe('src/domains/token (device code)', () => {
             scope: 'openid',
         });
 
-        const promise = api.pollWithDeviceCode({
+        const authorization : DeviceAuthorizationResponse = {
             device_code: 'device',
             user_code: 'WDJB-MJHT',
             verification_uri: 'https://example.com/device',
             verification_uri_complete: 'https://example.com/device?user_code=WDJB-MJHT',
             expires_in: 1800,
             interval: 1,
-        } as any);
+        };
+
+        const promise = api.pollWithDeviceCode({
+            ...authorization,
+            realm_name: 'master',
+            audience: ['a', 'b'],
+        });
 
         await vi.advanceTimersByTimeAsync(2000);
         await expect(promise).resolves.toEqual(tokenGrantResponse);
 
         expect(transport.requests).toHaveLength(2);
         transport.requests.forEach((request) => {
-            expect(getBody(request)).toEqual({
+            const { audience, ...body } = getBody(request);
+
+            expect(body).toEqual({
                 grant_type: DEVICE_CODE_GRANT_TYPE,
                 device_code: 'device',
                 client_id: 'client',
                 client_secret: 'secret',
                 realm_id: 'realm',
+                realm_name: 'master',
             });
+            expect(new URLSearchParams(request.body as any).getAll('audience')).toEqual(['a', 'b']);
         });
+    });
+
+    it('should keep the device code grant type over an extension parameter', async () => {
+        const transport = createTransport([createSuccessResponse()]);
+        const api = createAPI(transport, { clientId: 'client' });
+
+        await api.createWithDeviceCode({ device_code: 'device', grant_type: 'password' });
+
+        expect(getBody(transport.requests.at(-1)!).grant_type).toBe(DEVICE_CODE_GRANT_TYPE);
     });
 
     it('should apply the header rules on each request', async () => {

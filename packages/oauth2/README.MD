@@ -408,9 +408,9 @@ const token = await client.token.pollWithDeviceCode(authorization, {
 
 - `deviceAuthorization.create(parameters?, options?)` posts a form body to `deviceAuthorizationEndpoint` and fills `client_id`, `client_secret`, `realm_id` and `scope` from the client options when you leave them out. It follows the [client authentication](#client-authentication) rules of the token methods. It resolves with `device_code`, `user_code`, `verification_uri`, `expires_in` and, when present, `verification_uri_complete` and `interval`.
 - `token.pollWithDeviceCode(parameters, options?)` waits `interval` seconds (5 when unset), then calls `createWithDeviceCode`, and repeats while the server answers `authorization_pending`. A `slow_down` adds 5 seconds to the interval for this and every later request. Any other error, such as `access_denied` or `expired_token`, rejects as is.
-- You can pass the device authorization response as it is: only `device_code`, `client_id`, `client_secret` and `realm_id` are sent. With `expires_in`, polling stops once the next wait would end after that many seconds from the start of the call, and rejects with the last `authorization_pending` or `slow_down` error. At least one request is always made.
+- You can pass the device authorization response as it is, together with parameters the authorization server defines (e.g. Authup's `realm_name`): every parameter is sent except `interval`, `expires_in`, `user_code`, `verification_uri` and `verification_uri_complete`. With `expires_in`, polling stops once the next wait would end after that many seconds from the start of the call, and rejects with the last `authorization_pending` or `slow_down` error, so such a rejection always means the deadline passed. At least one request is always made.
 - Aborting `signal` during a wait rejects with its `reason`; during a request it rejects with the client's abort error (`NetworkError`). `timeout` applies to each request, not to the whole polling.
-- `createWithDeviceCode({ device_code })` makes a single request, for your own polling loop. No `scope` is sent with the device code grant.
+- `createWithDeviceCode({ device_code, ...extension })` makes a single request, for your own polling loop. No `scope` is sent with the device code grant.
 
 ## Userinfo
 
@@ -563,7 +563,7 @@ try {
 | `AuthorizeResponseType`, `AuthorizeResponseMode`, `AuthorizeCodeChallengeMethod`, `AuthorizeDisplay`, `AuthorizePrompt`, `ResponseType`, `TokenTypeIdentifier` | enums | Parameter values |
 | `Options`, `Config`, `ConfigInput` | types | Client configuration |
 | `AuthorizeParameters`, `AuthorizeParameterValue` | types | Authorize URL parameters |
-| `TokenGrantParameters`, `Token*GrantParameters`, `TokenGrantResponse`, `TokenBaseOptions`, `TokenIntrospectParameters`, `TokenRevokeParameters`, `TokenDeviceCodePollParameters`, `TokenTokenExchangeParameters`, `TokenTokenExchangeExtensionParameters`, `ClientAuthenticationParameters` | types | Token requests |
+| `TokenGrantParameters`, `Token*GrantParameters`, `TokenGrantResponse`, `TokenBaseOptions`, `TokenIntrospectParameters`, `TokenRevokeParameters`, `TokenDeviceCodeParameters`, `TokenDeviceCodePollParameters`, `TokenTokenExchangeParameters`, `TokenExtensionParameters`, `ClientAuthenticationParameters` | types | Token requests |
 | `DeviceAuthorizationParameters`, `DeviceAuthorizationResponse` | types | Device authorization requests |
 | `UserInfoOptions` | type | Userinfo request options |
 | `OpenIDProviderMetadata`, `JwtPayload`, `ResponseTypeCombinations` | types | Discovery and token payloads |

@@ -15,8 +15,9 @@ import type {
     TokenAuthorizationCodeGrantParameters,
     TokenBaseOptions,
     TokenClientCredentialsGrantParameters,
-    TokenDeviceCodeGrantParameters,
+    TokenDeviceCodeParameters,
     TokenDeviceCodePollParameters,
+    TokenExtensionParameters,
     TokenGrantParameters,
     TokenGrantResponse,
     TokenIntrospectParameters,
@@ -24,7 +25,6 @@ import type {
     TokenRefreshTokenGrantParameters,
     TokenRevokeParameters,
     TokenRobotCredentialsGrantParameters,
-    TokenTokenExchangeExtensionParameters,
     TokenTokenExchangeParameters,
 } from './types';
 import {
@@ -96,13 +96,15 @@ export class TokenAPI extends BaseAPI {
         }, options);
     }
 
-    async createWithDeviceCode(
-        parameters: Omit<TokenDeviceCodeGrantParameters, 'grant_type'>,
+    async createWithDeviceCode<
+        EXTENSION extends TokenExtensionParameters = Record<never, never>,
+    >(
+        parameters: TokenDeviceCodeParameters<EXTENSION>,
         options: TokenBaseOptions = {},
     ): Promise<TokenGrantResponse> {
         return this.create({
-            grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
             ...parameters,
+            grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
         }, options);
     }
 
@@ -117,7 +119,7 @@ export class TokenAPI extends BaseAPI {
      * @param options
      */
     async createWithTokenExchange<
-        EXTENSION extends TokenTokenExchangeExtensionParameters = Record<never, never>,
+        EXTENSION extends TokenExtensionParameters = Record<never, never>,
     >(
         parameters: TokenTokenExchangeParameters<EXTENSION>,
         options: TokenBaseOptions = {},
@@ -132,18 +134,27 @@ export class TokenAPI extends BaseAPI {
      * Poll the token endpoint with a device code until the user
      * completed the device authorization (RFC 8628 3.4, 3.5).
      *
+     * Every parameter is sent except the poll controls (`interval`,
+     * `expires_in`) and the fields only shown to the user, so a device
+     * authorization response can be spread in together with extension
+     * parameters (e.g. Authup's `realm_name`).
+     *
      * Waits `interval` seconds (default 5) before each request. An
      * `authorization_pending` error continues polling, `slow_down` adds
      * 5 seconds to the interval; any other error is thrown. With `expires_in`,
      * the last of these errors is thrown once the next wait would end after
-     * the deadline. Aborting `options.signal` rejects with its reason.
+     * the deadline, so a rejection with `authorization_pending` or `slow_down`
+     * always means the deadline passed. Aborting `options.signal` rejects with
+     * its reason.
      *
      * @throws Error
      * @param parameters
      * @param options
      */
-    async pollWithDeviceCode(
-        parameters: TokenDeviceCodePollParameters,
+    async pollWithDeviceCode<
+        EXTENSION extends TokenExtensionParameters = Record<never, never>,
+    >(
+        parameters: TokenDeviceCodePollParameters<EXTENSION>,
         options: TokenBaseOptions = {},
     ): Promise<TokenGrantResponse> {
         const startedAt = Date.now();
@@ -169,7 +180,6 @@ export class TokenAPI extends BaseAPI {
             await wait(interval * 1000, options.signal);
 
             try {
-                // fresh objects per request: create() and the transformers mutate them
                 return await this.createWithDeviceCode(
                     this.pickDeviceCodeGrantParameters(parameters),
                     { ...options },
@@ -294,24 +304,26 @@ export class TokenAPI extends BaseAPI {
         );
     }
 
-    protected pickDeviceCodeGrantParameters(
-        parameters: TokenDeviceCodePollParameters,
-    ) : Omit<TokenDeviceCodeGrantParameters, 'grant_type'> {
-        const output : Omit<TokenDeviceCodeGrantParameters, 'grant_type'> = { device_code: parameters.device_code };
+    /**
+     * The device access token request of a poll: every parameter except the
+     * poll controls and the fields only shown to the user. A fresh object per
+     * request, as create() and the transformers mutate it.
+     */
+    protected pickDeviceCodeGrantParameters<
+        EXTENSION extends TokenExtensionParameters,
+    >(
+        parameters: TokenDeviceCodePollParameters<EXTENSION>,
+    ) : TokenDeviceCodeParameters<EXTENSION> {
+        const {
+            interval,
+            expires_in,
+            user_code,
+            verification_uri,
+            verification_uri_complete,
+            ...output
+        } = parameters;
 
-        if (parameters.client_id) {
-            output.client_id = parameters.client_id;
-        }
-
-        if (parameters.client_secret) {
-            output.client_secret = parameters.client_secret;
-        }
-
-        if (parameters.realm_id) {
-            output.realm_id = parameters.realm_id;
-        }
-
-        return output;
+        return output as TokenDeviceCodeParameters<EXTENSION>;
     }
 
     // ------------------------------------------------------------------

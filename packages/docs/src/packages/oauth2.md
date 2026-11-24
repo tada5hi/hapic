@@ -151,7 +151,14 @@ const token = await client.token.pollWithDeviceCode(authorization, {
 });
 ```
 
-`deviceAuthorization.create` posts to `deviceAuthorizationEndpoint` (default `/device_authorization`, also read from the discovery document). `pollWithDeviceCode` waits `interval` seconds (default 5) before each request, keeps polling on `authorization_pending`, adds 5 seconds on `slow_down`, and rejects with any other error. With `expires_in` it stops once the next wait would end after the deadline and rejects with the last pending error; aborting the `signal` rejects with its reason. Only `device_code` and the client authentication are sent.
+`deviceAuthorization.create` posts to `deviceAuthorizationEndpoint` (default `/device_authorization`, also read from the discovery document). `pollWithDeviceCode` waits `interval` seconds (default 5) before each request, keeps polling on `authorization_pending`, adds 5 seconds on `slow_down`, and rejects with any other error. With `expires_in` it stops once the next wait would end after the deadline and rejects with the last pending error, so a rejection with `authorization_pending` or `slow_down` always means the deadline passed; aborting the `signal` rejects with its reason. Every parameter is sent except `interval`, `expires_in` and the fields only shown to the user (`user_code`, `verification_uri`, `verification_uri_complete`), so extension parameters of the authorization server travel along:
+
+```typescript
+const token = await client.token.pollWithDeviceCode({
+    ...authorization,
+    realm_name: 'master', // e.g. Authup
+});
+```
 
 ## Introspection & revocation
 

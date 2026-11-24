@@ -49,17 +49,32 @@ export type TokenRobotCredentialsGrantParameters = {
 /**
  * Device access token request (RFC 8628 3.4).
  */
-export type TokenDeviceCodeGrantParameters = {
-    grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
-    device_code: string,
-} & ClientAuthenticationParameters;
+/**
+ * Parameters an authorization server defines beyond the specification,
+ * e.g. Authup's `realm_name` or space separated `cap`. Numbers and
+ * booleans are stringified, arrays are joined with spaces.
+ */
+export type TokenExtensionParameters = Record<string, string | number | boolean | string[] | undefined>;
 
 /**
- * Additional parameters of a token exchange request, e.g. Authup's
- * space separated `cap`. Numbers and booleans are stringified,
- * arrays are joined with spaces.
+ * Device access token request without the grant type (RFC 8628 3.4).
+ *
+ * EXTENSION types parameters the authorization server defines beyond
+ * RFC 8628; `createWithDeviceCode` and `pollWithDeviceCode` infer it
+ * from the object passed.
  */
-export type TokenTokenExchangeExtensionParameters = Record<string, string | number | boolean | string[] | undefined>;
+export type TokenDeviceCodeParameters<
+    EXTENSION extends TokenExtensionParameters = Record<never, never>,
+> = {
+    device_code: string,
+} & ClientAuthenticationParameters &
+    EXTENSION;
+
+export type TokenDeviceCodeGrantParameters<
+    EXTENSION extends TokenExtensionParameters = Record<never, never>,
+> = {
+    grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+} & TokenDeviceCodeParameters<EXTENSION>;
 
 /**
  * The actor of a token exchange (RFC 8693 2.1):
@@ -87,7 +102,7 @@ export type TokenTokenExchangeActorParameters = {
  * object passed.
  */
 export type TokenTokenExchangeParameters<
-    EXTENSION extends TokenTokenExchangeExtensionParameters = Record<never, never>,
+    EXTENSION extends TokenExtensionParameters = Record<never, never>,
 > = {
     /**
      * Token representing the party on whose behalf the request is made.
@@ -121,7 +136,7 @@ export type TokenTokenExchangeParameters<
  * Token exchange request (RFC 8693 2.1).
  */
 export type TokenTokenExchangeGrantParameters<
-    EXTENSION extends TokenTokenExchangeExtensionParameters = Record<never, never>,
+    EXTENSION extends TokenExtensionParameters = Record<never, never>,
 > = {
     grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
 } & TokenTokenExchangeParameters<EXTENSION>;
@@ -136,10 +151,13 @@ export type TokenGrantParameters =    TokenClientCredentialsGrantParameters |
 
 /**
  * Parameters for polling the token endpoint with a device code (RFC 8628 3.4, 3.5).
- * A device authorization response can be passed as is; only the device code and
- * the client authentication parameters are sent.
+ * A device authorization response can be passed as is: every parameter is
+ * sent except the poll controls (interval, expires_in) and the fields only
+ * shown to the user (user_code, verification_uri, verification_uri_complete).
  */
-export type TokenDeviceCodePollParameters = Omit<TokenDeviceCodeGrantParameters, 'grant_type'> & {
+export type TokenDeviceCodePollParameters<
+    EXTENSION extends TokenExtensionParameters = Record<never, never>,
+> = TokenDeviceCodeParameters<EXTENSION> & {
     /**
      * Seconds to wait before each request.
      *
@@ -154,6 +172,21 @@ export type TokenDeviceCodePollParameters = Omit<TokenDeviceCodeGrantParameters,
      * default: undefined (no deadline)
      */
     expires_in?: number,
+
+    /**
+     * Not sent (device authorization response).
+     */
+    user_code?: string,
+
+    /**
+     * Not sent (device authorization response).
+     */
+    verification_uri?: string,
+
+    /**
+     * Not sent (device authorization response).
+     */
+    verification_uri_complete?: string,
 };
 
 // ------------------------------------------------------------------
