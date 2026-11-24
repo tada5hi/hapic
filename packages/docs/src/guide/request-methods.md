@@ -9,13 +9,13 @@ All of them return a `Promise<Response>` whose `data` holds the decoded body. Th
 | Method | Signature | Sends a body? |
 |--------|-----------|:-------------:|
 | `get`    | `get(url, config?)`        | — |
-| `delete` | `delete(url, config?)`     | — |
+| `delete` | `delete(url, config?)`     | if `config.body` is set |
 | `head`   | `head(url, config?)`       | — |
 | `post`   | `post(url, body?, config?)`| ✓ |
 | `put`    | `put(url, body?, config?)` | ✓ |
 | `patch`  | `patch(url, body?, config?)`| ✓ |
 
-For methods that don't carry a payload (`get` / `delete` / `head`), any body is stripped before dispatch.
+`get` and `head` never send a body: fetch refuses one for `GET` and `HEAD`, so any body is stripped before dispatch. Every other method, `delete` and `OPTIONS` included, sends a body you set explicitly.
 
 ### Reading data — `GET`
 
@@ -46,6 +46,13 @@ await useClient().patch('users/3', { name: 'Hans P.' });
 
 ```typescript
 await useClient().delete('users/3');
+```
+
+A `DELETE` has no body by default. Some APIs read one (a lock, bulk delete ids); pass it in the config and it is serialized like a `POST` body:
+
+```typescript
+await useClient().delete('items/1', { body: { lock: 3 } });
+// → DELETE items/1, body {"lock":3}, Content-Type: application/json
 ```
 
 ### Checking — `HEAD`
